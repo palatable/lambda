@@ -1,4 +1,4 @@
-functions
-=========
+lambda
+======
 
-Functional iteration patterns for Java
+Functional patterns for Java
