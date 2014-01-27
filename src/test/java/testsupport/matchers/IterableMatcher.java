@@ -6,6 +6,7 @@ import org.hamcrest.Description;
 import java.util.Iterator;
 
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 
 public class IterableMatcher<Element> extends BaseMatcher<Iterable<Element>> {
 
@@ -38,7 +39,7 @@ public class IterableMatcher<Element> extends BaseMatcher<Iterable<Element>> {
         Iterator expectedIterator = expected.iterator();
 
         while (actualIterator.hasNext() && expectedIterator.hasNext())
-            if (!actualIterator.next().equals(expectedIterator.next()))
+            if (!reflectionEquals(actualIterator.next(), expectedIterator.next()))
                 return false;
 
         return actualIterator.hasNext() == expectedIterator.hasNext();
