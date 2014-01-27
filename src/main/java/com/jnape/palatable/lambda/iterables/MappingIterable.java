@@ -5,36 +5,36 @@ import com.jnape.palatable.lambda.iterators.ImmutableIterator;
 
 import java.util.Iterator;
 
-public class MappingIterable<Input, Output> implements Iterable<Output> {
+public class MappingIterable<A, B> implements Iterable<B> {
 
-    private final MonadicFunction<? super Input, ? extends Output> function;
-    private final Iterable<Input>                                  xs;
+    private final MonadicFunction<? super A, ? extends B> function;
+    private final Iterable<A>                             as;
 
-    public MappingIterable(MonadicFunction<? super Input, ? extends Output> function, Iterable<Input> xs) {
-        this.xs = xs;
+    public MappingIterable(MonadicFunction<? super A, ? extends B> function, Iterable<A> as) {
         this.function = function;
+        this.as = as;
     }
 
     @Override
-    public Iterator<Output> iterator() {
-        final Iterator<Input> xsIterator = xs.iterator();
+    public Iterator<B> iterator() {
+        final Iterator<A> asIterator = as.iterator();
 
-        return new ImmutableIterator<Output>() {
+        return new ImmutableIterator<B>() {
             @Override
             public boolean hasNext() {
-                return xsIterator.hasNext();
+                return asIterator.hasNext();
             }
 
             @Override
-            public Output next() {
-                return function.apply(xsIterator.next());
+            public B next() {
+                return function.apply(asIterator.next());
             }
         };
     }
 
-    public static <Input, Output> MappingIterable<Input, Output> map(
-            MonadicFunction<? super Input, ? extends Output> function,
-            Iterable<Input> xs) {
-        return new MappingIterable<Input, Output>(function, xs);
+    public static <A, B> MappingIterable<A, B> map(
+            MonadicFunction<? super A, ? extends B> function,
+            Iterable<A> as) {
+        return new MappingIterable<A, B>(function, as);
     }
 }

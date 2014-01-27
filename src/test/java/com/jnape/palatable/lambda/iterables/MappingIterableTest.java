@@ -11,7 +11,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class MappingIterableTest {
 
     @Test
-    public void mapsInputIterableIntoOutputIterable() {
+    public void mapsInputsIntoOutputs() {
         Iterable<String> strings = asList("one", "two", "three");
         MappingIterable<String, Integer> stringsToLengths = map(new MonadicFunction<String, Integer>() {
             @Override
