@@ -4,7 +4,10 @@ import com.jnape.palatable.lambda.exceptions.EmptyIterableException;
 
 import java.util.Iterator;
 
+import static com.jnape.palatable.lambda.iterables.ReversingIterable.reverse;
+
 public class Folds {
+
     public static <A, B> B foldLeft(DyadicFunction<B, A, B> function, B initialAccumulation, Iterable<A> as) {
         B accumulation = initialAccumulation;
         for (A a : as)
@@ -24,5 +27,13 @@ public class Folds {
                 return iterator;
             }
         });
+    }
+
+    public static <A, B> B foldRight(DyadicFunction<A, B, B> function, B initialAccumulation, Iterable<A> as) {
+        return foldLeft(function.flip(), initialAccumulation, reverse(as));
+    }
+
+    public static <A> A reduceRight(DyadicFunction<A, A, A> function, Iterable<A> as) {
+        return reduceLeft(function.flip(), reverse(as));
     }
 }
