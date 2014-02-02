@@ -9,10 +9,10 @@ import java.util.ListIterator;
 public class Reverse {
 
     public static <A> Iterable<A> reverse(final Iterable<A> as) {
-        final Iterator<A> asIterator = as.iterator();
         return new Iterable<A>() {
             @Override
             public Iterator<A> iterator() {
+                final Iterator<A> asIterator = as.iterator();
                 return new ImmutableIterator<A>() {
                     private ListIterator<A> reversingIterator = null;
 

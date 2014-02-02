@@ -23,11 +23,11 @@ public class Zip {
     public static <A, B, C> Iterable<C> zipWith(final DyadicFunction<? super A, ? super B, ? extends C> zipper,
                                                 final Iterable<A> as,
                                                 final Iterable<B> bs) {
-        final Iterator<A> asIterator = as.iterator();
-        final Iterator<B> bsIterator = bs.iterator();
         return new Iterable<C>() {
             @Override
             public Iterator<C> iterator() {
+                final Iterator<A> asIterator = as.iterator();
+                final Iterator<B> bsIterator = bs.iterator();
                 return new ImmutableIterator<C>() {
                     @Override
                     public boolean hasNext() {

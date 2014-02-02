@@ -18,42 +18,53 @@ public class IterableMatcher<Element> extends BaseMatcher<Iterable<Element>> {
 
     @Override
     public boolean matches(Object actual) {
-        return actual instanceof Iterable && iteratesExpectedElementsInOrder((Iterable) actual);
+        return actual instanceof Iterable && iterablesIterateSameElementsInOrder((Iterable) expected, (Iterable) actual);
     }
 
     @Override
     public void describeTo(Description description) {
-        description.appendValue(expected);
+        description.appendText("<").appendText(stringify(expected)).appendText(">");
     }
 
     @Override
     public void describeMismatch(Object item, Description description) {
         if (item instanceof Iterable)
-            description.appendText("was ").appendText(stringify((Iterable) item));
+            description.appendText("was <").appendText(stringify((Iterable) item)).appendText(">");
         else
             super.describeMismatch(item, description);
     }
 
-    private boolean iteratesExpectedElementsInOrder(Iterable actual) {
+    private boolean iterablesIterateSameElementsInOrder(Iterable expected, Iterable actual) {
         Iterator actualIterator = actual.iterator();
         Iterator expectedIterator = expected.iterator();
 
-        while (actualIterator.hasNext() && expectedIterator.hasNext())
-            if (!reflectionEquals(actualIterator.next(), expectedIterator.next()))
+        while (expectedIterator.hasNext() && actualIterator.hasNext()) {
+            Object nextExpected = expectedIterator.next();
+            Object nextActual = actualIterator.next();
+
+            if (nextExpected instanceof Iterable && nextActual instanceof Iterable) {
+                if (!iterablesIterateSameElementsInOrder((Iterable) nextExpected, (Iterable) nextActual))
+                    return false;
+            } else if (!reflectionEquals(nextExpected, nextActual))
                 return false;
+        }
 
         return actualIterator.hasNext() == expectedIterator.hasNext();
     }
 
     private String stringify(Iterable iterable) {
-        StringBuilder stringBuilder = new StringBuilder().append("<[");
+        StringBuilder stringBuilder = new StringBuilder().append("[");
         Iterator iterator = iterable.iterator();
         while (iterator.hasNext()) {
-            stringBuilder.append(iterator.next());
+            Object next = iterator.next();
+            if (next instanceof Iterable)
+                stringBuilder.append(stringify((Iterable) next));
+            else
+                stringBuilder.append(next);
             if (iterator.hasNext())
                 stringBuilder.append(", ");
         }
-        return stringBuilder.append("]>").toString();
+        return stringBuilder.append("]").toString();
     }
 
     public static <Element> IterableMatcher<Element> iterates(Element... elements) {

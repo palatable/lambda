@@ -8,10 +8,10 @@ import java.util.Iterator;
 public class Map {
 
     public static <A, B> Iterable<B> map(final MonadicFunction<? super A, ? extends B> function, final Iterable<A> as) {
-        final Iterator<A> asIterator = as.iterator();
         return new Iterable<B>() {
             @Override
             public Iterator<B> iterator() {
+                final Iterator<A> asIterator = as.iterator();
                 return new ImmutableIterator<B>() {
                     @Override
                     public boolean hasNext() {

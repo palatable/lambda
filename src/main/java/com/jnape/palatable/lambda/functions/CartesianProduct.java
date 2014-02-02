@@ -10,10 +10,10 @@ import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 public class CartesianProduct {
 
     public static <A, B> Iterable<Tuple2<A, B>> cartesianProduct(final Iterable<A> as, final Iterable<B> bs) {
-        final Iterator<A> asIterator = as.iterator();
         return new Iterable<Tuple2<A, B>>() {
             @Override
             public Iterator<Tuple2<A, B>> iterator() {
+                final Iterator<A> asIterator = as.iterator();
                 return new ImmutableIterator<Tuple2<A, B>>() {
                     private A currentA = null;
                     private Iterator<B> bsIterator = bs.iterator();

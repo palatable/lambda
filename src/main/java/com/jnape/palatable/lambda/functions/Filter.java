@@ -9,10 +9,10 @@ import java.util.NoSuchElementException;
 public class Filter {
 
     public static <A> Iterable<A> filter(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
-        final Iterator<A> asIterator = as.iterator();
         return new Iterable<A>() {
             @Override
             public Iterator<A> iterator() {
+                final Iterator<A> asIterator = as.iterator();
                 return new ImmutableIterator<A>() {
                     private A queued;
 
