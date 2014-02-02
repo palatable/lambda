@@ -1,12 +1,13 @@
-package com.jnape.palatable.lambda;
+package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.DyadicFunction;
 import com.jnape.palatable.lambda.exceptions.EmptyIterableException;
 
 import java.util.Iterator;
 
-import static com.jnape.palatable.lambda.iterables.ReversingIterable.reverse;
+import static com.jnape.palatable.lambda.functions.Reverse.reverse;
 
-public class Folds {
+public class Fold {
 
     public static <A, B> B foldLeft(DyadicFunction<B, A, B> function, B initialAccumulation, Iterable<A> as) {
         B accumulation = initialAccumulation;

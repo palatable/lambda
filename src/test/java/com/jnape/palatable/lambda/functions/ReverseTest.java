@@ -1,21 +1,21 @@
-package com.jnape.palatable.lambda.iterables;
+package com.jnape.palatable.lambda.functions;
 
 import org.junit.Test;
 
 import java.util.Iterator;
 
-import static com.jnape.palatable.lambda.iterables.ReversingIterable.reverse;
+import static com.jnape.palatable.lambda.functions.Reverse.reverse;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static testsupport.matchers.IterableMatcher.iterates;
 
-public class ReversingIterableTest {
+public class ReverseTest {
 
     @Test
     public void iteratesElementsOfAnIterableBackwards() {
         Iterable<String> words = asList("the", "rain", "in", "Spain");
-        ReversingIterable<String> reversed = reverse(words);
+        Iterable<String> reversed = reverse(words);
 
         assertThat(reversed, iterates("Spain", "in", "rain", "the"));
     }

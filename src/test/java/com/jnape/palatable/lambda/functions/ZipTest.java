@@ -1,17 +1,17 @@
-package com.jnape.palatable.lambda.iterables;
+package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.DyadicFunction;
 import com.jnape.palatable.lambda.tuples.Tuple2;
 import org.junit.Test;
 
-import static com.jnape.palatable.lambda.iterables.ZippingIterable.zip;
-import static com.jnape.palatable.lambda.iterables.ZippingIterable.zipWith;
+import static com.jnape.palatable.lambda.functions.Zip.zip;
+import static com.jnape.palatable.lambda.functions.Zip.zipWith;
 import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
-public class ZippingIterableTest {
+public class ZipTest {
 
     @Test
     public void zipsTwoIterablesTogetherWithFunction() {
@@ -24,7 +24,7 @@ public class ZippingIterableTest {
                 return a + b;
             }
         };
-        ZippingIterable<Integer, Integer, Integer> sums = zipWith(add, oneThroughFive, sixThroughTen);
+        Iterable<Integer> sums = zipWith(add, oneThroughFive, sixThroughTen);
 
         assertThat(sums, iterates(7, 9, 11, 13, 15));
     }
@@ -35,7 +35,7 @@ public class ZippingIterableTest {
         Iterable<String> names = asList("Angie", "Bob", "Chelsea");
         Iterable<Integer> ages = asList(24, 18, 37);
 
-        ZippingIterable<String, Integer, Tuple2<String, Integer>> namesAndAges = zip(names, ages);
+        Iterable<Tuple2<String, Integer>> namesAndAges = zip(names, ages);
         assertThat(namesAndAges, iterates(tuple("Angie", 24), tuple("Bob", 18), tuple("Chelsea", 37)));
     }
 
@@ -45,7 +45,7 @@ public class ZippingIterableTest {
         Iterable<String> men = asList("Jack", "Sonny");
         Iterable<String> women = asList("Jill", "Cher", "Madonna");
 
-        ZippingIterable<String, String, Tuple2<String, String>> couples = zip(men, women);
+        Iterable<Tuple2<String, String>> couples = zip(men, women);
         assertThat(couples, iterates(tuple("Jack", "Jill"), tuple("Sonny", "Cher")));
     }
 }

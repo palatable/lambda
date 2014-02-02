@@ -1,17 +1,18 @@
-package com.jnape.palatable.lambda;
+package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.DyadicFunction;
 import com.jnape.palatable.lambda.exceptions.EmptyIterableException;
 import org.junit.Test;
 
 import java.util.Collections;
 
-import static com.jnape.palatable.lambda.Folds.*;
+import static com.jnape.palatable.lambda.functions.Fold.*;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class FoldsTest {
+public class FoldTest {
 
     private static final DyadicFunction<String, String, String> simulateAdd = new DyadicFunction<String, String, String>() {
         @Override

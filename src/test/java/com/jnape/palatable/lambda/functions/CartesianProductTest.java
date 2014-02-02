@@ -1,17 +1,17 @@
-package com.jnape.palatable.lambda.iterables;
+package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.tuples.Tuple2;
 import org.junit.Test;
 import testsupport.matchers.IterableMatcher;
 
-import static com.jnape.palatable.lambda.iterables.CartesianProductIterable.cartesianProduct;
+import static com.jnape.palatable.lambda.functions.CartesianProduct.cartesianProduct;
 import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 @SuppressWarnings("unchecked")
-public class CartesianProductIterableTest {
+public class CartesianProductTest {
 
     @Test
     public void computesCartesianProductOfTwoEquallySizedIterables() {
