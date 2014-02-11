@@ -18,4 +18,13 @@ public abstract class DyadicFunction<A, B, C> extends MonadicFunction<Tuple2<A, 
             }
         };
     }
+
+    public final MonadicFunction<B, C> partial(final A a) {
+        return new MonadicFunction<B, C>() {
+            @Override
+            public C apply(B b) {
+                return DyadicFunction.this.apply(a, b);
+            }
+        };
+    }
 }
