@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.iterators;
 import org.junit.Before;
 import org.junit.Test;
 
+import static testsupport.exceptions.OutOfScopeException.outOfScope;
+
 public class ImmutableIteratorTest {
 
     private ImmutableIterator immutableIterator;
@@ -12,12 +14,12 @@ public class ImmutableIteratorTest {
         immutableIterator = new ImmutableIterator() {
             @Override
             public boolean hasNext() {
-                return false;
+                throw outOfScope();
             }
 
             @Override
             public Object next() {
-                return null;
+                throw outOfScope();
             }
         };
     }

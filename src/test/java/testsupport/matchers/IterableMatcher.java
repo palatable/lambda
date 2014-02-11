@@ -2,7 +2,9 @@ package testsupport.matchers;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import static java.util.Arrays.asList;
@@ -69,5 +71,9 @@ public class IterableMatcher<Element> extends BaseMatcher<Iterable<Element>> {
 
     public static <Element> IterableMatcher<Element> iterates(Element... elements) {
         return new IterableMatcher<Element>(asList(elements));
+    }
+
+    public static <A> Matcher<Iterable<A>> isEmpty() {
+        return new IterableMatcher<A>(new ArrayList<A>());
     }
 }
