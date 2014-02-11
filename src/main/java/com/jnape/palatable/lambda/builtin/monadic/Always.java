@@ -2,14 +2,20 @@ package com.jnape.palatable.lambda.builtin.monadic;
 
 import com.jnape.palatable.lambda.MonadicFunction;
 
-public class Always {
+public final class Always<A, B> extends MonadicFunction<A, B> {
 
-    public static <A, B> MonadicFunction<A, B> always(final B b) {
-        return new MonadicFunction<A, B>() {
-            @Override
-            public B apply(A a) {
-                return b;
-            }
-        };
+    private final B b;
+
+    public Always(B b) {
+        this.b = b;
+    }
+
+    @Override
+    public final B apply(A a) {
+        return b;
+    }
+
+    public static <A, B> MonadicFunction<A, B> always(B b) {
+        return new Always<A, B>(b);
     }
 }
