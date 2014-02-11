@@ -28,22 +28,6 @@ public class IterableFactory {
     }
 
     public static <A> Iterable<A> iterable(final A... as) {
-        return new Iterable<A>() {
-            @Override
-            public Iterator<A> iterator() {
-                final Iterator<A> asIterator = asList(as).iterator();
-                return new ImmutableIterator<A>() {
-                    @Override
-                    public boolean hasNext() {
-                        return asIterator.hasNext();
-                    }
-
-                    @Override
-                    public A next() {
-                        return asIterator.next();
-                    }
-                };
-            }
-        };
+        return asList(as);
     }
 }
