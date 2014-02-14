@@ -1,9 +1,8 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.iterators.ImmutableIterator;
+import com.jnape.palatable.lambda.iterators.TakingIterator;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class Take {
 
@@ -11,24 +10,7 @@ public class Take {
         return new Iterable<A>() {
             @Override
             public Iterator<A> iterator() {
-                final Iterator<A> iterator = iterable.iterator();
-                return new ImmutableIterator<A>() {
-                    private int size = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return size < n && iterator.hasNext();
-                    }
-
-                    @Override
-                    public A next() {
-                        if (size >= n)
-                            throw new NoSuchElementException();
-
-                        size++;
-                        return iterator.next();
-                    }
-                };
+                return new TakingIterator<A>(n, iterable.iterator());
             }
         };
     }
