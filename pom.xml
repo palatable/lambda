@@ -45,6 +45,7 @@
 
     <properties>
         <commons-lang3.version>3.1</commons-lang3.version>
+        <loan-shark.version>1.0</loan-shark.version>
     </properties>
 
     <dependencies>
@@ -55,6 +56,11 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jnape.loan-shark</groupId>
+            <artifactId>loan-shark</artifactId>
+            <version>${loan-shark.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

@@ -1,5 +1,6 @@
 package testsupport.matchers;
 
+import com.jnape.loanshark.annotation.Todo;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -12,15 +13,17 @@ import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 
 public class IterableMatcher<Element> extends BaseMatcher<Iterable<Element>> {
 
+    private final int length;
     private final Iterable<Element> expected;
 
-    public IterableMatcher(Iterable<Element> expected) {
+    public IterableMatcher(int length, Iterable<Element> expected) {
+        this.length = length;
         this.expected = expected;
     }
 
     @Override
     public boolean matches(Object actual) {
-        return actual instanceof Iterable && iterablesIterateSameElementsInOrder((Iterable) expected, (Iterable) actual);
+        return actual instanceof Iterable && iterablesIterateSameElementsInOrder((Iterable) expected, (Iterable) actual) && finitelyIterable((Iterable) actual);
     }
 
     @Override
@@ -36,6 +39,7 @@ public class IterableMatcher<Element> extends BaseMatcher<Iterable<Element>> {
             super.describeMismatch(item, description);
     }
 
+    @Todo(created = "2/17/2014", author = "jnape", description = "This is a disaster. So many methods in one")
     private boolean iterablesIterateSameElementsInOrder(Iterable expected, Iterable actual) {
         Iterator actualIterator = actual.iterator();
         Iterator expectedIterator = expected.iterator();
@@ -54,6 +58,18 @@ public class IterableMatcher<Element> extends BaseMatcher<Iterable<Element>> {
         return actualIterator.hasNext() == expectedIterator.hasNext();
     }
 
+    private boolean finitelyIterable(Iterable iterable) {
+        Iterator iterator = iterable.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            iterator.next();
+            if (i++ > length)
+                return false;
+        }
+        return true;
+    }
+
+    @Todo(created = "02/17/2014", author = "jnape", description = "Pull this out into a separate class")
     private String stringify(Iterable iterable) {
         StringBuilder stringBuilder = new StringBuilder().append("[");
         Iterator iterator = iterable.iterator();
@@ -70,10 +86,10 @@ public class IterableMatcher<Element> extends BaseMatcher<Iterable<Element>> {
     }
 
     public static <Element> IterableMatcher<Element> iterates(Element... elements) {
-        return new IterableMatcher<Element>(asList(elements));
+        return new IterableMatcher<Element>(elements.length, asList(elements));
     }
 
     public static <A> Matcher<Iterable<A>> isEmpty() {
-        return new IterableMatcher<A>(new ArrayList<A>());
+        return new IterableMatcher<A>(0, new ArrayList<A>());
     }
 }
