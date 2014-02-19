@@ -44,12 +44,12 @@ public class SingleValueCachingIterator<A> extends ImmutableIterator<A> {
     }
 
     @Override
-    public boolean hasNext() {
+    public final boolean hasNext() {
         return iterator.hasNext();
     }
 
     @Override
-    public A next() {
+    public final A next() {
         A next = iterator.next();
         cache.store(next);
         return next;

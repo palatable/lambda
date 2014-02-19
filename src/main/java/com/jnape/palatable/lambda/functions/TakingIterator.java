@@ -1,30 +1,33 @@
-package com.jnape.palatable.lambda.iterators;
+package com.jnape.palatable.lambda.functions;
+
+import com.jnape.palatable.lambda.iterators.ImmutableIterator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class TakingIterator<A> extends ImmutableIterator<A> {
+
     private final int         n;
     private final Iterator<A> iterator;
-    private       int         size;
+    private       int         currentIndex;
 
     public TakingIterator(int n, Iterator<A> iterator) {
         this.n = n;
         this.iterator = iterator;
-        size = 0;
+        currentIndex = 0;
     }
 
     @Override
     public boolean hasNext() {
-        return size < n && iterator.hasNext();
+        return currentIndex < n && iterator.hasNext();
     }
 
     @Override
     public A next() {
-        if (size >= n)
+        if (currentIndex >= n)
             throw new NoSuchElementException();
 
-        size++;
+        currentIndex++;
         return iterator.next();
     }
 }

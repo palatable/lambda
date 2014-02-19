@@ -1,0 +1,67 @@
+package com.jnape.palatable.lambda.iterators;
+
+import com.jnape.palatable.lambda.Predicate;
+import org.junit.Test;
+
+import java.util.NoSuchElementException;
+
+import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+public class PredicatedTakingIteratorTest {
+
+    public static final Predicate<String> HAS_FOUR_LETTERS = new Predicate<String>() {
+        @Override
+        public Boolean apply(String s) {
+            return s.length() == 4;
+        }
+    };
+
+    @Test
+    public void hasNextIfPredicateSucceedsForNextElement() {
+        Iterable<String> words = iterable("four", "three", "two", "one");
+        PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
+        assertThat(predicatedTakingIterator.hasNext(), is(true));
+    }
+
+    @Test
+    public void stopsTakingAfterFirstPredicateFailure() {
+        Iterable<String> words = iterable("once", "upon", "a", "time");
+        PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
+        predicatedTakingIterator.next();
+        predicatedTakingIterator.next();
+        assertThat(predicatedTakingIterator.hasNext(), is(false));
+    }
+
+    @Test
+    public void doesNotHaveNextIfFirstElementFailsPredicate() {
+        Iterable<String> words = iterable("I", "have", "a", "dream");
+        PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
+        assertThat(predicatedTakingIterator.hasNext(), is(false));
+    }
+
+    @Test
+    public void doesNotHaveNextIfTakenAllElements() {
+        Iterable<String> words = iterable("four", "four");
+        PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
+        predicatedTakingIterator.next();
+        predicatedTakingIterator.next();
+        assertThat(predicatedTakingIterator.hasNext(), is(false));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void throwsExceptionIfNextAfterFailedPredicate() {
+        Iterable<String> words = iterable("no");
+        PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
+        predicatedTakingIterator.next();
+    }
+
+    @Test
+    public void takesEverythingIfPredicateNeverFails() {
+        Iterable<String> words = iterable("yeah");
+        PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
+        assertThat(predicatedTakingIterator.next(), is("yeah"));
+        assertThat(predicatedTakingIterator.hasNext(), is(false));
+    }
+}
