@@ -1,36 +1,32 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.iterators.ImmutableIterator;
+import com.jnape.palatable.lambda.DyadicFunction;
+import com.jnape.palatable.lambda.MonadicFunction;
+import com.jnape.palatable.lambda.iterators.GroupingIterator;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-import static com.jnape.palatable.lambda.functions.Take.take;
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
+public final class InGroupsOf<A> extends DyadicFunction<Integer, Iterable<A>, Iterable<Iterable<A>>> {
 
-public class InGroupsOf {
-
-    public static <A> Iterable<Iterable<A>> inGroupsOf(final int k, final Iterable<A> as) {
+    @Override
+    public final Iterable<Iterable<A>> apply(final Integer k, final Iterable<A> as) {
         return new Iterable<Iterable<A>>() {
             @Override
             public Iterator<Iterable<A>> iterator() {
-                final Iterator<A> asIterator = as.iterator();
-                return new ImmutableIterator<Iterable<A>>() {
-                    @Override
-                    public boolean hasNext() {
-                        return asIterator.hasNext();
-                    }
-
-                    @Override
-                    public Iterable<A> next() {
-                        List<A> group = new ArrayList<A>();
-                        for (A a : take(k, iterable(asIterator)))
-                            group.add(a);
-                        return group;
-                    }
-                };
+                return new GroupingIterator<A>(k, as.iterator());
             }
         };
+    }
+
+    public static <A> InGroupsOf<A> inGroupsOf() {
+        return new InGroupsOf<A>();
+    }
+
+    public static <A> MonadicFunction<Iterable<A>, Iterable<Iterable<A>>> inGroupsOf(Integer k) {
+        return InGroupsOf.<A>inGroupsOf().partial(k);
+    }
+
+    public static <A> Iterable<Iterable<A>> inGroupsOf(Integer k, Iterable<A> as) {
+        return InGroupsOf.<A>inGroupsOf(k).apply(as);
     }
 }

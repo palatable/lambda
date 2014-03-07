@@ -1,6 +1,13 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.traits.EmptyIterableSupport;
+import testsupport.traits.FiniteIteration;
+import testsupport.traits.ImmutableIteration;
+import testsupport.traits.Laziness;
 
 import java.util.Iterator;
 
@@ -10,7 +17,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static testsupport.matchers.IterableMatcher.iterates;
 
+@RunWith(Traits.class)
 public class ReverseTest {
+
+    @TestTraits({Laziness.class, ImmutableIteration.class, FiniteIteration.class, EmptyIterableSupport.class})
+    public Reverse createTestSubject() {
+        return reverse();
+    }
 
     @Test
     public void iteratesElementsOfAnIterableBackwards() {

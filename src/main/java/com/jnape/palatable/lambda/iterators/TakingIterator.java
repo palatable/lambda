@@ -1,6 +1,4 @@
-package com.jnape.palatable.lambda.functions;
-
-import com.jnape.palatable.lambda.iterators.ImmutableIterator;
+package com.jnape.palatable.lambda.iterators;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

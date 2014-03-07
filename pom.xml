@@ -46,6 +46,7 @@
     <properties>
         <commons-lang3.version>3.1</commons-lang3.version>
         <loan-shark.version>1.0</loan-shark.version>
+        <traitor.version>1.0</traitor.version>
     </properties>
 
     <dependencies>
@@ -56,6 +57,11 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jnape.palatable</groupId>
+            <artifactId>traitor</artifactId>
+            <version>${traitor.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jnape.loan-shark</groupId>

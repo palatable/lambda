@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.functions;
+package com.jnape.palatable.lambda.iterators;
 
 import org.junit.Test;
 

@@ -7,10 +7,10 @@ import java.util.Iterator;
 
 import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
 
-public class Cycle<A> extends MonadicFunction<Iterable<A>, Iterable<A>> {
+public final class Cycle<A> extends MonadicFunction<Iterable<A>, Iterable<A>> {
 
     @Override
-    public Iterable<A> apply(final Iterable<A> as) {
+    public final Iterable<A> apply(final Iterable<A> as) {
         return new Iterable<A>() {
             @Override
             public Iterator<A> iterator() {
@@ -19,8 +19,12 @@ public class Cycle<A> extends MonadicFunction<Iterable<A>, Iterable<A>> {
         };
     }
 
+    public static <A> Cycle<A> cycle() {
+        return new Cycle<A>();
+    }
+
     public static <A> Iterable<A> cycle(Iterable<A> as) {
-        return new Cycle<A>().apply(as);
+        return Cycle.<A>cycle().apply(as);
     }
 
     public static <A> Iterable<A> cycle(A... as) {

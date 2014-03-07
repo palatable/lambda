@@ -1,48 +1,27 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.iterators.ImmutableIterator;
+import com.jnape.palatable.lambda.MonadicFunction;
+import com.jnape.palatable.lambda.iterators.ReversingIterator;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.ListIterator;
 
-public class Reverse {
+public final class Reverse<A> extends MonadicFunction<Iterable<A>, Iterable<A>> {
 
-    public static <A> Iterable<A> reverse(final Iterable<A> as) {
+    @Override
+    public final Iterable<A> apply(final Iterable<A> as) {
         return new Iterable<A>() {
             @Override
             public Iterator<A> iterator() {
-                final Iterator<A> asIterator = as.iterator();
-                return new ImmutableIterator<A>() {
-                    private ListIterator<A> reversingIterator = null;
-
-                    @Override
-                    public boolean hasNext() {
-                        return readyToReverse() ? reversingIterator.hasPrevious() : asIterator.hasNext();
-                    }
-
-                    @Override
-                    public A next() {
-                        if (!readyToReverse())
-                            prepareForReversal();
-
-                        return reversingIterator.previous();
-                    }
-
-                    private void prepareForReversal() {
-                        ArrayList<A> asList = new ArrayList<A>() {{
-                            while (asIterator.hasNext())
-                                add(asIterator.next());
-                        }};
-                        reversingIterator = asList.listIterator(asList.size());
-                    }
-
-                    private boolean readyToReverse() {
-                        return reversingIterator != null;
-                    }
-                };
+                return new ReversingIterator<A>(as.iterator());
             }
         };
     }
 
+    public static <A> Reverse<A> reverse() {
+        return new Reverse<A>();
+    }
+
+    public static <A> Iterable<A> reverse(final Iterable<A> as) {
+        return Reverse.<A>reverse().apply(as);
+    }
 }

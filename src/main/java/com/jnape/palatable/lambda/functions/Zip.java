@@ -1,45 +1,33 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.DyadicFunction;
-import com.jnape.palatable.lambda.iterators.ImmutableIterator;
+import com.jnape.palatable.lambda.MonadicFunction;
 import com.jnape.palatable.lambda.tuples.Tuple2;
 
-import java.util.Iterator;
-
+import static com.jnape.palatable.lambda.functions.ZipWith.zipWith;
 import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 
-public class Zip {
+public final class Zip<A, B> extends DyadicFunction<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
 
-    public static <A, B> Iterable<Tuple2<A, B>> zip(Iterable<A> as, Iterable<B> bs) {
-        DyadicFunction<A, B, Tuple2<A, B>> zipper = new DyadicFunction<A, B, Tuple2<A, B>>() {
+    @Override
+    public final Iterable<Tuple2<A, B>> apply(final Iterable<A> as, final Iterable<B> bs) {
+        return zipWith(new DyadicFunction<A, B, Tuple2<A, B>>() {
             @Override
             public Tuple2<A, B> apply(A a, B b) {
                 return tuple(a, b);
             }
-        };
-        return zipWith(zipper, as, bs);
+        }, as, bs);
     }
 
-    public static <A, B, C> Iterable<C> zipWith(final DyadicFunction<? super A, ? super B, ? extends C> zipper,
-                                                final Iterable<A> as,
-                                                final Iterable<B> bs) {
-        return new Iterable<C>() {
-            @Override
-            public Iterator<C> iterator() {
-                final Iterator<A> asIterator = as.iterator();
-                final Iterator<B> bsIterator = bs.iterator();
-                return new ImmutableIterator<C>() {
-                    @Override
-                    public boolean hasNext() {
-                        return asIterator.hasNext() && bsIterator.hasNext();
-                    }
+    public static <A, B> DyadicFunction<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> zip() {
+        return new Zip<A, B>();
+    }
 
-                    @Override
-                    public C next() {
-                        return zipper.apply(asIterator.next(), bsIterator.next());
-                    }
-                };
-            }
-        };
+    public static <A, B> MonadicFunction<Iterable<B>, Iterable<Tuple2<A, B>>> zip(Iterable<A> as) {
+        return Zip.<A, B>zip().partial(as);
+    }
+
+    public static <A, B> Iterable<Tuple2<A, B>> zip(Iterable<A> as, Iterable<B> bs) {
+        return Zip.<A, B>zip().apply(as, bs);
     }
 }

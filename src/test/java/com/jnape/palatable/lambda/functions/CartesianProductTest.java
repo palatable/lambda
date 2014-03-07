@@ -1,17 +1,31 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.MonadicFunction;
 import com.jnape.palatable.lambda.tuples.Tuple2;
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
-import testsupport.matchers.IterableMatcher;
+import org.junit.runner.RunWith;
+import testsupport.traits.EmptyIterableSupport;
+import testsupport.traits.FiniteIteration;
+import testsupport.traits.ImmutableIteration;
+import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.CartesianProduct.cartesianProduct;
+import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
 import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
+@RunWith(Traits.class)
 @SuppressWarnings("unchecked")
 public class CartesianProductTest {
+
+    @TestTraits({Laziness.class, ImmutableIteration.class, EmptyIterableSupport.class, FiniteIteration.class})
+    public MonadicFunction<Iterable<Object>, Iterable<Tuple2<Integer, Object>>> createTestSubject() {
+        return cartesianProduct(iterable(1, 2, 3));
+    }
 
     @Test
     public void computesCartesianProductOfTwoEquallySizedIterables() {
@@ -50,13 +64,5 @@ public class CartesianProductTest {
                         tuple(3, "b")
                 )
         );
-    }
-
-    @Test
-    public void isEmptyIfFirstIterableIsEmpty() {
-        Iterable<Integer> empty = asList();
-        Iterable<String> notEmpty = asList("a", "b");
-
-        assertThat(cartesianProduct(empty, notEmpty), IterableMatcher.<Tuple2<Integer, String>>iterates());
     }
 }

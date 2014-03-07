@@ -1,13 +1,15 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.DyadicFunction;
 import com.jnape.palatable.lambda.MonadicFunction;
-import com.jnape.palatable.lambda.iterators.PredicatedTakingIterator;
+import com.jnape.palatable.lambda.iterators.TakingIterator;
 
 import java.util.Iterator;
 
-public class Take {
+public final class Take<A> extends DyadicFunction<Integer, Iterable<A>, Iterable<A>> {
 
-    public static <A> Iterable<A> take(final int n, final Iterable<A> as) {
+    @Override
+    public final Iterable<A> apply(final Integer n, final Iterable<A> as) {
         return new Iterable<A>() {
             @Override
             public Iterator<A> iterator() {
@@ -16,12 +18,15 @@ public class Take {
         };
     }
 
-    public static <A> Iterable<A> takeWhile(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
-        return new Iterable<A>() {
-            @Override
-            public Iterator<A> iterator() {
-                return new PredicatedTakingIterator<A>(predicate, as.iterator());
-            }
-        };
+    public static <A> Take<A> take() {
+        return new Take<A>();
+    }
+
+    public static <A> MonadicFunction<Iterable<A>, Iterable<A>> take(int n) {
+        return Take.<A>take().partial(n);
+    }
+
+    public static <A> Iterable<A> take(Integer n, Iterable<A> as) {
+        return Take.<A>take(n).apply(as);
     }
 }

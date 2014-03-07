@@ -1,42 +1,33 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.iterators.ImmutableIterator;
+import com.jnape.palatable.lambda.DyadicFunction;
+import com.jnape.palatable.lambda.MonadicFunction;
+import com.jnape.palatable.lambda.iterators.CombinatorialIterator;
 import com.jnape.palatable.lambda.tuples.Tuple2;
 
 import java.util.Iterator;
 
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
+public final class CartesianProduct<A, B> extends DyadicFunction<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
 
-public class CartesianProduct {
-
-    public static <A, B> Iterable<Tuple2<A, B>> cartesianProduct(final Iterable<A> as, final Iterable<B> bs) {
+    @Override
+    public final Iterable<Tuple2<A, B>> apply(final Iterable<A> as, final Iterable<B> bs) {
         return new Iterable<Tuple2<A, B>>() {
             @Override
             public Iterator<Tuple2<A, B>> iterator() {
-                final Iterator<A> asIterator = as.iterator();
-                return new ImmutableIterator<Tuple2<A, B>>() {
-                    private A currentA = null;
-                    private Iterator<B> bsIterator = bs.iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return asIterator.hasNext() || currentA != null && bsIterator.hasNext();
-                    }
-
-                    @Override
-                    public Tuple2<A, B> next() {
-                        if (currentA == null)
-                            currentA = asIterator.next();
-                        if (!bsIterator.hasNext() && asIterator.hasNext()) {
-                            bsIterator = bs.iterator();
-                            currentA = asIterator.next();
-                        }
-
-                        return tuple(currentA, bsIterator.next());
-                    }
-                };
+                return new CombinatorialIterator<A, B>(as.iterator(), bs.iterator());
             }
         };
     }
 
+    public static <A, B> CartesianProduct<A, B> cartesianProduct() {
+        return new CartesianProduct<A, B>();
+    }
+
+    public static <A, B> MonadicFunction<Iterable<B>, Iterable<Tuple2<A, B>>> cartesianProduct(Iterable<A> as) {
+        return CartesianProduct.<A, B>cartesianProduct().partial(as);
+    }
+
+    public static <A, B> Iterable<Tuple2<A, B>> cartesianProduct(final Iterable<A> as, final Iterable<B> bs) {
+        return CartesianProduct.<A, B>cartesianProduct(as).apply(bs);
+    }
 }
