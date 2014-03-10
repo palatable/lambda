@@ -8,30 +8,33 @@ import java.util.NoSuchElementException;
 public class FilteringIterator<A> extends ImmutableIterator<A> {
 
     private final MonadicFunction<? super A, Boolean> predicate;
-    private final SingleValueCachingIterator<A>       cachingIterator;
+    private final RewindableIterator<A>               rewindableIterator;
 
     public FilteringIterator(MonadicFunction<? super A, Boolean> predicate, Iterator<A> iterator) {
         this.predicate = predicate;
-        cachingIterator = new SingleValueCachingIterator<A>(iterator);
+        rewindableIterator = new RewindableIterator<A>(iterator);
     }
 
     @Override
     public boolean hasNext() {
-        return cachingIterator.hasCachedElement() || hasMoreMatchingElements();
+        return rewindableIterator.isRewound() || hasMoreMatchingElements();
     }
 
     @Override
     public A next() {
         if (hasNext())
-            return cachingIterator.lastElementCached();
+            return rewindableIterator.next();
 
         throw new NoSuchElementException();
     }
 
     private boolean hasMoreMatchingElements() {
-        while (cachingIterator.hasNext())
-            if (predicate.apply(cachingIterator.next()))
+        while (rewindableIterator.hasNext()) {
+            if (predicate.apply(rewindableIterator.next())) {
+                rewindableIterator.rewind();
                 return true;
+            }
+        }
 
         return false;
     }

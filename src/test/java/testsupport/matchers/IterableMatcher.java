@@ -4,6 +4,7 @@ import com.jnape.loanshark.annotation.Todo;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import static java.util.Arrays.asList;
@@ -71,5 +72,9 @@ public class IterableMatcher extends BaseMatcher<Iterable> {
 
     public static <Element> IterableMatcher iterates(Element... elements) {
         return new IterableMatcher(asList(elements));
+    }
+
+    public static IterableMatcher isEmpty() {
+        return new IterableMatcher(new ArrayList());
     }
 }

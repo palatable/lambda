@@ -12,43 +12,38 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.builtin.monadic.Always.always;
-import static com.jnape.palatable.lambda.functions.TakeWhile.takeWhile;
+import static com.jnape.palatable.lambda.functions.DropWhile.dropWhile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 @RunWith(Traits.class)
-public class TakeWhileTest {
+public class DropWhileTest {
 
-    @TestTraits({FiniteIteration.class, EmptyIterableSupport.class, ImmutableIteration.class, Laziness.class})
-    public MonadicFunction<Iterable<Object>, Iterable<Object>> createTestObject() {
-        return takeWhile(always(true));
+    @TestTraits({Laziness.class, ImmutableIteration.class, FiniteIteration.class, EmptyIterableSupport.class})
+    public MonadicFunction<Iterable<Object>, Iterable<Object>> createTestSubject() {
+        return dropWhile(always(true));
     }
 
     @Test
-    public void takesElementsWhilePredicateIsTrue() {
+    public void dropsElementsWhilePredicateIsTrue() {
         Predicate<Integer> lessThan3 = new Predicate<Integer>() {
             @Override
             public Boolean apply(Integer integer) {
                 return integer < 3;
             }
         };
-        Iterable<Integer> numbers = takeWhile(lessThan3, asList(1, 2, 3, 4, 5));
-        assertThat(numbers, iterates(1, 2));
+        assertThat(dropWhile(lessThan3, asList(1, 2, 3)), iterates(3));
     }
 
     @Test
-    public void takesAllElementsIfPredicateNeverFails() {
-        String[] requirements = {"fast", "good", "cheap"};
-        assertThat(
-                takeWhile(always(true), asList(requirements)),
-                iterates(requirements)
-        );
+    public void dropsAllElementsIfPredicateNeverFails() {
+        assertThat(dropWhile(always(true), asList(1, 2, 3)), isEmpty());
     }
 
     @Test
-    public void takesNoElementsIfPredicateImmediatelyFails() {
-        assertThat(takeWhile(always(false), asList(1, 2, 3)), isEmpty());
+    public void dropsNoElementsIfPredicateImmediatelyFails() {
+        assertThat(dropWhile(always(false), asList(1, 2, 3)), iterates(1, 2, 3));
     }
 }
