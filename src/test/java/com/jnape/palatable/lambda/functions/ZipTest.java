@@ -1,7 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.MonadicFunction;
-import com.jnape.palatable.lambda.staticfactory.IterableFactory;
 import com.jnape.palatable.lambda.tuples.Tuple2;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -10,6 +9,8 @@ import org.junit.runner.RunWith;
 import testsupport.traits.FiniteIteration;
 import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
+
+import java.util.Arrays;
 
 import static com.jnape.palatable.lambda.functions.Zip.zip;
 import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
@@ -22,7 +23,7 @@ public class ZipTest {
 
     @TestTraits({Laziness.class, FiniteIteration.class, ImmutableIteration.class})
     public MonadicFunction<Iterable<Object>, Iterable<Tuple2<Object, Object>>> createTestSubject() {
-        return zip(IterableFactory.<Object>iterable(1, 2, 3));
+        return zip(Arrays.<Object>asList(1, 2, 3));
     }
 
     @Test

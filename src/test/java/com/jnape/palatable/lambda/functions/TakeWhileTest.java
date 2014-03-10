@@ -13,7 +13,7 @@ import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.builtin.monadic.Always.always;
 import static com.jnape.palatable.lambda.functions.TakeWhile.takeWhile;
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
@@ -33,7 +33,7 @@ public class TakeWhileTest {
                 return integer < 3;
             }
         };
-        Iterable<Integer> numbers = takeWhile(lessThan3, iterable(1, 2, 3, 4, 5));
+        Iterable<Integer> numbers = takeWhile(lessThan3, asList(1, 2, 3, 4, 5));
         assertThat(numbers, iterates(1, 2));
     }
 
@@ -41,7 +41,7 @@ public class TakeWhileTest {
     public void takesAllElementsIfPredicateNeverFails() {
         String[] requirements = {"fast", "good", "cheap"};
         assertThat(
-                takeWhile(always(true), iterable(requirements)),
+                takeWhile(always(true), asList(requirements)),
                 iterates(requirements)
         );
     }

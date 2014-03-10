@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.NoSuchElementException;
 
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
+import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -20,14 +20,14 @@ public class PredicatedTakingIteratorTest {
 
     @Test
     public void hasNextIfPredicateSucceedsForNextElement() {
-        Iterable<String> words = iterable("four", "three", "two", "one");
+        Iterable<String> words = asList("four", "three", "two", "one");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
         assertThat(predicatedTakingIterator.hasNext(), is(true));
     }
 
     @Test
     public void stopsTakingAfterFirstPredicateFailure() {
-        Iterable<String> words = iterable("once", "upon", "a", "time");
+        Iterable<String> words = asList("once", "upon", "a", "time");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
         predicatedTakingIterator.next();
         predicatedTakingIterator.next();
@@ -36,14 +36,14 @@ public class PredicatedTakingIteratorTest {
 
     @Test
     public void doesNotHaveNextIfFirstElementFailsPredicate() {
-        Iterable<String> words = iterable("I", "have", "a", "dream");
+        Iterable<String> words = asList("I", "have", "a", "dream");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
         assertThat(predicatedTakingIterator.hasNext(), is(false));
     }
 
     @Test
     public void doesNotHaveNextIfTakenAllElements() {
-        Iterable<String> words = iterable("four", "four");
+        Iterable<String> words = asList("four", "four");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
         predicatedTakingIterator.next();
         predicatedTakingIterator.next();
@@ -52,14 +52,14 @@ public class PredicatedTakingIteratorTest {
 
     @Test(expected = NoSuchElementException.class)
     public void throwsExceptionIfNextAfterFailedPredicate() {
-        Iterable<String> words = iterable("no");
+        Iterable<String> words = asList("no");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
         predicatedTakingIterator.next();
     }
 
     @Test
     public void takesEverythingIfPredicateNeverFails() {
-        Iterable<String> words = iterable("yeah");
+        Iterable<String> words = asList("yeah");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<String>(HAS_FOUR_LETTERS, words.iterator());
         assertThat(predicatedTakingIterator.next(), is("yeah"));
         assertThat(predicatedTakingIterator.hasNext(), is(false));

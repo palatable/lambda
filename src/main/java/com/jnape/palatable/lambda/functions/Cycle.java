@@ -5,7 +5,7 @@ import com.jnape.palatable.lambda.iterators.CyclicIterator;
 
 import java.util.Iterator;
 
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
+import static java.util.Arrays.asList;
 
 public final class Cycle<A> extends MonadicFunction<Iterable<A>, Iterable<A>> {
 
@@ -28,6 +28,6 @@ public final class Cycle<A> extends MonadicFunction<Iterable<A>, Iterable<A>> {
     }
 
     public static <A> Iterable<A> cycle(A... as) {
-        return cycle(iterable(as));
+        return cycle(asList(as));
     }
 }

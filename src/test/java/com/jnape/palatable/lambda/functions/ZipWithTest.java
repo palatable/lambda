@@ -13,7 +13,6 @@ import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.Zip.zip;
 import static com.jnape.palatable.lambda.functions.ZipWith.zipWith;
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
 import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
@@ -29,7 +28,7 @@ public class ZipWithTest {
             public Object apply(Object o, Object o2) {
                 return new Object();
             }
-        }, iterable(1, 2, 3));
+        }, asList(1, 2, 3));
     }
 
     @Test

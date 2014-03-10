@@ -12,7 +12,7 @@ import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.builtin.monadic.Identity.id;
 import static com.jnape.palatable.lambda.functions.Map.map;
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
@@ -33,7 +33,7 @@ public class MapTest {
             }
         };
         assertThat(
-                map(length, iterable("one", "two", "three")),
+                map(length, asList("one", "two", "three")),
                 iterates(3, 3, 5)
         );
     }

@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import testsupport.traits.EmptyIterableSupport;
 
 import static com.jnape.palatable.lambda.functions.FoldRight.foldRight;
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -25,7 +24,7 @@ public class FoldRightTest {
             public Iterable<Object> apply(Object o, Iterable<Object> objects) {
                 return objects;
             }
-        }, iterable(new Object()));
+        }, asList(new Object()));
     }
 
     @Test

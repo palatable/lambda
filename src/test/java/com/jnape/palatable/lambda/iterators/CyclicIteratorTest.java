@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.iterators;
 
 import org.junit.Test;
 
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -10,7 +10,7 @@ public class CyclicIteratorTest {
 
     @Test
     public void alwaysHasNext() {
-        CyclicIterator<Integer> cyclicIterator = new CyclicIterator<Integer>(iterable(1, 2).iterator());
+        CyclicIterator<Integer> cyclicIterator = new CyclicIterator<Integer>(asList(1, 2).iterator());
         cyclicIterator.next();
         cyclicIterator.next();
         assertThat(cyclicIterator.hasNext(), is(true));
@@ -18,7 +18,7 @@ public class CyclicIteratorTest {
 
     @Test
     public void cyclesThroughElements() {
-        CyclicIterator<String> strings = new CyclicIterator<String>(iterable("bait", "switch").iterator());
+        CyclicIterator<String> strings = new CyclicIterator<String>(asList("bait", "switch").iterator());
         strings.next();
         strings.next();
         assertThat(strings.next(), is("bait"));

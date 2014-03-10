@@ -13,7 +13,7 @@ import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.builtin.monadic.Always.always;
 import static com.jnape.palatable.lambda.functions.Filter.filter;
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
@@ -34,7 +34,7 @@ public class FilterTest {
             }
         };
         assertThat(
-                filter(evens, iterable(1, 2, 3, 4, 5, 6)),
+                filter(evens, asList(1, 2, 3, 4, 5, 6)),
                 iterates(2, 4, 6)
         );
     }

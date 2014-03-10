@@ -12,7 +12,6 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.CartesianProduct.cartesianProduct;
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
 import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
@@ -24,7 +23,7 @@ public class CartesianProductTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, EmptyIterableSupport.class, FiniteIteration.class})
     public MonadicFunction<Iterable<Object>, Iterable<Tuple2<Integer, Object>>> createTestSubject() {
-        return cartesianProduct(iterable(1, 2, 3));
+        return cartesianProduct(asList(1, 2, 3));
     }
 
     @Test

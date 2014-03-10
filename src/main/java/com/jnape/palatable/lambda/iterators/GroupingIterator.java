@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.jnape.palatable.lambda.functions.Take.take;
-import static com.jnape.palatable.lambda.staticfactory.IterableFactory.iterable;
-
 public class GroupingIterator<A> extends ImmutableIterator<Iterable<A>> {
     private final Integer     k;
     private final Iterator<A> asIterator;
@@ -24,8 +21,9 @@ public class GroupingIterator<A> extends ImmutableIterator<Iterable<A>> {
     @Override
     public Iterable<A> next() {
         List<A> group = new ArrayList<A>();
-        for (A a : take(k, iterable(asIterator)))
-            group.add(a);
+        int i = 0;
+        while (i++ < k && asIterator.hasNext())
+            group.add(asIterator.next());
         return group;
     }
 }
