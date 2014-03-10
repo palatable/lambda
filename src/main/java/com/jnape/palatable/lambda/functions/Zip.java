@@ -14,7 +14,7 @@ public final class Zip<A, B> extends DyadicFunction<Iterable<A>, Iterable<B>, It
         return zipWith(Tupler2.<A, B>tupler(), as, bs);
     }
 
-    public static <A, B> DyadicFunction<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> zip() {
+    public static <A, B> Zip<A, B> zip() {
         return new Zip<A, B>();
     }
 

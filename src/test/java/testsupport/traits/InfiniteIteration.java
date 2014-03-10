@@ -17,4 +17,3 @@ public class InfiniteIteration implements Trait<MonadicFunction<Iterable, Iterab
         assertThat(result, is(not(finitelyIterable())));
     }
 }
-

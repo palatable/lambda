@@ -20,7 +20,7 @@ public final class ZipWith<A, B, C> extends TriadicFunction<DyadicFunction<? sup
         };
     }
 
-    public static <A, B, C> TriadicFunction<DyadicFunction<? super A, ? super B, ? extends C>, Iterable<A>, Iterable<B>, Iterable<C>> zipWith() {
+    public static <A, B, C> ZipWith<A, B, C> zipWith() {
         return new ZipWith<A, B, C>();
     }
 
