@@ -5,10 +5,10 @@ import com.jnape.palatable.traitor.traits.Trait;
 
 import java.util.ArrayList;
 
-public class EmptyIterableSupport implements Trait<MonadicFunction<Iterable, Iterable>> {
+public class EmptyIterableSupport implements Trait<MonadicFunction<Iterable, ?>> {
 
     @Override
-    public void test(MonadicFunction<Iterable, Iterable> testSubject) {
+    public void test(MonadicFunction<Iterable, ?> testSubject) {
         try {
             testSubject.apply(new ArrayList());
         } catch (Exception e) {
