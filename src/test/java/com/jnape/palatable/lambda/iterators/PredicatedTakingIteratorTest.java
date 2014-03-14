@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.functions.Predicate;
+import com.jnape.palatable.lambda.functions.specialized.Predicate;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;

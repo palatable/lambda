@@ -17,7 +17,7 @@ public abstract class DyadicFunction<A, B, C> extends MonadicFunction<Tuple2<A, 
         return partial2(this, a);
     }
 
-    public final DyadicFunction<B, A, C> flip() {
+    public DyadicFunction<B, A, C> flip() {
         return new DyadicFunction<B, A, C>() {
             @Override
             public C apply(B b, A a) {

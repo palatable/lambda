@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.dyadic;
 
 import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.functions.Predicate;
+import com.jnape.palatable.lambda.functions.specialized.Predicate;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
