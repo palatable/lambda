@@ -1,6 +1,6 @@
 package testsupport.traits;
 
-import com.jnape.palatable.lambda.MonadicFunction;
+import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.traitor.traits.Trait;
 
 import static org.junit.Assert.assertThat;

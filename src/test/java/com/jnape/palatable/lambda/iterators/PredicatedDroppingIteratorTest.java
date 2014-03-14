@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.MonadicFunction;
-import com.jnape.palatable.lambda.Predicate;
+import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functions.Predicate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

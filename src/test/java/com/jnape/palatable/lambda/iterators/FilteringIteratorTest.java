@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.Predicate;
+import com.jnape.palatable.lambda.functions.Predicate;
 import org.junit.Test;
 
 import static java.lang.Character.toUpperCase;

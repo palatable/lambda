@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.DyadicFunction;
+import com.jnape.palatable.lambda.functions.DyadicFunction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

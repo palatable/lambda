@@ -1,6 +1,6 @@
 package testsupport.functions;
 
-import com.jnape.palatable.lambda.DyadicFunction;
+import com.jnape.palatable.lambda.functions.DyadicFunction;
 
 import static java.lang.String.format;
 

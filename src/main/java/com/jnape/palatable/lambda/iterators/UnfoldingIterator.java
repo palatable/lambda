@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.MonadicFunction;
+import com.jnape.palatable.lambda.functions.MonadicFunction;
 
 public class UnfoldingIterator<A> extends InfiniteIterator<A> {
     private final MonadicFunction<? super A, ? extends A> fn;

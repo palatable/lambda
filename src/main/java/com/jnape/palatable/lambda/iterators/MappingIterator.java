@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.MonadicFunction;
+import com.jnape.palatable.lambda.functions.MonadicFunction;
 
 import java.util.Iterator;
 
