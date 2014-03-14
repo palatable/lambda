@@ -2,6 +2,8 @@ package com.jnape.palatable.lambda;
 
 import com.jnape.palatable.lambda.tuples.Tuple2;
 
+import static com.jnape.palatable.lambda.functions.Partial2.partial2;
+
 public abstract class DyadicFunction<A, B, C> extends MonadicFunction<Tuple2<A, B>, C> {
 
     @Override
@@ -21,11 +23,6 @@ public abstract class DyadicFunction<A, B, C> extends MonadicFunction<Tuple2<A, 
     }
 
     public final MonadicFunction<B, C> partial(final A a) {
-        return new MonadicFunction<B, C>() {
-            @Override
-            public C apply(B b) {
-                return DyadicFunction.this.apply(a, b);
-            }
-        };
+        return partial2(this, a);
     }
 }
