@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.EmptyIterableSupport;
 
-import static com.jnape.palatable.lambda.functions.builtin.dyadic.All.all;
+import static com.jnape.palatable.lambda.functions.builtin.dyadic.Any.any;
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Always.always;
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Repeat.repeat;
 import static java.util.Arrays.asList;
@@ -16,32 +16,32 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Traits.class)
-public class AllTest {
+public class AnyTest {
 
-    private static final MonadicFunction<? super Number, Boolean> EVEN = new Predicate<Number>() {
+    public static final MonadicFunction<? super Integer, Boolean> EVEN = new Predicate<Integer>() {
         @Override
-        public Boolean apply(Number number) {
-            return number.doubleValue() % 2 == 0;
+        public Boolean apply(Integer integer) {
+            return integer % 2 == 0;
         }
     };
 
     @TestTraits({EmptyIterableSupport.class})
     public MonadicFunction<Iterable<Object>, Boolean> createTestSubject() {
-        return all(always(true));
+        return any(always(true));
     }
 
     @Test
-    public void trueIfAllElementsMatchPredicate() {
-        assertThat(all(EVEN, asList(2, 4, 6, 8)), is(true));
+    public void trueIfAnyElementsMatchPredicate() {
+        assertThat(any(EVEN, asList(1, 2)), is(true));
     }
 
     @Test
-    public void falseIfAnyElementsFailPredicate() {
-        assertThat(all(EVEN, asList(1, 2, 4, 6, 8)), is(false));
+    public void falseIfNoElementsMatchPredicate() {
+        assertThat(any(EVEN, asList(1, 3, 5)), is(false));
     }
 
     @Test
-    public void terminatesIterationImmediatelyUponPredicateFailure() {
-        assertThat(all(EVEN, repeat(1)), is(false));
+    public void terminatesIterationImmediatelyUponPredicateSuccess() {
+        assertThat(any(EVEN, repeat(2)), is(true));
     }
 }
