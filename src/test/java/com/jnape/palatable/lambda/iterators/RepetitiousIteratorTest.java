@@ -12,7 +12,7 @@ public class RepetitiousIteratorTest {
 
     @Before
     public void setUp() {
-        repetitiousIterator = new RepetitiousIterator<Integer>(1);
+        repetitiousIterator = new RepetitiousIterator<>(1);
     }
 
     @Test

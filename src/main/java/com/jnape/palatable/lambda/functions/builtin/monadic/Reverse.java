@@ -3,22 +3,15 @@ package com.jnape.palatable.lambda.functions.builtin.monadic;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.iterators.ReversingIterator;
 
-import java.util.Iterator;
-
-public final class Reverse<A> extends MonadicFunction<Iterable<A>, Iterable<A>> {
+public final class Reverse<A> implements MonadicFunction<Iterable<A>, Iterable<A>> {
 
     @Override
     public final Iterable<A> apply(final Iterable<A> as) {
-        return new Iterable<A>() {
-            @Override
-            public Iterator<A> iterator() {
-                return new ReversingIterator<A>(as.iterator());
-            }
-        };
+        return () -> new ReversingIterator<>(as.iterator());
     }
 
     public static <A> Reverse<A> reverse() {
-        return new Reverse<A>();
+        return new Reverse<>();
     }
 
     public static <A> Iterable<A> reverse(final Iterable<A> as) {

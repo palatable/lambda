@@ -10,7 +10,7 @@ public class CyclicIteratorTest {
 
     @Test
     public void alwaysHasNext() {
-        CyclicIterator<Integer> cyclicIterator = new CyclicIterator<Integer>(asList(1, 2).iterator());
+        CyclicIterator<Integer> cyclicIterator = new CyclicIterator<>(asList(1, 2).iterator());
         cyclicIterator.next();
         cyclicIterator.next();
         assertThat(cyclicIterator.hasNext(), is(true));
@@ -18,7 +18,7 @@ public class CyclicIteratorTest {
 
     @Test
     public void cyclesThroughElements() {
-        CyclicIterator<String> strings = new CyclicIterator<String>(asList("bait", "switch").iterator());
+        CyclicIterator<String> strings = new CyclicIterator<>(asList("bait", "switch").iterator());
         strings.next();
         strings.next();
         assertThat(strings.next(), is("bait"));

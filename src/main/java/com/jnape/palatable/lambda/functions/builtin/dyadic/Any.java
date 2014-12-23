@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.functions.builtin.dyadic;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
-public final class Any<A> extends DyadicFunction<MonadicFunction<? super A, Boolean>, Iterable<A>, Boolean> {
+public final class Any<A> implements DyadicFunction<MonadicFunction<? super A, Boolean>, Iterable<A>, Boolean> {
 
     @Override
     public final Boolean apply(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
@@ -15,11 +15,11 @@ public final class Any<A> extends DyadicFunction<MonadicFunction<? super A, Bool
     }
 
     public static <A> Any<A> any() {
-        return new Any<A>();
+        return new Any<>();
     }
 
     public static <A> MonadicFunction<Iterable<A>, Boolean> any(MonadicFunction<? super A, Boolean> predicate) {
-        return Any.<A>any().partial(predicate);
+        return Any.<A>any().apply(predicate);
     }
 
     public static <A> Boolean any(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {

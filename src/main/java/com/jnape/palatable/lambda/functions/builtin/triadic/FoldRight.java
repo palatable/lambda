@@ -7,7 +7,7 @@ import com.jnape.palatable.lambda.functions.TriadicFunction;
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Reverse.reverse;
 import static com.jnape.palatable.lambda.functions.builtin.triadic.FoldLeft.foldLeft;
 
-public final class FoldRight<A, B> extends TriadicFunction<DyadicFunction<? super A, ? super B, ? extends B>, B, Iterable<A>, B> {
+public final class FoldRight<A, B> implements TriadicFunction<DyadicFunction<? super A, ? super B, ? extends B>, B, Iterable<A>, B> {
 
     @Override
     public final B apply(DyadicFunction<? super A, ? super B, ? extends B> function, B initialAccumulation,
@@ -16,18 +16,18 @@ public final class FoldRight<A, B> extends TriadicFunction<DyadicFunction<? supe
     }
 
     public static <A, B> FoldRight<A, B> foldRight() {
-        return new FoldRight<A, B>();
+        return new FoldRight<>();
     }
 
     public static <A, B> DyadicFunction<B, Iterable<A>, B> foldRight(
             DyadicFunction<? super A, ? super B, ? extends B> function) {
-        return FoldRight.<A, B>foldRight().partial(function);
+        return FoldRight.<A, B>foldRight().apply(function);
     }
 
     public static <A, B> MonadicFunction<Iterable<A>, B> foldRight(
             DyadicFunction<? super A, ? super B, ? extends B> function,
             B initialAccumulation) {
-        return foldRight(function).partial(initialAccumulation);
+        return foldRight(function).apply(initialAccumulation);
     }
 
     public static <A, B> B foldRight(DyadicFunction<? super A, ? super B, ? extends B> function, B initialAccumulation,

@@ -12,7 +12,7 @@ public class PredicatedDroppingIterator<A> extends ImmutableIterator<A> {
 
     public PredicatedDroppingIterator(MonadicFunction<? super A, Boolean> predicate, Iterator<A> asIterator) {
         this.predicate = predicate;
-        rewindableIterator = new RewindableIterator<A>(asIterator);
+        rewindableIterator = new RewindableIterator<>(asIterator);
         finishedDropping = false;
     }
 

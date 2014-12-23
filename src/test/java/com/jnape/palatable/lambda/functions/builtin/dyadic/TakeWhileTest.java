@@ -28,12 +28,7 @@ public class TakeWhileTest {
 
     @Test
     public void takesElementsWhilePredicateIsTrue() {
-        Predicate<Integer> lessThan3 = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer integer) {
-                return integer < 3;
-            }
-        };
+        Predicate<Integer> lessThan3 = integer -> integer < 3;
         Iterable<Integer> numbers = takeWhile(lessThan3, asList(1, 2, 3, 4, 5));
         assertThat(numbers, iterates(1, 2));
     }

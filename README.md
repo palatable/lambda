@@ -1,4 +1,4 @@
 lambda
 ======
 
-Functional patterns for Java
+Functional patterns for Java 8

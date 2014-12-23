@@ -1,16 +1,11 @@
 package com.jnape.palatable.lambda.functions;
 
-public abstract class MonadicFunction<A, B> {
+@FunctionalInterface
+public interface MonadicFunction<A, B> {
 
-    public abstract B apply(A a);
+    public B apply(A a);
 
-    public final <C> MonadicFunction<A, C> then(final MonadicFunction<B, C> f) {
-        return new MonadicFunction<A, C>() {
-            @Override
-            public C apply(A a) {
-                MonadicFunction<A, B> g = MonadicFunction.this;
-                return f.apply(g.apply(a));
-            }
-        };
+    public default <C> MonadicFunction<A, C> then(MonadicFunction<B, C> f) {
+        return a -> f.apply(apply(a));
     }
 }

@@ -2,32 +2,25 @@ package com.jnape.palatable.lambda.functions.builtin.dyadic;
 
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.tuples.Tuple3;
+import com.jnape.palatable.lambda.functions.TriadicFunction;
 
-import static com.jnape.palatable.lambda.tuples.Tuple3.tuple;
-
-public final class Partial3<A, B, C, D> extends DyadicFunction<MonadicFunction<Tuple3<A, B, C>, D>, A, DyadicFunction<B, C, D>> {
+public final class Partial3<A, B, C, D> implements DyadicFunction<TriadicFunction<A, B, C, D>, A, DyadicFunction<B, C, D>> {
 
     @Override
-    public final DyadicFunction<B, C, D> apply(final MonadicFunction<Tuple3<A, B, C>, D> function, final A a) {
-        return new DyadicFunction<B, C, D>() {
-            @Override
-            public D apply(B b, C c) {
-                return function.apply(tuple(a, b, c));
-            }
-        };
+    public DyadicFunction<B, C, D> apply(TriadicFunction<A, B, C, D> function, A a) {
+        return function.apply(a);
     }
 
     public static <A, B, C, D> Partial3<A, B, C, D> partial3() {
-        return new Partial3<A, B, C, D>();
+        return new Partial3<>();
     }
 
     public static <A, B, C, D> MonadicFunction<A, DyadicFunction<B, C, D>> partial3(
-            MonadicFunction<Tuple3<A, B, C>, D> function) {
-        return Partial3.<A, B, C, D>partial3().partial(function);
+            TriadicFunction<A, B, C, D> function) {
+        return Partial3.<A, B, C, D>partial3().apply(function);
     }
 
-    public static <A, B, C, D> DyadicFunction<B, C, D> partial3(MonadicFunction<Tuple3<A, B, C>, D> function, A a) {
+    public static <A, B, C, D> DyadicFunction<B, C, D> partial3(TriadicFunction<A, B, C, D> function, A a) {
         return partial3(function).apply(a);
     }
 }

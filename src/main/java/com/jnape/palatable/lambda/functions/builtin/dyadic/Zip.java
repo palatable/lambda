@@ -6,7 +6,7 @@ import com.jnape.palatable.lambda.tuples.Tuple2;
 
 import static com.jnape.palatable.lambda.functions.builtin.triadic.ZipWith.zipWith;
 
-public final class Zip<A, B> extends DyadicFunction<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
+public final class Zip<A, B> implements DyadicFunction<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
 
     @Override
     public final Iterable<Tuple2<A, B>> apply(final Iterable<A> as, final Iterable<B> bs) {
@@ -14,11 +14,11 @@ public final class Zip<A, B> extends DyadicFunction<Iterable<A>, Iterable<B>, It
     }
 
     public static <A, B> Zip<A, B> zip() {
-        return new Zip<A, B>();
+        return new Zip<>();
     }
 
     public static <A, B> MonadicFunction<Iterable<B>, Iterable<Tuple2<A, B>>> zip(Iterable<A> as) {
-        return Zip.<A, B>zip().partial(as);
+        return Zip.<A, B>zip().apply(as);
     }
 
     public static <A, B> Iterable<Tuple2<A, B>> zip(Iterable<A> as, Iterable<B> bs) {

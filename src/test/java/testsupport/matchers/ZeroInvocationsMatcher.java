@@ -36,6 +36,6 @@ public class ZeroInvocationsMatcher<T> extends BaseMatcher<T> {
     }
 
     public static <T> Matcher<T> wasNeverInteractedWith() {
-        return new ZeroInvocationsMatcher<T>();
+        return new ZeroInvocationsMatcher<>();
     }
 }

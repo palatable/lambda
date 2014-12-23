@@ -23,12 +23,7 @@ public class ZipWithTest {
 
     @TestTraits({Laziness.class, FiniteIteration.class, ImmutableIteration.class})
     public MonadicFunction<Iterable<Object>, Iterable<Object>> createTestSubject() {
-        return zipWith(new DyadicFunction<Object, Object, Object>() {
-            @Override
-            public Object apply(Object o, Object o2) {
-                return new Object();
-            }
-        }, asList(1, 2, 3));
+        return zipWith((o, o2) -> new Object(), asList(1, 2, 3));
     }
 
     @Test
@@ -36,12 +31,7 @@ public class ZipWithTest {
         Iterable<Integer> oneThroughFive = asList(1, 2, 3, 4, 5);
         Iterable<Integer> sixThroughTen = asList(6, 7, 8, 9, 10);
 
-        DyadicFunction<Integer, Integer, Integer> add = new DyadicFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) {
-                return a + b;
-            }
-        };
+        DyadicFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
         Iterable<Integer> sums = ZipWith.zipWith(add, oneThroughFive, sixThroughTen);
 
         assertThat(sums, iterates(7, 9, 11, 13, 15));

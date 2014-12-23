@@ -23,7 +23,7 @@ public class ZipTest {
 
     @TestTraits({Laziness.class, FiniteIteration.class, ImmutableIteration.class})
     public MonadicFunction<Iterable<Object>, Iterable<Tuple2<Object, Object>>> createTestSubject() {
-        return zip(Arrays.<Object>asList(1, 2, 3));
+        return zip(Arrays.asList(1, 2, 3));
     }
 
     @Test

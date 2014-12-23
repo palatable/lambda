@@ -1,7 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
 import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.functions.specialized.Predicate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +17,7 @@ import static testsupport.Mocking.mockIteratorToHaveValues;
 @RunWith(MockitoJUnitRunner.class)
 public class PredicatedDroppingIteratorTest {
 
-    private static final MonadicFunction<? super Integer, Boolean> EVEN = new Predicate<Integer>() {
-        @Override
-        public Boolean apply(Integer integer) {
-            return integer % 2 == 0;
-        }
-    };
+    private static final MonadicFunction<? super Integer, Boolean> EVEN = x -> x % 2 == 0;
 
     @Mock private Iterator<Integer> iterator;
 
@@ -31,7 +25,7 @@ public class PredicatedDroppingIteratorTest {
 
     @Before
     public void setUp() {
-        predicatedDroppingIterator = new PredicatedDroppingIterator<Integer>(EVEN, iterator);
+        predicatedDroppingIterator = new PredicatedDroppingIterator<>(EVEN, iterator);
     }
 
     @Test

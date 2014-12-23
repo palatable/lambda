@@ -4,26 +4,19 @@ import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.iterators.GroupingIterator;
 
-import java.util.Iterator;
-
-public final class InGroupsOf<A> extends DyadicFunction<Integer, Iterable<A>, Iterable<Iterable<A>>> {
+public final class InGroupsOf<A> implements DyadicFunction<Integer, Iterable<A>, Iterable<Iterable<A>>> {
 
     @Override
     public final Iterable<Iterable<A>> apply(final Integer k, final Iterable<A> as) {
-        return new Iterable<Iterable<A>>() {
-            @Override
-            public Iterator<Iterable<A>> iterator() {
-                return new GroupingIterator<A>(k, as.iterator());
-            }
-        };
+        return () -> new GroupingIterator<>(k, as.iterator());
     }
 
     public static <A> InGroupsOf<A> inGroupsOf() {
-        return new InGroupsOf<A>();
+        return new InGroupsOf<>();
     }
 
     public static <A> MonadicFunction<Iterable<A>, Iterable<Iterable<A>>> inGroupsOf(Integer k) {
-        return InGroupsOf.<A>inGroupsOf().partial(k);
+        return InGroupsOf.<A>inGroupsOf().apply(k);
     }
 
     public static <A> Iterable<Iterable<A>> inGroupsOf(Integer k, Iterable<A> as) {

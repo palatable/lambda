@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.functions.builtin.triadic;
 
-import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -19,12 +18,7 @@ public class FoldRightTest {
 
     @TestTraits({EmptyIterableSupport.class})
     public MonadicFunction<Iterable<Object>, Iterable<Object>> createTestSubject() {
-        return foldRight(new DyadicFunction<Object, Iterable<Object>, Iterable<Object>>() {
-            @Override
-            public Iterable<Object> apply(Object o, Iterable<Object> objects) {
-                return objects;
-            }
-        }, asList(new Object()));
+        return foldRight((o, objects) -> objects, asList(new Object()));
     }
 
     @Test

@@ -22,17 +22,12 @@ public class UnfoldrTest {
 
     @TestTraits({Laziness.class, InfiniteIteration.class, ImmutableIteration.class})
     public MonadicFunction<? extends Iterable, ? extends Iterable> createTestSubject() {
-        return unfoldr(always(new ArrayList<String>()));
+        return unfoldr(always(new ArrayList<>()));
     }
 
     @Test
     public void unfoldsIterableFromSeedValueAndSuccessiveFunctionApplications() {
-        MonadicFunction<Integer, Integer> add1 = new MonadicFunction<Integer, Integer>() {
-            @Override
-            public Integer apply(Integer integer) {
-                return integer + 1;
-            }
-        };
+        MonadicFunction<Integer, Integer> add1 = integer -> integer + 1;
         assertThat(take(5, unfoldr(add1, 0)), iterates(0, 1, 2, 3, 4));
     }
 }

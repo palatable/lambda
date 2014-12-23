@@ -7,12 +7,8 @@ import static org.junit.Assert.assertThat;
 
 public class DyadicFunctionTest {
 
-    private static final DyadicFunction<String, Integer, Boolean> CHECK_LENGTH = new DyadicFunction<String, Integer, Boolean>() {
-        @Override
-        public Boolean apply(String string, Integer length) {
-            return string.length() == length;
-        }
-    };
+    private static final DyadicFunction<String, Integer, Boolean> CHECK_LENGTH = (string,
+                                                                                  length) -> string.length() == length;
 
     @Test
     public void flipSwapsArguments() {
@@ -21,7 +17,7 @@ public class DyadicFunctionTest {
 
     @Test
     public void canBePartiallyApplied() {
-        MonadicFunction<Integer, Boolean> checkQuuxLength = CHECK_LENGTH.partial("quux");
+        MonadicFunction<Integer, Boolean> checkQuuxLength = CHECK_LENGTH.apply("quux");
         assertThat(checkQuuxLength.apply(4), is(true));
     }
 }

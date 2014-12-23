@@ -27,12 +27,7 @@ public class FilterTest {
 
     @Test
     public void filtersOutMatchingElements() {
-        Predicate<Integer> evens = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer integer) {
-                return integer % 2 == 0;
-            }
-        };
+        Predicate<Integer> evens = integer -> integer % 2 == 0;
         assertThat(
                 filter(evens, asList(1, 2, 3, 4, 5, 6)),
                 iterates(2, 4, 6)

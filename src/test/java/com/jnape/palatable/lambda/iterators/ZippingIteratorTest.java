@@ -25,7 +25,7 @@ public class ZippingIteratorTest {
 
     @Before
     public void setUp() {
-        zippingIterator = new ZippingIterator<Object, Object, Object>(zipper, as, bs);
+        zippingIterator = new ZippingIterator<>(zipper, as, bs);
     }
 
     @Test

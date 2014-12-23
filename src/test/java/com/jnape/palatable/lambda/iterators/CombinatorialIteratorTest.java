@@ -24,7 +24,7 @@ public class CombinatorialIteratorTest {
 
     @Before
     public void setUp() {
-        combinatorialIterator = new CombinatorialIterator<Object, Object>(as, bs);
+        combinatorialIterator = new CombinatorialIterator<>(as, bs);
     }
 
     @Test

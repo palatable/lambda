@@ -11,7 +11,11 @@ import java.util.Iterator;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static testsupport.Mocking.mockIteratorToHaveValues;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,7 +27,7 @@ public class ReversingIteratorTest {
 
     @Before
     public void setUp() {
-        reversingIterator = new ReversingIterator<Object>(iterator);
+        reversingIterator = new ReversingIterator<>(iterator);
     }
 
     @Test

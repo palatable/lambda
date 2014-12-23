@@ -22,7 +22,7 @@ public class GroupingIteratorTest {
 
     @Before
     public void setUp() {
-        groupingIterator = new GroupingIterator<Object>(2, as);
+        groupingIterator = new GroupingIterator<>(2, as);
     }
 
     @Test

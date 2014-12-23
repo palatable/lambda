@@ -54,7 +54,7 @@ public class IterableMatcher extends BaseMatcher<Iterable> {
         return actualIterator.hasNext() == expectedIterator.hasNext();
     }
 
-    @Todo(created = "02/17/2014", author = "jnape", description = "Pull this out into a separate class")
+    @Todo(created = "12/23/2014", author = "jnape", description = "Pull this out into a separate class")
     private String stringify(Iterable iterable) {
         StringBuilder stringBuilder = new StringBuilder().append("[");
         Iterator iterator = iterable.iterator();
@@ -70,6 +70,7 @@ public class IterableMatcher extends BaseMatcher<Iterable> {
         return stringBuilder.append("]").toString();
     }
 
+    @SafeVarargs
     public static <Element> IterableMatcher iterates(Element... elements) {
         return new IterableMatcher(asList(elements));
     }

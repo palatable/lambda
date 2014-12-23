@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.monadic;
 
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
-public final class Identity<A> extends MonadicFunction<A, A> {
+public final class Identity<A> implements MonadicFunction<A, A> {
 
     @Override
     public final A apply(A a) {
@@ -10,6 +10,6 @@ public final class Identity<A> extends MonadicFunction<A, A> {
     }
 
     public static <A> Identity<A> id() {
-        return new Identity<A>();
+        return new Identity<>();
     }
 }

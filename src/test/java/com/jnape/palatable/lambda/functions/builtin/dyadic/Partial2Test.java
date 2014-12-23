@@ -1,8 +1,6 @@
 package com.jnape.palatable.lambda.functions.builtin.dyadic;
 
 import com.jnape.palatable.lambda.functions.DyadicFunction;
-import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.tuples.Tuple2;
 import org.junit.Test;
 
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Partial2.partial2;
@@ -13,12 +11,7 @@ public class Partial2Test {
 
     @Test
     public void partiallyAppliesFunction() {
-        MonadicFunction<Tuple2<Integer, Integer>, Integer> subtract = new DyadicFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer minuend, Integer subtrahend) {
-                return minuend - subtrahend;
-            }
-        };
+        DyadicFunction<Integer, Integer, Integer> subtract = (minuend, subtrahend) -> minuend - subtrahend;
 
         assertThat(partial2(subtract, 3).apply(2), is(1));
     }

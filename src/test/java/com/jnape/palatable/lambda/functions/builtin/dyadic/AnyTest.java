@@ -1,7 +1,6 @@
 package com.jnape.palatable.lambda.functions.builtin.dyadic;
 
 import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.functions.specialized.Predicate;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
@@ -18,12 +17,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Traits.class)
 public class AnyTest {
 
-    public static final MonadicFunction<? super Integer, Boolean> EVEN = new Predicate<Integer>() {
-        @Override
-        public Boolean apply(Integer integer) {
-            return integer % 2 == 0;
-        }
-    };
+    public static final MonadicFunction<? super Integer, Boolean> EVEN = x -> x % 2 == 0;
 
     @TestTraits({EmptyIterableSupport.class})
     public MonadicFunction<Iterable<Object>, Boolean> createTestSubject() {

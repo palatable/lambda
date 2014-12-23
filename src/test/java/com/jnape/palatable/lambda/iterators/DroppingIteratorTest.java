@@ -22,7 +22,7 @@ public class DroppingIteratorTest {
 
     @Before
     public void setUp() {
-        droppingIterator = new DroppingIterator<Object>(5, iterator);
+        droppingIterator = new DroppingIterator<>(5, iterator);
     }
 
     @Test

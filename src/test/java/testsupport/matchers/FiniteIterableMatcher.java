@@ -24,7 +24,7 @@ public class FiniteIterableMatcher extends BaseMatcher<Iterable> {
     private boolean supportsLessThanInfiniteIterations(Iterable iterable) {
         long sufficientlyInfinite = 1000000;
         long elementsIterated = 0;
-        for (Object _ : iterable)
+        for (Object ignored : iterable)
             if (elementsIterated++ > sufficientlyInfinite)
                 return false;
         return true;

@@ -10,7 +10,7 @@ public class Tupler2Test {
 
     @Test
     public void createsTupleOfTwoThings() {
-        Tupler2<String, Integer> tupler = new Tupler2<String, Integer>();
+        Tupler2<String, Integer> tupler = new Tupler2<>();
         assertThat(tupler.apply("a", 1), is(tuple("a", 1)));
     }
 }

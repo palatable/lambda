@@ -1,19 +1,22 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.tuples.Tuple3;
+@FunctionalInterface
+public interface TriadicFunction<A, B, C, D> extends DyadicFunction<A, B, MonadicFunction<C, D>> {
 
-import static com.jnape.palatable.lambda.functions.builtin.dyadic.Partial3.partial3;
-
-public abstract class TriadicFunction<A, B, C, D> extends MonadicFunction<Tuple3<A, B, C>, D> {
+    public D apply(A a, B b, C c);
 
     @Override
-    public final D apply(Tuple3<A, B, C> args) {
-        return apply(args._1, args._2, args._3);
+    default DyadicFunction<B, C, D> apply(A a) {
+        return (b, c) -> apply(a, b, c);
     }
 
-    public abstract D apply(A a, B b, C c);
+    @Override
+    default MonadicFunction<C, D> apply(A a, B b) {
+        return (c) -> apply(a, b, c);
+    }
 
-    public final DyadicFunction<B, C, D> partial(final A a) {
-        return partial3(this, a);
+    @Override
+    default TriadicFunction<B, A, C, D> flip() {
+        return (b, a, c) -> apply(a, b, c);
     }
 }

@@ -28,12 +28,7 @@ public class DropWhileTest {
 
     @Test
     public void dropsElementsWhilePredicateIsTrue() {
-        Predicate<Integer> lessThan3 = new Predicate<Integer>() {
-            @Override
-            public Boolean apply(Integer integer) {
-                return integer < 3;
-            }
-        };
+        Predicate<Integer> lessThan3 = integer -> integer < 3;
         assertThat(dropWhile(lessThan3, asList(1, 2, 3)), iterates(3));
     }
 

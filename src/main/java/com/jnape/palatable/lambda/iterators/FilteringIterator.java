@@ -12,7 +12,7 @@ public class FilteringIterator<A> extends ImmutableIterator<A> {
 
     public FilteringIterator(MonadicFunction<? super A, Boolean> predicate, Iterator<A> iterator) {
         this.predicate = predicate;
-        rewindableIterator = new RewindableIterator<A>(iterator);
+        rewindableIterator = new RewindableIterator<>(iterator);
     }
 
     @Override

@@ -13,14 +13,9 @@ public class MappingIteratorTest {
 
     @Test
     public void nextProducesMappedResult() {
-        MonadicFunction<String, Integer> stringToLength = new MonadicFunction<String, Integer>() {
-            @Override
-            public Integer apply(String s) {
-                return s.length();
-            }
-        };
+        MonadicFunction<String, Integer> stringToLength = String::length;
         List<String> words = asList("foo", "bar");
-        MappingIterator<String, Integer> mappingIterator = new MappingIterator<String, Integer>(stringToLength, words.iterator());
+        MappingIterator<String, Integer> mappingIterator = new MappingIterator<>(stringToLength, words.iterator());
 
         assertThat(mappingIterator.next(), is(3));
     }

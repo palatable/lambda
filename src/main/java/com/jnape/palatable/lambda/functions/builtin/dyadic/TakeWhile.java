@@ -4,27 +4,20 @@ import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.iterators.PredicatedTakingIterator;
 
-import java.util.Iterator;
-
-public final class TakeWhile<A> extends DyadicFunction<MonadicFunction<? super A, Boolean>, Iterable<A>, Iterable<A>> {
+public final class TakeWhile<A> implements DyadicFunction<MonadicFunction<? super A, Boolean>, Iterable<A>, Iterable<A>> {
 
     @Override
     public final Iterable<A> apply(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
-        return new Iterable<A>() {
-            @Override
-            public Iterator<A> iterator() {
-                return new PredicatedTakingIterator<A>(predicate, as.iterator());
-            }
-        };
+        return () -> new PredicatedTakingIterator<>(predicate, as.iterator());
     }
 
     public static <A> TakeWhile<A> takeWhile() {
-        return new TakeWhile<A>();
+        return new TakeWhile<>();
     }
 
     public static <A> MonadicFunction<Iterable<A>, Iterable<A>> takeWhile(
             MonadicFunction<? super A, Boolean> predicate) {
-        return TakeWhile.<A>takeWhile().partial(predicate);
+        return TakeWhile.<A>takeWhile().apply(predicate);
     }
 
     public static <A> Iterable<A> takeWhile(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {

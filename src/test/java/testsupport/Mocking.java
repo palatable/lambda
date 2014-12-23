@@ -1,6 +1,5 @@
 package testsupport;
 
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.Iterator;
@@ -18,6 +17,7 @@ public class Mocking {
         return iterable;
     }
 
+    @SafeVarargs
     public static <T> void mockIteratorToHaveValues(Iterator iterator, T... values) {
         Iterator real = asList(values).iterator();
 
@@ -26,11 +26,6 @@ public class Mocking {
     }
 
     public static Answer<?> delegateTo(final Object real) {
-        return new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return invocation.getMethod().invoke(real);
-            }
-        };
+        return invocation -> invocation.getMethod().invoke(real);
     }
 }

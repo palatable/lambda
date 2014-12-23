@@ -13,7 +13,7 @@ public class PredicatedTakingIterator<A> extends ImmutableIterator<A> {
     public PredicatedTakingIterator(MonadicFunction<? super A, Boolean> predicate,
                                     Iterator<A> asIterator) {
         this.predicate = predicate;
-        rewindableIterator = new RewindableIterator<A>(asIterator);
+        rewindableIterator = new RewindableIterator<>(asIterator);
         stillTaking = true;
     }
 

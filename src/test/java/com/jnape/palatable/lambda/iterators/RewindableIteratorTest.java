@@ -23,7 +23,7 @@ public class RewindableIteratorTest {
 
     @Before
     public void setUp() {
-        rewindableIterator = new RewindableIterator<Object>(iterator);
+        rewindableIterator = new RewindableIterator<>(iterator);
     }
 
     @Test

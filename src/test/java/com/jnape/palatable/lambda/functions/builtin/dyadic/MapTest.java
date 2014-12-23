@@ -26,12 +26,7 @@ public class MapTest {
 
     @Test
     public void mapsInputsIntoOutputs() {
-        MonadicFunction<String, Integer> length = new MonadicFunction<String, Integer>() {
-            @Override
-            public Integer apply(String string) {
-                return string.length();
-            }
-        };
+        MonadicFunction<String, Integer> length = String::length;
         assertThat(
                 map(length, asList("one", "two", "three")),
                 iterates(3, 3, 5)
