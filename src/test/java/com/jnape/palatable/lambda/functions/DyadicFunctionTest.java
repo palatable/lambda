@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.functions;
 
 import org.junit.Test;
 
+import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -17,7 +18,11 @@ public class DyadicFunctionTest {
 
     @Test
     public void canBePartiallyApplied() {
-        MonadicFunction<Integer, Boolean> checkQuuxLength = CHECK_LENGTH.apply("quux");
-        assertThat(checkQuuxLength.apply(4), is(true));
+        assertThat(CHECK_LENGTH.apply("quux").apply(4), is(true));
+    }
+
+    @Test
+    public void uncurries() {
+        assertThat(CHECK_LENGTH.uncurry().apply(tuple("abc", 3)), is(true));
     }
 }

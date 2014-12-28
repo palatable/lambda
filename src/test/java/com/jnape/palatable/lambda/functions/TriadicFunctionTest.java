@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.functions;
 
 import org.junit.Test;
 
+import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -12,7 +13,13 @@ public class TriadicFunctionTest {
 
     @Test
     public void canBePartiallyApplied() {
-        DyadicFunction<Integer, Integer, Boolean> checkMultiplicationBy2 = CHECK_MULTIPLICATION.apply(2);
-        assertThat(checkMultiplicationBy2.apply(4, 8), is(true));
+        assertThat(CHECK_MULTIPLICATION.apply(2).apply(4).apply(8), is(true));
+        assertThat(CHECK_MULTIPLICATION.apply(2).apply(4, 8), is(true));
+        assertThat(CHECK_MULTIPLICATION.apply(2, 4).apply(8), is(true));
+    }
+
+    @Test
+    public void uncurries() {
+        assertThat(CHECK_MULTIPLICATION.uncurry().apply(tuple(2, 3), 6), is(true));
     }
 }
