@@ -9,7 +9,7 @@ public interface DyadicFunction<A, B, C> extends MonadicFunction<A, MonadicFunct
 
     @Override
     default MonadicFunction<B, C> apply(A a) {
-        return (b) -> DyadicFunction.this.apply(a, b);
+        return (b) -> apply(a, b);
     }
 
     default DyadicFunction<B, A, C> flip() {

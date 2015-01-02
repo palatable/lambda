@@ -1,20 +1,33 @@
 package com.jnape.palatable.lambda.iterators;
 
 import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.tuples.Tuple2;
 
-public class UnfoldingIterator<A> extends InfiniteIterator<A> {
-    private final MonadicFunction<? super A, ? extends A> fn;
-    private       A                                       acc;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
-    public UnfoldingIterator(MonadicFunction<? super A, ? extends A> fn, A seed) {
-        this.fn = fn;
-        acc = seed;
+public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
+    private final MonadicFunction<B, Optional<Tuple2<A, B>>> function;
+    private       Optional<Tuple2<A, B>>                     optionalAcc;
+
+    public UnfoldingIterator(MonadicFunction<B, Optional<Tuple2<A, B>>> function, B b) {
+        this.function = function;
+        optionalAcc = function.apply(b);
+    }
+
+    @Override
+    public boolean hasNext() {
+        return optionalAcc.isPresent();
     }
 
     @Override
     public A next() {
-        A next = acc;
-        acc = fn.apply(acc);
+        if (!hasNext())
+            throw new NoSuchElementException();
+
+        Tuple2<A, B> acc = optionalAcc.get();
+        A next = acc._1;
+        optionalAcc = function.apply(acc._2);
         return next;
     }
 }

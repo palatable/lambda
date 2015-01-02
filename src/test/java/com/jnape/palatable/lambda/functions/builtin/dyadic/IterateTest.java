@@ -9,24 +9,24 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.InfiniteIteration;
 import testsupport.traits.Laziness;
 
-import java.util.Optional;
+import java.util.ArrayList;
 
+import static com.jnape.palatable.lambda.functions.builtin.dyadic.Iterate.iterate;
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Take.take;
-import static com.jnape.palatable.lambda.functions.builtin.dyadic.Unfoldr.unfoldr;
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Always.always;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 @RunWith(Traits.class)
-public class UnfoldrTest {
+public class IterateTest {
 
     @TestTraits({Laziness.class, InfiniteIteration.class, ImmutableIteration.class})
     public MonadicFunction<? extends Iterable, ? extends Iterable> createTestSubject() {
-        return new Unfoldr<Iterable, Iterable>().apply(x -> Optional.of(tuple(x, x)));
+        return iterate(always(new ArrayList<>()));
     }
 
     @Test
     public void iteratesIterableFromSeedValueAndSuccessiveFunctionApplications() {
-        assertThat(take(5, unfoldr(x -> Optional.of(tuple(x, x + 1)), 0)), iterates(0, 1, 2, 3, 4));
+        assertThat(take(5, iterate(x -> x + 1, 0)), iterates(0, 1, 2, 3, 4));
     }
 }
