@@ -8,7 +8,15 @@ import static org.hamcrest.core.Is.is;
 public class MonadicFunctionTest {
 
     @Test
-    public void composesByApplyingFunctionThenForwardingToNextFunction() {
+    public void fmapComposesFunctions() {
+        MonadicFunction<Integer, Integer> add2 = integer -> integer + 2;
+        MonadicFunction<Integer, String> toString = Object::toString;
+
+        assertThat(add2.fmap(toString).apply(2), is(toString.apply(add2.apply(2))));
+    }
+
+    @Test
+    public void thenIsJustAnAliasForFmap() {
         MonadicFunction<Integer, Integer> add2 = integer -> integer + 2;
         MonadicFunction<Integer, String> toString = Object::toString;
 

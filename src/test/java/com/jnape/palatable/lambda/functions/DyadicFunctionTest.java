@@ -25,4 +25,15 @@ public class DyadicFunctionTest {
     public void uncurries() {
         assertThat(CHECK_LENGTH.uncurry().apply(tuple("abc", 3)), is(true));
     }
+
+    @Test
+    public void diMapProducesDyadicFunctionWithContravariantArg2AndCovariantReturn() {
+        assertThat(
+                CHECK_LENGTH.<String, String>diMap(
+                        Integer::parseInt,
+                        Object::toString
+                ).apply("123", "3"),
+                is("true")
+        );
+    }
 }
