@@ -22,4 +22,10 @@ public class TriadicFunctionTest {
     public void uncurries() {
         assertThat(CHECK_MULTIPLICATION.uncurry().apply(tuple(2, 3), 6), is(true));
     }
+
+    @Test
+    public void flipsFirstAndSecondArgument() {
+        TriadicFunction<String, Integer, String, String> concat3 = (a, b, c) -> a + b.toString() + c;
+        assertThat(concat3.flip().apply(1, "2", "3"), is("213"));
+    }
 }

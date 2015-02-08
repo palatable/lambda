@@ -27,7 +27,17 @@ public class DyadicFunctionTest {
     }
 
     @Test
-    public void diMapProducesDyadicFunctionWithContravariantArg2AndCovariantReturn() {
+    public void mapsContravariantlyOverSecondArgument() {
+        assertThat(CHECK_LENGTH.<String>diMapL(Integer::parseInt).apply("123").apply("3"), is(true));
+    }
+
+    @Test
+    public void mapsCovariantlyOverReturnValue() {
+        assertThat(CHECK_LENGTH.<String>diMapR(Object::toString).apply("123").apply(3), is("true"));
+    }
+
+    @Test
+    public void mapsOverSecondArgumentAndReturnValueInSingleTransformation() {
         assertThat(
                 CHECK_LENGTH.<String, String>diMap(
                         Integer::parseInt,

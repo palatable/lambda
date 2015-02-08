@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.functions.MonadicFunction;
 
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
 
+@FunctionalInterface
 public interface ProFunctor<A, B> {
 
     default <C> ProFunctor<C, B> diMapL(MonadicFunction<? super C, ? extends A> fn) {

@@ -16,4 +16,9 @@ public class Tuple3Test {
         assertThat(integerStringCharacterTuple._2, is("two"));
         assertThat(integerStringCharacterTuple._3, is('3'));
     }
+
+    @Test
+    public void toStringIsReasonable() {
+        assertThat(tuple("foo", "bar", "baz").toString(), is("(foo, bar, baz)"));
+    }
 }
