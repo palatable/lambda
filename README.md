@@ -1,5 +1,6 @@
 lambda
 ======
+[![Build Status](https://travis-ci.org/palatable/lambda.svg)](https://travis-ci.org/palatable/lambda)
 
 Functional patterns for Java 8
 
