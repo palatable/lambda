@@ -59,14 +59,16 @@
             <artifactId>mockito-all</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.jnape.palatable</groupId>
-            <artifactId>traitor</artifactId>
-            <version>${traitor.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.jnape.loan-shark</groupId>
             <artifactId>loan-shark</artifactId>
             <version>${loan-shark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jnape.palatable</groupId>
+            <artifactId>traitor</artifactId>
+            <version>${traitor.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
