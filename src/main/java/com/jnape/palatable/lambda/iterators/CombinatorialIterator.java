@@ -1,12 +1,12 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.tuples.Tuple2;
+import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 
 public class CombinatorialIterator<A, B> extends ImmutableIterator<Tuple2<A, B>> {
     private final Iterator<A>     asIterator;

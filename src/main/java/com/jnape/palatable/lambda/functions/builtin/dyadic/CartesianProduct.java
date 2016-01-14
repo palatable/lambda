@@ -1,9 +1,9 @@
 package com.jnape.palatable.lambda.functions.builtin.dyadic;
 
+import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.iterators.CombinatorialIterator;
-import com.jnape.palatable.lambda.tuples.Tuple2;
 
 public final class CartesianProduct<A, B> implements DyadicFunction<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
 

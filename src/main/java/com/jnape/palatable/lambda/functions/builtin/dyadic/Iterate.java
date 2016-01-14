@@ -6,7 +6,7 @@ import com.jnape.palatable.lambda.iterators.UnfoldingIterator;
 
 import java.util.Optional;
 
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 
 public final class Iterate<A> implements DyadicFunction<MonadicFunction<? super A, ? extends A>, A, Iterable<A>> {
 

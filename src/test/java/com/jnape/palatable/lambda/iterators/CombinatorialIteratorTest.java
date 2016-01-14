@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.tuples.Tuple2;
+import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

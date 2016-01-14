@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions;
 
 import org.junit.Test;
 
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -33,7 +33,7 @@ public class DyadicFunctionTest {
 
     @Test
     public void mapsCovariantlyOverReturnValue() {
-        assertThat(CHECK_LENGTH.<String>diMapR(Object::toString).apply("123").apply(3), is("true"));
+        assertThat(CHECK_LENGTH.diMapR(Object::toString).apply("123").apply(3), is("true"));
     }
 
     @Test

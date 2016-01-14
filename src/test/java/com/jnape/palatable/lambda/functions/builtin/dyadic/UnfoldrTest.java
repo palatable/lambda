@@ -11,9 +11,9 @@ import testsupport.traits.Laziness;
 
 import java.util.Optional;
 
+import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Take.take;
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Unfoldr.unfoldr;
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 

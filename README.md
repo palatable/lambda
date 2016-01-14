@@ -11,19 +11,19 @@ Add the following dependency to your:
  
 `pom.xml` ([Maven](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)):
  
- ```xml
+```xml
  <dependency>
      <groupId>com.jnape.palatable</groupId>
      <artifactId>lambda</artifactId>
      <version>1.0</version>
  </dependency>
- ```
+```
  
- `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
+`build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
  
- ```gradle
+```gradle
   compile group: 'com.jnape.palatable', name: 'lambda', version: '1.0'
-  ```
+```
   
 Background
 ----------
@@ -122,7 +122,67 @@ And have fun with 3s:
 
 Or check out [the tests](https://github.com/palatable/lambda/tree/master/src/test/java/com/jnape/palatable/lambda/functions/builtin) for more examples.
 
-license
+ADTs
+----
+
+In addition to the functions above, Lambda also supports a few first-class [algebraic data types](https://www.wikiwand.com/en/Algebraic_data_type).
+
+### Tuples
+
+There are two parametric variants on the tuple product type, `Tuple2<_1, _2>` and `Tuple3<_1, _2, _3>`, both immutable.
+
+```Java
+  Tuple2<String, Integer> tuple2 = Tuple2.tuple("foo", 1);
+
+  System.out.println(tuple2._1); // prints "foo"
+  System.out.println(tuple2._2); // prints 1
+```
+
+```Java
+  Tuple3<String, Boolean, Integer> tuple3 = Tuple3.tuple("foo", true, 1);
+
+  System.out.println(tuple3._1); // prints "foo"
+  System.out.println(tuple3._2); // prints true
+  System.out.println(tuple3._3); // prints 1
+```
+
+Both `Tuple2` and `Tuple3` are `BiFunctor`s over `_1` and `_2`:
+
+```Java
+  Tuple2<String, Integer> mappedTuple2 = tuple2.biMap(String::toUpperCase, x -> x + 1);
+
+  System.out.println(mappedTuple2._1); // prints "FOO"
+  System.out.println(mappedTuple2._2); // prints 2
+```
+
+```Java
+  Tuple3<String, Boolean, Integer> mappedTuple3 = tuple3.biMap(String::toUpperCase, b -> !b);
+
+  System.out.println(mappedTuple3._1); // prints "FOO"
+  System.out.println(mappedTuple3._2); // prints false
+  System.out.println(mappedTuple3._3); // prints 1
+```
+
+### Either
+
+Binary tagged unions are represented as `Either<L, R>`s, which resolve to one of two possible values: a `Left` value wrapping an `L`, or a `Right` value wrapping an `R` (typically an exceptional value or a successful value, respectively).
+
+Rather than supporting explicit value unwrapping, `Either` supports many useful comprehensions to help facilitate type-safe interactions. For example, `Either#match` is used to resolve an `Either<L,R>` to a different type.    
+
+```Java
+  Either<String, Integer> right = Either.right(1);
+  Either<String, Integer> left = Either.left("Head fell off");
+
+  Boolean successful = right.match(l -> false, r -> true);
+  //-> true
+  
+  List<Integer> values = left.match(l -> Collections.emptyList(), Collections::singletonList);
+  //-> [] 
+```
+
+Check out the tests for [more examples](https://github.com/palatable/lambda/blob/master/src/test/java/com/jnape/palatable/lambda/adt/EitherTest.java) of ways to interact with `Either`.
+
+License
 -------
 
 _lambda_ is part of [palatable](http://www.github.com/palatable), which is distributed under [The MIT License](http://choosealicense.com/licenses/mit/).

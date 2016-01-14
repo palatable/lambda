@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.functions.builtin.dyadic;
 
+import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.tuples.Tuple2;
 
 import static com.jnape.palatable.lambda.functions.builtin.triadic.ZipWith.zipWith;
 

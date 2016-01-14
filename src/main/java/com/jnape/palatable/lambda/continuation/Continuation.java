@@ -1,14 +1,14 @@
 package com.jnape.palatable.lambda.continuation;
 
+import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 import com.jnape.palatable.lambda.applicative.Functor;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.tuples.Tuple2;
 
 import java.util.Iterator;
 import java.util.Optional;
 
+import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 import static com.jnape.palatable.lambda.continuation.Memo.memoize;
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 
 @FunctionalInterface
 public interface Continuation<A> extends Functor<A>, Iterable<A> {

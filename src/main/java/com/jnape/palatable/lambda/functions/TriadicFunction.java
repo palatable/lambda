@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.tuples.Tuple2;
+import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 
 @FunctionalInterface
 public interface TriadicFunction<A, B, C, D> extends DyadicFunction<A, B, MonadicFunction<C, D>> {

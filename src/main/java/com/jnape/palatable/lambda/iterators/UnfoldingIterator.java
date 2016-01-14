@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.iterators;
 
+import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.tuples.Tuple2;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;

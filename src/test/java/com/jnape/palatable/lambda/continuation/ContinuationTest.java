@@ -5,8 +5,8 @@ import org.junit.Test;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 import static com.jnape.palatable.lambda.continuation.Continuations.continuing;
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;

@@ -27,4 +27,15 @@ public class BiFunctorTest {
         biFunctor.biMapR(String::valueOf);
         assertThat(leftInvocation.get(), is(id()));
     }
+
+    @Test
+    public void functorProperties() {
+        AtomicReference<MonadicFunction> leftInvocation = new AtomicReference<>();
+        AtomicReference<MonadicFunction> rightInvocation = new AtomicReference<>();
+        BiFunctor<String, Integer> biFunctor = new InvocationRecordingBiFunctor<>(leftInvocation, rightInvocation);
+        MonadicFunction<Integer, String> fn = String::valueOf;
+        biFunctor.fmap(fn);
+        assertThat(leftInvocation.get(), is(id()));
+        assertThat(rightInvocation.get(), is(fn));
+    }
 }

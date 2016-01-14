@@ -1,8 +1,8 @@
-package com.jnape.palatable.lambda.tuples;
+package com.jnape.palatable.lambda.adt.tuples;
 
 import org.junit.Test;
 
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -12,14 +12,14 @@ public class Tuple2Test {
 
     @Test
     public void hasTwoSlots() {
-        Tuple2<String, Integer> stringIntTuple = new Tuple2<>("foo", 1);
+        Tuple2<String, Integer> stringIntTuple = tuple("foo", 1);
 
         assertThat(stringIntTuple._1, is("foo"));
         assertThat(stringIntTuple._2, is(1));
     }
 
     @Test
-    public void mapsCovariantlyOverOverLeftSlot() {
+    public void mapsCovariantlyOverLeftSlot() {
         assertThat(
                 tuple("foo", 1).biMapL(String::toUpperCase),
                 is(tuple("FOO", 1))

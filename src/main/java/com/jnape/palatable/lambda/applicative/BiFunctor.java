@@ -5,7 +5,12 @@ import com.jnape.palatable.lambda.functions.MonadicFunction;
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
 
 @FunctionalInterface
-public interface BiFunctor<A, B> {
+public interface BiFunctor<A, B> extends Functor<B> {
+
+    @Override
+    default <C> BiFunctor<A, C> fmap(MonadicFunction<? super B, ? extends C> fn) {
+        return biMapR(fn);
+    }
 
     default <C> BiFunctor<C, B> biMapL(MonadicFunction<? super A, ? extends C> fn) {
         return biMap(fn, id());

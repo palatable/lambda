@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 import com.jnape.palatable.lambda.applicative.ProFunctor;
-import com.jnape.palatable.lambda.tuples.Tuple2;
 
 @FunctionalInterface
 public interface DyadicFunction<A, B, C> extends MonadicFunction<A, MonadicFunction<B, C>>, ProFunctor<B, C> {

@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions;
 
 import org.junit.Test;
 
-import static com.jnape.palatable.lambda.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 

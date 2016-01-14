@@ -1,8 +1,8 @@
-package com.jnape.palatable.lambda.tuples;
+package com.jnape.palatable.lambda.adt.tuples;
 
 import org.junit.Test;
 
-import static com.jnape.palatable.lambda.tuples.Tuple3.tuple;
+import static com.jnape.palatable.lambda.adt.tuples.Tuple3.tuple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 

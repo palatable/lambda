@@ -44,7 +44,6 @@
 
     <properties>
         <commons-lang3.version>3.1</commons-lang3.version>
-        <loan-shark.version>1.0</loan-shark.version>
         <traitor.version>1.0</traitor.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
     </properties>
@@ -57,12 +56,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jnape.loan-shark</groupId>
-            <artifactId>loan-shark</artifactId>
-            <version>${loan-shark.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.jnape.palatable</groupId>
