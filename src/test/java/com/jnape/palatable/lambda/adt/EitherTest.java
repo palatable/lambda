@@ -7,7 +7,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Optional;
 
-import static com.jnape.palatable.lambda.adt.Either.either;
+import static com.jnape.palatable.lambda.adt.Either.fromOptional;
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static org.hamcrest.core.Is.is;
@@ -61,6 +61,15 @@ public class EitherTest {
     }
 
     @Test
+    public void monadicFlatMapAppliesAndFlattensRight() {
+        Either<String, Integer> left = left("foo");
+        Either<String, Integer> right = right(1);
+
+        assertThat(left.flatMap(r -> right(r + 1)), is(left("foo")));
+        assertThat(right.flatMap(r -> right(r + 1)), is(right(2)));
+    }
+
+    @Test
     public void flatMapAdjunctivelyLifts() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
@@ -96,12 +105,12 @@ public class EitherTest {
     }
 
     @Test
-    public void eitherMapsOptionalToEither() {
+    public void fromOptionalMapsOptionalToEither() {
         Optional<String> present = Optional.of("foo");
         Optional<String> absent = Optional.empty();
 
-        assertThat(either(present, () -> -1), is(right("foo")));
-        assertThat(either(absent, () -> -1), is(left(-1)));
+        assertThat(fromOptional(present, () -> -1), is(right("foo")));
+        assertThat(fromOptional(absent, () -> -1), is(left(-1)));
     }
 
     @Test
@@ -114,7 +123,7 @@ public class EitherTest {
     }
 
     @Test
-    public void bifunctorProperties() {
+    public void biFunctorProperties() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 

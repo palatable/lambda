@@ -9,62 +9,87 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public interface Either<L, R> extends Functor<R>, BiFunctor<L, R> {
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
 
-    static <L, R> Either<L, R> either(Optional<R> optional, Supplier<L> leftFn) {
-        return optional.<Either<L, R>>map(Either::right)
-                .orElse(left(leftFn.get()));
-    }
+public abstract class Either<L, R> implements Functor<R>, BiFunctor<L, R> {
 
-    default R or(R defaultValue) {
+    public final R or(R defaultValue) {
         return recover(l -> defaultValue);
     }
 
-    R recover(MonadicFunction<? super L, ? extends R> recoveryFn);
+    public final R recover(MonadicFunction<? super L, ? extends R> recoveryFn) {
+        return match(recoveryFn, id());
+    }
 
-    <E extends RuntimeException> R orThrow(MonadicFunction<? super L, ? extends E> throwableFn) throws E;
+    public final <E extends RuntimeException> R orThrow(
+            MonadicFunction<? super L, ? extends E> throwableFn) throws E {
+        return match(l -> {
+            throw throwableFn.apply(l);
+        }, id());
+    }
 
-    Either<L, R> filter(MonadicFunction<? super R, Boolean> pred,
-                        Supplier<L> leftSupplier);
+    public final Either<L, R> filter(MonadicFunction<? super R, Boolean> pred,
+                                     Supplier<L> leftSupplier) {
+        return flatMap(r -> pred.apply(r) ? right(r) : left(leftSupplier.get()));
+    }
 
-    <L2, R2> Either<L2, R2> flatMap(MonadicFunction<? super L, ? extends Either<L2, R2>> leftFn,
-                                    MonadicFunction<? super R, ? extends Either<L2, R2>> rightFn);
+    public final <R2> Either<L, R2> flatMap(MonadicFunction<? super R, ? extends Either<L, R2>> rightFn) {
+        return flatMap(Either::left, rightFn);
+    }
 
-    Either<L, R> merge(DyadicFunction<? super L, ? super L, ? extends L> leftFn,
-                       DyadicFunction<? super R, ? super R, ? extends R> rightFn,
-                       Either<L, R> other);
+    public final <L2, R2> Either<L2, R2> flatMap(MonadicFunction<? super L, ? extends Either<L2, R2>> leftFn,
+                                                 MonadicFunction<? super R, ? extends Either<L2, R2>> rightFn) {
+        return match(leftFn, rightFn);
+    }
 
-    <V> V match(MonadicFunction<? super L, ? extends V> leftFn,
-                MonadicFunction<? super R, ? extends V> rightFn);
+    public final Either<L, R> merge(DyadicFunction<? super L, ? super L, ? extends L> leftFn,
+                                    DyadicFunction<? super R, ? super R, ? extends R> rightFn,
+                                    Either<L, R> other) {
+        return this.match(
+                l1 -> other.match(l2 -> left(leftFn.apply(l1, l2)), r -> left(l1)),
+                r1 -> other.match(Either::left, r2 -> right(rightFn.apply(r1, r2))));
+    }
+
+    public abstract <V> V match(MonadicFunction<? super L, ? extends V> leftFn,
+                                MonadicFunction<? super R, ? extends V> rightFn);
 
     @Override
-    default <R2> Either<L, R2> fmap(MonadicFunction<? super R, ? extends R2> fn) {
+    public final <R2> Either<L, R2> fmap(MonadicFunction<? super R, ? extends R2> fn) {
         return biMapR(fn);
     }
 
     @Override
-    default <L2> Either<L2, R> biMapL(MonadicFunction<? super L, ? extends L2> fn) {
+    @SuppressWarnings("unchecked")
+    public final <L2> Either<L2, R> biMapL(MonadicFunction<? super L, ? extends L2> fn) {
         return (Either<L2, R>) BiFunctor.super.biMapL(fn);
     }
 
     @Override
-    default <R2> Either<L, R2> biMapR(MonadicFunction<? super R, ? extends R2> fn) {
+    @SuppressWarnings("unchecked")
+    public final <R2> Either<L, R2> biMapR(MonadicFunction<? super R, ? extends R2> fn) {
         return (Either<L, R2>) BiFunctor.super.biMapR(fn);
     }
 
     @Override
-    <L2, R2> Either<L2, R2> biMap(MonadicFunction<? super L, ? extends L2> leftFn,
-                                  MonadicFunction<? super R, ? extends R2> rightFn);
+    public final <L2, R2> Either<L2, R2> biMap(MonadicFunction<? super L, ? extends L2> leftFn,
+                                               MonadicFunction<? super R, ? extends R2> rightFn) {
+        return match(l -> left(leftFn.apply(l)), r -> right(rightFn.apply(r)));
+    }
 
-    static <L, R> Either<L, R> left(L l) {
+    public static <L, R> Either<L, R> fromOptional(Optional<R> optional, Supplier<L> leftFn) {
+        return optional.<Either<L, R>>map(Either::right)
+                .orElse(left(leftFn.get()));
+    }
+
+    public static <L, R> Either<L, R> left(L l) {
         return new Left<>(l);
     }
 
-    static <L, R> Either<L, R> right(R r) {
+    public static <L, R> Either<L, R> right(R r) {
         return new Right<>(r);
     }
 
-    final class Left<L, R> implements Either<L, R> {
+    private static final class Left<L, R> extends Either<L, R> {
         private final L l;
 
         private Left(L l) {
@@ -72,44 +97,9 @@ public interface Either<L, R> extends Functor<R>, BiFunctor<L, R> {
         }
 
         @Override
-        public R recover(MonadicFunction<? super L, ? extends R> recoveryFn) {
-            return recoveryFn.apply(l);
-        }
-
-        @Override
-        public <E extends RuntimeException> R orThrow(MonadicFunction<? super L, ? extends E> throwableFn) throws E {
-            throw throwableFn.apply(l);
-        }
-
-        @Override
-        public Either<L, R> filter(MonadicFunction<? super R, Boolean> pred, Supplier<L> leftSupplier) {
-            return this;
-        }
-
-        @Override
-        public <L2, R2> Either<L2, R2> flatMap(MonadicFunction<? super L, ? extends Either<L2, R2>> leftFn,
-                                               MonadicFunction<? super R, ? extends Either<L2, R2>> rightFn) {
-            return leftFn.apply(l);
-        }
-
-        @Override
-        public Either<L, R> merge(DyadicFunction<? super L, ? super L, ? extends L> leftFn,
-                                  DyadicFunction<? super R, ? super R, ? extends R> rightFn, Either<L, R> other) {
-            return other instanceof Left
-                    ? left(leftFn.apply(l, ((Left<L, R>) other).l))
-                    : this;
-        }
-
-        @Override
         public <V> V match(MonadicFunction<? super L, ? extends V> leftFn,
                            MonadicFunction<? super R, ? extends V> rightFn) {
             return leftFn.apply(l);
-        }
-
-        @Override
-        public <L2, R2> Either<L2, R2> biMap(MonadicFunction<? super L, ? extends L2> leftFn,
-                                             MonadicFunction<? super R, ? extends R2> rightFn) {
-            return left(leftFn.apply(l));
         }
 
         @Override
@@ -130,7 +120,7 @@ public interface Either<L, R> extends Functor<R>, BiFunctor<L, R> {
         }
     }
 
-    final class Right<L, R> implements Either<L, R> {
+    private static final class Right<L, R> extends Either<L, R> {
         private final R r;
 
         private Right(R r) {
@@ -138,44 +128,9 @@ public interface Either<L, R> extends Functor<R>, BiFunctor<L, R> {
         }
 
         @Override
-        public R recover(MonadicFunction<? super L, ? extends R> recoveryFn) {
-            return r;
-        }
-
-        @Override
-        public <E extends RuntimeException> R orThrow(MonadicFunction<? super L, ? extends E> throwableFn) throws E {
-            return r;
-        }
-
-        @Override
-        public Either<L, R> filter(MonadicFunction<? super R, Boolean> pred, Supplier<L> leftSupplier) {
-            return pred.apply(r) ? this : left(leftSupplier.get());
-        }
-
-        @Override
-        public <L2, R2> Either<L2, R2> flatMap(MonadicFunction<? super L, ? extends Either<L2, R2>> leftFn,
-                                               MonadicFunction<? super R, ? extends Either<L2, R2>> rightFn) {
-            return rightFn.apply(r);
-        }
-
-        @Override
-        public Either<L, R> merge(DyadicFunction<? super L, ? super L, ? extends L> leftFn,
-                                  DyadicFunction<? super R, ? super R, ? extends R> rightFn, Either<L, R> other) {
-            return other instanceof Right
-                    ? right(rightFn.apply(r, ((Right<L, R>) other).r))
-                    : other;
-        }
-
-        @Override
         public <V> V match(MonadicFunction<? super L, ? extends V> leftFn,
                            MonadicFunction<? super R, ? extends V> rightFn) {
             return rightFn.apply(r);
-        }
-
-        @Override
-        public <L2, R2> Either<L2, R2> biMap(MonadicFunction<? super L, ? extends L2> leftFn,
-                                             MonadicFunction<? super R, ? extends R2> rightFn) {
-            return right(rightFn.apply(r));
         }
 
         @Override
