@@ -18,30 +18,82 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         return new HCons<>(head, tail);
     }
 
-    public static <Head> HCons<Head, HNil> singleton(Head head) {
-        return cons(head, nil());
+    public static <Head> HCons1<Head> list(Head head) {
+        return new HCons1<>(head);
     }
 
-    public static <H1, H2> HCons<H1, HCons<H2, HNil>> list(H1 h1, H2 h2) {
-        return singleton(h2).cons(h1);
+    public static <H1, H2> HCons2<H1, H2> list(H1 h1, H2 h2) {
+        return list(h2).cons(h1);
     }
 
-    public static <H1, H2, H3> HCons<H1, HCons<H2, HCons<H3, HNil>>> list(H1 h1, H2 h2, H3 h3) {
+    public static <H1, H2, H3> HCons3<H1, H2, H3> list(H1 h1, H2 h2, H3 h3) {
         return list(h2, h3).cons(h1);
     }
 
-    public static <H1, H2, H3, H4> HCons<H1, HCons<H2, HCons<H3, HCons<H4, HNil>>>> list(H1 h1, H2 h2, H3 h3,
-                                                                                         H4 h4) {
+    public static <H1, H2, H3, H4> HCons4<H1, H2, H3, H4> list(H1 h1, H2 h2, H3 h3, H4 h4) {
         return list(h2, h3, h4).cons(h1);
     }
 
-    public static <H1, H2, H3, H4, H5> HCons<H1, HCons<H2, HCons<H3, HCons<H4, HCons<H5, HNil>>>>> list(H1 h1, H2 h2,
-                                                                                                        H3 h3, H4 h4,
-                                                                                                        H5 h5) {
+    public static <H1, H2, H3, H4, H5> HCons5<H1, H2, H3, H4, H5> list(H1 h1, H2 h2, H3 h3, H4 h4, H5 h5) {
         return list(h2, h3, h4, h5).cons(h1);
     }
 
-    public static final class HCons<Head, Tail extends HList<?, ?>> extends HList<Head, Tail> implements Functor<Head> {
+    public static final class HCons5<A, B, C, D, E> extends HCons<A, HCons4<B, C, D, E>> {
+        private HCons5(A a, HCons4<B, C, D, E> tail) {
+            super(a, tail);
+        }
+
+        @Override
+        public <NewHead> HCons<NewHead, HCons5<A, B, C, D, E>> cons(NewHead newHead) {
+            return new HCons<>(newHead, this);
+        }
+    }
+
+    public static final class HCons4<A, B, C, D> extends HCons<A, HCons3<B, C, D>> {
+        private HCons4(A a, HCons3<B, C, D> tail) {
+            super(a, tail);
+        }
+
+        @Override
+        public <NewHead> HCons5<NewHead, A, B, C, D> cons(NewHead newHead) {
+            return new HCons5<>(newHead, this);
+        }
+    }
+
+    public static final class HCons3<A, B, C> extends HCons<A, HCons2<B, C>> {
+        private HCons3(A a, HCons2<B, C> tail) {
+            super(a, tail);
+        }
+
+        @Override
+        public <NewHead> HCons4<NewHead, A, B, C> cons(NewHead newHead) {
+            return new HCons4<>(newHead, this);
+        }
+    }
+
+    public static final class HCons2<A, B> extends HCons<A, HCons1<B>> {
+        public HCons2(A a, HCons1<B> tail) {
+            super(a, tail);
+        }
+
+        @Override
+        public <NewHead> HCons3<NewHead, A, B> cons(NewHead newHead) {
+            return new HCons3<>(newHead, this);
+        }
+    }
+
+    public static final class HCons1<Head> extends HCons<Head, HNil> {
+        private HCons1(Head head) {
+            super(head, nil());
+        }
+
+        @Override
+        public <NewHead> HCons2<NewHead, Head> cons(NewHead newHead) {
+            return new HCons2<>(newHead, this);
+        }
+    }
+
+    public static class HCons<Head, Tail extends HList<?, ?>> extends HList<Head, Tail> implements Functor<Head> {
         private final Head head;
         private final Tail tail;
 
@@ -59,7 +111,7 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         }
 
         @Override
-        public <NewHead> HCons<NewHead, HCons<Head, Tail>> cons(NewHead newHead) {
+        public <NewHead> HCons<NewHead, ? extends HCons<Head, Tail>> cons(NewHead newHead) {
             return new HCons<>(newHead, this);
         }
 
