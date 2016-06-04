@@ -10,6 +10,9 @@ import static com.jnape.palatable.lambda.functions.builtin.triadic.FoldLeft.fold
 
 public final class ReduceLeft<A> implements DyadicFunction<DyadicFunction<? super A, ? super A, ? extends A>, Iterable<A>, A> {
 
+    private ReduceLeft() {
+    }
+
     @Override
     public final A apply(DyadicFunction<? super A, ? super A, ? extends A> function, Iterable<A> as) {
         final Iterator<A> iterator = as.iterator();
@@ -30,6 +33,6 @@ public final class ReduceLeft<A> implements DyadicFunction<DyadicFunction<? supe
     }
 
     public static <A> A reduceLeft(DyadicFunction<? super A, ? super A, ? extends A> function, Iterable<A> as) {
-        return reduceLeft(function).apply(as);
+        return ReduceLeft.<A>reduceLeft(function).apply(as);
     }
 }

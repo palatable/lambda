@@ -5,6 +5,9 @@ import com.jnape.palatable.lambda.functions.MonadicFunction;
 
 public final class Partial2<A, B, C> implements DyadicFunction<DyadicFunction<A, B, C>, A, MonadicFunction<B, C>> {
 
+    private Partial2() {
+    }
+
     @Override
     public MonadicFunction<B, C> apply(DyadicFunction<A, B, C> function, A a) {
         return function.apply(a);

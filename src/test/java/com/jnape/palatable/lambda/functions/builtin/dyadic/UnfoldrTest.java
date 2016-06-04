@@ -22,7 +22,7 @@ public class UnfoldrTest {
 
     @TestTraits({Laziness.class, InfiniteIteration.class, ImmutableIteration.class})
     public MonadicFunction<? extends Iterable, ? extends Iterable> createTestSubject() {
-        return new Unfoldr<Iterable, Iterable>().apply(x -> Optional.of(tuple(x, x)));
+        return unfoldr(x -> Optional.of(tuple(x, x)));
     }
 
     @Test

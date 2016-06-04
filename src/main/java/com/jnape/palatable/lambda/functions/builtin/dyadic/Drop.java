@@ -4,7 +4,19 @@ import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.iterators.DroppingIterator;
 
+/**
+ * Lazily skip the first <code>n</code> elements from an <code>Iterable</code> by returning an <code>Iterable</code>
+ * that begins iteration after the <code>nth</code> element. If <code>n</code> is greater than or equal to the length of
+ * the <code>Iterable</code>, an empty <code>Iterable</code> is returned.
+ *
+ * @param <A> The Iterable element type
+ * @see DropWhile
+ * @see Take
+ */
 public final class Drop<A> implements DyadicFunction<Integer, Iterable<A>, Iterable<A>> {
+
+    private Drop() {
+    }
 
     @Override
     public final Iterable<A> apply(final Integer n, final Iterable<A> as) {

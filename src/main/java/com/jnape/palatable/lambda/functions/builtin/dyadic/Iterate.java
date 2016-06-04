@@ -8,7 +8,17 @@ import java.util.Optional;
 
 import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 
+/**
+ * Lazily generate an infinite <code>Iterable</code> from the successive applications of the function first to the
+ * initial seed value, then to the result, and so on; i.e., the result of <code>iterate(x -> x + 1, 0)</code> would
+ * produce an infinite <code>Iterable</code> over the elements <code>0, 1, 2, 3, ... </code> and so on.
+ *
+ * @param <A> The Iterable element type
+ */
 public final class Iterate<A> implements DyadicFunction<MonadicFunction<? super A, ? extends A>, A, Iterable<A>> {
+
+    private Iterate() {
+    }
 
     @Override
     public final Iterable<A> apply(final MonadicFunction<? super A, ? extends A> fn, final A seed) {
@@ -24,6 +34,6 @@ public final class Iterate<A> implements DyadicFunction<MonadicFunction<? super 
     }
 
     public static <A> Iterable<A> iterate(MonadicFunction<? super A, ? extends A> fn, A seed) {
-        return iterate(fn).apply(seed);
+        return Iterate.<A>iterate(fn).apply(seed);
     }
 }

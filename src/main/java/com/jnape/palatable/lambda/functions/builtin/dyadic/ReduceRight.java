@@ -8,6 +8,9 @@ import static com.jnape.palatable.lambda.functions.builtin.monadic.Reverse.rever
 
 public final class ReduceRight<A> implements DyadicFunction<DyadicFunction<? super A, ? super A, ? extends A>, Iterable<A>, A> {
 
+    private ReduceRight() {
+    }
+
     @Override
     public final A apply(DyadicFunction<? super A, ? super A, ? extends A> function, Iterable<A> as) {
         return reduceLeft(function.flip(), reverse(as));
@@ -23,6 +26,6 @@ public final class ReduceRight<A> implements DyadicFunction<DyadicFunction<? sup
     }
 
     public static <A> A reduceRight(DyadicFunction<? super A, ? super A, ? extends A> function, Iterable<A> as) {
-        return reduceRight(function).apply(as);
+        return ReduceRight.<A>reduceRight(function).apply(as);
     }
 }

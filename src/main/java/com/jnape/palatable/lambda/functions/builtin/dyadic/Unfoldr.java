@@ -9,6 +9,9 @@ import java.util.Optional;
 
 public final class Unfoldr<A, B> implements DyadicFunction<MonadicFunction<B, Optional<Tuple2<A, B>>>, B, Iterable<A>> {
 
+    private Unfoldr() {
+    }
+
     @Override
     public Iterable<A> apply(MonadicFunction<B, Optional<Tuple2<A, B>>> function, B b) {
         return () -> new UnfoldingIterator<>(function, b);

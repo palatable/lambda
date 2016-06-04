@@ -4,7 +4,18 @@ import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.iterators.FilteringIterator;
 
+/**
+ * Lazily apply a predicate to each element in an <code>Iterable</code>, returning an <code>Iterable</code> of just the
+ * elements for which the predicate evaluated to <code>true</code>.
+ *
+ * @param <A> A type contravariant to the input Iterable element type
+ * @see TakeWhile
+ * @see DropWhile
+ */
 public final class Filter<A> implements DyadicFunction<MonadicFunction<? super A, Boolean>, Iterable<A>, Iterable<A>> {
+
+    private Filter() {
+    }
 
     @Override
     public final Iterable<A> apply(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
@@ -21,6 +32,6 @@ public final class Filter<A> implements DyadicFunction<MonadicFunction<? super A
     }
 
     public static <A> Iterable<A> filter(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
-        return filter(predicate).apply(as);
+        return Filter.<A>filter(predicate).apply(as);
     }
 }

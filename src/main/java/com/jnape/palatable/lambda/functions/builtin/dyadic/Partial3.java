@@ -6,6 +6,9 @@ import com.jnape.palatable.lambda.functions.TriadicFunction;
 
 public final class Partial3<A, B, C, D> implements DyadicFunction<TriadicFunction<A, B, C, D>, A, DyadicFunction<B, C, D>> {
 
+    private Partial3() {
+    }
+
     @Override
     public DyadicFunction<B, C, D> apply(TriadicFunction<A, B, C, D> function, A a) {
         return function.apply(a);

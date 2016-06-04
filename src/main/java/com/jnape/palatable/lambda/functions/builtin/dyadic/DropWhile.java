@@ -4,7 +4,21 @@ import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.iterators.PredicatedDroppingIterator;
 
+/**
+ * Lazily limit the <code>Iterable</code> by skipping the first contiguous group of elements that satisfy the predicate,
+ * beginning iteration at the first element for which the predicate evaluates to <code>false</code>.
+ *
+ * @param <A> The Iterable element type
+ * @see Drop
+ * @see Filter
+ * @see TakeWhile
+ */
+
 public final class DropWhile<A> implements DyadicFunction<MonadicFunction<? super A, Boolean>, Iterable<A>, Iterable<A>> {
+
+    private DropWhile() {
+    }
+
     @Override
     public final Iterable<A> apply(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
         return () -> new PredicatedDroppingIterator<>(predicate, as.iterator());
@@ -20,7 +34,6 @@ public final class DropWhile<A> implements DyadicFunction<MonadicFunction<? supe
     }
 
     public static <A> Iterable<A> dropWhile(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
-        return dropWhile(predicate).apply(as);
+        return DropWhile.<A>dropWhile(predicate).apply(as);
     }
-
 }

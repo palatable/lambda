@@ -3,7 +3,18 @@ package com.jnape.palatable.lambda.functions.builtin.dyadic;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
+/**
+ * Eagerly apply a predicate to each element in an <code>Iterable</code>, returning <code>true</code> if every element
+ * satisfies the predicate, and <code>false</code> otherwise. This method short-circuits on the first <code>false</code>
+ * evaluation.
+ *
+ * @param <A> The input Iterable element type
+ * @see Any
+ */
 public final class All<A> implements DyadicFunction<MonadicFunction<? super A, Boolean>, Iterable<A>, Boolean> {
+
+    private All() {
+    }
 
     @Override
     public final Boolean apply(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
@@ -23,6 +34,6 @@ public final class All<A> implements DyadicFunction<MonadicFunction<? super A, B
     }
 
     public static <A> boolean all(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
-        return all(predicate).apply(as);
+        return All.<A>all(predicate).apply(as);
     }
 }

@@ -4,13 +4,17 @@ import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
+import static com.jnape.palatable.lambda.functions.builtin.dyadic.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.triadic.ZipWith.zipWith;
 
 public final class Zip<A, B> implements DyadicFunction<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
 
+    private Zip() {
+    }
+
     @Override
     public final Iterable<Tuple2<A, B>> apply(final Iterable<A> as, final Iterable<B> bs) {
-        return zipWith(Tupler2.<A, B>tupler(), as, bs);
+        return zipWith(tupler(), as, bs);
     }
 
     public static <A, B> Zip<A, B> zip() {
