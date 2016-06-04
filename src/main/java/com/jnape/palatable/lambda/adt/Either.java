@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.applicative.BiFunctor;
 import com.jnape.palatable.lambda.applicative.Functor;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functions.specialized.unchecked.CheckedSupplier;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -19,6 +20,10 @@ public abstract class Either<L, R> implements Functor<R>, BiFunctor<L, R> {
 
     public final R recover(MonadicFunction<? super L, ? extends R> recoveryFn) {
         return match(recoveryFn, id());
+    }
+
+    public final L forfeit(MonadicFunction<? super R, ? extends L> forfeitFn) {
+        return match(id(), forfeitFn);
     }
 
     public final <E extends RuntimeException> R orThrow(
@@ -79,6 +84,20 @@ public abstract class Either<L, R> implements Functor<R>, BiFunctor<L, R> {
     public static <L, R> Either<L, R> fromOptional(Optional<R> optional, Supplier<L> leftFn) {
         return optional.<Either<L, R>>map(Either::right)
                 .orElse(left(leftFn.get()));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <E extends Exception, L, R> Either<L, R> trying(CheckedSupplier<E, ? extends R> supplier,
+                                                                  MonadicFunction<? super E, ? extends L> leftFn) {
+        try {
+            return right(supplier.get());
+        } catch (Exception e) {
+            return left(leftFn.apply((E) e));
+        }
+    }
+
+    public static <E extends Exception, R> Either<E, R> trying(CheckedSupplier<E, R> supplier) {
+        return trying(supplier, id());
     }
 
     public static <L, R> Either<L, R> left(L l) {

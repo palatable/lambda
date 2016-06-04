@@ -11,6 +11,7 @@ import static com.jnape.palatable.lambda.adt.Either.fromOptional;
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class EitherTest {
@@ -19,7 +20,7 @@ public class EitherTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void recoverFlattensByLiftingLeftBiasingTowardsRight() {
+    public void recoverLiftsLeftAndFlattensRight() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -28,7 +29,16 @@ public class EitherTest {
     }
 
     @Test
-    public void orFlattensByReplacingLeftBiasingTowardsRight() {
+    public void forfeitLiftsRightAndFlattensLeft() {
+        Either<String, Integer> left = left("foo");
+        Either<String, Integer> right = right(1);
+
+        assertThat(left.forfeit(r -> "bar"), is("foo"));
+        assertThat(right.forfeit(r -> "bar"), is("bar"));
+    }
+
+    @Test
+    public void orReplacesLeftAndFlattensRight() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -37,7 +47,7 @@ public class EitherTest {
     }
 
     @Test
-    public void orThrowFlattensByLiftingAndThrowingLeftBiasingTowardsRight() {
+    public void orThrowFlattensRightOrThrowsException() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -50,7 +60,7 @@ public class EitherTest {
     }
 
     @Test
-    public void filterLiftsToTheRight() {
+    public void filterLiftsRight() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -61,7 +71,7 @@ public class EitherTest {
     }
 
     @Test
-    public void monadicFlatMapAppliesAndFlattensRight() {
+    public void monadicFlatMapLiftsRightAndFlattensBackToEither() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -70,7 +80,7 @@ public class EitherTest {
     }
 
     @Test
-    public void flatMapAdjunctivelyLifts() {
+    public void dyadicFlatMapDuallyLiftsAndFlattensBackToEither() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -79,7 +89,7 @@ public class EitherTest {
     }
 
     @Test
-    public void mergeAdjunctivelyLiftsAndMergesBiasingTowardsLeft() {
+    public void mergeDuallyLiftsAndCombinesBiasingLeft() {
         Either<String, Integer> left1 = left("foo");
         Either<String, Integer> right1 = right(1);
 
@@ -96,7 +106,7 @@ public class EitherTest {
     }
 
     @Test
-    public void matchAdjunctivelyLiftsAndFlattens() {
+    public void matchDuallyLiftsAndFlattens() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -114,7 +124,7 @@ public class EitherTest {
     }
 
     @Test
-    public void functorProperties() {
+    public void functorialProperties() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -123,11 +133,29 @@ public class EitherTest {
     }
 
     @Test
-    public void biFunctorProperties() {
+    public void biFunctorialProperties() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(left.biMap(l -> l + "bar", r -> r + 1), is(left("foobar")));
         assertThat(right.biMap(l -> l + "bar", r -> r + 1), is(right(2)));
+    }
+
+    @Test
+    public void monadicTryingLiftsCheckedSupplier() {
+        assertEquals(right(1), Either.trying(() -> 1));
+
+        Exception checkedException = new Exception("expected");
+        assertEquals(left(checkedException), Either.trying(() -> {
+            throw checkedException;
+        }));
+    }
+
+    @Test
+    public void dyadicTryingLiftsCheckedSupplierMappingAnyThrownExceptions() {
+        assertEquals(right(1), Either.trying(() -> 1, Throwable::getMessage));
+        assertEquals(left("expected"), Either.trying(() -> {
+            throw new Exception("expected");
+        }, Throwable::getMessage));
     }
 }
