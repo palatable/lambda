@@ -14,11 +14,13 @@ public interface DyadicFunction<A, B, C> extends MonadicFunction<A, MonadicFunct
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     default <C1> DyadicFunction<A, C1, C> diMapL(MonadicFunction<? super C1, ? extends B> fn) {
         return (DyadicFunction<A, C1, C>) ProFunctor.super.diMapL(fn);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     default <C1> DyadicFunction<A, B, C1> diMapR(MonadicFunction<? super C, ? extends C1> fn) {
         return (DyadicFunction<A, B, C1>) ProFunctor.super.diMapR(fn);
     }
