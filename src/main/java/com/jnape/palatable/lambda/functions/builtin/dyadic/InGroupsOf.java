@@ -6,7 +6,7 @@ import com.jnape.palatable.lambda.iterators.GroupingIterator;
 
 /**
  * Lazily group the <code>Iterable</code> by returning an <code>Iterable</code> of smaller <code>Iterable</code>s of
- * size <code>k</code>. Note that groups are <em>not</em> padded; that is, if <code>k >= n</code>, where <code>n</code>
+ * size <code>k</code>. Note that groups are <em>not</em> padded; that is, if <code>k &gt;= n</code>, where <code>n</code>
  * is the number of remaining elements, the final <code>Iterable</code> will have only <code>n</code> elements.
  *
  * @param <A> The Iterable element type

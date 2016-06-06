@@ -10,7 +10,7 @@ import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 
 /**
  * Lazily generate an infinite <code>Iterable</code> from the successive applications of the function first to the
- * initial seed value, then to the result, and so on; i.e., the result of <code>iterate(x -> x + 1, 0)</code> would
+ * initial seed value, then to the result, and so on; i.e., the result of <code>iterate(x -&gt; x + 1, 0)</code> would
  * produce an infinite <code>Iterable</code> over the elements <code>0, 1, 2, 3, ... </code> and so on.
  *
  * @param <A> The Iterable element type
