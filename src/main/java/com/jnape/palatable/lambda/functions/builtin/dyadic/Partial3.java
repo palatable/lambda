@@ -4,6 +4,16 @@ import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.functions.TriadicFunction;
 
+/**
+ * Partially apply (fix) the first argument of a <code>TriadicFunction</code>, producing a <code>DyadicFunction</code>
+ * that takes the remaining two argument. This is isomorphic to calling {@link com.jnape.palatable.lambda.functions.TriadicFunction#apply(Object)}.
+ *
+ * @param <A> The type of the value to be supplied
+ * @param <B> The first input argument type of the resulting function
+ * @param <C> The second input argument type of the resulting function
+ * @param <D> The return type of the resulting function
+ * @see Partial2
+ */
 public final class Partial3<A, B, C, D> implements DyadicFunction<TriadicFunction<A, B, C, D>, A, DyadicFunction<B, C, D>> {
 
     private Partial3() {

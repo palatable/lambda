@@ -1,8 +1,15 @@
 package com.jnape.palatable.lambda.adt;
 
-import com.jnape.palatable.lambda.applicative.Functor;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functor.Functor;
 
+/**
+ * A heterogeneous list supporting arbitrary depth type-safety via a linearly recursive type signature. Note that due to
+ * its rapidly expanding type signature, specializations exist up to certain depths to minimize typing overhead.
+ *
+ * @param <Head> The head element type
+ * @param <Tail> The encoded recursive tail HList type
+ */
 public abstract class HList<Head, Tail extends HList<?, ?>> {
 
     private HList() {

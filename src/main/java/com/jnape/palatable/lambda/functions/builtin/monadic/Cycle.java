@@ -5,10 +5,16 @@ import com.jnape.palatable.lambda.iterators.CyclicIterator;
 
 import static java.util.Arrays.asList;
 
+/**
+ * Given an <code>Iterable</code>, return an infinite <code>Iterable</code> that repeatedly cycles its elements, in
+ * order.
+ *
+ * @param <A> The Iterable element type
+ */
 public final class Cycle<A> implements MonadicFunction<Iterable<A>, Iterable<A>> {
 
     @Override
-    public final Iterable<A> apply(final Iterable<A> as) {
+    public Iterable<A> apply(Iterable<A> as) {
         return () -> new CyclicIterator<>(as.iterator());
     }
 

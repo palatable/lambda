@@ -14,7 +14,10 @@ import java.util.Iterator;
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Reverse.reverse;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 @RunWith(Traits.class)

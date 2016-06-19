@@ -1,10 +1,19 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.tuples.Tuple2;
-import com.jnape.palatable.lambda.applicative.ProFunctor;
+import com.jnape.palatable.lambda.functor.Profunctor;
 
+/**
+ * A function taking two arguments. Auto-curried.
+ *
+ * @param <A> The first argument type
+ * @param <B> The second argument type
+ * @param <C> The return type
+ * @see MonadicFunction
+ * @see com.jnape.palatable.lambda.functions.builtin.dyadic.Partial2
+ */
 @FunctionalInterface
-public interface DyadicFunction<A, B, C> extends MonadicFunction<A, MonadicFunction<B, C>>, ProFunctor<B, C> {
+public interface DyadicFunction<A, B, C> extends MonadicFunction<A, MonadicFunction<B, C>>, Profunctor<B, C> {
 
     C apply(A a, B b);
 
@@ -16,13 +25,13 @@ public interface DyadicFunction<A, B, C> extends MonadicFunction<A, MonadicFunct
     @Override
     @SuppressWarnings("unchecked")
     default <C1> DyadicFunction<A, C1, C> diMapL(MonadicFunction<? super C1, ? extends B> fn) {
-        return (DyadicFunction<A, C1, C>) ProFunctor.super.diMapL(fn);
+        return (DyadicFunction<A, C1, C>) Profunctor.super.diMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     default <C1> DyadicFunction<A, B, C1> diMapR(MonadicFunction<? super C, ? extends C1> fn) {
-        return (DyadicFunction<A, B, C1>) ProFunctor.super.diMapR(fn);
+        return (DyadicFunction<A, B, C1>) Profunctor.super.diMapR(fn);
     }
 
     @Override

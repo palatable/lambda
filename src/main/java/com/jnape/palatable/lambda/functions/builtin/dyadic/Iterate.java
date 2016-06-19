@@ -21,7 +21,7 @@ public final class Iterate<A> implements DyadicFunction<MonadicFunction<? super 
     }
 
     @Override
-    public final Iterable<A> apply(final MonadicFunction<? super A, ? extends A> fn, final A seed) {
+    public Iterable<A> apply(MonadicFunction<? super A, ? extends A> fn, A seed) {
         return () -> new UnfoldingIterator<>(a -> Optional.of(tuple(a, fn.apply(a))), seed);
     }
 

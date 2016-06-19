@@ -6,13 +6,20 @@ import com.jnape.palatable.lambda.functions.MonadicFunction;
 
 import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
 
+/**
+ * Creates a <code>Tuple2</code> from two values.
+ *
+ * @param <A> The type of the first value; also the first slot type of returned Tuple2
+ * @param <B> The type of the second value; also the second slot type of returned Tuple2
+ * @see Tuple2
+ */
 public final class Tupler2<A, B> implements DyadicFunction<A, B, Tuple2<A, B>> {
 
     private Tupler2() {
     }
 
     @Override
-    public final Tuple2<A, B> apply(A a, B b) {
+    public Tuple2<A, B> apply(A a, B b) {
         return tuple(a, b);
     }
 

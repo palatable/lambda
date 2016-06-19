@@ -18,7 +18,7 @@ public final class Filter<A> implements DyadicFunction<MonadicFunction<? super A
     }
 
     @Override
-    public final Iterable<A> apply(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
+    public Iterable<A> apply(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
         return () -> new FilteringIterator<>(predicate, as.iterator());
     }
 
@@ -26,12 +26,11 @@ public final class Filter<A> implements DyadicFunction<MonadicFunction<? super A
         return new Filter<>();
     }
 
-    public static <A> MonadicFunction<Iterable<A>, Iterable<A>> filter(
-            final MonadicFunction<? super A, Boolean> predicate) {
+    public static <A> MonadicFunction<Iterable<A>, Iterable<A>> filter(MonadicFunction<? super A, Boolean> predicate) {
         return Filter.<A>filter().apply(predicate);
     }
 
-    public static <A> Iterable<A> filter(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
+    public static <A> Iterable<A> filter(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
         return Filter.<A>filter(predicate).apply(as);
     }
 }

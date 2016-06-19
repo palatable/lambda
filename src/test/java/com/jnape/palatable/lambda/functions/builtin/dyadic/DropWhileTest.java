@@ -12,7 +12,7 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.DropWhile.dropWhile;
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Always.always;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Constantly.constantly;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;
@@ -23,7 +23,7 @@ public class DropWhileTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, FiniteIteration.class, EmptyIterableSupport.class})
     public MonadicFunction<Iterable<Object>, Iterable<Object>> createTestSubject() {
-        return dropWhile(always(true));
+        return dropWhile(constantly(true));
     }
 
     @Test
@@ -34,11 +34,11 @@ public class DropWhileTest {
 
     @Test
     public void dropsAllElementsIfPredicateNeverFails() {
-        assertThat(dropWhile(always(true), asList(1, 2, 3)), isEmpty());
+        assertThat(dropWhile(constantly(true), asList(1, 2, 3)), isEmpty());
     }
 
     @Test
     public void dropsNoElementsIfPredicateImmediatelyFails() {
-        assertThat(dropWhile(always(false), asList(1, 2, 3)), iterates(1, 2, 3));
+        assertThat(dropWhile(constantly(false), asList(1, 2, 3)), iterates(1, 2, 3));
     }
 }

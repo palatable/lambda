@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.EmptyIterableSupport;
 
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Any.any;
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Always.always;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Repeat.repeat;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
@@ -21,7 +21,7 @@ public class AnyTest {
 
     @TestTraits({EmptyIterableSupport.class})
     public MonadicFunction<Iterable<Object>, Boolean> createTestSubject() {
-        return any(always(true));
+        return any(constantly(true));
     }
 
     @Test

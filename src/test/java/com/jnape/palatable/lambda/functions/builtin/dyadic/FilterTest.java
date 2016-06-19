@@ -12,7 +12,7 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Filter.filter;
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Always.always;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Constantly.constantly;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
@@ -22,7 +22,7 @@ public class FilterTest {
 
     @TestTraits({Laziness.class, EmptyIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
     public MonadicFunction<? extends Iterable, ?> createTraitsTestSubject() {
-        return filter(always(true));
+        return filter(constantly(true));
     }
 
     @Test

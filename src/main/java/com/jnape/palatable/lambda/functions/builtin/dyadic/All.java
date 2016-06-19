@@ -17,7 +17,7 @@ public final class All<A> implements DyadicFunction<MonadicFunction<? super A, B
     }
 
     @Override
-    public final Boolean apply(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
+    public Boolean apply(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
         for (A a : as)
             if (!predicate.apply(a))
                 return false;

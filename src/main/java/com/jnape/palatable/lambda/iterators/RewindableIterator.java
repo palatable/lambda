@@ -5,36 +5,9 @@ import java.util.NoSuchElementException;
 
 public class RewindableIterator<A> extends ImmutableIterator<A> {
 
-    private static class Cache<A> {
-
-        private A cache;
-
-        public void store(A a) {
-            cache = a;
-        }
-
-        public A retrieve() {
-            if (cache == null)
-                throw new NoSuchElementException("Cache is empty.");
-
-            A cache = this.cache;
-            this.cache = null;
-            return cache;
-        }
-
-        public boolean isEmpty() {
-            return cache == null;
-        }
-
-        public boolean isNotEmpty() {
-            return !isEmpty();
-        }
-    }
-
     private final Iterator<A> asIterator;
     private final Cache<A>    cache;
     private       boolean     rewound;
-
     public RewindableIterator(Iterator<A> asIterator) {
         this.asIterator = asIterator;
         cache = new Cache<>();
@@ -66,5 +39,31 @@ public class RewindableIterator<A> extends ImmutableIterator<A> {
 
     public boolean isRewound() {
         return rewound;
+    }
+
+    private static class Cache<A> {
+
+        private A cache;
+
+        public void store(A a) {
+            cache = a;
+        }
+
+        public A retrieve() {
+            if (cache == null)
+                throw new NoSuchElementException("Cache is empty.");
+
+            A cache = this.cache;
+            this.cache = null;
+            return cache;
+        }
+
+        public boolean isEmpty() {
+            return cache == null;
+        }
+
+        public boolean isNotEmpty() {
+            return !isEmpty();
+        }
     }
 }

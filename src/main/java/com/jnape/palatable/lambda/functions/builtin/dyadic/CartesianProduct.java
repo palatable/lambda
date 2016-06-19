@@ -9,7 +9,7 @@ import com.jnape.palatable.lambda.iterators.CombinatorialIterator;
  * Lazily compute the cartesian product of an <code>Iterable&lt;A&gt;</code> and <code>Iterable&lt;B&gt;</code>,
  * returning an <code>Iterable&lt;Tuple2&lt;A, B&gt;&gt;</code>, the <em>products</em> as tuples of
  * <em>multiplicand</em> <code>A</code>s and <em>multiplier</em> <code>B</code>s.
- * <p></p>
+ * <p>
  * Note that this algorithm exhaustively pairs all elements from <code>Iterable&lt;B&gt;</code> to the first element of
  * <code>Iterable&lt;A&gt;</code> before advancing to the next element of <code>Iterable&lt;A&gt;</code>, <strong>so if
  * <code>Iterable&lt;B&gt;</code> is infinite, only one element from <code>Iterable&lt;A&gt;</code> will ever be
@@ -25,7 +25,7 @@ public final class CartesianProduct<A, B> implements DyadicFunction<Iterable<A>,
     }
 
     @Override
-    public final Iterable<Tuple2<A, B>> apply(Iterable<A> as, Iterable<B> bs) {
+    public Iterable<Tuple2<A, B>> apply(Iterable<A> as, Iterable<B> bs) {
         return () -> new CombinatorialIterator<>(as.iterator(), bs.iterator());
     }
 

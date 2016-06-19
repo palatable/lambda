@@ -19,7 +19,7 @@ public final class TakeWhile<A> implements DyadicFunction<MonadicFunction<? supe
     }
 
     @Override
-    public final Iterable<A> apply(final MonadicFunction<? super A, Boolean> predicate, final Iterable<A> as) {
+    public Iterable<A> apply(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
         return () -> new PredicatedTakingIterator<>(predicate, as.iterator());
     }
 

@@ -19,7 +19,7 @@ public final class Drop<A> implements DyadicFunction<Integer, Iterable<A>, Itera
     }
 
     @Override
-    public final Iterable<A> apply(final Integer n, final Iterable<A> as) {
+    public Iterable<A> apply(Integer n, Iterable<A> as) {
         return () -> new DroppingIterator<>(n, as.iterator());
     }
 

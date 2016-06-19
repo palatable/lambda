@@ -1,10 +1,10 @@
 package com.jnape.palatable.lambda.adt;
 
-import com.jnape.palatable.lambda.applicative.BiFunctor;
-import com.jnape.palatable.lambda.applicative.Functor;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
-import com.jnape.palatable.lambda.functions.specialized.unchecked.CheckedSupplier;
+import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
+import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -12,7 +12,15 @@ import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
 
-public abstract class Either<L, R> implements Functor<R>, BiFunctor<L, R> {
+/**
+ * The binary tagged union. General semantics tend to connote "success" values via the right value and "failure" values
+ * via the left values. <code>Either</code>s are both <code>Functor</code>s over their right value and
+ * <code>Bifunctor</code>s over both values.
+ *
+ * @param <L> The left parameter type
+ * @param <R> The right parameter type
+ */
+public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
 
     public final R or(R defaultValue) {
         return recover(l -> defaultValue);
@@ -66,13 +74,13 @@ public abstract class Either<L, R> implements Functor<R>, BiFunctor<L, R> {
     @Override
     @SuppressWarnings("unchecked")
     public final <L2> Either<L2, R> biMapL(MonadicFunction<? super L, ? extends L2> fn) {
-        return (Either<L2, R>) BiFunctor.super.biMapL(fn);
+        return (Either<L2, R>) Bifunctor.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public final <R2> Either<L, R2> biMapR(MonadicFunction<? super R, ? extends R2> fn) {
-        return (Either<L, R2>) BiFunctor.super.biMapR(fn);
+        return (Either<L, R2>) Bifunctor.super.biMapR(fn);
     }
 
     @Override

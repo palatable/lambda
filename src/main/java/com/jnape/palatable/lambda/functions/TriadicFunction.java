@@ -2,6 +2,16 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 
+/**
+ * A function taking three arguments. Auto-curried
+ *
+ * @param <A> The first argument type
+ * @param <B> The second argument type
+ * @param <C> The third argument type
+ * @param <D> The return type
+ * @see DyadicFunction
+ * @see com.jnape.palatable.lambda.functions.builtin.dyadic.Partial3
+ */
 @FunctionalInterface
 public interface TriadicFunction<A, B, C, D> extends DyadicFunction<A, B, MonadicFunction<C, D>> {
 

@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 public class PredicatedTakingIterator<A> extends ImmutableIterator<A> {
     private final MonadicFunction<? super A, Boolean> predicate;
-    private final RewindableIterator<A> rewindableIterator;
+    private final RewindableIterator<A>               rewindableIterator;
     private       boolean                             stillTaking;
 
     public PredicatedTakingIterator(MonadicFunction<? super A, Boolean> predicate,

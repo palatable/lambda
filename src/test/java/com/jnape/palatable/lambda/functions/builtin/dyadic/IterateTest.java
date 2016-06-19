@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Iterate.iterate;
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Take.take;
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Always.always;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Constantly.constantly;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
@@ -22,7 +22,7 @@ public class IterateTest {
 
     @TestTraits({Laziness.class, InfiniteIteration.class, ImmutableIteration.class})
     public MonadicFunction<? extends Iterable, ? extends Iterable> createTestSubject() {
-        return iterate(always(new ArrayList<>()));
+        return iterate(constantly(new ArrayList<>()));
     }
 
     @Test

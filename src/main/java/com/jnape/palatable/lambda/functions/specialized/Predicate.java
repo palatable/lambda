@@ -2,6 +2,11 @@ package com.jnape.palatable.lambda.functions.specialized;
 
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
+/**
+ * A specialized {@link MonadicFunction} that returns a <code>Boolean</code>.
+ *
+ * @param <A> The argument type
+ */
 public interface Predicate<A> extends MonadicFunction<A, Boolean>, java.util.function.Predicate<A> {
 
     @Override

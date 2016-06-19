@@ -17,7 +17,7 @@ public final class Map<A, B> implements DyadicFunction<MonadicFunction<? super A
     }
 
     @Override
-    public final Iterable<B> apply(final MonadicFunction<? super A, ? extends B> function, final Iterable<A> as) {
+    public Iterable<B> apply(MonadicFunction<? super A, ? extends B> function, Iterable<A> as) {
         return () -> new MappingIterator<>(function, as.iterator());
     }
 

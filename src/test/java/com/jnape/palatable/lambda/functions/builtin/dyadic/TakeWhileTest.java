@@ -12,7 +12,7 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.TakeWhile.takeWhile;
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Always.always;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Constantly.constantly;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;
@@ -23,7 +23,7 @@ public class TakeWhileTest {
 
     @TestTraits({FiniteIteration.class, EmptyIterableSupport.class, ImmutableIteration.class, Laziness.class})
     public MonadicFunction<Iterable<Object>, Iterable<Object>> createTestObject() {
-        return takeWhile(always(true));
+        return takeWhile(constantly(true));
     }
 
     @Test
@@ -37,13 +37,13 @@ public class TakeWhileTest {
     public void takesAllElementsIfPredicateNeverFails() {
         String[] requirements = {"fast", "good", "cheap"};
         assertThat(
-                takeWhile(always(true), asList(requirements)),
+                takeWhile(constantly(true), asList(requirements)),
                 iterates(requirements)
         );
     }
 
     @Test
     public void takesNoElementsIfPredicateImmediatelyFails() {
-        assertThat(takeWhile(always(false), asList(1, 2, 3)), isEmpty());
+        assertThat(takeWhile(constantly(false), asList(1, 2, 3)), isEmpty());
     }
 }

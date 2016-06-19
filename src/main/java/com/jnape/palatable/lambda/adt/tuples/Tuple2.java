@@ -1,19 +1,26 @@
 package com.jnape.palatable.lambda.adt.tuples;
 
-import com.jnape.palatable.lambda.applicative.BiFunctor;
-import com.jnape.palatable.lambda.applicative.Functor;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
 
 import static java.lang.String.format;
 
-public class Tuple2<_1, _2> implements Functor<_2>, BiFunctor<_1, _2> {
+/**
+ * The binary tuple product type. Tuple2
+ *
+ * @param <_1> The first slot element type
+ * @param <_2> The second slot element type
+ * @see Tuple3
+ */
+public class Tuple2<_1, _2> implements Functor<_2>, Bifunctor<_1, _2> {
 
     public final _1 _1;
     public final _2 _2;
 
-    public Tuple2(_1 _1, _2 _2) {
+    Tuple2(_1 _1, _2 _2) {
         this._1 = _1;
         this._2 = _2;
     }
@@ -32,13 +39,13 @@ public class Tuple2<_1, _2> implements Functor<_2>, BiFunctor<_1, _2> {
     @Override
     @SuppressWarnings("unchecked")
     public <_1A> Tuple2<_1A, _2> biMapL(MonadicFunction<? super _1, ? extends _1A> fn) {
-        return (Tuple2<_1A, _2>) BiFunctor.super.biMapL(fn);
+        return (Tuple2<_1A, _2>) Bifunctor.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <_2A> Tuple2<_1, _2A> biMapR(MonadicFunction<? super _2, ? extends _2A> fn) {
-        return (Tuple2<_1, _2A>) BiFunctor.super.biMapR(fn);
+        return (Tuple2<_1, _2A>) Bifunctor.super.biMapR(fn);
     }
 
     @Override

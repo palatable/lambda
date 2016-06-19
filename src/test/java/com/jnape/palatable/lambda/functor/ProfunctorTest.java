@@ -1,8 +1,8 @@
-package com.jnape.palatable.lambda.applicative;
+package com.jnape.palatable.lambda.functor;
 
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import org.junit.Test;
-import testsupport.applicatives.InvocationRecordingBiFunctor;
+import testsupport.applicatives.InvocationRecordingProfunctor;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -10,21 +10,21 @@ import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BiFunctorTest {
+public class ProfunctorTest {
 
     @Test
-    public void biMapLUsesIdentityForRightBiMapFunction() {
+    public void diMapLUsesIdentityForRightDiMapFunction() {
         AtomicReference<MonadicFunction> rightInvocation = new AtomicReference<>();
-        BiFunctor<String, Integer> biFunctor = new InvocationRecordingBiFunctor<>(new AtomicReference<>(), rightInvocation);
-        biFunctor.biMapL(String::toUpperCase);
+        Profunctor<String, Integer> profunctor = new InvocationRecordingProfunctor<>(new AtomicReference<>(), rightInvocation);
+        profunctor.diMapL(Object::toString);
         assertThat(rightInvocation.get(), is(id()));
     }
 
     @Test
-    public void biMapRUsesIdentityForLeftBiMapFunction() {
+    public void diMapRUsesIdentityForLeftDiMapFunction() {
         AtomicReference<MonadicFunction> leftInvocation = new AtomicReference<>();
-        BiFunctor<String, Integer> biFunctor = new InvocationRecordingBiFunctor<>(leftInvocation, new AtomicReference<>());
-        biFunctor.biMapR(String::valueOf);
+        Profunctor<String, Integer> profunctor = new InvocationRecordingProfunctor<>(leftInvocation, new AtomicReference<>());
+        profunctor.diMapR(String::valueOf);
         assertThat(leftInvocation.get(), is(id()));
     }
 }

@@ -6,11 +6,19 @@ import java.util.Objects;
 
 import static java.lang.String.format;
 
+/**
+ * The ternary tuple product type. This class extends <code>{@link Tuple2}</code> and as such embodies the same
+ * functorial properties.
+ *
+ * @param <_1> The first slot element type
+ * @param <_2> The second slot element type
+ * @param <_3> The third slot element type
+ */
 public class Tuple3<_1, _2, _3> extends Tuple2<_1, _2> {
 
     public final _3 _3;
 
-    public Tuple3(_1 _1, _2 _2, _3 _3) {
+    Tuple3(_1 _1, _2 _2, _3 _3) {
         super(_1, _2);
         this._3 = _3;
     }
