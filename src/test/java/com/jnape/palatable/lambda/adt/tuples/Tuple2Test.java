@@ -19,30 +19,6 @@ public class Tuple2Test {
     }
 
     @Test
-    public void mapsCovariantlyOverLeftSlot() {
-        assertThat(
-                tuple("foo", 1).biMapL(String::toUpperCase),
-                is(tuple("FOO", 1))
-        );
-    }
-
-    @Test
-    public void mapsCovariantlyOverRightSlot() {
-        assertThat(
-                tuple("foo", 1).biMapR(String::valueOf),
-                is(tuple("foo", "1"))
-        );
-    }
-
-    @Test
-    public void mapsOverBothSlotsInSingleTransformation() {
-        assertThat(
-                tuple("foo", 1).biMap(String::toUpperCase, i -> i + 1),
-                is(tuple("FOO", 2))
-        );
-    }
-
-    @Test
     public void toStringIsReasonable() {
         assertThat(tuple("1", "2").toString(), is("(1, 2)"));
     }
@@ -72,5 +48,17 @@ public class Tuple2Test {
     @Test
     public void hashesUsingReasonableDistribution() {
         assertNotEquals(tuple("foo", 1).hashCode(), tuple("bar", 2).hashCode());
+    }
+
+    @Test
+    public void functorialProperties() {
+        assertThat(tuple("foo", 1).fmap(String::valueOf), is(tuple("foo", "1")));
+    }
+
+    @Test
+    public void biFunctorialProperties() {
+        assertThat(tuple("foo", 1).biMapL(String::toUpperCase), is(tuple("FOO", 1)));
+        assertThat(tuple("foo", 1).biMapR(String::valueOf), is(tuple("foo", "1")));
+        assertThat(tuple("foo", 1).biMap(String::toUpperCase, i -> i + 1), is(tuple("FOO", 2)));
     }
 }

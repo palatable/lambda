@@ -33,7 +33,7 @@ public class HListTest {
     }
 
     @Test
-    public void functorProperties() {
+    public void functorialProperties() {
         assertEquals(list("1"), list(1).fmap(Object::toString));
     }
 

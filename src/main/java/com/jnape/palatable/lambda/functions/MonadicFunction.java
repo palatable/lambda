@@ -2,8 +2,10 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.applicative.Functor;
 
+import java.util.function.Function;
+
 @FunctionalInterface
-public interface MonadicFunction<A, B> extends Functor<B> {
+public interface MonadicFunction<A, B> extends Functor<B>, Function<A, B> {
 
     B apply(A a);
 

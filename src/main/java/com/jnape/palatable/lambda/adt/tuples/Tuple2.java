@@ -1,13 +1,14 @@
 package com.jnape.palatable.lambda.adt.tuples;
 
 import com.jnape.palatable.lambda.applicative.BiFunctor;
+import com.jnape.palatable.lambda.applicative.Functor;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
 import java.util.Objects;
 
 import static java.lang.String.format;
 
-public class Tuple2<_1, _2> implements BiFunctor<_1, _2> {
+public class Tuple2<_1, _2> implements Functor<_2>, BiFunctor<_1, _2> {
 
     public final _1 _1;
     public final _2 _2;
@@ -19,7 +20,7 @@ public class Tuple2<_1, _2> implements BiFunctor<_1, _2> {
 
     @Override
     public <_2A> Tuple2<_1, _2A> fmap(MonadicFunction<? super _2, ? extends _2A> fn) {
-        return (Tuple2<_1, _2A>) BiFunctor.super.fmap(fn);
+        return biMapR(fn);
     }
 
     @Override
@@ -29,11 +30,13 @@ public class Tuple2<_1, _2> implements BiFunctor<_1, _2> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <_1A> Tuple2<_1A, _2> biMapL(MonadicFunction<? super _1, ? extends _1A> fn) {
         return (Tuple2<_1A, _2>) BiFunctor.super.biMapL(fn);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <_2A> Tuple2<_1, _2A> biMapR(MonadicFunction<? super _2, ? extends _2A> fn) {
         return (Tuple2<_1, _2A>) BiFunctor.super.biMapR(fn);
     }
