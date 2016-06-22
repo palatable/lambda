@@ -13,7 +13,7 @@ import com.jnape.palatable.lambda.functions.MonadicFunction;
  * @see Bifunctor
  * @see Profunctor
  * @see MonadicFunction
- * @see com.jnape.palatable.lambda.adt.tuples.Tuple2
+ * @see com.jnape.palatable.lambda.adt.hlist.Tuple2
  * @see com.jnape.palatable.lambda.adt.Either
  */
 @FunctionalInterface
