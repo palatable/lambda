@@ -1,12 +1,12 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.adt.tuples.Tuple2;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import org.junit.Test;
 
 import java.util.Optional;
 
-import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 

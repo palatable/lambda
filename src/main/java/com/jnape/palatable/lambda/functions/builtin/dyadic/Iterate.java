@@ -6,7 +6,7 @@ import com.jnape.palatable.lambda.iterators.UnfoldingIterator;
 
 import java.util.Optional;
 
-import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 
 /**
  * Lazily generate an infinite <code>Iterable</code> from the successive applications of the function first to the

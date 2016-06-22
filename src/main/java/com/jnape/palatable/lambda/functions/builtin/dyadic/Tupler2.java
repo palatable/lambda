@@ -1,17 +1,17 @@
 package com.jnape.palatable.lambda.functions.builtin.dyadic;
 
-import com.jnape.palatable.lambda.adt.tuples.Tuple2;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
-import static com.jnape.palatable.lambda.adt.tuples.Tuple2.tuple;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 
 /**
  * Creates a <code>Tuple2</code> from two values.
  *
  * @param <A> The type of the first value; also the first slot type of returned Tuple2
  * @param <B> The type of the second value; also the second slot type of returned Tuple2
- * @see Tuple2
+ * @see com.jnape.palatable.lambda.adt.hlist.Tuple2
  */
 public final class Tupler2<A, B> implements DyadicFunction<A, B, Tuple2<A, B>> {
 

@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.adt.tuples.Tuple2;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Profunctor;
 
 /**
@@ -45,6 +45,6 @@ public interface DyadicFunction<A, B, C> extends MonadicFunction<A, MonadicFunct
     }
 
     default MonadicFunction<Tuple2<A, B>, C> uncurry() {
-        return (ab) -> apply(ab._1, ab._2);
+        return (ab) -> apply(ab._1(), ab._2());
     }
 }

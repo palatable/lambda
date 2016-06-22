@@ -1,30 +1,9 @@
-lambda
+λ
 ======
 [![Build Status](https://travis-ci.org/palatable/lambda.svg)](https://travis-ci.org/palatable/lambda)
 
 Functional patterns for Java 8
 
-Installation
-------------
-
-Add the following dependency to your:
- 
-`pom.xml` ([Maven](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)):
- 
-```xml
- <dependency>
-     <groupId>com.jnape.palatable</groupId>
-     <artifactId>lambda</artifactId>
-     <version>1.0</version>
- </dependency>
-```
- 
-`build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
- 
-```gradle
-  compile group: 'com.jnape.palatable', name: 'lambda', version: '1.0'
-```
-  
 Background
 ----------
 
@@ -41,6 +20,28 @@ Some things a user of lambda most likely values:
 Generally, everything that lambda produces is lazily-evaluated (except for terminal operations like `reduce`), immutable (except for `Iterator`s, since it's effectively impossible), composable (even between different arities, where possible), foundational (maximally contravariant), and parametrically type-checked (even where this adds unnecessary constraints due to a lack of higher-kinded types).
 
 Although the library is currently (very) small, these values should always be the driving forces behind future growth.
+
+Installation
+------------
+
+Add the following dependency to your:
+ 
+`pom.xml` ([Maven](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)):
+ 
+```xml
+ <dependency>
+     <groupId>com.jnape.palatable</groupId>
+     <artifactId>lambda</artifactId>
+     <version>1.1</version>
+ </dependency>
+```
+ 
+`build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
+ 
+```gradle
+  compile group: 'com.jnape.palatable', name: 'lambda', version: '1.1'
+```
+  
 
 Examples
 --------
@@ -125,42 +126,65 @@ Or check out [the tests](https://github.com/palatable/lambda/tree/master/src/tes
 ADTs
 ----
 
-In addition to the functions above, Lambda also supports a few first-class [algebraic data types](https://www.wikiwand.com/en/Algebraic_data_type).
+In addition to the functions above, lambda also supports a few first-class [algebraic data types](https://www.wikiwand.com/en/Algebraic_data_type).
 
-### Tuples
+### Heterogeneous Lists (HLists)
 
-There are two parametric variants on the tuple product type, `Tuple2<_1, _2>` and `Tuple3<_1, _2, _3>`, both immutable.
+HLists are type-safe heterogeneous lists, meaning they can store elements of different types in the same list while facilitating certain type-safe interactions.
+
+The following illustrates how the linear expansion of the recursive type signature for `HList` prevents ill-typed expressions:
 
 ```Java
-  Tuple2<String, Integer> tuple2 = Tuple2.tuple("foo", 1);
+  HCons<Integer, HCons<String, HNil>> hList = HList.cons(1, HList.cons("foo", HList.nil()));
 
-  System.out.println(tuple2._1); // prints "foo"
-  System.out.println(tuple2._2); // prints 1
+  System.out.println(hList.head()); // prints 1
+  System.out.println(hList.tail().head()); // prints "foo"
+
+  HNil nil = hList.tail().tail();
+  //nil.head() won't type-check
 ```
 
-```Java
-  Tuple3<String, Boolean, Integer> tuple3 = Tuple3.tuple("foo", true, 1);
+## Tuples
 
-  System.out.println(tuple3._1); // prints "foo"
-  System.out.println(tuple3._2); // prints true
-  System.out.println(tuple3._3); // prints 1
+One of the primary downsides to using `HList`s in Java is how quickly the type signature grows.
+
+To address this, tuples in lambda are specializations of `HList`s up to 5 elements deep, with added support for index-based accessor methods.
+
+```Java
+  HNil nil = HList.nil();
+  Singleton<Integer> singleton = nil.cons(5);
+  Tuple2<Integer, Integer> tuple2 = singleton.cons(4);
+  Tuple3<Integer, Integer, Integer> tuple3 = tuple2.cons(3);
+  Tuple4<Integer, Integer, Integer, Integer> tuple4 = tuple3.cons(2);
+  Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = tuple4.cons(1);
+
+  System.out.println(tuple2._1()); // prints 4
+  System.out.println(tuple5._5()); // prints 5
 ```
 
-Both `Tuple2` and `Tuple3` are `BiFunctor`s over `_1` and `_2`:
+Additionally, `HList` provides convenience static factory methods for directly constructing lists of up to 5 elements:
 
 ```Java
-  Tuple2<String, Integer> mappedTuple2 = tuple2.biMap(String::toUpperCase, x -> x + 1);
-
-  System.out.println(mappedTuple2._1); // prints "FOO"
-  System.out.println(mappedTuple2._2); // prints 2
+  Singleton<Integer> singleton = HList.singleton(1);
+  Tuple2<Integer, Integer> tuple2 = HList.tuple(1, 2);
+  Tuple3<Integer, Integer, Integer> tuple3 = HList.tuple(1, 2, 3);
+  Tuple4<Integer, Integer, Integer, Integer> tuple4 = HList.tuple(1, 2, 3, 4);
+  Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = HList.tuple(1, 2, 3, 4, 5);
 ```
 
-```Java
-  Tuple3<String, Boolean, Integer> mappedTuple3 = tuple3.biMap(String::toUpperCase, b -> !b);
+Finally, all `Tuple*` classes are instances of both `Functor` and `Bifunctor`:
 
-  System.out.println(mappedTuple3._1); // prints "FOO"
-  System.out.println(mappedTuple3._2); // prints false
-  System.out.println(mappedTuple3._3); // prints 1
+```Java
+  Tuple2<Integer, String> mappedTuple2 = tuple(1, 2).biMap(x -> x + 1, Object::toString);
+
+  System.out.println(mappedTuple2._1()); // prints 2
+  System.out.println(mappedTuple2._2()); // prints "2"
+
+  Tuple3<String, Boolean, Integer> mappedTuple3 = tuple("foo", true, 1).biMap(x -> !x, x -> x + 1);
+
+  System.out.println(mappedTuple3._1()); // prints "foo"
+  System.out.println(mappedTuple3._2()); // prints false
+  System.out.println(mappedTuple3._3()); // prints 2
 ```
 
 ### Either

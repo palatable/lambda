@@ -17,10 +17,10 @@ public final class InvocationRecordingBifunctor<A, B> implements Bifunctor<A, B>
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C, D> Bifunctor<C, D> biMap(MonadicFunction<? super A, ? extends C> f1,
-                                        MonadicFunction<? super B, ? extends D> f2) {
-        leftFn.set(f1);
-        rightFn.set(f2);
+    public <C, D> Bifunctor<C, D> biMap(MonadicFunction<? super A, ? extends C> lFn,
+                                        MonadicFunction<? super B, ? extends D> rFn) {
+        leftFn.set(lFn);
+        rightFn.set(rFn);
         return (Bifunctor<C, D>) this;
     }
 }

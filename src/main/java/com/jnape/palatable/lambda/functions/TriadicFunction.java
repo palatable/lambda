@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.adt.tuples.Tuple2;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 
 /**
  * A function taking three arguments. Auto-curried
@@ -34,6 +34,6 @@ public interface TriadicFunction<A, B, C, D> extends DyadicFunction<A, B, Monadi
 
     @Override
     default DyadicFunction<Tuple2<A, B>, C, D> uncurry() {
-        return (ab, c) -> apply(ab._1, ab._2, c);
+        return (ab, c) -> apply(ab._1(), ab._2(), c);
     }
 }

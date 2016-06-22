@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
  * @param <B> The type of the second parameter
  * @see Functor
  * @see Profunctor
- * @see com.jnape.palatable.lambda.adt.tuples.Tuple2
+ * @see com.jnape.palatable.lambda.adt.hlist.Tuple2
  */
 @FunctionalInterface
 public interface Bifunctor<A, B> {
@@ -26,6 +26,6 @@ public interface Bifunctor<A, B> {
         return biMap(id(), fn);
     }
 
-    <C, D> Bifunctor<C, D> biMap(MonadicFunction<? super A, ? extends C> f1,
-                                 MonadicFunction<? super B, ? extends D> f2);
+    <C, D> Bifunctor<C, D> biMap(MonadicFunction<? super A, ? extends C> lFn,
+                                 MonadicFunction<? super B, ? extends D> rFn);
 }

@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions.builtin.dyadic;
 
-import com.jnape.palatable.lambda.adt.tuples.Tuple2;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.iterators.CombinatorialIterator;

@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.adt.tuples.Tuple2;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Iterator;
 
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
@@ -56,9 +56,9 @@ public class CombinatorialIteratorTest {
         mockIteratorToHaveValues(as, "a1", "a2");
         mockIteratorToHaveValues(bs, "b1", "b2");
 
-        assertThat(combinatorialIterator.next(), is(Tuple2.<Object, Object>tuple("a1", "b1")));
-        assertThat(combinatorialIterator.next(), is(Tuple2.<Object, Object>tuple("a1", "b2")));
-        assertThat(combinatorialIterator.next(), is(Tuple2.<Object, Object>tuple("a2", "b1")));
-        assertThat(combinatorialIterator.next(), is(Tuple2.<Object, Object>tuple("a2", "b2")));
+        assertThat(combinatorialIterator.next(), is(tuple("a1", "b1")));
+        assertThat(combinatorialIterator.next(), is(tuple("a1", "b2")));
+        assertThat(combinatorialIterator.next(), is(tuple("a2", "b1")));
+        assertThat(combinatorialIterator.next(), is(tuple("a2", "b2")));
     }
 }
