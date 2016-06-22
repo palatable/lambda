@@ -144,7 +144,7 @@ The following illustrates how the linear expansion of the recursive type signatu
   //nil.head() won't type-check
 ```
 
-## Tuples
+#### Tuples
 
 One of the primary downsides to using `HList`s in Java is how quickly the type signature grows.
 
