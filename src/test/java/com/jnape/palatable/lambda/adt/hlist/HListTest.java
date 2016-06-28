@@ -43,7 +43,7 @@ public class HListTest {
 
     @Test
     @SuppressWarnings({"EqualsWithItself", "EqualsBetweenInconvertibleTypes"})
-    public void equals() {
+    public void equality() {
         assertTrue(nil().equals(nil()));
         assertTrue(cons(1, nil()).equals(cons(1, nil())));
 

@@ -5,6 +5,8 @@ import com.jnape.palatable.lambda.functions.MonadicFunction;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
+import java.util.Map;
+
 /**
  * A 2-element tuple product type, implemented as a specialized HList.
  *
@@ -16,7 +18,7 @@ import com.jnape.palatable.lambda.functor.Functor;
  * @see Tuple4
  * @see Tuple5
  */
-public final class Tuple2<_1, _2> extends HCons<_1, Singleton<_2>> implements Functor<_2>, Bifunctor<_1, _2> {
+public final class Tuple2<_1, _2> extends HCons<_1, Singleton<_2>> implements Map.Entry<_1, _2>, Functor<_2>, Bifunctor<_1, _2> {
 
     Tuple2(_1 _1, Singleton<_2> tail) {
         super(_1, tail);
@@ -33,6 +35,21 @@ public final class Tuple2<_1, _2> extends HCons<_1, Singleton<_2>> implements Fu
 
     public _2 _2() {
         return tail().head();
+    }
+
+    @Override
+    public _1 getKey() {
+        return _1();
+    }
+
+    @Override
+    public _2 getValue() {
+        return _2();
+    }
+
+    @Override
+    public _2 setValue(_2 value) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -56,5 +73,9 @@ public final class Tuple2<_1, _2> extends HCons<_1, Singleton<_2>> implements Fu
     public <_1Prime, _2Prime> Tuple2<_1Prime, _2Prime> biMap(MonadicFunction<? super _1, ? extends _1Prime> lFn,
                                                              MonadicFunction<? super _2, ? extends _2Prime> rFn) {
         return new Tuple2<>(lFn.apply(_1()), tail().fmap(rFn));
+    }
+
+    public static <K, V> Tuple2<K, V> fromEntry(Map.Entry<K, V> entry) {
+        return new Tuple2<>(entry.getKey(), singleton(entry.getValue()));
     }
 }
