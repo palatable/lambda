@@ -187,6 +187,21 @@ Finally, all `Tuple*` classes are instances of both `Functor` and `Bifunctor`:
   System.out.println(mappedTuple3._3()); // prints 2
 ```
 
+### Heterogeneous Maps
+
+HMaps are type-safe heterogeneous maps, meaning they can store mappings to different value types in the same map; however, whereas HLists encode value types in their type signatures, HMaps rely on the keys to encode the value type that they point to. 
+
+```Java
+  TypeSafeKey<String> stringKey = TypeSafeKey.typeSafeKey();
+  TypeSafeKey<Integer> intKey = TypeSafeKey.typeSafeKey();
+  HMap hmap = HMap.hMap(stringKey, "string value",
+                        intKey, 1);
+
+  Optional<String> stringValue = hmap.get(stringKey); // Optional["string value"]
+  Optional<Integer> intValue = hmap.get(intKey); // Optional[1]
+  Optional<Integer> anotherIntValue = hmap.get(anotherIntKey); // Optional.empty
+```    
+
 ### Either
 
 Binary tagged unions are represented as `Either<L, R>`s, which resolve to one of two possible values: a `Left` value wrapping an `L`, or a `Right` value wrapping an `R` (typically an exceptional value or a successful value, respectively).
