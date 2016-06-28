@@ -8,6 +8,7 @@ import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
@@ -21,6 +22,9 @@ import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
  * @param <R> The right parameter type
  */
 public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
+
+    private Either() {
+    }
 
     public final R or(R defaultValue) {
         return recover(l -> defaultValue);
@@ -61,6 +65,21 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
         return this.match(
                 l1 -> other.match(l2 -> left(leftFn.apply(l1, l2)), r -> left(l1)),
                 r1 -> other.match(Either::left, r2 -> right(rightFn.apply(r1, r2))));
+    }
+
+    public Either<L, R> peek(Consumer<R> rightConsumer) {
+        return peek(l -> {
+        }, rightConsumer);
+    }
+
+    public Either<L, R> peek(Consumer<L> leftConsumer, Consumer<R> rightConsumer) {
+        return flatMap(l -> {
+            leftConsumer.accept(l);
+            return this;
+        }, r -> {
+            rightConsumer.accept(r);
+            return this;
+        });
     }
 
     public abstract <V> V match(MonadicFunction<? super L, ? extends V> leftFn,

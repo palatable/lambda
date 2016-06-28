@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.jnape.palatable.lambda.adt.Either.fromOptional;
 import static com.jnape.palatable.lambda.adt.Either.left;
@@ -157,5 +159,36 @@ public class EitherTest {
         assertEquals(left("expected"), Either.trying(() -> {
             throw new Exception("expected");
         }, Throwable::getMessage));
+    }
+
+    @Test
+    public void monadicPeekLiftsIOToTheRight() {
+        Either<String, Integer> left = left("foo");
+        Either<String, Integer> right = right(1);
+
+        AtomicInteger intRef = new AtomicInteger();
+
+        left.peek(intRef::set);
+        assertEquals(0, intRef.get());
+
+        right.peek(intRef::set);
+        assertEquals(1, intRef.get());
+    }
+
+    @Test
+    public void dyadicPeekDuallyLiftsIO() {
+        Either<String, Integer> left = left("foo");
+        Either<String, Integer> right = right(1);
+
+        AtomicReference<String> stringRef = new AtomicReference<>();
+        AtomicInteger intRef = new AtomicInteger();
+
+        left.peek(stringRef::set, intRef::set);
+        assertEquals("foo", stringRef.get());
+        assertEquals(0, intRef.get());
+
+        right.peek(stringRef::set, intRef::set);
+        assertEquals("foo", stringRef.get());
+        assertEquals(1, intRef.get());
     }
 }
