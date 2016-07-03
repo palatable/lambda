@@ -17,10 +17,9 @@ public final class InvocationRecordingProfunctor<A, B> implements Profunctor<A, 
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C, D> Profunctor<C, D> diMap(MonadicFunction<? super C, ? extends A> f1,
-                                         MonadicFunction<? super B, ? extends D> f2) {
-        leftFn.set(f1);
-        rightFn.set(f2);
+    public <C, D> Profunctor<C, D> diMap(MonadicFunction<C, A> lFn, MonadicFunction<B, D> rFn) {
+        leftFn.set(lFn);
+        rightFn.set(rFn);
         return (Profunctor<C, D>) this;
     }
 }

@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.functions.builtin.monadic.Identity;
 import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -8,8 +9,8 @@ import static org.junit.Assert.assertThat;
 
 public class DyadicFunctionTest {
 
-    private static final DyadicFunction<String, Integer, Boolean> CHECK_LENGTH = (string,
-                                                                                  length) -> string.length() == length;
+    private static final DyadicFunction<String, Integer, Boolean> CHECK_LENGTH
+            = (string, length) -> string.length() == length;
 
     @Test
     public void flipSwapsArguments() {
@@ -27,22 +28,19 @@ public class DyadicFunctionTest {
     }
 
     @Test
-    public void mapsContravariantlyOverSecondArgument() {
-        assertThat(CHECK_LENGTH.<String>diMapL(Integer::parseInt).apply("123").apply("3"), is(true));
+    public void functorProperties() {
+        assertThat(CHECK_LENGTH.fmap(f -> Identity.id()).apply("foo").apply("bar"), is("bar"));
     }
 
     @Test
-    public void mapsCovariantlyOverReturnValue() {
-        assertThat(CHECK_LENGTH.diMapR(Object::toString).apply("123").apply(3), is("true"));
-    }
-
-    @Test
-    public void mapsOverSecondArgumentAndReturnValueInSingleTransformation() {
+    public void profunctorProperties() {
+        assertThat(CHECK_LENGTH.diMapL(Object::toString).apply(123).apply(3), is(true));
+        assertThat(CHECK_LENGTH.diMapR(fn -> fn.andThen(Object::toString)).apply("123").apply(3), is("true"));
         assertThat(
-                CHECK_LENGTH.<String, String>diMap(
-                        Integer::parseInt,
-                        Object::toString
-                ).apply("123", "3"),
+                CHECK_LENGTH.<String, MonadicFunction<Integer, String>>diMap(
+                        Object::toString,
+                        fn -> fn.andThen(Object::toString)
+                ).apply("123").apply(3),
                 is("true")
         );
     }

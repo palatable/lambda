@@ -14,19 +14,18 @@ import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
  * @param <B> The type of the second parameter
  * @see Functor
  * @see Bifunctor
- * @see com.jnape.palatable.lambda.functions.DyadicFunction
+ * @see com.jnape.palatable.lambda.functions.MonadicFunction
  */
 @FunctionalInterface
 public interface Profunctor<A, B> {
 
-    default <C> Profunctor<C, B> diMapL(MonadicFunction<? super C, ? extends A> fn) {
+    default <C> Profunctor<C, B> diMapL(MonadicFunction<C, A> fn) {
         return diMap(fn, id());
     }
 
-    default <C> Profunctor<A, C> diMapR(MonadicFunction<? super B, ? extends C> fn) {
+    default <C> Profunctor<A, C> diMapR(MonadicFunction<B, C> fn) {
         return diMap(id(), fn);
     }
 
-    <C, D> Profunctor<C, D> diMap(MonadicFunction<? super C, ? extends A> f1,
-                                  MonadicFunction<? super B, ? extends D> f2);
+    <C, D> Profunctor<C, D> diMap(MonadicFunction<C, A> lFn, MonadicFunction<B, D> rFn);
 }

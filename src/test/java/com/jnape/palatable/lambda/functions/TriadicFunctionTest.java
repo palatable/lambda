@@ -19,13 +19,29 @@ public class TriadicFunctionTest {
     }
 
     @Test
+    public void flipsFirstAndSecondArgument() {
+        TriadicFunction<String, Integer, String, String> concat3 = (a, b, c) -> a + b.toString() + c;
+        assertThat(concat3.flip().apply(1, "2", "3"), is("213"));
+    }
+
+    @Test
     public void uncurries() {
         assertThat(CHECK_MULTIPLICATION.uncurry().apply(tuple(2, 3), 6), is(true));
     }
 
     @Test
-    public void flipsFirstAndSecondArgument() {
-        TriadicFunction<String, Integer, String, String> concat3 = (a, b, c) -> a + b.toString() + c;
-        assertThat(concat3.flip().apply(1, "2", "3"), is("213"));
+    public void functorProperties() {
+        assertThat(CHECK_MULTIPLICATION.fmap(f -> f.fmap(g -> g.andThen(Object::toString))).apply(2).apply(3).apply(6), is("true"));
+    }
+
+    @Test
+    public void profunctorProperties() {
+        assertThat(CHECK_MULTIPLICATION.<String>diMapL(Integer::parseInt).apply("2").apply(3).apply(6), is(true));
+        assertThat(CHECK_MULTIPLICATION.diMapR(f -> f.fmap(g -> g.andThen(Object::toString))).apply(2).apply(3).apply(6), is("true"));
+        assertThat(CHECK_MULTIPLICATION.diMap((MonadicFunction<String, Integer>) Integer::parseInt,
+                                              f -> f.fmap(g -> g.andThen(Object::toString)))
+                           .apply("2")
+                           .apply(3)
+                           .apply(6), is("true"));
     }
 }
