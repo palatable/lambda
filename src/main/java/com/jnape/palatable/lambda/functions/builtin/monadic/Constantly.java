@@ -1,27 +1,33 @@
 package com.jnape.palatable.lambda.functions.builtin.monadic;
 
+import com.jnape.palatable.lambda.functions.DyadicFunction;
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
 /**
- * Given a value, produce a function that returns that value, regardless of input.
+ * A function that takes two arguments and always returns the first argument.
  *
- * @param <A> The input type of the resulting function
- * @param <B> The output type of the resulting function
+ * @param <A> The first argument type, and the the function's return type
+ * @param <B> The second (ignored) argument type
  */
-public final class Constantly<A, B> implements MonadicFunction<A, B> {
+public final class Constantly<A, B> implements DyadicFunction<A, B, A> {
 
-    private final B b;
-
-    private Constantly(B b) {
-        this.b = b;
+    private Constantly() {
     }
 
     @Override
-    public B apply(A a) {
-        return b;
+    public A apply(A a, B b) {
+        return a;
     }
 
-    public static <A, B> MonadicFunction<A, B> constantly(B b) {
-        return new Constantly<>(b);
+    public static <A, B> Constantly<A, B> constantly() {
+        return new Constantly<>();
+    }
+
+    public static <A, B> MonadicFunction<B, A> constantly(A a) {
+        return Constantly.<A, B>constantly().apply(a);
+    }
+
+    public static <A, B> A constantly(A a, B b) {
+        return constantly(a).apply(b);
     }
 }
