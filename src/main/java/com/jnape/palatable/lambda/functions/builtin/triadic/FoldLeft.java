@@ -20,6 +20,9 @@ import com.jnape.palatable.lambda.functions.TriadicFunction;
  */
 public final class FoldLeft<A, B> implements TriadicFunction<DyadicFunction<? super B, ? super A, ? extends B>, B, Iterable<A>, B> {
 
+    private FoldLeft() {
+    }
+
     @Override
     public B apply(DyadicFunction<? super B, ? super A, ? extends B> function, B initialAccumulation,
                    Iterable<A> as) {

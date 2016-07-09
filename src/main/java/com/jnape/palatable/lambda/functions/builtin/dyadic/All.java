@@ -33,7 +33,7 @@ public final class All<A> implements DyadicFunction<MonadicFunction<? super A, B
         return All.<A>all().apply(predicate);
     }
 
-    public static <A> boolean all(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
+    public static <A> Boolean all(MonadicFunction<? super A, Boolean> predicate, Iterable<A> as) {
         return All.<A>all(predicate).apply(as);
     }
 }

@@ -10,6 +10,9 @@ import com.jnape.palatable.lambda.iterators.RepetitiousIterator;
  */
 public final class Repeat<A> implements MonadicFunction<A, Iterable<A>> {
 
+    private Repeat() {
+    }
+
     @Override
     public Iterable<A> apply(A a) {
         return () -> new RepetitiousIterator<>(a);

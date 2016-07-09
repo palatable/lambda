@@ -17,6 +17,9 @@ import com.jnape.palatable.lambda.iterators.ZippingIterator;
  */
 public final class ZipWith<A, B, C> implements TriadicFunction<DyadicFunction<? super A, ? super B, ? extends C>, Iterable<A>, Iterable<B>, Iterable<C>> {
 
+    private ZipWith() {
+    }
+
     @Override
     public Iterable<C> apply(DyadicFunction<? super A, ? super B, ? extends C> zipper, Iterable<A> as, Iterable<B> bs) {
         return () -> new ZippingIterator<>(zipper, as.iterator(), bs.iterator());

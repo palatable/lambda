@@ -11,6 +11,9 @@ import com.jnape.palatable.lambda.iterators.ReversingIterator;
  */
 public final class Reverse<A> implements MonadicFunction<Iterable<A>, Iterable<A>> {
 
+    private Reverse() {
+    }
+
     @Override
     public Iterable<A> apply(Iterable<A> as) {
         return () -> new ReversingIterator<>(as.iterator());

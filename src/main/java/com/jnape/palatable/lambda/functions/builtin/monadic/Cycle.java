@@ -13,6 +13,9 @@ import static java.util.Arrays.asList;
  */
 public final class Cycle<A> implements MonadicFunction<Iterable<A>, Iterable<A>> {
 
+    private Cycle() {
+    }
+
     @Override
     public Iterable<A> apply(Iterable<A> as) {
         return () -> new CyclicIterator<>(as.iterator());

@@ -18,7 +18,7 @@ public class RepeatTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, InfiniteIteration.class})
     public Repeat createTestSubject() {
-        return new Repeat();
+        return repeat();
     }
 
     @Test

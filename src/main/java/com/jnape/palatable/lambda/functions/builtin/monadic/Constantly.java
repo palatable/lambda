@@ -12,7 +12,7 @@ public final class Constantly<A, B> implements MonadicFunction<A, B> {
 
     private final B b;
 
-    public Constantly(B b) {
+    private Constantly(B b) {
         this.b = b;
     }
 

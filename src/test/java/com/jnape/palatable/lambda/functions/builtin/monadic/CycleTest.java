@@ -18,7 +18,7 @@ public class CycleTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, InfiniteIteration.class})
     public Cycle createTestSubject() {
-        return new Cycle();
+        return cycle();
     }
 
     @Test

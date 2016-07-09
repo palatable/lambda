@@ -11,6 +11,9 @@ public final class Identity<A> implements MonadicFunction<A, A> {
 
     private static final Identity IDENTITY = new Identity();
 
+    private Identity() {
+    }
+
     @Override
     public A apply(A a) {
         return a;

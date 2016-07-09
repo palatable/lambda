@@ -21,6 +21,9 @@ import static java.util.Arrays.asList;
  */
 public final class ScanLeft<A, B> implements TriadicFunction<DyadicFunction<? super B, ? super A, ? extends B>, B, Iterable<A>, Iterable<B>> {
 
+    private ScanLeft() {
+    }
+
     @Override
     public Iterable<B> apply(DyadicFunction<? super B, ? super A, ? extends B> fn, B b, Iterable<A> as) {
         return () -> new ScanningIterator<>(fn, b, as.iterator());
