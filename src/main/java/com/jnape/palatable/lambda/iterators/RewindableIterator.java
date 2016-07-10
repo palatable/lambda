@@ -8,6 +8,7 @@ public class RewindableIterator<A> extends ImmutableIterator<A> {
     private final Iterator<A> asIterator;
     private final Cache<A>    cache;
     private       boolean     rewound;
+
     public RewindableIterator(Iterator<A> asIterator) {
         this.asIterator = asIterator;
         cache = new Cache<>();

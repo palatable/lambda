@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
-import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
@@ -40,25 +40,25 @@ public final class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implemen
     }
 
     @Override
-    public <_3Prime> Tuple3<_1, _2, _3Prime> fmap(MonadicFunction<? super _3, ? extends _3Prime> fn) {
+    public <_3Prime> Tuple3<_1, _2, _3Prime> fmap(Fn1<? super _3, ? extends _3Prime> fn) {
         return biMapR(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_2Prime> Tuple3<_1, _2Prime, _3> biMapL(MonadicFunction<? super _2, ? extends _2Prime> fn) {
+    public <_2Prime> Tuple3<_1, _2Prime, _3> biMapL(Fn1<? super _2, ? extends _2Prime> fn) {
         return (Tuple3<_1, _2Prime, _3>) Bifunctor.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_3Prime> Tuple3<_1, _2, _3Prime> biMapR(MonadicFunction<? super _3, ? extends _3Prime> fn) {
+    public <_3Prime> Tuple3<_1, _2, _3Prime> biMapR(Fn1<? super _3, ? extends _3Prime> fn) {
         return (Tuple3<_1, _2, _3Prime>) Bifunctor.super.biMapR(fn);
     }
 
     @Override
-    public <_2Prime, _3Prime> Tuple3<_1, _2Prime, _3Prime> biMap(MonadicFunction<? super _2, ? extends _2Prime> lFn,
-                                                                 MonadicFunction<? super _3, ? extends _3Prime> rFn) {
+    public <_2Prime, _3Prime> Tuple3<_1, _2Prime, _3Prime> biMap(Fn1<? super _2, ? extends _2Prime> lFn,
+                                                                 Fn1<? super _3, ? extends _3Prime> rFn) {
         return new Tuple3<>(_1(), tail().biMap(lFn, rFn));
     }
 }

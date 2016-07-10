@@ -9,7 +9,7 @@ import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.t
  *
  * @param <E> The exception type
  * @param <T> The return type
- * @see CheckedMonadicFunction
+ * @see CheckedFn1
  */
 @FunctionalInterface
 public interface CheckedSupplier<E extends Exception, T> extends Supplier<T> {

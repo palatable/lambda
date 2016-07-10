@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.functor;
 
-import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functions.Fn1;
 
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Id.id;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
  * A dually-parametric <code>Functor</code> that maps covariantly over both parameters.
@@ -18,14 +18,14 @@ import static com.jnape.palatable.lambda.functions.builtin.monadic.Id.id;
 @FunctionalInterface
 public interface Bifunctor<A, B> {
 
-    default <C> Bifunctor<C, B> biMapL(MonadicFunction<? super A, ? extends C> fn) {
+    default <C> Bifunctor<C, B> biMapL(Fn1<? super A, ? extends C> fn) {
         return biMap(fn, id());
     }
 
-    default <C> Bifunctor<A, C> biMapR(MonadicFunction<? super B, ? extends C> fn) {
+    default <C> Bifunctor<A, C> biMapR(Fn1<? super B, ? extends C> fn) {
         return biMap(id(), fn);
     }
 
-    <C, D> Bifunctor<C, D> biMap(MonadicFunction<? super A, ? extends C> lFn,
-                                 MonadicFunction<? super B, ? extends D> rFn);
+    <C, D> Bifunctor<C, D> biMap(Fn1<? super A, ? extends C> lFn,
+                                 Fn1<? super B, ? extends D> rFn);
 }

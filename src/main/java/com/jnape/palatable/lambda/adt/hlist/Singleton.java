@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
-import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Functor;
 
 /**
@@ -27,7 +27,7 @@ public final class Singleton<_1> extends HCons<_1, HNil> implements Functor<_1> 
     }
 
     @Override
-    public <_1Prime> Singleton<_1Prime> fmap(MonadicFunction<? super _1, ? extends _1Prime> fn) {
+    public <_1Prime> Singleton<_1Prime> fmap(Fn1<? super _1, ? extends _1Prime> fn) {
         return new Singleton<>(fn.apply(head()));
     }
 }

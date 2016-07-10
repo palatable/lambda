@@ -1,12 +1,12 @@
 package testsupport.functions;
 
-import com.jnape.palatable.lambda.functions.DyadicFunction;
+import com.jnape.palatable.lambda.functions.Fn2;
 
 import static java.lang.String.format;
 
 public class ExplainFold {
 
-    public static DyadicFunction<String, String, String> explainFold() {
+    public static Fn2<String, String, String> explainFold() {
         return (acc, x) -> format("(%s + %s)", acc, x);
     }
 }

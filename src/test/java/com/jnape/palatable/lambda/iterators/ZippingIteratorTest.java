@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.functions.DyadicFunction;
+import com.jnape.palatable.lambda.functions.Fn2;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,9 +17,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ZippingIteratorTest {
 
-    @Mock private DyadicFunction<Object, Object, Object> zipper;
-    @Mock private Iterator<Object>                       as;
-    @Mock private Iterator<Object>                       bs;
+    @Mock private Fn2<Object, Object, Object> zipper;
+    @Mock private Iterator<Object>            as;
+    @Mock private Iterator<Object>            bs;
 
     private ZippingIterator<Object, Object, Object> zippingIterator;
 

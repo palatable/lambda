@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functions.Fn1;
 import org.junit.Test;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public class MappingIteratorTest {
 
     @Test
     public void nextProducesMappedResult() {
-        MonadicFunction<String, Integer> stringToLength = String::length;
+        Fn1<String, Integer> stringToLength = String::length;
         List<String> words = asList("foo", "bar");
         MappingIterator<String, Integer> mappingIterator = new MappingIterator<>(stringToLength, words.iterator());
 

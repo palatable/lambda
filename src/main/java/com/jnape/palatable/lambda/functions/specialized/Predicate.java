@@ -1,13 +1,13 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
-import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functions.Fn1;
 
 /**
- * A specialized {@link MonadicFunction} that returns a <code>Boolean</code>.
+ * A specialized {@link Fn1} that returns a <code>Boolean</code>.
  *
  * @param <A> The argument type
  */
-public interface Predicate<A> extends MonadicFunction<A, Boolean>, java.util.function.Predicate<A> {
+public interface Predicate<A> extends Fn1<A, Boolean>, java.util.function.Predicate<A> {
 
     @Override
     default boolean test(A a) {

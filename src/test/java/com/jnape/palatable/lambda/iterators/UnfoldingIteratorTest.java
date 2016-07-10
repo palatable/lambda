@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.iterators;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.functions.MonadicFunction;
+import com.jnape.palatable.lambda.functions.Fn1;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 
 public class UnfoldingIteratorTest {
 
-    private static final MonadicFunction<Integer, Optional<Tuple2<String, Integer>>> STRINGIFY = x -> Optional.of(tuple(x.toString(), x + 1));
+    private static final Fn1<Integer, Optional<Tuple2<String, Integer>>> STRINGIFY = x -> Optional.of(tuple(x.toString(), x + 1));
 
     @Test
     public void hasNextIfFunctionProducesPresentValue() {

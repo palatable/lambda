@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.iterators;
 
+import com.jnape.palatable.lambda.functions.Fn2;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -11,7 +12,7 @@ import static org.hamcrest.core.Is.is;
 
 public class ScanningIteratorTest {
 
-    public static final com.jnape.palatable.lambda.functions.DyadicFunction<Integer, Integer, Integer> ADD = (x, y) -> x + y;
+    public static final Fn2<Integer, Integer, Integer> ADD = (x, y) -> x + y;
 
     @Test
     public void hasNextAtLeastForB() {

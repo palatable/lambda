@@ -1,15 +1,15 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.functions.DyadicFunction;
+import com.jnape.palatable.lambda.functions.Fn2;
 
 import java.util.Iterator;
 
 public class ZippingIterator<C, A, B> extends ImmutableIterator<C> {
-    private final DyadicFunction<? super A, ? super B, ? extends C> zipper;
-    private final Iterator<A>                                       asIterator;
-    private final Iterator<B>                                       bsIterator;
+    private final Fn2<? super A, ? super B, ? extends C> zipper;
+    private final Iterator<A>                            asIterator;
+    private final Iterator<B>                            bsIterator;
 
-    public ZippingIterator(DyadicFunction<? super A, ? super B, ? extends C> zipper, Iterator<A> asIterator,
+    public ZippingIterator(Fn2<? super A, ? super B, ? extends C> zipper, Iterator<A> asIterator,
                            Iterator<B> bsIterator) {
         this.asIterator = asIterator;
         this.bsIterator = bsIterator;

@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.adt;
 
-import com.jnape.palatable.lambda.functions.DyadicFunction;
+import com.jnape.palatable.lambda.functions.Fn2;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -98,8 +98,8 @@ public class EitherTest {
         Either<String, Integer> left2 = left("bar");
         Either<String, Integer> right2 = right(2);
 
-        DyadicFunction<String, String, String> concat = String::concat;
-        DyadicFunction<Integer, Integer, Integer> add = (r1, r2) -> r1 + r2;
+        Fn2<String, String, String> concat = String::concat;
+        Fn2<Integer, Integer, Integer> add = (r1, r2) -> r1 + r2;
 
         assertThat(left1.merge(concat, add, left2), is(left("foobar")));
         assertThat(left1.merge(concat, add, right2), is(left1));

@@ -57,7 +57,7 @@ First, the obligatory `map`/`filter`/`reduce` example:
 
 Every function in lambda is [curried](https://www.wikiwand.com/en/Currying), so we could have also done this:
 ```Java
-  MonadicFunction<Iterable<Integer>, Integer> sumOfEvenIncrementsFn =
+  Fn1<Iterable<Integer>, Integer> sumOfEvenIncrementsFn =
             map((Integer x) -> x + 1)
             .then(filter(x -> x % 2 == 0))
             .then(reduceLeft((x, y) -> x + y));
@@ -95,20 +95,20 @@ What if we want the cross product of a domain and codomain:
 Let's compose two functions:
 
 ```Java
-  MonadicFunction<Integer, Integer> add = x -> x + 1;
-  MonadicFunction<Integer, Integer> subtract = x -> x -1;
+  Fn1<Integer, Integer> add = x -> x + 1;
+  Fn1<Integer, Integer> subtract = x -> x -1;
 
-  MonadicFunction<Integer, Integer> noOp = add.then(subtract);
+  Fn1<Integer, Integer> noOp = add.then(subtract);
   // same as
-  MonadicFunction<Integer, Integer> alsoNoOp = subtract.fmap(add);
+  Fn1<Integer, Integer> alsoNoOp = subtract.fmap(add);
 ```
 
 And partially apply some:
 
 ```Java
-  DyadicFunction<Integer, Integer, Integer> add = (x, y) -> x + y;
+  Fn2<Integer, Integer, Integer> add = (x, y) -> x + y;
 
-  MonadicFunction<Integer, Integer> add1 = add.apply(1);
+  Fn1<Integer, Integer> add1 = add.apply(1);
   add1.apply(2);
   //-> 3
 ```
@@ -152,7 +152,7 @@ To address this, tuples in lambda are specializations of `HList`s up to 5 elemen
 
 ```Java
   HNil nil = HList.nil();
-  Singleton<Integer> singleton = nil.cons(5);
+  SingletonHList<Integer> singleton = nil.cons(5);
   Tuple2<Integer, Integer> tuple2 = singleton.cons(4);
   Tuple3<Integer, Integer, Integer> tuple3 = tuple2.cons(3);
   Tuple4<Integer, Integer, Integer, Integer> tuple4 = tuple3.cons(2);
@@ -165,7 +165,7 @@ To address this, tuples in lambda are specializations of `HList`s up to 5 elemen
 Additionally, `HList` provides convenience static factory methods for directly constructing lists of up to 5 elements:
 
 ```Java
-  Singleton<Integer> singleton = HList.singleton(1);
+  SingletonHList<Integer> singleton = HList.singletonHList(1);
   Tuple2<Integer, Integer> tuple2 = HList.tuple(1, 2);
   Tuple3<Integer, Integer, Integer> tuple3 = HList.tuple(1, 2, 3);
   Tuple4<Integer, Integer, Integer, Integer> tuple4 = HList.tuple(1, 2, 3, 4);

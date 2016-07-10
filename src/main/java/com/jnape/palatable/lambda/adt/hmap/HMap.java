@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static com.jnape.palatable.lambda.functions.builtin.dyadic.Map.map;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
