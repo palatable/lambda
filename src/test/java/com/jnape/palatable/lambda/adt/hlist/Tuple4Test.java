@@ -11,7 +11,7 @@ public class Tuple4Test {
 
     @Before
     public void setUp() {
-        tuple4 = new Tuple4<>(1, new Tuple3<>("2", new Tuple2<>('3', new Singleton<>(false))));
+        tuple4 = new Tuple4<>(1, new Tuple3<>("2", new Tuple2<>('3', new SingletonHList<>(false))));
     }
 
     @Test
@@ -21,7 +21,7 @@ public class Tuple4Test {
 
     @Test
     public void tail() {
-        assertEquals(new Tuple3<>("2", new Tuple2<>('3', new Singleton<>(false))), tuple4.tail());
+        assertEquals(new Tuple3<>("2", new Tuple2<>('3', new SingletonHList<>(false))), tuple4.tail());
     }
 
     @Test
@@ -39,12 +39,12 @@ public class Tuple4Test {
 
     @Test
     public void functorProperties() {
-        assertEquals(new Tuple4<>(1, new Tuple3<>("2", new Tuple2<>('3', new Singleton<>(true)))), tuple4.fmap(x -> !x));
+        assertEquals(new Tuple4<>(1, new Tuple3<>("2", new Tuple2<>('3', new SingletonHList<>(true)))), tuple4.fmap(x -> !x));
     }
 
     @Test
     public void bifunctorProperties() {
-        assertEquals(new Tuple4<>(1, new Tuple3<>("2", new Tuple2<>("3", new Singleton<>(true)))),
+        assertEquals(new Tuple4<>(1, new Tuple3<>("2", new Tuple2<>("3", new SingletonHList<>(true)))),
                      tuple4.biMap(Object::toString, x -> !x));
     }
 }

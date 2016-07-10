@@ -15,9 +15,9 @@ import com.jnape.palatable.lambda.functor.Functor;
  * @see Tuple4
  * @see Tuple5
  */
-public final class Singleton<_1> extends HCons<_1, HNil> implements Functor<_1> {
+public final class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1> {
 
-    Singleton(_1 _1) {
+    SingletonHList(_1 _1) {
         super(_1, nil());
     }
 
@@ -27,7 +27,7 @@ public final class Singleton<_1> extends HCons<_1, HNil> implements Functor<_1> 
     }
 
     @Override
-    public <_1Prime> Singleton<_1Prime> fmap(Fn1<? super _1, ? extends _1Prime> fn) {
-        return new Singleton<>(fn.apply(head()));
+    public <_1Prime> SingletonHList<_1Prime> fmap(Fn1<? super _1, ? extends _1Prime> fn) {
+        return new SingletonHList<>(fn.apply(head()));
     }
 }

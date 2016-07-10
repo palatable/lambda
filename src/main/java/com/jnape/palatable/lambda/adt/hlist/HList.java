@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @param <Head> The head element type
  * @param <Tail> The encoded recursive tail HList type
- * @see Singleton
+ * @see SingletonHList
  * @see Tuple2
  * @see Tuple3
  * @see Tuple4
@@ -29,12 +29,12 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         return new HCons<>(head, tail);
     }
 
-    public static <Head> Singleton<Head> singleton(Head head) {
-        return new Singleton<>(head);
+    public static <Head> SingletonHList<Head> singletonHList(Head head) {
+        return new SingletonHList<>(head);
     }
 
     public static <_1, _2> Tuple2<_1, _2> tuple(_1 _1, _2 _2) {
-        return singleton(_2).cons(_1);
+        return singletonHList(_2).cons(_1);
     }
 
     public static <_1, _2, _3> Tuple3<_1, _2, _3> tuple(_1 _1, _2 _2, _3 _3) {
@@ -100,8 +100,8 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         private static final HNil INSTANCE = new HNil();
 
         @Override
-        public <Head> Singleton<Head> cons(Head head) {
-            return new Singleton<>(head);
+        public <Head> SingletonHList<Head> cons(Head head) {
+            return new SingletonHList<>(head);
         }
 
         @Override

@@ -14,7 +14,7 @@ import com.jnape.palatable.lambda.functor.Functor;
  * @param <_4> The fourth slot element type
  * @param <_5> The fifth slot element type
  * @see HList
- * @see Singleton
+ * @see SingletonHList
  * @see Tuple2
  * @see Tuple3
  * @see Tuple4

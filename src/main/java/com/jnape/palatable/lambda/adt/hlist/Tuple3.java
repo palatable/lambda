@@ -12,7 +12,7 @@ import com.jnape.palatable.lambda.functor.Functor;
  * @param <_2> The second slot element type
  * @param <_3> The third slot element type
  * @see HList
- * @see Singleton
+ * @see SingletonHList
  * @see Tuple2
  * @see Tuple4
  * @see Tuple5

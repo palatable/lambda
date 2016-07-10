@@ -15,7 +15,7 @@ public class Tuple2Test {
 
     @Before
     public void setUp() throws Exception {
-        tuple2 = new Tuple2<>(1, new Singleton<>(2));
+        tuple2 = new Tuple2<>(1, new SingletonHList<>(2));
     }
 
     @Test
@@ -25,7 +25,7 @@ public class Tuple2Test {
 
     @Test
     public void tail() {
-        assertEquals(new Singleton<>(2), tuple2.tail());
+        assertEquals(new SingletonHList<>(2), tuple2.tail());
     }
 
     @Test
@@ -41,12 +41,12 @@ public class Tuple2Test {
 
     @Test
     public void functorProperties() {
-        assertEquals(new Tuple2<>(1, new Singleton<>("2")), tuple2.fmap(Object::toString));
+        assertEquals(new Tuple2<>(1, new SingletonHList<>("2")), tuple2.fmap(Object::toString));
     }
 
     @Test
     public void bifunctorProperties() {
-        assertEquals(new Tuple2<>("1", new Singleton<>("2")), tuple2.biMap(Object::toString, Object::toString));
+        assertEquals(new Tuple2<>("1", new SingletonHList<>("2")), tuple2.biMap(Object::toString, Object::toString));
     }
 
     @Test

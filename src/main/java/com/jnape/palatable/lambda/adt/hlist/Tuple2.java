@@ -13,14 +13,14 @@ import java.util.Map;
  * @param <_1> The first slot element type
  * @param <_2> The second slot element type
  * @see HList
- * @see Singleton
+ * @see SingletonHList
  * @see Tuple3
  * @see Tuple4
  * @see Tuple5
  */
-public final class Tuple2<_1, _2> extends HCons<_1, Singleton<_2>> implements Map.Entry<_1, _2>, Functor<_2>, Bifunctor<_1, _2> {
+public final class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map.Entry<_1, _2>, Functor<_2>, Bifunctor<_1, _2> {
 
-    Tuple2(_1 _1, Singleton<_2> tail) {
+    Tuple2(_1 _1, SingletonHList<_2> tail) {
         super(_1, tail);
     }
 
@@ -76,6 +76,6 @@ public final class Tuple2<_1, _2> extends HCons<_1, Singleton<_2>> implements Ma
     }
 
     public static <K, V> Tuple2<K, V> fromEntry(Map.Entry<K, V> entry) {
-        return new Tuple2<>(entry.getKey(), singleton(entry.getValue()));
+        return new Tuple2<>(entry.getKey(), singletonHList(entry.getValue()));
     }
 }

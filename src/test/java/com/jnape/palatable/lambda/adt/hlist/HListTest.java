@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.cons;
 import static com.jnape.palatable.lambda.adt.hlist.HList.nil;
-import static com.jnape.palatable.lambda.adt.hlist.HList.singleton;
+import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,7 +29,7 @@ public class HListTest {
     @Test
     public void convenienceStaticFactoryMethods() {
         assertEquals(nil().cons(1), cons(1, nil()));
-        assertEquals(nil().cons(1), singleton(1));
+        assertEquals(nil().cons(1), singletonHList(1));
         assertEquals(nil().cons('2').cons(1), tuple(1, '2'));
         assertEquals(nil().cons("3").cons('2').cons(1), tuple(1, '2', "3"));
         assertEquals(nil().cons(4.0).cons("3").cons('2').cons(1), tuple(1, '2', "3", 4.0));

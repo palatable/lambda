@@ -6,32 +6,32 @@ import org.junit.Test;
 import static com.jnape.palatable.lambda.adt.hlist.HList.nil;
 import static org.junit.Assert.assertEquals;
 
-public class SingletonTest {
+public class SingletonHListTest {
 
-    private Singleton<Integer> singleton;
+    private SingletonHList<Integer> singletonHList;
 
     @Before
     public void setUp() {
-        singleton = new Singleton<>(1);
+        singletonHList = new SingletonHList<>(1);
     }
 
     @Test
     public void head() {
-        assertEquals((Integer) 1, singleton.head());
+        assertEquals((Integer) 1, singletonHList.head());
     }
 
     @Test
     public void tail() {
-        assertEquals(nil(), singleton.tail());
+        assertEquals(nil(), singletonHList.tail());
     }
 
     @Test
     public void cons() {
-        assertEquals(new Tuple2<>("0", singleton), singleton.cons("0"));
+        assertEquals(new Tuple2<>("0", singletonHList), singletonHList.cons("0"));
     }
 
     @Test
     public void functorProperties() {
-        assertEquals(new Singleton<>("1"), singleton.fmap(Object::toString));
+        assertEquals(new SingletonHList<>("1"), singletonHList.fmap(Object::toString));
     }
 }

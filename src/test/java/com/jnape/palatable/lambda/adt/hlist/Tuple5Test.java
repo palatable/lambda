@@ -12,7 +12,7 @@ public class Tuple5Test {
 
     @Before
     public void setUp() {
-        tuple5 = new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new Singleton<>(5L)))));
+        tuple5 = new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new SingletonHList<>(5L)))));
     }
 
     @Test
@@ -22,7 +22,7 @@ public class Tuple5Test {
 
     @Test
     public void tail() {
-        assertEquals(new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new Singleton<>(5L)))), tuple5.tail());
+        assertEquals(new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new SingletonHList<>(5L)))), tuple5.tail());
     }
 
     @Test
@@ -41,13 +41,13 @@ public class Tuple5Test {
 
     @Test
     public void functorProperties() {
-        assertEquals(new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new Singleton<>("5"))))),
+        assertEquals(new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new SingletonHList<>("5"))))),
                      tuple5.fmap(Object::toString));
     }
 
     @Test
     public void bifunctorProperties() {
-        assertEquals(new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(true, new Singleton<>("5"))))),
+        assertEquals(new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(true, new SingletonHList<>("5"))))),
                      tuple5.biMap(x -> !x, Object::toString));
     }
 }
