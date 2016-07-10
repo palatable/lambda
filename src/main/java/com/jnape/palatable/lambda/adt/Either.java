@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Id.id;
 
 /**
  * The binary tagged union. General semantics tend to connote "success" values via the right value and "failure" values

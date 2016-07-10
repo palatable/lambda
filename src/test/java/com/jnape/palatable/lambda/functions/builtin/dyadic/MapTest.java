@@ -11,7 +11,7 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.builtin.dyadic.Map.map;
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Id.id;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;

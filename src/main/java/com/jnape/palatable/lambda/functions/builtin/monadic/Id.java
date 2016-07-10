@@ -7,11 +7,11 @@ import com.jnape.palatable.lambda.functions.MonadicFunction;
  *
  * @param <A> The input/output type
  */
-public final class Identity<A> implements MonadicFunction<A, A> {
+public final class Id<A> implements MonadicFunction<A, A> {
 
-    private static final Identity IDENTITY = new Identity();
+    private static final Id ID = new Id();
 
-    private Identity() {
+    private Id() {
     }
 
     @Override
@@ -20,7 +20,7 @@ public final class Identity<A> implements MonadicFunction<A, A> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <A> Identity<A> id() {
-        return (Identity<A>) IDENTITY;
+    public static <A> Id<A> id() {
+        return (Id<A>) ID;
     }
 }

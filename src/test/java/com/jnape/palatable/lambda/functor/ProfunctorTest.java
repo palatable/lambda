@@ -6,7 +6,7 @@ import testsupport.applicatives.InvocationRecordingProfunctor;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Id.id;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functor;
 
 import com.jnape.palatable.lambda.functions.MonadicFunction;
 
-import static com.jnape.palatable.lambda.functions.builtin.monadic.Identity.id;
+import static com.jnape.palatable.lambda.functions.builtin.monadic.Id.id;
 
 /**
  * A dually-parametric <code>Functor</code> that maps contravariantly over the first parameter and covariantly over the

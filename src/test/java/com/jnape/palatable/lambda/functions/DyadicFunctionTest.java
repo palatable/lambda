@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.functions.builtin.monadic.Identity;
+import com.jnape.palatable.lambda.functions.builtin.monadic.Id;
 import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -29,7 +29,7 @@ public class DyadicFunctionTest {
 
     @Test
     public void functorProperties() {
-        assertThat(CHECK_LENGTH.fmap(f -> Identity.id()).apply("foo").apply("bar"), is("bar"));
+        assertThat(CHECK_LENGTH.fmap(f -> Id.id()).apply("foo").apply("bar"), is("bar"));
     }
 
     @Test
