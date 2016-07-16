@@ -117,12 +117,19 @@ public class EitherTest {
     }
 
     @Test
-    public void fromOptionalMapsOptionalToEither() {
-        Optional<String> present = Optional.of("foo");
-        Optional<String> absent = Optional.empty();
+    public void toOptionalMapsEitherToOptional() {
+        assertEquals(Optional.of(1), Either.<String, Integer>right(1).toOptional());
+        assertEquals(Optional.empty(), Either.<String, Integer>right(null).toOptional());
+        assertEquals(Optional.empty(), Either.<String, Integer>left("fail").toOptional());
+    }
 
-        assertThat(fromOptional(present, () -> -1), is(right("foo")));
-        assertThat(fromOptional(absent, () -> -1), is(left(-1)));
+    @Test
+    public void fromOptionalMapsOptionalToEither() {
+        Optional<Integer> present = Optional.of(1);
+        Optional<Integer> absent = Optional.empty();
+
+        assertThat(fromOptional(present, () -> "fail"), is(right(1)));
+        assertThat(fromOptional(absent, () -> "fail"), is(left("fail")));
     }
 
     @Test

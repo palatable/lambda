@@ -108,6 +108,10 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
         return match(l -> left(leftFn.apply(l)), r -> right(rightFn.apply(r)));
     }
 
+    public Optional<R> toOptional() {
+        return match(__ -> Optional.empty(), Optional::ofNullable);
+    }
+
     public static <L, R> Either<L, R> fromOptional(Optional<R> optional, Supplier<L> leftFn) {
         return optional.<Either<L, R>>map(Either::right)
                 .orElse(left(leftFn.get()));
