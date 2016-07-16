@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.lens.lenses;
+package com.jnape.palatable.lambda.lens.lenses.impure;
 
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.lens.Lens;
