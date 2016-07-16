@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.lens.lenses;
+package com.jnape.palatable.lambda.lens.lenses.impure;
 
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.lens.Lens;
@@ -14,7 +14,7 @@ import java.util.Set;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
-import static com.jnape.palatable.lambda.lens.lenses.ImpureMapLens.keys;
+import static com.jnape.palatable.lambda.lens.lenses.impure.ImpureMapLens.keys;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
