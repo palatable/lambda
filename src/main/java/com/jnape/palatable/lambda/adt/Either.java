@@ -216,6 +216,10 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
                 .orElse(left(leftFn.get()));
     }
 
+    public Optional<R> toOptional() {
+        return match(__ -> Optional.empty(), Optional::ofNullable);
+    }
+
     /**
      * Attempt to execute the {@link CheckedSupplier}, returning its result in a right value. If the supplier throws an
      * exception, apply leftFn to it, wrap it in a left value and return it.
