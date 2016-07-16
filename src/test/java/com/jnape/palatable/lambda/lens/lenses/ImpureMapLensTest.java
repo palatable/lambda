@@ -14,11 +14,11 @@ import java.util.Set;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
-import static com.jnape.palatable.lambda.lens.lenses.UnsafeMapLens.keys;
+import static com.jnape.palatable.lambda.lens.lenses.ImpureMapLens.keys;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
-public class UnsafeMapLensTest {
+public class ImpureMapLensTest {
 
     private Map<String, Integer> m;
 
@@ -33,7 +33,7 @@ public class UnsafeMapLensTest {
 
     @Test
     public void atKeyFocusesOnValueAtKey() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Integer, Integer> atFoo = UnsafeMapLens.atKey("foo");
+        Lens<Map<String, Integer>, Map<String, Integer>, Integer, Integer> atFoo = ImpureMapLens.atKey("foo");
 
         assertEquals((Integer) 1, view(atFoo, m));
         assertEquals((Integer) (-1), view(atFoo, set(atFoo, -1, m)));
@@ -54,7 +54,7 @@ public class UnsafeMapLensTest {
 
     @Test
     public void valuesFocusOnValues() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Collection<Integer>, Fn2<String, Integer, Integer>> values = UnsafeMapLens.values();
+        Lens<Map<String, Integer>, Map<String, Integer>, Collection<Integer>, Fn2<String, Integer, Integer>> values = ImpureMapLens.values();
 
         assertEquals(m.values(), view(values, m));
         assertEquals(new HashMap<String, Integer>() {{
@@ -67,7 +67,7 @@ public class UnsafeMapLensTest {
 
     @Test
     public void invertFlipsKeysAndValues() {
-        Lens.Simple<Map<String, Integer>, Map<Integer, String>> invert = UnsafeMapLens.invert();
+        Lens.Simple<Map<String, Integer>, Map<Integer, String>> invert = ImpureMapLens.invert();
 
         assertEquals(new HashMap<Integer, String>() {{
             put(1, "foo");

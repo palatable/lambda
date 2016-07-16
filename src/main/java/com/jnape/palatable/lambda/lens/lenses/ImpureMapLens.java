@@ -12,9 +12,9 @@ import static com.jnape.palatable.lambda.lens.Lens.lens;
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 
-public final class UnsafeMapLens {
+public final class ImpureMapLens {
 
-    private UnsafeMapLens() {
+    private ImpureMapLens() {
     }
 
     public static <K, V> Lens.Simple<Map<K, V>, V> atKey(K k) {
