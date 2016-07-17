@@ -41,14 +41,14 @@ public final class ImpureMapLens {
         });
     }
 
-    public static <K, V> Lens.Simple<Map<K, V>, Map<V, K>> invert() {
+    public static <K, V> Lens.Simple<Map<K, V>, Map<V, K>> inverted() {
         return simpleLens(m -> {
             Map<V, K> inverted = new HashMap<>();
             m.entrySet().forEach(entry -> inverted.put(entry.getValue(), entry.getKey()));
             return inverted;
         }, (m, im) -> {
             m.clear();
-            m.putAll(view(invert(), im));
+            m.putAll(view(inverted(), im));
             return m;
         });
     }

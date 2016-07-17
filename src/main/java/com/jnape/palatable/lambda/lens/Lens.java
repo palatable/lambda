@@ -49,9 +49,30 @@ public interface Lens<S, T, A, B> extends Functor<T> {
         return lens(getter, setter)::apply;
     }
 
+    @FunctionalInterface
     interface Simple<S, A> extends Lens<S, S, A, A> {
+
+        @Override
+        default <FS extends Functor<S>, FA extends Functor<A>> Fixed<S, A, FS, FA> fix() {
+            return Lens.super.<FS, FA>fix()::apply;
+        }
+
+        @SuppressWarnings("unchecked")
+        default <Q> Lens.Simple<Q, A> compose(Lens.Simple<Q, S> g) {
+            return Lens.super.compose(g)::apply;
+        }
+
+        default <B> Lens.Simple<S, B> andThen(Lens.Simple<A, B> f) {
+            return f.compose(this);
+        }
+
+        @FunctionalInterface
+        interface Fixed<S, A, FS extends Functor<S>, FA extends Functor<A>>
+                extends Lens.Fixed<S, S, A, A, FS, FA> {
+        }
     }
 
+    @FunctionalInterface
     interface Fixed<S, T, A, B, FT extends Functor<T>, FB extends Functor<B>>
             extends Fn2<Fn1<? super A, ? extends FB>, S, FT> {
     }
