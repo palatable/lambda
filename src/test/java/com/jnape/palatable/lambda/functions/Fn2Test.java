@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.functions.builtin.fn1.Id;
 import org.junit.Test;
 
 import java.util.function.BiFunction;
@@ -28,24 +27,6 @@ public class Fn2Test {
     @Test
     public void uncurries() {
         assertThat(CHECK_LENGTH.uncurry().apply(tuple("abc", 3)), is(true));
-    }
-
-    @Test
-    public void functorProperties() {
-        assertThat(CHECK_LENGTH.fmap(f -> Id.id()).apply("foo").apply("bar"), is("bar"));
-    }
-
-    @Test
-    public void profunctorProperties() {
-        assertThat(CHECK_LENGTH.diMapL(Object::toString).apply(123).apply(3), is(true));
-        assertThat(CHECK_LENGTH.diMapR(fn -> fn.andThen(Object::toString)).apply("123").apply(3), is("true"));
-        assertThat(
-                CHECK_LENGTH.<String, Fn1<Integer, String>>diMap(
-                        Object::toString,
-                        fn -> fn.andThen(Object::toString)
-                ).apply("123").apply(3),
-                is("true")
-        );
     }
 
     @Test
