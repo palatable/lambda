@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.lens.lenses.impure;
+package com.jnape.palatable.lambda.lens.lenses;
 
 import com.jnape.palatable.lambda.lens.Lens;
 import org.junit.Before;
@@ -12,8 +12,10 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
-public class ImpureListLensTest {
+public class ListLensTest {
 
     private List<String> xs;
 
@@ -27,8 +29,19 @@ public class ImpureListLensTest {
     }
 
     @Test
+    public void asCopyFocusesOnListThroughCopy() {
+        Lens.Simple<List<String>, List<String>> asCopy = ListLens.asCopy();
+
+        assertEquals(xs, view(asCopy, xs));
+        assertNotSame(xs, view(asCopy, xs));
+
+        List<String> update = asList("foo", "bar", "baz", "quux");
+        assertSame(update, set(asCopy, update, xs));
+    }
+
+    @Test
     public void atFocusesOnElementAtIndex() {
-        Lens.Simple<List<String>, String> at0 = ImpureListLens.at(0);
+        Lens.Simple<List<String>, String> at0 = ListLens.at(0);
 
         assertEquals("foo", view(at0, xs));
         assertEquals(null, view(at0, emptyList()));
