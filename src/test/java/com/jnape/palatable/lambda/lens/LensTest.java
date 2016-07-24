@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,21 +26,13 @@ public class LensTest {
 
     @Test
     public void setsUnderIdentity() {
-        Set<Integer> ints = LENS.<Identity<Set<Integer>>, Identity<Integer>>apply(
-                s -> new Identity<>(s.length()),
-                asList("foo", "bar", "baz")
-        ).runIdentity();
-
+        Set<Integer> ints = LENS.<Identity<Set<Integer>>, Identity<Integer>>apply(s -> new Identity<>(s.length()), asList("foo", "bar", "baz")).runIdentity();
         assertEquals(singleton(3), ints);
     }
 
     @Test
     public void viewsUnderConst() {
-        Integer i = LENS.<Const<Integer, Set<Integer>>, Const<Integer, Integer>>apply(
-                s -> new Const<>(s.length()),
-                asList("foo", "bar", "baz")
-        ).runConst();
-
+        Integer i = LENS.<Const<Integer, Set<Integer>>, Const<Integer, Integer>>apply(s -> new Const<>(s.length()), asList("foo", "bar", "baz")).runConst();
         assertEquals((Integer) 3, i);
     }
 
@@ -57,6 +50,11 @@ public class LensTest {
     @Test
     public void functorProperties() {
         assertEquals(false, set(LENS.fmap(Set::isEmpty), 1, singletonList("foo")));
+    }
+
+    @Test
+    public void profunctorProperties() {
+        assertEquals(false, set(LENS.diMap(ArrayList::new, Set::isEmpty), 2, singleton("foo")));
     }
 
     @Test
