@@ -13,26 +13,23 @@ import java.util.Set;
 
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
+import static com.jnape.palatable.lambda.lens.lenses.MapLens.keys;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
-import static java.util.Collections.unmodifiableMap;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 
 public class MapLensTest {
 
     private Map<String, Integer> m;
 
     @Before
-    public void setUp() throws Exception {
-        m = unmodifiableMap(new HashMap<String, Integer>() {{
+    public void setUp() {
+        m = new HashMap<String, Integer>() {{
             put("foo", 1);
             put("bar", 2);
             put("baz", 3);
-        }});
+        }};
     }
 
     @Test
@@ -45,49 +42,52 @@ public class MapLensTest {
         Map<String, Integer> update = new HashMap<String, Integer>() {{
             put("quux", 0);
         }};
-        assertEquals(update, set(asCopy, update, m));
         assertSame(update, set(asCopy, update, m));
     }
 
     @Test
     public void atKeyFocusesOnValueAtKey() {
-        Lens.Simple<Map<String, Integer>, Integer> atFoo = MapLens.atKey("foo");
+        Lens<Map<String, Integer>, Map<String, Integer>, Integer, Integer> atFoo = MapLens.atKey("foo");
 
         assertEquals((Integer) 1, view(atFoo, m));
+
+        Map<String, Integer> updated = set(atFoo, -1, m);
         assertEquals(new HashMap<String, Integer>() {{
             put("foo", -1);
             put("bar", 2);
             put("baz", 3);
-        }}, set(atFoo, -1, m));
+        }}, updated);
+        assertSame(m, updated);
     }
 
     @Test
-    public void keysFocusesOnKeysWithImmutableSet() {
-        Lens.Simple<Map<String, Integer>, Set<String>> keys = MapLens.keys();
+    public void keysFocusesOnKeys() {
+        Lens<Map<String, Integer>, Map<String, Integer>, Set<String>, Set<String>> keys = keys();
 
         assertEquals(m.keySet(), view(keys, m));
-        view(keys, m).clear();
-        assertEquals(new HashSet<>(asList("foo", "bar", "baz")), m.keySet());
 
+        Map<String, Integer> updated = set(keys, new HashSet<>(asList("bar", "baz", "quux")), m);
         assertEquals(new HashMap<String, Integer>() {{
             put("bar", 2);
             put("baz", 3);
             put("quux", null);
-        }}, set(keys, new HashSet<>(asList("bar", "baz", "quux")), m));
+        }}, updated);
+        assertSame(m, updated);
     }
 
     @Test
     public void valuesFocusesOnValues() {
         Lens<Map<String, Integer>, Map<String, Integer>, Collection<Integer>, Fn2<String, Integer, Integer>> values = MapLens.values();
 
-        assertThat(view(values, m),
-                   containsInAnyOrder(m.values().toArray()));
+        assertEquals(m.values(), view(values, m));
 
+        Map<String, Integer> updated = set(values, (k, v) -> k.length() + v, m);
         assertEquals(new HashMap<String, Integer>() {{
             put("foo", 4);
             put("bar", 5);
             put("baz", 6);
-        }}, set(values, (k, v) -> k.length() + v, m));
+        }}, updated);
+        assertSame(m, updated);
     }
 
     @Test
@@ -100,8 +100,14 @@ public class MapLensTest {
             put(3, "baz");
         }}, view(inverted, m));
 
+        Map<String, Integer> updated = set(inverted, new HashMap<Integer, String>() {{
+            put(2, "bar");
+            put(3, "baz");
+        }}, m);
         assertEquals(new HashMap<String, Integer>() {{
-            put("quux", -1);
-        }}, set(inverted, singletonMap(-1, "quux"), m));
+            put("bar", 2);
+            put("baz", 3);
+        }}, updated);
+        assertSame(m, updated);
     }
 }

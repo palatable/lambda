@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.lens.lenses.impure;
+package com.jnape.palatable.lambda.lens.lenses;
 
 import com.jnape.palatable.lambda.lens.Lens;
 import org.junit.Before;
@@ -18,8 +18,10 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
-public class ImpureCollectionLensTest {
+public class CollectionLensTest {
 
     private List<String> xs;
 
@@ -33,8 +35,19 @@ public class ImpureCollectionLensTest {
     }
 
     @Test
+    public void asCopyUsesMappingFunctionToFocusOnCollectionThroughCopy() {
+        Lens.Simple<List<String>, List<String>> asCopy = CollectionLens.asCopy(ArrayList::new);
+
+        assertEquals(xs, view(asCopy, xs));
+        assertNotSame(xs, view(asCopy, xs));
+
+        List<String> updatedList = asList("foo", "bar");
+        assertSame(updatedList, set(asCopy, updatedList, xs));
+    }
+
+    @Test
     public void asSetFocusesOnCollectionAsSet() {
-        Lens.Simple<List<String>, Set<String>> asSet = ImpureCollectionLens.asSet();
+        Lens.Simple<List<String>, Set<String>> asSet = CollectionLens.asSet();
 
         assertEquals(new HashSet<>(xs), view(asSet, xs));
         assertEquals(singleton("foo"), view(asSet, asList("foo", "foo")));
@@ -51,7 +64,7 @@ public class ImpureCollectionLensTest {
 
     @Test
     public void asStreamFocusesOnCollectionAsStream() {
-        Lens.Simple<List<String>, Stream<String>> asStream = ImpureCollectionLens.asStream();
+        Lens.Simple<List<String>, Stream<String>> asStream = CollectionLens.asStream();
 
         assertEquals(xs, view(asStream, xs).collect(toList()));
         assertEquals(asList("foo", "bar"), set(asStream, Stream.of("foo", "bar"), xs));

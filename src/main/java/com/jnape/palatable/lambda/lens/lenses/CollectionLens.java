@@ -1,5 +1,6 @@
-package com.jnape.palatable.lambda.lens.lenses.impure;
+package com.jnape.palatable.lambda.lens.lenses;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.lens.Lens;
 
 import java.util.Collection;
@@ -9,7 +10,11 @@ import java.util.stream.Stream;
 
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 
-public class ImpureCollectionLens {
+public class CollectionLens {
+
+    public static <X, CX extends Collection<X>> Lens.Simple<CX, CX> asCopy(Fn1<? super CX, ? extends CX> copyFn) {
+        return simpleLens(copyFn, (__, copy) -> copy);
+    }
 
     public static <X, CX extends Collection<X>> Lens.Simple<CX, Set<X>> asSet() {
         return simpleLens(HashSet::new, (xsL, xsS) -> {
