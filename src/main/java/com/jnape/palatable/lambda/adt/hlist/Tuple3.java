@@ -6,7 +6,7 @@ import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
 /**
- * A 3-element tuple product type, implemented as a specialized HList.
+ * A 3-element tuple product type, implemented as a specialized HList. Supports random access.
  *
  * @param <_1> The first slot element type
  * @param <_2> The second slot element type
@@ -17,9 +17,16 @@ import com.jnape.palatable.lambda.functor.Functor;
  * @see Tuple4
  * @see Tuple5
  */
-public final class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements Functor<_3>, Bifunctor<_2, _3> {
+public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements Functor<_3>, Bifunctor<_2, _3> {
+    private final _1 _1;
+    private final _2 _2;
+    private final _3 _3;
+
     Tuple3(_1 _1, Tuple2<_2, _3> tail) {
         super(_1, tail);
+        this._1 = _1;
+        _2 = tail._1();
+        _3 = tail._2();
     }
 
     @Override
@@ -27,16 +34,31 @@ public final class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implemen
         return new Tuple4<>(_0, this);
     }
 
+    /**
+     * Retrieve the first (head) element in constant time.
+     *
+     * @return the head element
+     */
     public _1 _1() {
-        return head();
+        return _1;
     }
 
+    /**
+     * Retrieve the second element in constant time.
+     *
+     * @return the second element
+     */
     public _2 _2() {
-        return tail()._1();
+        return _2;
     }
 
+    /**
+     * Retrieve the third element in constant time.
+     *
+     * @return the third element
+     */
     public _3 _3() {
-        return tail()._2();
+        return _3;
     }
 
     @Override

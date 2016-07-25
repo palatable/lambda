@@ -5,8 +5,10 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Functor;
 
+import java.util.RandomAccess;
+
 /**
- * A singleton HList.
+ * A singleton HList. Supports random access.
  *
  * @param <_1> The single slot element type
  * @see HList
@@ -15,7 +17,7 @@ import com.jnape.palatable.lambda.functor.Functor;
  * @see Tuple4
  * @see Tuple5
  */
-public final class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1> {
+public class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1>, RandomAccess {
 
     SingletonHList(_1 _1) {
         super(_1, nil());

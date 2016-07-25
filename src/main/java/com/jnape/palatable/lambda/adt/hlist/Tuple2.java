@@ -8,7 +8,7 @@ import com.jnape.palatable.lambda.functor.Functor;
 import java.util.Map;
 
 /**
- * A 2-element tuple product type, implemented as a specialized HList.
+ * A 2-element tuple product type, implemented as a specialized HList. Supports random access.
  *
  * @param <_1> The first slot element type
  * @param <_2> The second slot element type
@@ -18,10 +18,15 @@ import java.util.Map;
  * @see Tuple4
  * @see Tuple5
  */
-public final class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map.Entry<_1, _2>, Functor<_2>, Bifunctor<_1, _2> {
+public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map.Entry<_1, _2>, Functor<_2>, Bifunctor<_1, _2> {
+
+    private final _1 _1;
+    private final _2 _2;
 
     Tuple2(_1 _1, SingletonHList<_2> tail) {
         super(_1, tail);
+        this._1 = _1;
+        _2 = tail.head();
     }
 
     @Override
@@ -29,12 +34,22 @@ public final class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implemen
         return new Tuple3<>(_0, this);
     }
 
+    /**
+     * Retrieve the first (head) element in constant time.
+     *
+     * @return the head element
+     */
     public _1 _1() {
-        return head();
+        return _1;
     }
 
+    /**
+     * Retrieve the second element in constant time.
+     *
+     * @return the second element
+     */
     public _2 _2() {
-        return tail().head();
+        return _2;
     }
 
     @Override
@@ -75,6 +90,14 @@ public final class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implemen
         return new Tuple2<>(lFn.apply(_1()), tail().fmap(rFn));
     }
 
+    /**
+     * Static factory method for creating <code>Tuple2</code>s from {@link java.util.Map.Entry}s.
+     *
+     * @param entry the map entry
+     * @param <K>   the key parameter type, and first (head) element type
+     * @param <V>   the value parameter type, and second element type
+     * @return the newly created Tuple2
+     */
     public static <K, V> Tuple2<K, V> fromEntry(Map.Entry<K, V> entry) {
         return new Tuple2<>(entry.getKey(), singletonHList(entry.getValue()));
     }

@@ -3,7 +3,12 @@ package com.jnape.palatable.lambda.adt.hlist;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class Tuple3Test {
 
@@ -34,6 +39,19 @@ public class Tuple3Test {
         assertEquals((Integer) 1, tuple3._1());
         assertEquals("2", tuple3._2());
         assertEquals((Character) '3', tuple3._3());
+    }
+
+    @Test
+    public void randomAccess() {
+        Tuple2<String, String> spiedTail = spy(tuple("second", "third"));
+        Tuple3<String, String, String> tuple3 = new Tuple3<>("first", spiedTail);
+
+        verify(spiedTail, times(1))._1();
+        verify(spiedTail, times(1))._2();
+        tuple3._1();
+        tuple3._2();
+        tuple3._3();
+        verifyNoMoreInteractions(spiedTail);
     }
 
     @Test

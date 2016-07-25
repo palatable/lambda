@@ -6,8 +6,13 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class Tuple2Test {
 
@@ -37,6 +42,17 @@ public class Tuple2Test {
     public void accessors() {
         assertEquals((Integer) 1, tuple2._1());
         assertEquals((Integer) 2, tuple2._2());
+    }
+
+    @Test
+    public void randomAccess() {
+        SingletonHList<String> spiedTail = spy(singletonHList("second"));
+        Tuple2<String, String> tuple2 = new Tuple2<>("first", spiedTail);
+
+        verify(spiedTail, only()).head();
+        tuple2._1();
+        tuple2._2();
+        verifyNoMoreInteractions(spiedTail);
     }
 
     @Test

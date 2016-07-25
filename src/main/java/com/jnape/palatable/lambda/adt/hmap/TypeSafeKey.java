@@ -13,6 +13,12 @@ package com.jnape.palatable.lambda.adt.hmap;
 @SuppressWarnings("unused")
 public interface TypeSafeKey<T> {
 
+    /**
+     * Static factory method for creating a unique type-safe key
+     *
+     * @param <T> the type of value stored at this key
+     * @return a unique type-safe key
+     */
     static <T> TypeSafeKey<T> typeSafeKey() {
         return new TypeSafeKey<T>() {
         };

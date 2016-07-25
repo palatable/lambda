@@ -19,5 +19,13 @@ import com.jnape.palatable.lambda.functions.Fn1;
 @FunctionalInterface
 public interface Functor<A> {
 
+    /**
+     * Covariantly transmute this functor's parameter using the given mapping function. Generally this method is
+     * specialized to return an instance of the class implementing Functor.
+     *
+     * @param fn  the mapping function
+     * @param <B> the new parameter type
+     * @return a functor over B (the new parameter type)
+     */
     <B> Functor<B> fmap(Fn1<? super A, ? extends B> fn);
 }

@@ -24,5 +24,12 @@ public interface CheckedFn1<A, B> extends Fn1<A, B> {
         }
     }
 
+    /**
+     * A version of {@link Fn1} that can throw checked exceptions.
+     *
+     * @param a the argument
+     * @return the result of the function application
+     * @throws Exception any exception thrown by the function application
+     */
     B checkedApply(A a) throws Exception;
 }

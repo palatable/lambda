@@ -23,5 +23,11 @@ public interface CheckedSupplier<E extends Exception, T> extends Supplier<T> {
         }
     }
 
+    /**
+     * A version of {@link Supplier#get()} that can throw checked exceptions.
+     *
+     * @return the supplied result
+     * @throws E any exception that can be thrown by this method
+     */
     T checkedGet() throws E;
 }
