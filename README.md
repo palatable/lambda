@@ -122,7 +122,7 @@ And have fun with 3s:
   //-> [[3, 6, 9], [12, 15, 18], [21, 24, 27]]
 ```
 
-Or check out [the tests](https://github.com/palatable/lambda/tree/master/src/test/java/com/jnape/palatable/lambda/functions/builtin) for more examples.
+Check out the [tests](https://github.com/palatable/lambda/tree/master/src/test/java/com/jnape/palatable/lambda/functions/builtin) or [javadoc](http://palatable.github.io/lambda/javadoc/) for more examples.
 
 ADTs
 ----
