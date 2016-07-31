@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Lambda by palatable</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Lambda</h1>
+        <h2>Functional patterns for Java</h2>
+        <a href="https://github.com/palatable/lambda" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="λ" class="anchor" href="#%CE%BB" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>λ</h1>
+
+<p><a href="https://travis-ci.org/palatable/lambda"><img src="https://travis-ci.org/palatable/lambda.svg" alt="Build Status"></a>
+<a href="http://search.maven.org/#search%7Cga%7C1%7Ccom.jnape.palatable.lambda"><img src="https://img.shields.io/maven-central/v/com.jnape.palatable/lambda.svg?maxAge=2592000" alt="Lambda"></a></p>
+
+<p>Functional patterns for Java 8</p>
+
+<h2>
+<a id="background" class="anchor" href="#background" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Background</h2>
+
+<p>Lambda was born out of a desire to use some of the same canonical functions (e.g. <code>unfoldr</code>, <code>takeWhile</code>, <code>zipWith</code>) and functional patterns (e.g. <code>Functor</code> and friends) that are idiomatic in other languages and make them available for Java.</p>
+
+<p>Some things a user of lambda most likely values:</p>
+
+<ul>
+<li>Lazy evaluation</li>
+<li>Immutablility by design</li>
+<li>Composition</li>
+<li>Higher-level abstractions</li>
+<li>Parametric polymorphism</li>
+</ul>
+
+<p>Generally, everything that lambda produces is lazily-evaluated (except for terminal operations like <code>reduce</code>), immutable (except for <code>Iterator</code>s, since it's effectively impossible), composable (even between different arities, where possible), foundational (maximally contravariant), and parametrically type-checked (even where this adds unnecessary constraints due to a lack of higher-kinded types).</p>
+
+<p>Although the library is currently (very) small, these values should always be the driving forces behind future growth.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add the following dependency to your:</p>
+
+<p><code>pom.xml</code> (<a href="https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html">Maven</a>):</p>
+
+<div class="highlight highlight-text-xml"><pre> &lt;<span class="pl-ent">dependency</span>&gt;
+     &lt;<span class="pl-ent">groupId</span>&gt;com.jnape.palatable&lt;/<span class="pl-ent">groupId</span>&gt;
+     &lt;<span class="pl-ent">artifactId</span>&gt;lambda&lt;/<span class="pl-ent">artifactId</span>&gt;
+     &lt;<span class="pl-ent">version</span>&gt;1.2&lt;/<span class="pl-ent">version</span>&gt;
+ &lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
+
+<p><code>build.gradle</code> (<a href="https://docs.gradle.org/current/userguide/dependency_management.html">Gradle</a>):</p>
+
+<div class="highlight highlight-source-groovy-gradle"><pre>  compile <span class="pl-c1">group</span>: <span class="pl-s"><span class="pl-pds">'</span>com.jnape.palatable<span class="pl-pds">'</span></span>, <span class="pl-c1">name</span>: <span class="pl-s"><span class="pl-pds">'</span>lambda<span class="pl-pds">'</span></span>, <span class="pl-c1">version</span>: <span class="pl-s"><span class="pl-pds">'</span>1.2<span class="pl-pds">'</span></span></pre></div>
+
+<h2>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples</h2>
+
+<p>First, the obligatory <code>map</code>/<code>filter</code>/<code>reduce</code> example:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-smi">Integer</span> sumOfEvenIncrements <span class="pl-k">=</span>
+            reduceLeft((x, y) <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> y,
+                filter(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">%</span> <span class="pl-c1">2</span> <span class="pl-k">==</span> <span class="pl-c1">0</span>,
+                    map(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> <span class="pl-c1">1</span>, asList(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>, <span class="pl-c1">4</span>, <span class="pl-c1">5</span>))));
+  <span class="pl-c">//-&gt; 12</span></pre></div>
+
+<p>Every function in lambda is <a href="https://www.wikiwand.com/en/Currying">curried</a>, so we could have also done this:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Fn1&lt;<span class="pl-k">Iterable&lt;<span class="pl-smi">Integer</span>&gt;</span>, <span class="pl-smi">Integer</span>&gt;</span> sumOfEvenIncrementsFn <span class="pl-k">=</span>
+            map((<span class="pl-smi">Integer</span> x) <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> <span class="pl-c1">1</span>)
+            .then(filter(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">%</span> <span class="pl-c1">2</span> <span class="pl-k">==</span> <span class="pl-c1">0</span>))
+            .then(reduceLeft((x, y) <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> y));
+
+  <span class="pl-smi">Integer</span> sumOfEvenIncrements <span class="pl-k">=</span> sumOfEvenIncrementsFn<span class="pl-k">.</span>apply(asList(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>, <span class="pl-c1">4</span>, <span class="pl-c1">5</span>));
+  <span class="pl-c">//-&gt; 12</span></pre></div>
+
+<p>How about the positive squares below 100:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Iterable&lt;<span class="pl-smi">Integer</span>&gt;</span> positiveSquaresBelow100 <span class="pl-k">=</span>
+            takeWhile(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">&lt;</span> <span class="pl-c1">100</span>, map(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">*</span> x, iterate(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> <span class="pl-c1">1</span>, <span class="pl-c1">1</span>)));
+  <span class="pl-c">//-&gt; [1, 4, 9, 16, 25, 36, 49, 64, 81]</span></pre></div>
+
+<p>We could have also used <code>unfoldr</code>:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Iterable&lt;<span class="pl-smi">Integer</span>&gt;</span> positiveSquaresBelow100 <span class="pl-k">=</span> unfoldr(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> {
+                <span class="pl-k">int</span> square <span class="pl-k">=</span> x <span class="pl-k">*</span> x;
+                <span class="pl-k">return</span> square <span class="pl-k">&lt;</span> <span class="pl-c1">100</span> <span class="pl-k">?</span> <span class="pl-smi">Optional</span><span class="pl-k">.</span>of(tuple(square, x <span class="pl-k">+</span> <span class="pl-c1">1</span>)) <span class="pl-k">:</span> <span class="pl-smi">Optional</span><span class="pl-k">.</span>empty();
+            }, <span class="pl-c1">1</span>);
+  <span class="pl-c">//-&gt; [1, 4, 9, 16, 25, 36, 49, 64, 81]</span></pre></div>
+
+<p>What if we want the cross product of a domain and codomain:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Iterable&lt;<span class="pl-k">Tuple2&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">String</span>&gt;</span>&gt;</span> crossProduct <span class="pl-k">=</span>
+            take(<span class="pl-c1">10</span>, cartesianProduct(asList(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>), asList(<span class="pl-s"><span class="pl-pds">"</span>a<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>b<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>c<span class="pl-pds">"</span></span>)));
+  <span class="pl-c">//-&gt; (1,"a"), (1,"b"), (1,"c"), (2,"a"), (2,"b"), (2,"c"), (3,"a"), (3,"b"), (3,"c")</span></pre></div>
+
+<p>Let's compose two functions:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Fn1&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> add <span class="pl-k">=</span> x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> <span class="pl-c1">1</span>;
+  <span class="pl-k">Fn1&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> subtract <span class="pl-k">=</span> x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">-</span><span class="pl-c1">1</span>;
+
+  <span class="pl-k">Fn1&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> noOp <span class="pl-k">=</span> add<span class="pl-k">.</span>then(subtract);
+  <span class="pl-c">// same as</span>
+  <span class="pl-k">Fn1&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> alsoNoOp <span class="pl-k">=</span> subtract<span class="pl-k">.</span>fmap(add);</pre></div>
+
+<p>And partially apply some:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Fn2&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> add <span class="pl-k">=</span> (x, y) <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> y;
+
+  <span class="pl-k">Fn1&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> add1 <span class="pl-k">=</span> add<span class="pl-k">.</span>apply(<span class="pl-c1">1</span>);
+  add1<span class="pl-k">.</span>apply(<span class="pl-c1">2</span>);
+  <span class="pl-c">//-&gt; 3</span></pre></div>
+
+<p>And have fun with 3s:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Iterable&lt;<span class="pl-k">Iterable&lt;<span class="pl-smi">Integer</span>&gt;</span>&gt;</span> multiplesOf3InGroupsOf3 <span class="pl-k">=</span>
+            take(<span class="pl-c1">10</span>, inGroupsOf(<span class="pl-c1">3</span>, unfoldr(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-smi">Optional</span><span class="pl-k">.</span>of(tuple(x <span class="pl-k">*</span> <span class="pl-c1">3</span>, x <span class="pl-k">+</span> <span class="pl-c1">1</span>)), <span class="pl-c1">1</span>)));
+  <span class="pl-c">//-&gt; [[3, 6, 9], [12, 15, 18], [21, 24, 27]]</span></pre></div>
+
+<p>Check out <a href="https://github.com/palatable/lambda/tree/master/src/test/java/com/jnape/palatable/lambda/functions/builtin">the tests</a> or <a href="https://palatable.github.io/lambda/javadoc">javadoc</a> for more examples.</p>
+
+<h2>
+<a id="adts" class="anchor" href="#adts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ADTs</h2>
+
+<p>In addition to the functions above, lambda also supports a few first-class <a href="https://www.wikiwand.com/en/Algebraic_data_type">algebraic data types</a>.</p>
+
+<h3>
+<a id="heterogeneous-lists-hlists" class="anchor" href="#heterogeneous-lists-hlists" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Heterogeneous Lists (HLists)</h3>
+
+<p>HLists are type-safe heterogeneous lists, meaning they can store elements of different types in the same list while facilitating certain type-safe interactions.</p>
+
+<p>The following illustrates how the linear expansion of the recursive type signature for <code>HList</code> prevents ill-typed expressions:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">HCons&lt;<span class="pl-smi">Integer</span>, <span class="pl-k">HCons&lt;<span class="pl-smi">String</span>, <span class="pl-smi">HNil</span>&gt;</span>&gt;</span> hList <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>cons(<span class="pl-c1">1</span>, <span class="pl-smi">HList</span><span class="pl-k">.</span>cons(<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>, <span class="pl-smi">HList</span><span class="pl-k">.</span>nil()));
+
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(hList<span class="pl-k">.</span>head()); <span class="pl-c">// prints 1</span>
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(hList<span class="pl-k">.</span>tail()<span class="pl-k">.</span>head()); <span class="pl-c">// prints "foo"</span>
+
+  <span class="pl-smi">HNil</span> nil <span class="pl-k">=</span> hList<span class="pl-k">.</span>tail()<span class="pl-k">.</span>tail();
+  <span class="pl-c">//nil.head() won't type-check</span></pre></div>
+
+<h4>
+<a id="tuples" class="anchor" href="#tuples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tuples</h4>
+
+<p>One of the primary downsides to using <code>HList</code>s in Java is how quickly the type signature grows.</p>
+
+<p>To address this, tuples in lambda are specializations of <code>HList</code>s up to 5 elements deep, with added support for index-based accessor methods.</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-smi">HNil</span> nil <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>nil();
+  <span class="pl-k">SingletonHList&lt;<span class="pl-smi">Integer</span>&gt;</span> singleton <span class="pl-k">=</span> nil<span class="pl-k">.</span>cons(<span class="pl-c1">5</span>);
+  <span class="pl-k">Tuple2&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple2 <span class="pl-k">=</span> singleton<span class="pl-k">.</span>cons(<span class="pl-c1">4</span>);
+  <span class="pl-k">Tuple3&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple3 <span class="pl-k">=</span> tuple2<span class="pl-k">.</span>cons(<span class="pl-c1">3</span>);
+  <span class="pl-k">Tuple4&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple4 <span class="pl-k">=</span> tuple3<span class="pl-k">.</span>cons(<span class="pl-c1">2</span>);
+  <span class="pl-k">Tuple5&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple5 <span class="pl-k">=</span> tuple4<span class="pl-k">.</span>cons(<span class="pl-c1">1</span>);
+
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(tuple2<span class="pl-k">.</span>_1()); <span class="pl-c">// prints 4</span>
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(tuple5<span class="pl-k">.</span>_5()); <span class="pl-c">// prints 5</span></pre></div>
+
+<p>Additionally, <code>HList</code> provides convenience static factory methods for directly constructing lists of up to 5 elements:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">SingletonHList&lt;<span class="pl-smi">Integer</span>&gt;</span> singleton <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>singletonHList(<span class="pl-c1">1</span>);
+  <span class="pl-k">Tuple2&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple2 <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>tuple(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>);
+  <span class="pl-k">Tuple3&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple3 <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>tuple(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>);
+  <span class="pl-k">Tuple4&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple4 <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>tuple(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>, <span class="pl-c1">4</span>);
+  <span class="pl-k">Tuple5&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple5 <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>tuple(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>, <span class="pl-c1">4</span>, <span class="pl-c1">5</span>);</pre></div>
+
+<p>Finally, all <code>Tuple*</code> classes are instances of both <code>Functor</code> and <code>Bifunctor</code>:</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Tuple2&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">String</span>&gt;</span> mappedTuple2 <span class="pl-k">=</span> tuple(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>)<span class="pl-k">.</span>biMap(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> <span class="pl-c1">1</span>, <span class="pl-smi">Object</span><span class="pl-k">::</span>toString);
+
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(mappedTuple2<span class="pl-k">.</span>_1()); <span class="pl-c">// prints 2</span>
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(mappedTuple2<span class="pl-k">.</span>_2()); <span class="pl-c">// prints "2"</span>
+
+  <span class="pl-k">Tuple3&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Boolean</span>, <span class="pl-smi">Integer</span>&gt;</span> mappedTuple3 <span class="pl-k">=</span> tuple(<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>, <span class="pl-c1">true</span>, <span class="pl-c1">1</span>)<span class="pl-k">.</span>biMap(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-k">!</span>x, x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> <span class="pl-c1">1</span>);
+
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(mappedTuple3<span class="pl-k">.</span>_1()); <span class="pl-c">// prints "foo"</span>
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(mappedTuple3<span class="pl-k">.</span>_2()); <span class="pl-c">// prints false</span>
+  <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(mappedTuple3<span class="pl-k">.</span>_3()); <span class="pl-c">// prints 2</span></pre></div>
+
+<h3>
+<a id="heterogeneous-maps" class="anchor" href="#heterogeneous-maps" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Heterogeneous Maps</h3>
+
+<p>HMaps are type-safe heterogeneous maps, meaning they can store mappings to different value types in the same map; however, whereas HLists encode value types in their type signatures, HMaps rely on the keys to encode the value type that they point to. </p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">TypeSafeKey&lt;<span class="pl-smi">String</span>&gt;</span> stringKey <span class="pl-k">=</span> <span class="pl-smi">TypeSafeKey</span><span class="pl-k">.</span>typeSafeKey();
+  <span class="pl-k">TypeSafeKey&lt;<span class="pl-smi">Integer</span>&gt;</span> intKey <span class="pl-k">=</span> <span class="pl-smi">TypeSafeKey</span><span class="pl-k">.</span>typeSafeKey();
+  <span class="pl-smi">HMap</span> hmap <span class="pl-k">=</span> <span class="pl-smi">HMap</span><span class="pl-k">.</span>hMap(stringKey, <span class="pl-s"><span class="pl-pds">"</span>string value<span class="pl-pds">"</span></span>,
+                        intKey, <span class="pl-c1">1</span>);
+
+  <span class="pl-k">Optional&lt;<span class="pl-smi">String</span>&gt;</span> stringValue <span class="pl-k">=</span> hmap<span class="pl-k">.</span>get(stringKey); <span class="pl-c">// Optional["string value"]</span>
+  <span class="pl-k">Optional&lt;<span class="pl-smi">Integer</span>&gt;</span> intValue <span class="pl-k">=</span> hmap<span class="pl-k">.</span>get(intKey); <span class="pl-c">// Optional[1]</span>
+  <span class="pl-k">Optional&lt;<span class="pl-smi">Integer</span>&gt;</span> anotherIntValue <span class="pl-k">=</span> hmap<span class="pl-k">.</span>get(anotherIntKey); <span class="pl-c">// Optional.empty</span></pre></div>
+
+<h3>
+<a id="either" class="anchor" href="#either" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Either</h3>
+
+<p>Binary tagged unions are represented as <code>Either&lt;L, R&gt;</code>s, which resolve to one of two possible values: a <code>Left</code> value wrapping an <code>L</code>, or a <code>Right</code> value wrapping an <code>R</code> (typically an exceptional value or a successful value, respectively).</p>
+
+<p>Rather than supporting explicit value unwrapping, <code>Either</code> supports many useful comprehensions to help facilitate type-safe interactions. For example, <code>Either#match</code> is used to resolve an <code>Either&lt;L,R&gt;</code> to a different type.    </p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">Either&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>&gt;</span> right <span class="pl-k">=</span> <span class="pl-smi">Either</span><span class="pl-k">.</span>right(<span class="pl-c1">1</span>);
+  <span class="pl-k">Either&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>&gt;</span> left <span class="pl-k">=</span> <span class="pl-smi">Either</span><span class="pl-k">.</span>left(<span class="pl-s"><span class="pl-pds">"</span>Head fell off<span class="pl-pds">"</span></span>);
+
+  <span class="pl-smi">Boolean</span> successful <span class="pl-k">=</span> right<span class="pl-k">.</span>match(l <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-c1">false</span>, r <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-c1">true</span>);
+  <span class="pl-c">//-&gt; true</span>
+
+  <span class="pl-k">List&lt;<span class="pl-smi">Integer</span>&gt;</span> values <span class="pl-k">=</span> left<span class="pl-k">.</span>match(l <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-smi">Collections</span><span class="pl-k">.</span>emptyList(), <span class="pl-smi">Collections</span><span class="pl-k">::</span>singletonList);
+  <span class="pl-c">//-&gt; [] </span></pre></div>
+
+<p>Check out the tests for <a href="https://github.com/palatable/lambda/blob/master/src/test/java/com/jnape/palatable/lambda/adt/EitherTest.java">more examples</a> of ways to interact with <code>Either</code>.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p><em>lambda</em> is part of <a href="http://www.github.com/palatable">palatable</a>, which is distributed under <a href="http://choosealicense.com/licenses/mit/">The MIT License</a>.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/palatable/lambda/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/palatable/lambda/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/palatable/lambda"></a> is maintained by <a href="https://github.com/palatable">palatable</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
