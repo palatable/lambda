@@ -5,7 +5,19 @@
 
 Functional patterns for Java 8
 
-Background
+#### Table of Contents
+
+ - [Background](#background)
+ - [Installation](#installation)
+ - [Examples](#examples)
+   - [ADTs](#adts)
+     - [HLists](#hlists)
+       - [Tuples](#tuples)
+     - [HMaps](#hmaps)
+     - [Either](#either)
+ - [License](#license)
+
+<a name="background">Background</a>
 ----------
 
 Lambda was born out of a desire to use some of the same canonical functions (e.g. `unfoldr`, `takeWhile`, `zipWith`) and functional patterns (e.g. `Functor` and friends) that are idiomatic in other languages and make them available for Java.
@@ -22,7 +34,7 @@ Generally, everything that lambda produces is lazily-evaluated (except for termi
 
 Although the library is currently (very) small, these values should always be the driving forces behind future growth.
 
-Installation
+<a name="installation">Installation</a>
 ------------
 
 Add the following dependency to your:
@@ -44,7 +56,7 @@ Add the following dependency to your:
 ```
   
 
-Examples
+<a name="examples">Examples</a>
 --------
 
 First, the obligatory `map`/`filter`/`reduce` example:
@@ -124,12 +136,12 @@ And have fun with 3s:
 
 Check out the [tests](https://github.com/palatable/lambda/tree/master/src/test/java/com/jnape/palatable/lambda/functions/builtin) or [javadoc](http://palatable.github.io/lambda/javadoc/) for more examples.
 
-ADTs
+<a name="adts">ADTs</a>
 ----
 
 In addition to the functions above, lambda also supports a few first-class [algebraic data types](https://www.wikiwand.com/en/Algebraic_data_type).
 
-### Heterogeneous Lists (HLists)
+### <a name="hlists">Heterogeneous Lists (HLists)</a>
 
 HLists are type-safe heterogeneous lists, meaning they can store elements of different types in the same list while facilitating certain type-safe interactions.
 
@@ -145,7 +157,7 @@ The following illustrates how the linear expansion of the recursive type signatu
   //nil.head() won't type-check
 ```
 
-#### Tuples
+#### <a name="tuples">Tuples</a>
 
 One of the primary downsides to using `HList`s in Java is how quickly the type signature grows.
 
@@ -188,7 +200,7 @@ Finally, all `Tuple*` classes are instances of both `Functor` and `Bifunctor`:
   System.out.println(mappedTuple3._3()); // prints 2
 ```
 
-### Heterogeneous Maps
+### <a name="hmaps">Heterogeneous Maps</a>
 
 HMaps are type-safe heterogeneous maps, meaning they can store mappings to different value types in the same map; however, whereas HLists encode value types in their type signatures, HMaps rely on the keys to encode the value type that they point to. 
 
@@ -203,7 +215,7 @@ HMaps are type-safe heterogeneous maps, meaning they can store mappings to diffe
   Optional<Integer> anotherIntValue = hmap.get(anotherIntKey); // Optional.empty
 ```    
 
-### Either
+### <a name="either">Either</a>
 
 Binary tagged unions are represented as `Either<L, R>`s, which resolve to one of two possible values: a `Left` value wrapping an `L`, or a `Right` value wrapping an `R` (typically an exceptional value or a successful value, respectively).
 
@@ -222,7 +234,7 @@ Rather than supporting explicit value unwrapping, `Either` supports many useful 
 
 Check out the tests for [more examples](https://github.com/palatable/lambda/blob/master/src/test/java/com/jnape/palatable/lambda/adt/EitherTest.java) of ways to interact with `Either`.
 
-License
+<a name="license">License</a>
 -------
 
 _lambda_ is part of [palatable](http://www.github.com/palatable), which is distributed under [The MIT License](http://choosealicense.com/licenses/mit/).
