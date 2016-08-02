@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.adt;
 
-import com.jnape.palatable.lambda.functions.Fn2;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -8,6 +7,7 @@ import org.junit.rules.ExpectedException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 
 import static com.jnape.palatable.lambda.adt.Either.fromOptional;
 import static com.jnape.palatable.lambda.adt.Either.left;
@@ -98,8 +98,8 @@ public class EitherTest {
         Either<String, Integer> left2 = left("bar");
         Either<String, Integer> right2 = right(2);
 
-        Fn2<String, String, String> concat = String::concat;
-        Fn2<Integer, Integer, Integer> add = (r1, r2) -> r1 + r2;
+        BiFunction<String, String, String> concat = String::concat;
+        BiFunction<Integer, Integer, Integer> add = (r1, r2) -> r1 + r2;
 
         assertThat(left1.merge(concat, add, left2), is(left("foobar")));
         assertThat(left1.merge(concat, add, right2), is(left1));

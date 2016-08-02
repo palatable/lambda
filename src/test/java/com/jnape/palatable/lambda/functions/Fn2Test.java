@@ -3,8 +3,11 @@ package com.jnape.palatable.lambda.functions;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Id;
 import org.junit.Test;
 
+import java.util.function.BiFunction;
+
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class Fn2Test {
@@ -43,5 +46,11 @@ public class Fn2Test {
                 ).apply("123").apply(3),
                 is("true")
         );
+    }
+
+    @Test
+    public void toBiFunction() {
+        BiFunction<String, Integer, Boolean> biFunction = CHECK_LENGTH.toBiFunction();
+        assertEquals(true, biFunction.apply("abc", 3));
     }
 }

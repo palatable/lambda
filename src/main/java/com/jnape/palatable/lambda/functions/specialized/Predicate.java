@@ -38,7 +38,7 @@ public interface Predicate<A> extends Fn1<A, Boolean>, java.util.function.Predic
      */
     @Override
     @SuppressWarnings("unchecked")
-    default <Z> Predicate<Z> diMapL(Fn1<Z, A> fn) {
+    default <Z> Predicate<Z> diMapL(Function<Z, A> fn) {
         return Fn1.super.diMapL(fn)::apply;
     }
 

@@ -2,10 +2,9 @@ package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Functor;
 
-import java.util.RandomAccess;
+import java.util.function.Function;
 
 /**
  * A singleton HList. Supports random access.
@@ -17,7 +16,7 @@ import java.util.RandomAccess;
  * @see Tuple4
  * @see Tuple5
  */
-public class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1>, RandomAccess {
+public class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1> {
 
     SingletonHList(_1 _1) {
         super(_1, nil());
@@ -29,7 +28,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1>, 
     }
 
     @Override
-    public <_1Prime> SingletonHList<_1Prime> fmap(Fn1<? super _1, ? extends _1Prime> fn) {
+    public <_1Prime> SingletonHList<_1Prime> fmap(Function<? super _1, ? extends _1Prime> fn) {
         return new SingletonHList<>(fn.apply(head()));
     }
 }

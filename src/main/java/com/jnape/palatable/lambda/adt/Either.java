@@ -1,14 +1,14 @@
 package com.jnape.palatable.lambda.adt;
 
-import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
@@ -43,7 +43,7 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      * @param recoveryFn a function from L to R
      * @return either the wrapped value (if right) or the result of the left value applied to recoveryFn
      */
-    public final R recover(Fn1<? super L, ? extends R> recoveryFn) {
+    public final R recover(Function<? super L, ? extends R> recoveryFn) {
         return match(recoveryFn, id());
     }
 
@@ -54,7 +54,7 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      * @param forfeitFn a function from R to L
      * @return either the wrapped value (if left) or the result of the right value applied to forfeitFn
      */
-    public final L forfeit(Fn1<? super R, ? extends L> forfeitFn) {
+    public final L forfeit(Function<? super R, ? extends L> forfeitFn) {
         return match(id(), forfeitFn);
     }
 
@@ -67,7 +67,7 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      * @return the wrapped value if this is a right
      * @throws E the result of applying the wrapped left value to throwableFn, if this is a left
      */
-    public final <E extends RuntimeException> R orThrow(Fn1<? super L, ? extends E> throwableFn) throws E {
+    public final <E extends RuntimeException> R orThrow(Function<? super L, ? extends E> throwableFn) throws E {
         return match(l -> {
             throw throwableFn.apply(l);
         }, id());
@@ -84,7 +84,7 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      * @return this if a left value or a right value that pred matches; otherwise, the result of leftSupplier wrapped in
      * a left
      */
-    public final Either<L, R> filter(Fn1<? super R, Boolean> pred, Supplier<L> leftSupplier) {
+    public final Either<L, R> filter(Function<? super R, Boolean> pred, Supplier<L> leftSupplier) {
         return flatMap(r -> pred.apply(r) ? right(r) : left(leftSupplier.get()));
     }
 
@@ -99,7 +99,7 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      * @param <R2>    the new right parameter type
      * @return the Either resulting from applying rightFn to this right value, or this left value if left
      */
-    public final <R2> Either<L, R2> flatMap(Fn1<? super R, ? extends Either<L, R2>> rightFn) {
+    public final <R2> Either<L, R2> flatMap(Function<? super R, ? extends Either<L, R2>> rightFn) {
         return flatMap(Either::left, rightFn);
     }
 
@@ -114,8 +114,8 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      * @param <R2>    the new right parameter type
      * @return the result of either rightFn or leftFn, depending on whether this is a right or a left
      */
-    public final <L2, R2> Either<L2, R2> flatMap(Fn1<? super L, ? extends Either<L2, R2>> leftFn,
-                                                 Fn1<? super R, ? extends Either<L2, R2>> rightFn) {
+    public final <L2, R2> Either<L2, R2> flatMap(Function<? super L, ? extends Either<L2, R2>> leftFn,
+                                                 Function<? super R, ? extends Either<L2, R2>> rightFn) {
         return match(leftFn, rightFn);
     }
 
@@ -130,8 +130,8 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      * @param other   the other Either
      * @return the merged Either
      */
-    public final Either<L, R> merge(Fn2<? super L, ? super L, ? extends L> leftFn,
-                                    Fn2<? super R, ? super R, ? extends R> rightFn,
+    public final Either<L, R> merge(BiFunction<? super L, ? super L, ? extends L> leftFn,
+                                    BiFunction<? super R, ? super R, ? extends R> rightFn,
                                     Either<L, R> other) {
         return this.match(
                 l1 -> other.match(l2 -> left(leftFn.apply(l1, l2)), r -> left(l1)),
@@ -176,28 +176,28 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      * @param <V>     the result type
      * @return the result of applying the appropriate mapping function to the wrapped value
      */
-    public abstract <V> V match(Fn1<? super L, ? extends V> leftFn, Fn1<? super R, ? extends V> rightFn);
+    public abstract <V> V match(Function<? super L, ? extends V> leftFn, Function<? super R, ? extends V> rightFn);
 
     @Override
-    public final <R2> Either<L, R2> fmap(Fn1<? super R, ? extends R2> fn) {
+    public final <R2> Either<L, R2> fmap(Function<? super R, ? extends R2> fn) {
         return biMapR(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public final <L2> Either<L2, R> biMapL(Fn1<? super L, ? extends L2> fn) {
+    public final <L2> Either<L2, R> biMapL(Function<? super L, ? extends L2> fn) {
         return (Either<L2, R>) Bifunctor.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public final <R2> Either<L, R2> biMapR(Fn1<? super R, ? extends R2> fn) {
+    public final <R2> Either<L, R2> biMapR(Function<? super R, ? extends R2> fn) {
         return (Either<L, R2>) Bifunctor.super.biMapR(fn);
     }
 
     @Override
-    public final <L2, R2> Either<L2, R2> biMap(Fn1<? super L, ? extends L2> leftFn,
-                                               Fn1<? super R, ? extends R2> rightFn) {
+    public final <L2, R2> Either<L2, R2> biMap(Function<? super L, ? extends L2> leftFn,
+                                               Function<? super R, ? extends R2> rightFn) {
         return match(l -> left(leftFn.apply(l)), r -> right(rightFn.apply(r)));
     }
 
@@ -229,7 +229,7 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
      */
     @SuppressWarnings("unchecked")
     public static <E extends Exception, L, R> Either<L, R> trying(CheckedSupplier<E, ? extends R> supplier,
-                                                                  Fn1<? super E, ? extends L> leftFn) {
+                                                                  Function<? super E, ? extends L> leftFn) {
         try {
             return right(supplier.get());
         } catch (Exception e) {
@@ -282,7 +282,7 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
         }
 
         @Override
-        public <V> V match(Fn1<? super L, ? extends V> leftFn, Fn1<? super R, ? extends V> rightFn) {
+        public <V> V match(Function<? super L, ? extends V> leftFn, Function<? super R, ? extends V> rightFn) {
             return leftFn.apply(l);
         }
 
@@ -312,7 +312,7 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
         }
 
         @Override
-        public <V> V match(Fn1<? super L, ? extends V> leftFn, Fn1<? super R, ? extends V> rightFn) {
+        public <V> V match(Function<? super L, ? extends V> leftFn, Function<? super R, ? extends V> rightFn) {
             return rightFn.apply(r);
         }
 

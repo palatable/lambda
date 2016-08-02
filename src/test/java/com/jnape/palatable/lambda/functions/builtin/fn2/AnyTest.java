@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.EmptyIterableSupport;
 
+import java.util.function.Function;
+
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Any.any;
@@ -17,7 +19,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Traits.class)
 public class AnyTest {
 
-    public static final Fn1<? super Integer, Boolean> EVEN = x -> x % 2 == 0;
+    public static final Function<? super Integer, Boolean> EVEN = x -> x % 2 == 0;
 
     @TestTraits({EmptyIterableSupport.class})
     public Fn1<Iterable<Object>, Boolean> createTestSubject() {

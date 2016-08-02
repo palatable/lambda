@@ -4,6 +4,8 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.iterators.FilteringIterator;
 
+import java.util.function.Function;
+
 /**
  * Lazily apply a predicate to each element in an <code>Iterable</code>, returning an <code>Iterable</code> of just the
  * elements for which the predicate evaluated to <code>true</code>.
@@ -12,13 +14,13 @@ import com.jnape.palatable.lambda.iterators.FilteringIterator;
  * @see TakeWhile
  * @see DropWhile
  */
-public final class Filter<A> implements Fn2<Fn1<? super A, Boolean>, Iterable<A>, Iterable<A>> {
+public final class Filter<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Iterable<A>> {
 
     private Filter() {
     }
 
     @Override
-    public Iterable<A> apply(Fn1<? super A, Boolean> predicate, Iterable<A> as) {
+    public Iterable<A> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
         return () -> new FilteringIterator<>(predicate, as.iterator());
     }
 
@@ -26,11 +28,11 @@ public final class Filter<A> implements Fn2<Fn1<? super A, Boolean>, Iterable<A>
         return new Filter<>();
     }
 
-    public static <A> Fn1<Iterable<A>, Iterable<A>> filter(Fn1<? super A, Boolean> predicate) {
+    public static <A> Fn1<Iterable<A>, Iterable<A>> filter(Function<? super A, Boolean> predicate) {
         return Filter.<A>filter().apply(predicate);
     }
 
-    public static <A> Iterable<A> filter(Fn1<? super A, Boolean> predicate, Iterable<A> as) {
+    public static <A> Iterable<A> filter(Function<? super A, Boolean> predicate, Iterable<A> as) {
         return Filter.<A>filter(predicate).apply(as);
     }
 }

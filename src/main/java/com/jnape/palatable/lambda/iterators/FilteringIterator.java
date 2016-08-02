@@ -1,16 +1,15 @@
 package com.jnape.palatable.lambda.iterators;
 
-import com.jnape.palatable.lambda.functions.Fn1;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 public class FilteringIterator<A> extends ImmutableIterator<A> {
 
-    private final Fn1<? super A, Boolean> predicate;
-    private final RewindableIterator<A>   rewindableIterator;
+    private final Function<? super A, Boolean> predicate;
+    private final RewindableIterator<A>        rewindableIterator;
 
-    public FilteringIterator(Fn1<? super A, Boolean> predicate, Iterator<A> iterator) {
+    public FilteringIterator(Function<? super A, Boolean> predicate, Iterator<A> iterator) {
         this.predicate = predicate;
         rewindableIterator = new RewindableIterator<>(iterator);
     }

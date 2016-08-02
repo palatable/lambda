@@ -31,20 +31,20 @@ public interface Fn1<A, B> extends Functor<B>, Profunctor<A, B>, Function<A, B> 
      * @param <C> the return type of the next function to invoke
      * @return a function representing the composition of this function and f
      */
-    default <C> Fn1<A, C> then(Fn1<? super B, ? extends C> f) {
+    default <C> Fn1<A, C> then(Function<? super B, ? extends C> f) {
         return fmap(f);
     }
 
     /**
      * Also left-to-right composition (<a href="http://jnape.com/the-perils-of-implementing-functor-in-java/">sadly</a>).
      *
-     * @param f   the function to invoke with this function's return value
      * @param <C> the return type of the next function to invoke
+     * @param f   the function to invoke with this function's return value
      * @return a function representing the composition of this function and f
-     * @see Fn1#then(Fn1)
+     * @see Fn1#then(Function)
      */
     @Override
-    default <C> Fn1<A, C> fmap(Fn1<? super B, ? extends C> f) {
+    default <C> Fn1<A, C> fmap(Function<? super B, ? extends C> f) {
         return a -> f.apply(apply(a));
     }
 
@@ -52,12 +52,12 @@ public interface Fn1<A, B> extends Functor<B>, Profunctor<A, B>, Function<A, B> 
      * Contravariantly map over the argument to this function, producing a function that takes the new argument type,
      * and produces the same result.
      *
-     * @param fn  the contravariant argument mapping function
      * @param <Z> the new argument type
+     * @param fn  the contravariant argument mapping function
      * @return a new function from Z (the new argument type) to B (the same result)
      */
     @Override
-    default <Z> Fn1<Z, B> diMapL(Fn1<Z, A> fn) {
+    default <Z> Fn1<Z, B> diMapL(Function<Z, A> fn) {
         return (Fn1<Z, B>) Profunctor.super.diMapL(fn);
     }
 
@@ -65,27 +65,27 @@ public interface Fn1<A, B> extends Functor<B>, Profunctor<A, B>, Function<A, B> 
      * Covariantly map over the return value of this function, producing a function that takes the same argument, and
      * produces the new result type.
      *
-     * @param fn  the covariant result mapping function
      * @param <C> the new result type
+     * @param fn  the covariant result mapping function
      * @return a new function from A (the same argument type) to C (the new result type)
      */
     @Override
-    default <C> Fn1<A, C> diMapR(Fn1<B, C> fn) {
+    default <C> Fn1<A, C> diMapR(Function<B, C> fn) {
         return (Fn1<A, C>) Profunctor.super.diMapR(fn);
     }
 
     /**
      * Exercise both <code>diMapL</code> and <code>diMapR</code> over this function in the same invocation.
      *
-     * @param lFn the contravariant argument mapping function
-     * @param rFn the covariant result mapping function
      * @param <Z> the new argument type
      * @param <C> the new result type
+     * @param lFn the contravariant argument mapping function
+     * @param rFn the covariant result mapping function
      * @return a new function from Z (the new argument type) to C (the new result type)
      */
     @Override
-    default <Z, C> Fn1<Z, C> diMap(Fn1<Z, A> lFn, Fn1<B, C> rFn) {
-        return lFn.andThen(this).andThen(rFn);
+    default <Z, C> Fn1<Z, C> diMap(Function<Z, A> lFn, Function<B, C> rFn) {
+        return lFn.andThen(this).andThen(rFn)::apply;
     }
 
     /**

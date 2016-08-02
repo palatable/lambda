@@ -2,6 +2,8 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 
+import java.util.function.BiFunction;
+
 /**
  * A function taking two arguments. Note that defining <code>Fn2</code> in terms of <code>Fn1</code> provides a
  * reasonable approximation of currying in the form of multiple <code>apply</code> overloads that take different numbers
@@ -52,5 +54,15 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      */
     default Fn1<Tuple2<A, B>, C> uncurry() {
         return (ab) -> apply(ab._1(), ab._2());
+    }
+
+    /**
+     * View this <code>Fn2</code> as a <code>j.u.f.BiFunction</code>.
+     *
+     * @return the same logic as a <code>BiFunction</code>
+     * @see BiFunction
+     */
+    default BiFunction<A, B, C> toBiFunction() {
+        return this::apply;
     }
 }

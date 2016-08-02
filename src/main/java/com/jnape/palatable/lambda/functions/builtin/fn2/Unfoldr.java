@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.iterators.UnfoldingIterator;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Given an initial seed value and a function that takes the seed type and produces an <code>Optional&lt;{@link
@@ -28,13 +29,13 @@ import java.util.Optional;
  * @param <A> The output Iterable element type
  * @param <B> The unfolding function input type
  */
-public final class Unfoldr<A, B> implements Fn2<Fn1<B, Optional<Tuple2<A, B>>>, B, Iterable<A>> {
+public final class Unfoldr<A, B> implements Fn2<Function<B, Optional<Tuple2<A, B>>>, B, Iterable<A>> {
 
     private Unfoldr() {
     }
 
     @Override
-    public Iterable<A> apply(Fn1<B, Optional<Tuple2<A, B>>> fn, B b) {
+    public Iterable<A> apply(Function<B, Optional<Tuple2<A, B>>> fn, B b) {
         return () -> new UnfoldingIterator<>(fn, b);
     }
 
@@ -42,11 +43,11 @@ public final class Unfoldr<A, B> implements Fn2<Fn1<B, Optional<Tuple2<A, B>>>, 
         return new Unfoldr<>();
     }
 
-    public static <A, B> Fn1<B, Iterable<A>> unfoldr(Fn1<B, Optional<Tuple2<A, B>>> fn) {
+    public static <A, B> Fn1<B, Iterable<A>> unfoldr(Function<B, Optional<Tuple2<A, B>>> fn) {
         return Unfoldr.<A, B>unfoldr().apply(fn);
     }
 
-    public static <A, B> Iterable<A> unfoldr(Fn1<B, Optional<Tuple2<A, B>>> fn, B b) {
+    public static <A, B> Iterable<A> unfoldr(Function<B, Optional<Tuple2<A, B>>> fn, B b) {
         return unfoldr(fn).apply(b);
     }
 }

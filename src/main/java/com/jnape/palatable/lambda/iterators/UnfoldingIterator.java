@@ -1,16 +1,16 @@
 package com.jnape.palatable.lambda.iterators;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
-    private final Fn1<B, Optional<Tuple2<A, B>>> function;
-    private       Optional<Tuple2<A, B>>         optionalAcc;
+    private final Function<B, Optional<Tuple2<A, B>>> function;
+    private       Optional<Tuple2<A, B>>              optionalAcc;
 
-    public UnfoldingIterator(Fn1<B, Optional<Tuple2<A, B>>> function, B b) {
+    public UnfoldingIterator(Function<B, Optional<Tuple2<A, B>>> function, B b) {
         this.function = function;
         optionalAcc = function.apply(b);
     }
@@ -21,6 +21,7 @@ public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
     }
 
     @Override
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public A next() {
         if (!hasNext())
             throw new NoSuchElementException();

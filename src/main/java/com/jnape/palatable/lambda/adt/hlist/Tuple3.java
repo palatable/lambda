@@ -1,9 +1,10 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
+
+import java.util.function.Function;
 
 /**
  * A 3-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -62,25 +63,25 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements Fun
     }
 
     @Override
-    public <_3Prime> Tuple3<_1, _2, _3Prime> fmap(Fn1<? super _3, ? extends _3Prime> fn) {
+    public <_3Prime> Tuple3<_1, _2, _3Prime> fmap(Function<? super _3, ? extends _3Prime> fn) {
         return biMapR(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_2Prime> Tuple3<_1, _2Prime, _3> biMapL(Fn1<? super _2, ? extends _2Prime> fn) {
+    public <_2Prime> Tuple3<_1, _2Prime, _3> biMapL(Function<? super _2, ? extends _2Prime> fn) {
         return (Tuple3<_1, _2Prime, _3>) Bifunctor.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_3Prime> Tuple3<_1, _2, _3Prime> biMapR(Fn1<? super _3, ? extends _3Prime> fn) {
+    public <_3Prime> Tuple3<_1, _2, _3Prime> biMapR(Function<? super _3, ? extends _3Prime> fn) {
         return (Tuple3<_1, _2, _3Prime>) Bifunctor.super.biMapR(fn);
     }
 
     @Override
-    public <_2Prime, _3Prime> Tuple3<_1, _2Prime, _3Prime> biMap(Fn1<? super _2, ? extends _2Prime> lFn,
-                                                                 Fn1<? super _3, ? extends _3Prime> rFn) {
+    public <_2Prime, _3Prime> Tuple3<_1, _2Prime, _3Prime> biMap(Function<? super _2, ? extends _2Prime> lFn,
+                                                                 Function<? super _3, ? extends _3Prime> rFn) {
         return new Tuple3<>(_1(), tail().biMap(lFn, rFn));
     }
 }

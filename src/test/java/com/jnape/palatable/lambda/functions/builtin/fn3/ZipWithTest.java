@@ -2,7 +2,6 @@ package com.jnape.palatable.lambda.functions.builtin.fn3;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
@@ -10,6 +9,8 @@ import org.junit.runner.RunWith;
 import testsupport.traits.FiniteIteration;
 import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
+
+import java.util.function.BiFunction;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Zip.zip;
@@ -31,7 +32,7 @@ public class ZipWithTest {
         Iterable<Integer> oneThroughFive = asList(1, 2, 3, 4, 5);
         Iterable<Integer> sixThroughTen = asList(6, 7, 8, 9, 10);
 
-        Fn2<Integer, Integer, Integer> add = (a, b) -> a + b;
+        BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
         Iterable<Integer> sums = ZipWith.zipWith(add, oneThroughFive, sixThroughTen);
 
         assertThat(sums, iterates(7, 9, 11, 13, 15));

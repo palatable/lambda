@@ -4,6 +4,8 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.iterators.PredicatedDroppingIterator;
 
+import java.util.function.Function;
+
 /**
  * Lazily limit the <code>Iterable</code> by skipping the first contiguous group of elements that satisfy the predicate,
  * beginning iteration at the first element for which the predicate evaluates to <code>false</code>.
@@ -14,13 +16,13 @@ import com.jnape.palatable.lambda.iterators.PredicatedDroppingIterator;
  * @see TakeWhile
  */
 
-public final class DropWhile<A> implements Fn2<Fn1<? super A, Boolean>, Iterable<A>, Iterable<A>> {
+public final class DropWhile<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Iterable<A>> {
 
     private DropWhile() {
     }
 
     @Override
-    public Iterable<A> apply(Fn1<? super A, Boolean> predicate, Iterable<A> as) {
+    public Iterable<A> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
         return () -> new PredicatedDroppingIterator<>(predicate, as.iterator());
     }
 
@@ -28,11 +30,11 @@ public final class DropWhile<A> implements Fn2<Fn1<? super A, Boolean>, Iterable
         return new DropWhile<>();
     }
 
-    public static <A> Fn1<Iterable<A>, Iterable<A>> dropWhile(Fn1<? super A, Boolean> predicate) {
+    public static <A> Fn1<Iterable<A>, Iterable<A>> dropWhile(Function<? super A, Boolean> predicate) {
         return DropWhile.<A>dropWhile().apply(predicate);
     }
 
-    public static <A> Iterable<A> dropWhile(Fn1<? super A, Boolean> predicate, Iterable<A> as) {
+    public static <A> Iterable<A> dropWhile(Function<? super A, Boolean> predicate, Iterable<A> as) {
         return DropWhile.<A>dropWhile(predicate).apply(as);
     }
 }

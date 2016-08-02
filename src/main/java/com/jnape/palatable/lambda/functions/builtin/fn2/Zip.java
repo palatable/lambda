@@ -4,7 +4,6 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.ZipWith.zipWith;
 
 /**
@@ -23,7 +22,7 @@ public final class Zip<A, B> implements Fn2<Iterable<A>, Iterable<B>, Iterable<T
 
     @Override
     public Iterable<Tuple2<A, B>> apply(Iterable<A> as, Iterable<B> bs) {
-        return zipWith(tupler(), as, bs);
+        return zipWith(Tupler2.<A, B>tupler().toBiFunction(), as, bs);
     }
 
     public static <A, B> Zip<A, B> zip() {
