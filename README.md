@@ -15,6 +15,7 @@ Functional patterns for Java 8
        - [Tuples](#tuples)
      - [HMaps](#hmaps)
      - [Either](#either)
+ - [Notes](#notes) 
  - [License](#license)
 
 <a name="background">Background</a>
@@ -233,6 +234,13 @@ Rather than supporting explicit value unwrapping, `Either` supports many useful 
 ```
 
 Check out the tests for [more examples](https://github.com/palatable/lambda/blob/master/src/test/java/com/jnape/palatable/lambda/adt/EitherTest.java) of ways to interact with `Either`.
+
+<a name="notes">Notes</a>
+-----
+
+Wherever possible, _lambda_ maintains interface compatibility with similar, familiar core Java types. Some examples of where this works well is with both `Fn1` and `Predicate`, which extend `j.u.f.Function` and `j.u.f.Predicate`, respectively. In these examples, they also override any implemented methods to return their _lambda_-specific counterparts (`Fn1.compose` returning `Fn1` instead of `j.u.f.Function` as an example).
+
+Unfortunately, due to Java's type hierarchy and inheritance inconsistencies, this is not always possible. One surprising example of this is how `Fn1` extends `j.u.f.Function`, but `Fn2` does not extend `j.u.f.BiFunction`. This is because `j.u.f.BiFunction` itself does not extend `j.u.f.Function`, but it does define methods that collide with `j.u.f.Function`. For this reason, both `Fn1` and `Fn2` cannot extend their Java counterparts without sacrificing their own inheritance hierarchy. These types of asymmetries are, unfortunately, not uncommon; however, wherever these situations arise, measures are taken to attempt to ease the transition in and out of core Java types (in the case of `Fn2`, a supplemental `#toBiFunction` method is added). I do not take these inconveniences for granted, and I'm regularly looking for ways to minimize the negative impact of this as much as possible. Suggestions and use cases that highlight particular pain points here are particularly appreciated.
 
 <a name="license">License</a>
 -------
