@@ -36,8 +36,41 @@
 
 <p>Functional patterns for Java 8</p>
 
+<h4>
+<a id="table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Table of Contents</h4>
+
+<ul>
+<li><a href="#background">Background</a></li>
+<li><a href="#installation">Installation</a></li>
+<li>
+<a href="#examples">Examples</a>
+
+<ul>
+<li>
+<a href="#adts">ADTs</a>
+
+<ul>
+<li>
+<a href="#hlists">HLists</a>
+
+<ul>
+<li><a href="#tuples">Tuples</a></li>
+</ul>
+</li>
+<li><a href="#hmaps">HMaps</a></li>
+<li><a href="#either">Either</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<a href="#notes">Notes</a> </li>
+<li><a href="#license">License</a></li>
+</ul>
+
 <h2>
-<a id="background" class="anchor" href="#background" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Background</h2>
+<a id="background" class="anchor" href="#background" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="background">Background</a>
+</h2>
 
 <p>Lambda was born out of a desire to use some of the same canonical functions (e.g. <code>unfoldr</code>, <code>takeWhile</code>, <code>zipWith</code>) and functional patterns (e.g. <code>Functor</code> and friends) that are idiomatic in other languages and make them available for Java.</p>
 
@@ -56,7 +89,8 @@
 <p>Although the library is currently (very) small, these values should always be the driving forces behind future growth.</p>
 
 <h2>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="installation">Installation</a>
+</h2>
 
 <p>Add the following dependency to your:</p>
 
@@ -73,7 +107,8 @@
 <div class="highlight highlight-source-groovy-gradle"><pre>  compile <span class="pl-c1">group</span>: <span class="pl-s"><span class="pl-pds">'</span>com.jnape.palatable<span class="pl-pds">'</span></span>, <span class="pl-c1">name</span>: <span class="pl-s"><span class="pl-pds">'</span>lambda<span class="pl-pds">'</span></span>, <span class="pl-c1">version</span>: <span class="pl-s"><span class="pl-pds">'</span>1.2<span class="pl-pds">'</span></span></pre></div>
 
 <h2>
-<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples</h2>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="examples">Examples</a>
+</h2>
 
 <p>First, the obligatory <code>map</code>/<code>filter</code>/<code>reduce</code> example:</p>
 
@@ -139,12 +174,14 @@
 <p>Check out the <a href="https://github.com/palatable/lambda/tree/master/src/test/java/com/jnape/palatable/lambda/functions/builtin">tests</a> or <a href="http://palatable.github.io/lambda/javadoc/">javadoc</a> for more examples.</p>
 
 <h2>
-<a id="adts" class="anchor" href="#adts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ADTs</h2>
+<a id="adts" class="anchor" href="#adts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="adts">ADTs</a>
+</h2>
 
 <p>In addition to the functions above, lambda also supports a few first-class <a href="https://www.wikiwand.com/en/Algebraic_data_type">algebraic data types</a>.</p>
 
 <h3>
-<a id="heterogeneous-lists-hlists" class="anchor" href="#heterogeneous-lists-hlists" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Heterogeneous Lists (HLists)</h3>
+<a id="heterogeneous-lists-hlists" class="anchor" href="#heterogeneous-lists-hlists" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="hlists">Heterogeneous Lists (HLists)</a>
+</h3>
 
 <p>HLists are type-safe heterogeneous lists, meaning they can store elements of different types in the same list while facilitating certain type-safe interactions.</p>
 
@@ -159,7 +196,8 @@
   <span class="pl-c">//nil.head() won't type-check</span></pre></div>
 
 <h4>
-<a id="tuples" class="anchor" href="#tuples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tuples</h4>
+<a id="tuples" class="anchor" href="#tuples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="tuples">Tuples</a>
+</h4>
 
 <p>One of the primary downsides to using <code>HList</code>s in Java is how quickly the type signature grows.</p>
 
@@ -197,7 +235,8 @@
   <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(mappedTuple3<span class="pl-k">.</span>_3()); <span class="pl-c">// prints 2</span></pre></div>
 
 <h3>
-<a id="heterogeneous-maps" class="anchor" href="#heterogeneous-maps" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Heterogeneous Maps</h3>
+<a id="heterogeneous-maps" class="anchor" href="#heterogeneous-maps" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="hmaps">Heterogeneous Maps</a>
+</h3>
 
 <p>HMaps are type-safe heterogeneous maps, meaning they can store mappings to different value types in the same map; however, whereas HLists encode value types in their type signatures, HMaps rely on the keys to encode the value type that they point to. </p>
 
@@ -211,7 +250,8 @@
   <span class="pl-k">Optional&lt;<span class="pl-smi">Integer</span>&gt;</span> anotherIntValue <span class="pl-k">=</span> hmap<span class="pl-k">.</span>get(anotherIntKey); <span class="pl-c">// Optional.empty</span></pre></div>
 
 <h3>
-<a id="either" class="anchor" href="#either" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Either</h3>
+<a id="either" class="anchor" href="#either" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="either">Either</a>
+</h3>
 
 <p>Binary tagged unions are represented as <code>Either&lt;L, R&gt;</code>s, which resolve to one of two possible values: a <code>Left</code> value wrapping an <code>L</code>, or a <code>Right</code> value wrapping an <code>R</code> (typically an exceptional value or a successful value, respectively).</p>
 
@@ -229,7 +269,16 @@
 <p>Check out the tests for <a href="https://github.com/palatable/lambda/blob/master/src/test/java/com/jnape/palatable/lambda/adt/EitherTest.java">more examples</a> of ways to interact with <code>Either</code>.</p>
 
 <h2>
-<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+<a id="notes" class="anchor" href="#notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="notes">Notes</a>
+</h2>
+
+<p>Wherever possible, <em>lambda</em> maintains interface compatibility with similar, familiar core Java types. Some examples of where this works well is with both <code>Fn1</code> and <code>Predicate</code>, which extend <code>j.u.f.Function</code> and <code>j.u.f.Predicate</code>, respectively. In these examples, they also override any implemented methods to return their <em>lambda</em>-specific counterparts (<code>Fn1.compose</code> returning <code>Fn1</code> instead of <code>j.u.f.Function</code> as an example).</p>
+
+<p>Unfortunately, due to Java's type hierarchy and inheritance inconsistencies, this is not always possible. One surprising example of this is how <code>Fn1</code> extends <code>j.u.f.Function</code>, but <code>Fn2</code> does not extend <code>j.u.f.BiFunction</code>. This is because <code>j.u.f.BiFunction</code> itself does not extend <code>j.u.f.Function</code>, but it does define methods that collide with <code>j.u.f.Function</code>. For this reason, both <code>Fn1</code> and <code>Fn2</code> cannot extend their Java counterparts without sacrificing their own inheritance hierarchy. These types of asymmetries are, unfortunately, not uncommon; however, wherever these situations arise, measures are taken to attempt to ease the transition in and out of core Java types (in the case of <code>Fn2</code>, a supplemental <code>#toBiFunction</code> method is added). I do not take these inconveniences for granted, and I'm regularly looking for ways to minimize the negative impact of this as much as possible. Suggestions and use cases that highlight particular pain points here are particularly appreciated.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="license">License</a>
+</h2>
 
 <p><em>lambda</em> is part of <a href="http://www.github.com/palatable">palatable</a>, which is distributed under <a href="http://choosealicense.com/licenses/mit/">The MIT License</a>.</p>
         </section>
