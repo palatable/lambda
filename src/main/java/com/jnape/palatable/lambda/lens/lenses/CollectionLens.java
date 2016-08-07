@@ -1,18 +1,18 @@
 package com.jnape.palatable.lambda.lens.lenses;
 
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.lens.Lens;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 
 public class CollectionLens {
 
-    public static <X, CX extends Collection<X>> Lens.Simple<CX, CX> asCopy(Fn1<? super CX, ? extends CX> copyFn) {
+    public static <X, CX extends Collection<X>> Lens.Simple<CX, CX> asCopy(Function<? super CX, ? extends CX> copyFn) {
         return simpleLens(copyFn, (__, copy) -> copy);
     }
 

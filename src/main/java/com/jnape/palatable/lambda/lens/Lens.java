@@ -1,9 +1,11 @@
 package com.jnape.palatable.lambda.lens;
 
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
+
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
@@ -13,31 +15,31 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
 @FunctionalInterface
 public interface Lens<S, T, A, B> extends Functor<T>, Profunctor<S, T> {
 
-    <FT extends Functor<T>, FB extends Functor<B>> FT apply(Fn1<? super A, ? extends FB> fn, S s);
+    <FT extends Functor<T>, FB extends Functor<B>> FT apply(Function<? super A, ? extends FB> fn, S s);
 
     default <FT extends Functor<T>, FB extends Functor<B>> Fixed<S, T, A, B, FT, FB> fix() {
         return this::<FT, FB>apply;
     }
 
     @Override
-    default <U> Lens<S, U, A, B> fmap(Fn1<? super T, ? extends U> fn) {
+    default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
         return this.compose(Lens.<S, U, S, T>lens(id(), (s, t) -> fn.apply(t)));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    default <R> Lens<R, T, A, B> diMapL(Fn1<R, S> fn) {
+    default <R> Lens<R, T, A, B> diMapL(Function<R, S> fn) {
         return (Lens<R, T, A, B>) Profunctor.super.diMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    default <U> Lens<S, U, A, B> diMapR(Fn1<T, U> fn) {
+    default <U> Lens<S, U, A, B> diMapR(Function<T, U> fn) {
         return (Lens<S, U, A, B>) Profunctor.super.diMapR(fn);
     }
 
     @Override
-    default <R, U> Lens<R, U, A, B> diMap(Fn1<R, S> lFn, Fn1<T, U> rFn) {
+    default <R, U> Lens<R, U, A, B> diMap(Function<R, S> lFn, Function<T, U> rFn) {
         return this.compose(lens(lFn, (r, t) -> rFn.apply(t)));
     }
 
@@ -49,21 +51,21 @@ public interface Lens<S, T, A, B> extends Functor<T>, Profunctor<S, T> {
         return lens(view(g).fmap(view(this)), (q, b) -> over(g, set(this, b), q));
     }
 
-    static <S, T, A, B> Lens<S, T, A, B> lens(Fn1<? super S, ? extends A> getter,
-                                              Fn2<? super S, ? super B, ? extends T> setter) {
+    static <S, T, A, B> Lens<S, T, A, B> lens(Function<? super S, ? extends A> getter,
+                                              BiFunction<? super S, ? super B, ? extends T> setter) {
         return new Lens<S, T, A, B>() {
             @Override
             @SuppressWarnings("unchecked")
-            public <FT extends Functor<T>, FB extends Functor<B>> FT apply(Fn1<? super A, ? extends FB> fn,
+            public <FT extends Functor<T>, FB extends Functor<B>> FT apply(Function<? super A, ? extends FB> fn,
                                                                            S s) {
-                return (FT) fn.apply(getter.apply(s)).fmap(setter.apply(s));
+                return (FT) fn.apply(getter.apply(s)).fmap(b -> setter.apply(s, b));
             }
         };
     }
 
     @SuppressWarnings("unchecked")
-    static <S, A> Lens.Simple<S, A> simpleLens(Fn1<? super S, ? extends A> getter,
-                                               Fn2<? super S, ? super A, ? extends S> setter) {
+    static <S, A> Lens.Simple<S, A> simpleLens(Function<? super S, ? extends A> getter,
+                                               BiFunction<? super S, ? super A, ? extends S> setter) {
         return lens(getter, setter)::apply;
     }
 
@@ -92,6 +94,6 @@ public interface Lens<S, T, A, B> extends Functor<T>, Profunctor<S, T> {
 
     @FunctionalInterface
     interface Fixed<S, T, A, B, FT extends Functor<T>, FB extends Functor<B>>
-            extends Fn2<Fn1<? super A, ? extends FB>, S, FT> {
+            extends Fn2<Function<? super A, ? extends FB>, S, FT> {
     }
 }
