@@ -27,7 +27,7 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
 
     private final Map<TypeSafeKey, Object> table;
 
-    HMap(Map<TypeSafeKey, Object> table) {
+    private HMap(Map<TypeSafeKey, Object> table) {
         this.table = table;
     }
 
@@ -70,7 +70,7 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
     /**
      * Store all the key/value mappings in <code>hMap</code> in this HMap.
      *
-     * @param hMap the other hMap
+     * @param hMap the other HMap
      * @return the updated HMap
      */
     public HMap putAll(HMap hMap) {
@@ -85,6 +85,26 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      */
     public boolean containsKey(TypeSafeKey key) {
         return table.containsKey(key);
+    }
+
+    /**
+     * Remove a mapping from this HMap.
+     *
+     * @param key the key
+     * @return the updated HMap
+     */
+    public HMap remove(TypeSafeKey key) {
+        return alter(t -> t.remove(key));
+    }
+
+    /**
+     * Remove all the key/value mappings in <code>hMap</code> from this HMap.
+     *
+     * @param hMap the other HMap
+     * @return the updated HMap
+     */
+    public HMap removeAll(HMap hMap) {
+        return alter(t -> t.keySet().removeAll(hMap.table.keySet()));
     }
 
     /**
