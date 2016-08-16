@@ -114,7 +114,7 @@ Let's compose two functions:
 
   Fn1<Integer, Integer> noOp = add.then(subtract);
   // same as
-  Fn1<Integer, Integer> alsoNoOp = subtract.fmap(add);
+  Fn1<Integer, Integer> alsoNoOp = subtract.compose(subtract);
 ```
 
 And partially apply some:
