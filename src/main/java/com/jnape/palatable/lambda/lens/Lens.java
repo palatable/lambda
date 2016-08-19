@@ -2,7 +2,6 @@ package com.jnape.palatable.lambda.lens;
 
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Functor;
-import com.jnape.palatable.lambda.functor.Profunctor;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -13,34 +12,17 @@ import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 
 @FunctionalInterface
-public interface Lens<S, T, A, B> extends Functor<T>, Profunctor<S, T> {
+public interface Lens<S, T, A, B> extends Functor<T> {
 
     <FT extends Functor<T>, FB extends Functor<B>> FT apply(Function<? super A, ? extends FB> fn, S s);
 
     default <FT extends Functor<T>, FB extends Functor<B>> Fixed<S, T, A, B, FT, FB> fix() {
-        return this::<FT, FB>apply;
+        return this::apply;
     }
 
     @Override
     default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
         return this.compose(Lens.<S, U, S, T>lens(id(), (s, t) -> fn.apply(t)));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <R> Lens<R, T, A, B> diMapL(Function<R, S> fn) {
-        return (Lens<R, T, A, B>) Profunctor.super.diMapL(fn);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <U> Lens<S, U, A, B> diMapR(Function<T, U> fn) {
-        return (Lens<S, U, A, B>) Profunctor.super.diMapR(fn);
-    }
-
-    @Override
-    default <R, U> Lens<R, U, A, B> diMap(Function<R, S> lFn, Function<T, U> rFn) {
-        return this.compose(lens(lFn, (r, t) -> rFn.apply(t)));
     }
 
     default <C, D> Lens<S, T, C, D> andThen(Lens<A, B, C, D> f) {
@@ -74,7 +56,7 @@ public interface Lens<S, T, A, B> extends Functor<T>, Profunctor<S, T> {
 
         @Override
         default <FS extends Functor<S>, FA extends Functor<A>> Fixed<S, A, FS, FA> fix() {
-            return Lens.super.<FS, FA>fix()::apply;
+            return this::apply;
         }
 
         @SuppressWarnings("unchecked")

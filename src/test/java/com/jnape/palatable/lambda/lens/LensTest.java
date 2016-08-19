@@ -5,7 +5,6 @@ import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,11 +49,6 @@ public class LensTest {
     @Test
     public void functorProperties() {
         assertEquals(false, set(LENS.fmap(Set::isEmpty), 1, singletonList("foo")));
-    }
-
-    @Test
-    public void profunctorProperties() {
-        assertEquals(false, set(LENS.diMap(ArrayList::new, Set::isEmpty), 2, singleton("foo")));
     }
 
     @Test
