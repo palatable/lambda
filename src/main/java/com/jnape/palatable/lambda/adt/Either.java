@@ -12,6 +12,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
+import static java.util.Arrays.asList;
 
 /**
  * The binary tagged union. General semantics tend to connote "success" values via the right value and "failure" values
@@ -120,22 +122,24 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
     }
 
     /**
-     * Given two binary operators over L and R, merge two <code>Either&lt;L, R&gt;</code>s into a single
+     * Given two binary operators over L and R, merge multiple <code>Either&lt;L, R&gt;</code>s into a single
      * <code>Either&lt;L, R&gt;</code>. Note that <code>merge</code> biases towards left values; that is, if any left
      * value exists, the result will be a left value, such that only unanimous right values result in an ultimate right
      * value.
      *
      * @param leftFn  the binary operator for L
      * @param rightFn the binary operator for R
-     * @param other   the other Either
+     * @param others  the other Eithers to merge into this one
      * @return the merged Either
      */
+    @SafeVarargs
     public final Either<L, R> merge(BiFunction<? super L, ? super L, ? extends L> leftFn,
                                     BiFunction<? super R, ? super R, ? extends R> rightFn,
-                                    Either<L, R> other) {
-        return this.match(
-                l1 -> other.match(l2 -> left(leftFn.apply(l1, l2)), r -> left(l1)),
-                r1 -> other.match(Either::left, r2 -> right(rightFn.apply(r1, r2))));
+                                    Either<L, R>... others) {
+        return foldLeft((x, y) -> x.match(l1 -> y.<Either<L, R>>match(l2 -> left(leftFn.apply(l1, l2)), r -> left(l1)),
+                                          r1 -> y.<Either<L, R>>match(Either::left, r2 -> right(rightFn.apply(r1, r2)))),
+                        this,
+                        asList(others));
     }
 
     /**

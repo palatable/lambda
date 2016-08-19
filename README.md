@@ -46,14 +46,14 @@ Add the following dependency to your:
  <dependency>
      <groupId>com.jnape.palatable</groupId>
      <artifactId>lambda</artifactId>
-     <version>1.2</version>
+     <version>1.3</version>
  </dependency>
 ```
  
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
  
 ```gradle
-  compile group: 'com.jnape.palatable', name: 'lambda', version: '1.2'
+  compile group: 'com.jnape.palatable', name: 'lambda', version: '1.3'
 ```
   
 
@@ -114,7 +114,7 @@ Let's compose two functions:
 
   Fn1<Integer, Integer> noOp = add.then(subtract);
   // same as
-  Fn1<Integer, Integer> alsoNoOp = subtract.fmap(add);
+  Fn1<Integer, Integer> alsoNoOp = subtract.compose(subtract);
 ```
 
 And partially apply some:

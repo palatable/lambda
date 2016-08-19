@@ -134,6 +134,12 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         return tuple(_2, _3, _4, _5).cons(_1);
     }
 
+    /**
+     * The consing of a head element to a tail <code>HList</code>.
+     *
+     * @param <Head> the head element type
+     * @param <Tail> the HList tail type
+     */
     public static class HCons<Head, Tail extends HList<?, ?>> extends HList<Head, Tail> {
         private final Head head;
         private final Tail tail;
@@ -143,10 +149,20 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
             this.tail = tail;
         }
 
+        /**
+         * The head element of the <code>HList</code>.
+         *
+         * @return the head element
+         */
         public Head head() {
             return head;
         }
 
+        /**
+         * The remaining tail of the <code>HList</code>; returns an HNil if this is the last element.
+         *
+         * @return the tail
+         */
         public Tail tail() {
             return tail;
         }
@@ -180,6 +196,9 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         }
     }
 
+    /**
+     * The empty <code>HList</code>.
+     */
     public static final class HNil extends HList<Void, HNil> {
         private static final HNil INSTANCE = new HNil();
 
