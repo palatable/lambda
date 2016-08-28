@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
@@ -41,10 +42,10 @@ public class ListLensTest {
 
     @Test
     public void atFocusesOnElementAtIndex() {
-        Lens.Simple<List<String>, String> at0 = ListLens.at(0);
+        Lens<List<String>, List<String>, Optional<String>, String> at0 = ListLens.at(0);
 
-        assertEquals("foo", view(at0, xs));
-        assertEquals(null, view(at0, emptyList()));
+        assertEquals(Optional.of("foo"), view(at0, xs));
+        assertEquals(Optional.empty(), view(at0, emptyList()));
         assertEquals(asList("quux", "bar", "baz"), set(at0, "quux", xs));
         assertEquals(emptyList(), set(at0, "quux", emptyList()));
     }

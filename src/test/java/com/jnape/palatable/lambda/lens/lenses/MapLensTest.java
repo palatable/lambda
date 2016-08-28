@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.lens.lenses;
 
-import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.lens.Lens;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
@@ -47,9 +47,9 @@ public class MapLensTest {
 
     @Test
     public void atKeyFocusesOnValueAtKey() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Integer, Integer> atFoo = MapLens.atKey("foo");
+        Lens<Map<String, Integer>, Map<String, Integer>, Optional<Integer>, Integer> atFoo = MapLens.atKey("foo");
 
-        assertEquals((Integer) 1, view(atFoo, m));
+        assertEquals(Optional.of(1), view(atFoo, m));
 
         Map<String, Integer> updated = set(atFoo, -1, m);
         assertEquals(new HashMap<String, Integer>() {{
@@ -77,15 +77,14 @@ public class MapLensTest {
 
     @Test
     public void valuesFocusesOnValues() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Collection<Integer>, Fn2<String, Integer, Integer>> values = MapLens.values();
+        Lens<Map<String, Integer>, Map<String, Integer>, Collection<Integer>, Collection<Integer>> values = MapLens.values();
 
         assertEquals(m.values(), view(values, m));
 
-        Map<String, Integer> updated = set(values, (k, v) -> k.length() + v, m);
+        Map<String, Integer> updated = set(values, asList(1, 2), m);
         assertEquals(new HashMap<String, Integer>() {{
-            put("foo", 4);
-            put("bar", 5);
-            put("baz", 6);
+            put("foo", 1);
+            put("bar", 2);
         }}, updated);
         assertSame(m, updated);
     }
@@ -109,5 +108,13 @@ public class MapLensTest {
             put("baz", 3);
         }}, updated);
         assertSame(m, updated);
+
+        Map<String, Integer> withDuplicateValues = new HashMap<String, Integer>() {{
+            put("foo", 1);
+            put("bar", 1);
+        }};
+        assertEquals(new HashMap<Integer, String>() {{
+            put(1, "foo");
+        }}, view(inverted, withDuplicateValues));
     }
 }
