@@ -7,11 +7,13 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.jnape.palatable.lambda.lens.Lens.lens;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
+import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
@@ -49,6 +51,19 @@ public class LensTest {
     @Test
     public void functorProperties() {
         assertEquals(false, set(LENS.fmap(Set::isEmpty), 1, singletonList("foo")));
+    }
+
+    @Test
+    public void mapsIndividuallyOverParameters() {
+        Lens<String, Boolean, Character, Integer> lens = lens(s -> s.charAt(0), (s, b) -> s.length() == b);
+        Lens<Optional<String>, Optional<Boolean>, Optional<Character>, Optional<Integer>> theGambit = lens
+                .mapS((Optional<String> optS) -> optS.orElse(""))
+                .mapT(Optional::ofNullable)
+                .mapA(Optional::ofNullable)
+                .mapB((Optional<Integer> optI) -> optI.orElse(-1));
+
+        Lens.Fixed<Optional<String>, Optional<Boolean>, Optional<Character>, Optional<Integer>, Identity<Optional<Boolean>>, Identity<Optional<Integer>>> fixed = theGambit.fix();
+        assertEquals(Optional.of(true), fixed.apply(optC -> new Identity<>(optC.map(c -> parseInt(Character.toString(c)))), Optional.of("321")).runIdentity());
     }
 
     @Test

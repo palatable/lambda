@@ -126,10 +126,10 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
  * <a href="http://skillsmatter.com/podcast/scala/lenses-compositional-data-access-and-manipulation">about</a>
  * <a href="http://r6.ca/blog/20120623T104901Z.html">lenses</a>.
  *
- * @param <S> The type of the "larger" value for reading
- * @param <T> The type of the "larger" value for putting
- * @param <A> The type of the "smaller" value that is read
- * @param <B> The type of the "smaller" update value
+ * @param <S> the type of the "larger" value for reading
+ * @param <T> the type of the "larger" value for putting
+ * @param <A> the type of the "smaller" value that is read
+ * @param <B> the type of the "smaller" update value
  */
 @FunctionalInterface
 public interface Lens<S, T, A, B> extends Functor<T> {
@@ -142,8 +142,8 @@ public interface Lens<S, T, A, B> extends Functor<T> {
      * Although the Java type system does not allow enforceability, the functor instance FT should be the same as FB,
      * only differentiating in their parameters.
      *
-     * @param <FT> The type of the lifted T
-     * @param <FB> The type of the lifted B
+     * @param <FT> the type of the lifted T
+     * @param <FB> the type of the lifted B
      * @return the lens, "fixed" to the functor
      */
     default <FT extends Functor<T>, FB extends Functor<B>> Fixed<S, T, A, B, FT, FB> fix() {
@@ -152,7 +152,51 @@ public interface Lens<S, T, A, B> extends Functor<T> {
 
     @Override
     default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
-        return this.compose(Lens.<S, U, S, T>lens(id(), (s, t) -> fn.apply(t)));
+        return compose(Lens.<S, U, S, T>lens(id(), (s, t) -> fn.apply(t)));
+    }
+
+    /**
+     * Contravariantly map <code>S</code> to <code>R</code>, yielding a new lens.
+     *
+     * @param fn  the mapping function
+     * @param <R> the type of the new "larger" value for reading
+     * @return the new lens
+     */
+    default <R> Lens<R, T, A, B> mapS(Function<? super R, ? extends S> fn) {
+        return compose(lens(fn, (r, t) -> t));
+    }
+
+    /**
+     * Covariantly map <code>T</code> to <code>U</code>, yielding a new lens.
+     *
+     * @param fn  the mapping function
+     * @param <U> the type of the new "larger" value for putting
+     * @return the new lens
+     */
+    default <U> Lens<S, U, A, B> mapT(Function<? super T, ? extends U> fn) {
+        return fmap(fn);
+    }
+
+    /**
+     * Covariantly map <code>A</code> to <code>C</code>, yielding a new lens.
+     *
+     * @param fn  the mapping function
+     * @param <C> the type of the new "smaller" value that is read
+     * @return the new lens
+     */
+    default <C> Lens<S, T, C, B> mapA(Function<? super A, ? extends C> fn) {
+        return andThen(lens(fn, (a, b) -> b));
+    }
+
+    /**
+     * Contravariantly map <code>B</code> to <code>Z</code>, yielding a new lens.
+     *
+     * @param fn  the mapping function
+     * @param <Z> the type of the new "smaller" update value
+     * @return the new lens
+     */
+    default <Z> Lens<S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
+        return andThen(lens(id(), (a, z) -> fn.apply(z)));
     }
 
     /**
@@ -184,10 +228,10 @@ public interface Lens<S, T, A, B> extends Functor<T> {
      *
      * @param getter the getter function
      * @param setter the setter function
-     * @param <S>    The type of the "larger" value for reading
-     * @param <T>    The type of the "larger" value for putting
-     * @param <A>    The type of the "smaller" value that is read
-     * @param <B>    The type of the "smaller" update value
+     * @param <S>    the type of the "larger" value for reading
+     * @param <T>    the type of the "larger" value for putting
+     * @param <A>    the type of the "smaller" value that is read
+     * @param <B>    the type of the "smaller" update value
      * @return the lens
      */
     static <S, T, A, B> Lens<S, T, A, B> lens(Function<? super S, ? extends A> getter,
@@ -207,8 +251,8 @@ public interface Lens<S, T, A, B> extends Functor<T> {
      *
      * @param getter the getter function
      * @param setter the setter function
-     * @param <S>    The type of both "larger" values
-     * @param <A>    The type of both "smaller" values
+     * @param <S>    the type of both "larger" values
+     * @param <A>    the type of both "smaller" values
      * @return the lens
      */
     @SuppressWarnings("unchecked")
@@ -221,8 +265,8 @@ public interface Lens<S, T, A, B> extends Functor<T> {
      * A convenience type with a simplified type signature for common lenses with both unified "larger" values and
      * unified "smaller" values.
      *
-     * @param <S> The type of both "larger" values
-     * @param <A> The type of both "smaller" values
+     * @param <S> the type of both "larger" values
+     * @param <A> the type of both "smaller" values
      */
     @FunctionalInterface
     interface Simple<S, A> extends Lens<S, S, A, A> {
@@ -244,10 +288,10 @@ public interface Lens<S, T, A, B> extends Functor<T> {
         /**
          * A convenience type with a simplified type signature for fixed simple lenses.
          *
-         * @param <S>  The type of both "larger" values
-         * @param <A>  The type of both "smaller" values
-         * @param <FS> The type of the lifted s
-         * @param <FA> The type of the lifted A
+         * @param <S>  the type of both "larger" values
+         * @param <A>  the type of both "smaller" values
+         * @param <FS> the type of the lifted s
+         * @param <FA> the type of the lifted A
          */
         @FunctionalInterface
         interface Fixed<S, A, FS extends Functor<S>, FA extends Functor<A>>
@@ -259,12 +303,12 @@ public interface Lens<S, T, A, B> extends Functor<T> {
      * A lens that has been fixed to a functor. Because the lens is no longer polymorphic, it can additionally be safely
      * represented as an Fn2.
      *
-     * @param <S>  The type of the "larger" value for reading
-     * @param <T>  The type of the "larger" value for putting
-     * @param <A>  The type of the "smaller" value that is read
-     * @param <B>  The type of the "smaller" update value
-     * @param <FT> The type of the lifted T
-     * @param <FB> The type of the lifted B
+     * @param <S>  the type of the "larger" value for reading
+     * @param <T>  the type of the "larger" value for putting
+     * @param <A>  the type of the "smaller" value that is read
+     * @param <B>  the type of the "smaller" update value
+     * @param <FT> the type of the lifted T
+     * @param <FB> the type of the lifted B
      */
     @FunctionalInterface
     interface Fixed<S, T, A, B, FT extends Functor<T>, FB extends Functor<B>>
