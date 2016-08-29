@@ -15,6 +15,7 @@ Functional patterns for Java 8
      - [Tuples](#tuples)
    - [HMaps](#hmaps)
    - [Either](#either)
+ - [Lenses](#lenses)
  - [Notes](#notes) 
  - [License](#license)
 
@@ -43,17 +44,17 @@ Add the following dependency to your:
 `pom.xml` ([Maven](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)):
  
 ```xml
- <dependency>
-     <groupId>com.jnape.palatable</groupId>
-     <artifactId>lambda</artifactId>
-     <version>1.3</version>
- </dependency>
+<dependency>
+    <groupId>com.jnape.palatable</groupId>
+    <artifactId>lambda</artifactId>
+    <version>1.5</version>
+</dependency>
 ```
  
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
  
 ```gradle
-  compile group: 'com.jnape.palatable', name: 'lambda', version: '1.3'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5'
 ```
   
 
@@ -62,77 +63,77 @@ Add the following dependency to your:
 
 First, the obligatory `map`/`filter`/`reduce` example:
 ```Java
-  Integer sumOfEvenIncrements =
-            reduceLeft((x, y) -> x + y,
-                filter(x -> x % 2 == 0,
-                    map(x -> x + 1, asList(1, 2, 3, 4, 5))));
-  //-> 12
+Integer sumOfEvenIncrements =
+          reduceLeft((x, y) -> x + y,
+              filter(x -> x % 2 == 0,
+                  map(x -> x + 1, asList(1, 2, 3, 4, 5))));
+//-> 12
 ```
 
 Every function in lambda is [curried](https://www.wikiwand.com/en/Currying), so we could have also done this:
 ```Java
-  Fn1<Iterable<Integer>, Integer> sumOfEvenIncrementsFn =
-            map((Integer x) -> x + 1)
-            .then(filter(x -> x % 2 == 0))
-            .then(reduceLeft((x, y) -> x + y));
-  
-  Integer sumOfEvenIncrements = sumOfEvenIncrementsFn.apply(asList(1, 2, 3, 4, 5));
-  //-> 12
+Fn1<Iterable<Integer>, Integer> sumOfEvenIncrementsFn =
+          map((Integer x) -> x + 1)
+          .then(filter(x -> x % 2 == 0))
+          .then(reduceLeft((x, y) -> x + y));
+
+Integer sumOfEvenIncrements = sumOfEvenIncrementsFn.apply(asList(1, 2, 3, 4, 5));
+//-> 12
 ```
 
 How about the positive squares below 100:
 
 ```Java
-  Iterable<Integer> positiveSquaresBelow100 =
-            takeWhile(x -> x < 100, map(x -> x * x, iterate(x -> x + 1, 1)));
-  //-> [1, 4, 9, 16, 25, 36, 49, 64, 81]
+Iterable<Integer> positiveSquaresBelow100 =
+          takeWhile(x -> x < 100, map(x -> x * x, iterate(x -> x + 1, 1)));
+//-> [1, 4, 9, 16, 25, 36, 49, 64, 81]
 ```
 
 We could have also used `unfoldr`:
 
 ```Java
-  Iterable<Integer> positiveSquaresBelow100 = unfoldr(x -> {
-                int square = x * x;
-                return square < 100 ? Optional.of(tuple(square, x + 1)) : Optional.empty();
-            }, 1);
-  //-> [1, 4, 9, 16, 25, 36, 49, 64, 81]
+Iterable<Integer> positiveSquaresBelow100 = unfoldr(x -> {
+              int square = x * x;
+              return square < 100 ? Optional.of(tuple(square, x + 1)) : Optional.empty();
+          }, 1);
+//-> [1, 4, 9, 16, 25, 36, 49, 64, 81]
 ```
 
 What if we want the cross product of a domain and codomain:
 
 ```Java
-  Iterable<Tuple2<Integer, String>> crossProduct =
-            take(10, cartesianProduct(asList(1, 2, 3), asList("a", "b", "c")));
-  //-> (1,"a"), (1,"b"), (1,"c"), (2,"a"), (2,"b"), (2,"c"), (3,"a"), (3,"b"), (3,"c")
+Iterable<Tuple2<Integer, String>> crossProduct =
+          take(10, cartesianProduct(asList(1, 2, 3), asList("a", "b", "c")));
+//-> (1,"a"), (1,"b"), (1,"c"), (2,"a"), (2,"b"), (2,"c"), (3,"a"), (3,"b"), (3,"c")
 ```
 
 Let's compose two functions:
 
 ```Java
-  Fn1<Integer, Integer> add = x -> x + 1;
-  Fn1<Integer, Integer> subtract = x -> x -1;
+Fn1<Integer, Integer> add = x -> x + 1;
+Fn1<Integer, Integer> subtract = x -> x -1;
 
-  Fn1<Integer, Integer> noOp = add.then(subtract);
-  // same as
-  Fn1<Integer, Integer> alsoNoOp = subtract.compose(subtract);
+Fn1<Integer, Integer> noOp = add.then(subtract);
+// same as
+Fn1<Integer, Integer> alsoNoOp = subtract.compose(subtract);
 ```
 
 And partially apply some:
 
 ```Java
-  Fn2<Integer, Integer, Integer> add = (x, y) -> x + y;
+Fn2<Integer, Integer, Integer> add = (x, y) -> x + y;
 
-  Fn1<Integer, Integer> add1 = add.apply(1);
-  add1.apply(2);
-  //-> 3
+Fn1<Integer, Integer> add1 = add.apply(1);
+add1.apply(2);
+//-> 3
 ```
 
 And have fun with 3s:
 
 ```Java
-  Iterable<Iterable<Integer>> multiplesOf3InGroupsOf3 =
-            take(10, inGroupsOf(3, unfoldr(x -> Optional.of(tuple(x * 3, x + 1)), 1)));
-  //-> [[3, 6, 9], [12, 15, 18], [21, 24, 27]]
+Iterable<Iterable<Integer>> multiplesOf3InGroupsOf3 =
+          take(10, inGroupsOf(3, unfoldr(x -> Optional.of(tuple(x * 3, x + 1)), 1)));
+//-> [[3, 6, 9], [12, 15, 18], [21, 24, 27]]
 ```
 
 Check out the [tests](https://github.com/palatable/lambda/tree/master/src/test/java/com/jnape/palatable/lambda/functions/builtin) or [javadoc](http://palatable.github.io/lambda/javadoc/) for more examples.
@@ -149,13 +150,13 @@ HLists are type-safe heterogeneous lists, meaning they can store elements of dif
 The following illustrates how the linear expansion of the recursive type signature for `HList` prevents ill-typed expressions:
 
 ```Java
-  HCons<Integer, HCons<String, HNil>> hList = HList.cons(1, HList.cons("foo", HList.nil()));
+HCons<Integer, HCons<String, HNil>> hList = HList.cons(1, HList.cons("foo", HList.nil()));
 
-  System.out.println(hList.head()); // prints 1
-  System.out.println(hList.tail().head()); // prints "foo"
+System.out.println(hList.head()); // prints 1
+System.out.println(hList.tail().head()); // prints "foo"
 
-  HNil nil = hList.tail().tail();
-  //nil.head() won't type-check
+HNil nil = hList.tail().tail();
+//nil.head() won't type-check
 ```
 
 #### <a name="tuples">Tuples</a>
@@ -165,40 +166,40 @@ One of the primary downsides to using `HList`s in Java is how quickly the type s
 To address this, tuples in lambda are specializations of `HList`s up to 5 elements deep, with added support for index-based accessor methods.
 
 ```Java
-  HNil nil = HList.nil();
-  SingletonHList<Integer> singleton = nil.cons(5);
-  Tuple2<Integer, Integer> tuple2 = singleton.cons(4);
-  Tuple3<Integer, Integer, Integer> tuple3 = tuple2.cons(3);
-  Tuple4<Integer, Integer, Integer, Integer> tuple4 = tuple3.cons(2);
-  Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = tuple4.cons(1);
+HNil nil = HList.nil();
+SingletonHList<Integer> singleton = nil.cons(5);
+Tuple2<Integer, Integer> tuple2 = singleton.cons(4);
+Tuple3<Integer, Integer, Integer> tuple3 = tuple2.cons(3);
+Tuple4<Integer, Integer, Integer, Integer> tuple4 = tuple3.cons(2);
+Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = tuple4.cons(1);
 
-  System.out.println(tuple2._1()); // prints 4
-  System.out.println(tuple5._5()); // prints 5
+System.out.println(tuple2._1()); // prints 4
+System.out.println(tuple5._5()); // prints 5
 ```
 
 Additionally, `HList` provides convenience static factory methods for directly constructing lists of up to 5 elements:
 
 ```Java
-  SingletonHList<Integer> singleton = HList.singletonHList(1);
-  Tuple2<Integer, Integer> tuple2 = HList.tuple(1, 2);
-  Tuple3<Integer, Integer, Integer> tuple3 = HList.tuple(1, 2, 3);
-  Tuple4<Integer, Integer, Integer, Integer> tuple4 = HList.tuple(1, 2, 3, 4);
-  Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = HList.tuple(1, 2, 3, 4, 5);
+SingletonHList<Integer> singleton = HList.singletonHList(1);
+Tuple2<Integer, Integer> tuple2 = HList.tuple(1, 2);
+Tuple3<Integer, Integer, Integer> tuple3 = HList.tuple(1, 2, 3);
+Tuple4<Integer, Integer, Integer, Integer> tuple4 = HList.tuple(1, 2, 3, 4);
+Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = HList.tuple(1, 2, 3, 4, 5);
 ```
 
 Finally, all `Tuple*` classes are instances of both `Functor` and `Bifunctor`:
 
 ```Java
-  Tuple2<Integer, String> mappedTuple2 = tuple(1, 2).biMap(x -> x + 1, Object::toString);
+Tuple2<Integer, String> mappedTuple2 = tuple(1, 2).biMap(x -> x + 1, Object::toString);
 
-  System.out.println(mappedTuple2._1()); // prints 2
-  System.out.println(mappedTuple2._2()); // prints "2"
+System.out.println(mappedTuple2._1()); // prints 2
+System.out.println(mappedTuple2._2()); // prints "2"
 
-  Tuple3<String, Boolean, Integer> mappedTuple3 = tuple("foo", true, 1).biMap(x -> !x, x -> x + 1);
+Tuple3<String, Boolean, Integer> mappedTuple3 = tuple("foo", true, 1).biMap(x -> !x, x -> x + 1);
 
-  System.out.println(mappedTuple3._1()); // prints "foo"
-  System.out.println(mappedTuple3._2()); // prints false
-  System.out.println(mappedTuple3._3()); // prints 2
+System.out.println(mappedTuple3._1()); // prints "foo"
+System.out.println(mappedTuple3._2()); // prints false
+System.out.println(mappedTuple3._3()); // prints 2
 ```
 
 ### <a name="hmaps">Heterogeneous Maps</a>
@@ -206,14 +207,14 @@ Finally, all `Tuple*` classes are instances of both `Functor` and `Bifunctor`:
 HMaps are type-safe heterogeneous maps, meaning they can store mappings to different value types in the same map; however, whereas HLists encode value types in their type signatures, HMaps rely on the keys to encode the value type that they point to. 
 
 ```Java
-  TypeSafeKey<String> stringKey = TypeSafeKey.typeSafeKey();
-  TypeSafeKey<Integer> intKey = TypeSafeKey.typeSafeKey();
-  HMap hmap = HMap.hMap(stringKey, "string value",
-                        intKey, 1);
+TypeSafeKey<String> stringKey = TypeSafeKey.typeSafeKey();
+TypeSafeKey<Integer> intKey = TypeSafeKey.typeSafeKey();
+HMap hmap = HMap.hMap(stringKey, "string value",
+                      intKey, 1);
 
-  Optional<String> stringValue = hmap.get(stringKey); // Optional["string value"]
-  Optional<Integer> intValue = hmap.get(intKey); // Optional[1]
-  Optional<Integer> anotherIntValue = hmap.get(anotherIntKey); // Optional.empty
+Optional<String> stringValue = hmap.get(stringKey); // Optional["string value"]
+Optional<Integer> intValue = hmap.get(intKey); // Optional[1]
+Optional<Integer> anotherIntValue = hmap.get(anotherIntKey); // Optional.empty
 ```    
 
 ### <a name="either">Either</a>
@@ -223,17 +224,75 @@ Binary tagged unions are represented as `Either<L, R>`s, which resolve to one of
 Rather than supporting explicit value unwrapping, `Either` supports many useful comprehensions to help facilitate type-safe interactions. For example, `Either#match` is used to resolve an `Either<L,R>` to a different type.    
 
 ```Java
-  Either<String, Integer> right = Either.right(1);
-  Either<String, Integer> left = Either.left("Head fell off");
+Either<String, Integer> right = Either.right(1);
+Either<String, Integer> left = Either.left("Head fell off");
 
-  Boolean successful = right.match(l -> false, r -> true);
-  //-> true
-  
-  List<Integer> values = left.match(l -> Collections.emptyList(), Collections::singletonList);
-  //-> [] 
+Boolean successful = right.match(l -> false, r -> true);
+//-> true
+
+List<Integer> values = left.match(l -> Collections.emptyList(), Collections::singletonList);
+//-> [] 
 ```
 
 Check out the tests for [more examples](https://github.com/palatable/lambda/blob/master/src/test/java/com/jnape/palatable/lambda/adt/EitherTest.java) of ways to interact with `Either`.
+
+<a name="lenses">Lenses</a>
+----
+
+Lambda also ships with a first-class <a href="https://www.youtube.com/watch?v=cefnmjtAolY&feature=youtu.be&hd=1">lens</a> type, as well as a small library of useful general lenses:
+
+```Java
+Lens<List<String>, List<String>, Optional<String>, String> stringAt0 = ListLens.at(0);
+
+List<String> strings = asList("foo", "bar", "baz");
+view(stringAt0, strings); // Optional[foo]
+set(stringAt0, "quux", strings); // [quux, bar, baz]
+over(stringAt0, s -> s.map(String::toUpperCase).orElse(""), strings); // [FOO, bar, baz]
+```
+
+There are three functions that lambda provides that interface directly with lenses: `view`, `over`, and `set`. As the name implies, `view` and `set` are used to retrieve values and store values, respectively, whereas `over` is used to apply a function to the value a lens is focused on, alter it, and store it (you can think of `set` as a specialization of `over` using `constantly`).
+
+Lenses can be easily created. Consider the following `Person` class:
+
+```Java
+public final class Person {
+    private final int age;
+
+    public Person(int age) {
+        this.age = age;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public Person setAge(int age) {
+        return new Person(age);
+    }
+
+    public Person setAge(LocalDate dob) {
+        return setAge((int) YEARS.between(dob, LocalDate.now()));
+    }
+}
+```
+
+...and a lens for getting and setting `age` as an `int`:
+
+```Java
+Lens<Person, Person, Integer, Integer> ageLensWithInt = Lens.lens(Person::getAge, Person::setAge);
+
+//or, when each pair of type arguments match...
+
+Lens.Simple<Person, Integer> alsoAgeLensWithInt = Lens.lens(Person::getAge, Person::setAge);
+```
+
+If we wanted a lens for the `LocalDate` version of `setAge`, we could use the same method references and only alter the type signature:
+
+```Java
+Lens<Person, Person, Integer, LocalDate> ageLensWithLocalDate = Lens.lens(Person::getAge, Person::setAge);
+```
+
+Lenses also compose, can have any parameter independently mapped over, and support various other properties that make them interesting and useful. Check out the tests or the javadocs for more info.
 
 <a name="notes">Notes</a>
 -----
