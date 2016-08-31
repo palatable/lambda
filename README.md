@@ -115,7 +115,7 @@ Fn1<Integer, Integer> subtract = x -> x -1;
 
 Fn1<Integer, Integer> noOp = add.then(subtract);
 // same as
-Fn1<Integer, Integer> alsoNoOp = subtract.compose(subtract);
+Fn1<Integer, Integer> alsoNoOp = subtract.compose(add);
 ```
 
 And partially apply some:
