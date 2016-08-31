@@ -1,7 +1,7 @@
 λ
 ======
 [![Build Status](https://travis-ci.org/palatable/lambda.svg)](https://travis-ci.org/palatable/lambda)
-[![Lambda](https://img.shields.io/maven-central/v/com.jnape.palatable/lambda.svg?maxAge=2592000)](http://search.maven.org/#search%7Cga%7C1%7Ccom.jnape.palatable.lambda)
+[![Lambda](https://img.shields.io/maven-central/v/com.jnape.palatable/lambda.svg)](http://search.maven.org/#search%7Cga%7C1%7Ccom.jnape.palatable.lambda)
 
 Functional patterns for Java 8
 
