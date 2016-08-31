@@ -283,7 +283,7 @@ Lens<Person, Person, Integer, Integer> ageLensWithInt = Lens.lens(Person::getAge
 
 //or, when each pair of type arguments match...
 
-Lens.Simple<Person, Integer> alsoAgeLensWithInt = Lens.lens(Person::getAge, Person::setAge);
+Lens.Simple<Person, Integer> alsoAgeLensWithInt = Lens.simpleLens(Person::getAge, Person::setAge);
 ```
 
 If we wanted a lens for the `LocalDate` version of `setAge`, we could use the same method references and only alter the type signature:
@@ -292,7 +292,28 @@ If we wanted a lens for the `LocalDate` version of `setAge`, we could use the sa
 Lens<Person, Person, Integer, LocalDate> ageLensWithLocalDate = Lens.lens(Person::getAge, Person::setAge);
 ```
 
-Lenses also compose, can have any parameter independently mapped over, and support various other properties that make them interesting and useful. Check out the tests or the javadocs for more info.
+Compatible lenses can be trivially composed:
+
+```Java
+Lens<List<Integer>, List<Integer>, Optional<Integer>, Integer> at0 = ListLens.at(0);
+Lens<Map<String, List<Integer>>, Map<String, List<Integer>>, List<Integer>, List<Integer>> atFoo = MapLens.atKey("foo", emptyList());
+
+view(atFoo.andThen(at0), singletonMap("foo", asList(1, 2, 3))); // Optional[1]
+```
+
+Lens provides independent `map` operations for each parameter, so incompatible lenses can also be composed: 
+
+```Java
+Lens<List<Integer>, List<Integer>, Optional<Integer>, Integer> at0 = ListLens.at(0);
+Lens<Map<String, List<Integer>>, Map<String, List<Integer>>, Optional<List<Integer>>, List<Integer>> atFoo = MapLens.atKey("foo");
+Lens<Map<String, List<Integer>>, Map<String, List<Integer>>, Optional<Integer>, Integer> composed =
+        atFoo.mapA(optL -> optL.orElse(singletonList(-1)))
+                .andThen(at0);
+
+view(composed, singletonMap("foo", emptyList())); // Optional.empty
+```
+
+Check out the tests or the [javadoc](http://palatable.github.io/lambda/javadoc/) for more info.
 
 <a name="notes">Notes</a>
 -----

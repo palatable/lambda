@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import static com.jnape.palatable.lambda.lens.Lens.lens;
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
+import static com.jnape.palatable.lambda.lens.lenses.OptionalLens.unLiftA;
 
 /**
  * Lenses that operate on {@link List}s.
@@ -43,5 +44,19 @@ public final class ListLens {
                             xs.set(index, x);
                         return xs;
                     });
+    }
+
+    /**
+     * Convenience static factory method for creating a lens that focuses on an element in a list at a particular index,
+     * returning <code>defaultValue</code> if there is no value at that index.
+     *
+     * @param index        the index to focus on
+     * @param defaultValue the value to use if there is no element at index
+     * @param <X>          the list element type
+     * @return the element at the index, or defaultValue
+     */
+    @SuppressWarnings("unchecked")
+    public static <X> Lens.Simple<List<X>, X> at(int index, X defaultValue) {
+        return unLiftA(at(index), defaultValue)::apply;
     }
 }

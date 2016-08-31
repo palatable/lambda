@@ -12,6 +12,7 @@ import java.util.Set;
 import static com.jnape.palatable.lambda.lens.Lens.lens;
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
+import static com.jnape.palatable.lambda.lens.lenses.OptionalLens.unLiftA;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -48,6 +49,21 @@ public final class MapLens {
             m.put(k, v);
             return m;
         });
+    }
+
+    /**
+     * Convenience static factory method for creating a lens that focuses on a value at a key in a map, falling back to
+     * <code>defaultV</code> if the value is missing.
+     *
+     * @param k            the key to focus on
+     * @param defaultValue the default value to use in case of a missing value at key
+     * @param <K>          the key type
+     * @param <V>          the value type
+     * @return a lens that focuses on the value at the key
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V> Lens.Simple<Map<K, V>, V> atKey(K k, V defaultValue) {
+        return unLiftA(atKey(k), defaultValue)::apply;
     }
 
     /**

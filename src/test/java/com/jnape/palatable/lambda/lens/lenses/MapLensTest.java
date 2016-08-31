@@ -15,6 +15,7 @@ import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static com.jnape.palatable.lambda.lens.lenses.MapLens.keys;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -54,6 +55,22 @@ public class MapLensTest {
         Map<String, Integer> updated = set(atFoo, -1, m);
         assertEquals(new HashMap<String, Integer>() {{
             put("foo", -1);
+            put("bar", 2);
+            put("baz", 3);
+        }}, updated);
+        assertSame(m, updated);
+    }
+
+    @Test
+    public void atKeyWithDefaultValueFocusedOnValueAtKey() {
+        Lens<Map<String, Integer>, Map<String, Integer>, Integer, Integer> atFoo = MapLens.atKey("foo", -1);
+
+        assertEquals((Integer) 1, view(atFoo, m));
+        assertEquals((Integer) (-1), view(atFoo, emptyMap()));
+
+        Map<String, Integer> updated = set(atFoo, 11, m);
+        assertEquals(new HashMap<String, Integer>() {{
+            put("foo", 11);
             put("bar", 2);
             put("baz", 3);
         }}, updated);

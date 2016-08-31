@@ -49,4 +49,14 @@ public class ListLensTest {
         assertEquals(asList("quux", "bar", "baz"), set(at0, "quux", xs));
         assertEquals(emptyList(), set(at0, "quux", emptyList()));
     }
+
+    @Test
+    public void atWithDefaultValueFocusesOnElementAtIndex() {
+        Lens<List<String>, List<String>, String, String> at0 = ListLens.at(0, "missing");
+
+        assertEquals("foo", view(at0, xs));
+        assertEquals("missing", view(at0, emptyList()));
+        assertEquals(asList("quux", "bar", "baz"), set(at0, "quux", xs));
+        assertEquals(emptyList(), set(at0, "quux", emptyList()));
+    }
 }
