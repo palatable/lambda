@@ -8,4 +8,8 @@ com.jnape.palatable.lambda.functions.builtin.fn3
 com.jnape.palatable.lambda.functions.specialized
 com.jnape.palatable.lambda.functions.specialized.checked
 com.jnape.palatable.lambda.functor
+com.jnape.palatable.lambda.functor.builtin
 com.jnape.palatable.lambda.iterators
+com.jnape.palatable.lambda.lens
+com.jnape.palatable.lambda.lens.functions
+com.jnape.palatable.lambda.lens.lenses
