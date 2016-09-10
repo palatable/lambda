@@ -206,6 +206,16 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
     }
 
     /**
+     * In the left case, returns an {@link Optional#empty}; otherwise, returns {@link Optional#ofNullable} around the
+     * right value.
+     *
+     * @return an Optional around the right value, or empty if left
+     */
+    public Optional<R> toOptional() {
+        return match(__ -> Optional.empty(), Optional::ofNullable);
+    }
+
+    /**
      * Convert an {@link Optional}&lt;R&gt; into an <code>Either&lt;L, R&gt;</code>, supplying the left value from
      * <code>leftFn</code> in the case of {@link Optional#empty()}.
      *
@@ -218,10 +228,6 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
     public static <L, R> Either<L, R> fromOptional(Optional<R> optional, Supplier<L> leftFn) {
         return optional.<Either<L, R>>map(Either::right)
                 .orElse(left(leftFn.get()));
-    }
-
-    public Optional<R> toOptional() {
-        return match(__ -> Optional.empty(), Optional::ofNullable);
     }
 
     /**
