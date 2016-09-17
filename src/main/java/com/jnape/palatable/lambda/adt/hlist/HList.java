@@ -29,6 +29,22 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
      */
     public abstract <NewHead> HCons<NewHead, ? extends HList<Head, Tail>> cons(NewHead newHead);
 
+    @Override
+    public final String toString() {
+        StringBuilder body = new StringBuilder("HList{");
+
+        HList next = this;
+        while (next != HNil.INSTANCE) {
+            HCons hCons = (HCons) next;
+            body.append(hCons.head);
+            next = hCons.tail;
+            if (next != HNil.INSTANCE)
+                body.append(" :: ");
+        }
+
+        return body.append("}").toString();
+    }
+
     /**
      * Static factory method for creating empty HLists.
      *
@@ -186,14 +202,6 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         public final int hashCode() {
             return 31 * Objects.hashCode(head) + tail.hashCode();
         }
-
-        @Override
-        public final String toString() {
-            return "HCons{" +
-                    "head=" + head +
-                    ", tail=" + tail +
-                    '}';
-        }
     }
 
     /**
@@ -208,11 +216,6 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         @Override
         public <Head> SingletonHList<Head> cons(Head head) {
             return new SingletonHList<>(head);
-        }
-
-        @Override
-        public String toString() {
-            return "HNil{}";
         }
     }
 }
