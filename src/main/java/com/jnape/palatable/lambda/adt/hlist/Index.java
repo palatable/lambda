@@ -33,6 +33,13 @@ public abstract class Index<Target, TargetList extends HCons<?, ?>> {
      */
     public abstract Target get(TargetList hList);
 
+    /**
+     * Set a new value of the same type at this index in an {@link HList}.
+     *
+     * @param newElement the new value
+     * @param hList      the HList
+     * @return the updated HList
+     */
     public abstract TargetList set(Target newElement, TargetList hList);
 
     /**
