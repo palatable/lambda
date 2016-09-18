@@ -47,8 +47,8 @@ public class MapLensTest {
     }
 
     @Test
-    public void atKeyFocusesOnValueAtKey() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Optional<Integer>, Integer> atFoo = MapLens.atKey("foo");
+    public void valueAtFocusesOnValueAtKey() {
+        Lens<Map<String, Integer>, Map<String, Integer>, Optional<Integer>, Integer> atFoo = MapLens.valueAt("foo");
 
         assertEquals(Optional.of(1), view(atFoo, m));
 
@@ -62,8 +62,8 @@ public class MapLensTest {
     }
 
     @Test
-    public void atKeyWithDefaultValueFocusedOnValueAtKey() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Integer, Integer> atFoo = MapLens.atKey("foo", -1);
+    public void valueAtWithDefaultValueFocusedOnValueAtKey() {
+        Lens<Map<String, Integer>, Map<String, Integer>, Integer, Integer> atFoo = MapLens.valueAt("foo", -1);
 
         assertEquals((Integer) 1, view(atFoo, m));
         assertEquals((Integer) (-1), view(atFoo, emptyMap()));

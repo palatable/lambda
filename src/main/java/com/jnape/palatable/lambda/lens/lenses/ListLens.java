@@ -37,7 +37,7 @@ public final class ListLens {
      * @param <X>   the list element type
      * @return an Optional wrapping the element at the index
      */
-    public static <X> Lens<List<X>, List<X>, Optional<X>, X> at(int index) {
+    public static <X> Lens<List<X>, List<X>, Optional<X>, X> elementAt(int index) {
         return lens(xs -> Optional.ofNullable(xs.size() > index ? xs.get(index) : null),
                     (xs, x) -> {
                         if (xs.size() > index)
@@ -56,7 +56,7 @@ public final class ListLens {
      * @return the element at the index, or defaultValue
      */
     @SuppressWarnings("unchecked")
-    public static <X> Lens.Simple<List<X>, X> at(int index, X defaultValue) {
-        return unLiftA(at(index), defaultValue)::apply;
+    public static <X> Lens.Simple<List<X>, X> elementAt(int index, X defaultValue) {
+        return unLiftA(elementAt(index), defaultValue)::apply;
     }
 }

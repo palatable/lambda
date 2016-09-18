@@ -41,8 +41,8 @@ public class ListLensTest {
     }
 
     @Test
-    public void atFocusesOnElementAtIndex() {
-        Lens<List<String>, List<String>, Optional<String>, String> at0 = ListLens.at(0);
+    public void elementAtFocusesOnElementAtIndex() {
+        Lens<List<String>, List<String>, Optional<String>, String> at0 = ListLens.elementAt(0);
 
         assertEquals(Optional.of("foo"), view(at0, xs));
         assertEquals(Optional.empty(), view(at0, emptyList()));
@@ -51,8 +51,8 @@ public class ListLensTest {
     }
 
     @Test
-    public void atWithDefaultValueFocusesOnElementAtIndex() {
-        Lens<List<String>, List<String>, String, String> at0 = ListLens.at(0, "missing");
+    public void elementAtWithDefaultValueFocusesOnElementAtIndex() {
+        Lens<List<String>, List<String>, String, String> at0 = ListLens.elementAt(0, "missing");
 
         assertEquals("foo", view(at0, xs));
         assertEquals("missing", view(at0, emptyList()));

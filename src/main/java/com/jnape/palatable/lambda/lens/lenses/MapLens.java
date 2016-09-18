@@ -44,7 +44,7 @@ public final class MapLens {
      * @param <V> the value type
      * @return a lens that focuses on the value at key, as an {@link Optional}
      */
-    public static <K, V> Lens<Map<K, V>, Map<K, V>, Optional<V>, V> atKey(K k) {
+    public static <K, V> Lens<Map<K, V>, Map<K, V>, Optional<V>, V> valueAt(K k) {
         return lens(m -> Optional.ofNullable(m.get(k)), (m, v) -> {
             m.put(k, v);
             return m;
@@ -62,8 +62,8 @@ public final class MapLens {
      * @return a lens that focuses on the value at the key
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> Lens.Simple<Map<K, V>, V> atKey(K k, V defaultValue) {
-        return unLiftA(atKey(k), defaultValue)::apply;
+    public static <K, V> Lens.Simple<Map<K, V>, V> valueAt(K k, V defaultValue) {
+        return unLiftA(valueAt(k), defaultValue)::apply;
     }
 
     /**
