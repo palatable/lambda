@@ -36,10 +36,10 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
         HList next = this;
         while (next != HNil.INSTANCE) {
             HCons hCons = (HCons) next;
-            body.append(hCons.head);
+            body.append(" ").append(hCons.head).append(" ");
             next = hCons.tail;
             if (next != HNil.INSTANCE)
-                body.append(" :: ");
+                body.append("::");
         }
 
         return body.append("}").toString();

@@ -187,6 +187,23 @@ Tuple4<Integer, Integer, Integer, Integer> tuple4 = HList.tuple(1, 2, 3, 4);
 Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = HList.tuple(1, 2, 3, 4, 5);
 ```
 
+`Index` can be used for type-safe retrieval and updating of elements at specific indexes:
+
+```Java
+HCons<Integer, HCons<String, HCons<Character, HNil>>> hList = cons(1, cons("2", cons('3', nil())));
+HCons<Integer, Tuple2<String, Character>> tuple = tuple(1, "2", '3');
+Tuple5<Integer, String, Character, Double, Boolean> longerHList = tuple(1, "2", '3', 4.0d, false);
+
+Index<Character, HCons<Integer, ? extends HCons<String, ? extends HCons<Character, ?>>>> characterIndex =
+        Index.<Character>index().<String>after().after();
+
+characterIndex.get(hList); // '3'
+characterIndex.get(tuple); // '3'
+characterIndex.get(longerHList); // '3'
+
+characterIndex.set('4', hList); // HList{ 1 :: "2" :: '4' }
+```
+
 Finally, all `Tuple*` classes are instances of both `Functor` and `Bifunctor`:
 
 ```Java

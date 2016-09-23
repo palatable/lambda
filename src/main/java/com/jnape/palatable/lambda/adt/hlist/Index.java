@@ -40,7 +40,7 @@ public abstract class Index<Target, TargetList extends HCons<?, ?>> {
      * @param hList      the HList
      * @return the updated HList
      */
-    public abstract TargetList set(Target newElement, TargetList hList);
+    public abstract <L extends TargetList> L set(Target newElement, L hList);
 
     /**
      * Create a root index for a head value of type <code>Target</code>.
@@ -62,8 +62,9 @@ public abstract class Index<Target, TargetList extends HCons<?, ?>> {
         }
 
         @Override
-        public HCons<Target, ?> set(Target newElement, HCons<Target, ?> hList) {
-            return hList.tail().cons(newElement);
+        @SuppressWarnings("unchecked")
+        public <L extends HCons<Target, ?>> L set(Target newElement, L hList) {
+            return (L) hList.tail().cons(newElement);
         }
 
         @SuppressWarnings("unchecked")
@@ -87,8 +88,8 @@ public abstract class Index<Target, TargetList extends HCons<?, ?>> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public HCons<Head, ? extends List> set(Target newElement, HCons<Head, ? extends List> hList) {
-            return (HCons<Head, ? extends List>) previousIndex.set(newElement, hList.tail()).cons(hList.head());
+        public <L extends HCons<Head, ? extends List>> L set(Target newElement, L hList) {
+            return (L) previousIndex.set(newElement, hList.tail()).cons(hList.head());
         }
     }
 }
