@@ -38,6 +38,7 @@ public abstract class Index<Target, TargetList extends HCons<?, ?>> {
      *
      * @param newElement the new value
      * @param hList      the HList
+     * @param <L>        the inferred tail type of the HList
      * @return the updated HList
      */
     public abstract <L extends TargetList> L set(Target newElement, L hList);
