@@ -91,6 +91,15 @@ public class EitherTest {
     }
 
     @Test
+    public void invertSwapsParameters() {
+        Either<String, Integer> left = left("foo");
+        assertEquals(right("foo"), left.invert());
+
+        Either<String, Integer> right = right(1);
+        assertEquals(left(1), right.invert());
+    }
+
+    @Test
     public void mergeDuallyLiftsAndCombinesBiasingLeft() {
         Either<String, Integer> left1 = left("foo");
         Either<String, Integer> right1 = right(1);

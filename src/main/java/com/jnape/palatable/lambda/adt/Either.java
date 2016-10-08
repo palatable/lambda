@@ -122,6 +122,16 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
     }
 
     /**
+     * Transform an <code>Either&lt;L, R&gt;</code> into an <code>Either&lt;R, L&gt;</code>, preserving the current
+     * values.
+     *
+     * @return The inverted either
+     */
+    public final Either<R, L> invert() {
+        return flatMap(Either::right, Either::left);
+    }
+
+    /**
      * Given two binary operators over L and R, merge multiple <code>Either&lt;L, R&gt;</code>s into a single
      * <code>Either&lt;L, R&gt;</code>. Note that <code>merge</code> biases towards left values; that is, if any left
      * value exists, the result will be a left value, such that only unanimous right values result in an ultimate right
