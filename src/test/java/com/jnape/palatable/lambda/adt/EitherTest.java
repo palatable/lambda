@@ -142,7 +142,7 @@ public class EitherTest {
     }
 
     @Test
-    public void functorialProperties() {
+    public void functorProperties() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 
@@ -151,7 +151,7 @@ public class EitherTest {
     }
 
     @Test
-    public void biFunctorialProperties() {
+    public void bifunctorProperties() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
 

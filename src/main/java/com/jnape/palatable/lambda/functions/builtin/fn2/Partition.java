@@ -14,7 +14,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Filter.filter;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 
 /**
- * Given an <code>Iterable&lt;A&gt;</code> <code>as</code> and a disjoint mapping function <code>a -> Either&lt;L,
+ * Given an <code>Iterable&lt;A&gt;</code> <code>as</code> and a disjoint mapping function <code>a -&gt; Either&lt;L,
  * R&gt;</code>, return a {@link Tuple2} over the lazily unwrapped left <code>L</code> and right <code>R</code> values
  * in the first and second slots, respectively. Note that while the tuple must be constructed eagerly, the left and
  * right iterables contained therein are both lazy, so comprehension over infinite iterables is supported.

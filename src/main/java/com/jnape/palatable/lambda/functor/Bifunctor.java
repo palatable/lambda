@@ -49,7 +49,7 @@ public interface Bifunctor<A, B> {
      * @param <D> the new right parameter type
      * @param lFn the left parameter mapping function
      * @param rFn the right parameter mapping function
-     * @return a bifunctor over Z (the new left parameter type) and C (the new right parameter type)
+     * @return a bifunctor over C (the new left parameter type) and D (the new right parameter type)
      */
     <C, D> Bifunctor<C, D> biMap(Function<? super A, ? extends C> lFn, Function<? super B, ? extends D> rFn);
 }
