@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.t
  * @see Fn1
  */
 @FunctionalInterface
-public interface CheckedFn1<A, B> extends Fn1<A, B> {
+public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
 
     @Override
     default B apply(A a) {
@@ -29,7 +29,7 @@ public interface CheckedFn1<A, B> extends Fn1<A, B> {
      *
      * @param a the argument
      * @return the result of the function application
-     * @throws Exception any exception thrown by the function application
+     * @throws T any Throwable thrown by the function application
      */
-    B checkedApply(A a) throws Exception;
+    B checkedApply(A a) throws T;
 }

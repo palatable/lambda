@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.adt;
 
+import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
+import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
-import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -23,7 +23,7 @@ import static java.util.Arrays.asList;
  * @param <L> The left parameter type
  * @param <R> The right parameter type
  */
-public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
+public abstract class Either<L, R> implements CoProduct2<L, R> {
 
     private Either() {
     }
@@ -61,16 +61,16 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
     }
 
     /**
-     * Return the wrapped value if this is a right; otherwise, map the wrapped left value to an <code>E</code> and throw
+     * Return the wrapped value if this is a right; otherwise, map the wrapped left value to a <code>T</code> and throw
      * it.
      *
-     * @param throwableFn a function from L to E
-     * @param <E>         the left parameter type (the throwable exception type)
+     * @param throwableFn a function from L to T
+     * @param <T>         the left parameter type (the throwable type)
      * @return the wrapped value if this is a right
-     * @throws E the result of applying the wrapped left value to throwableFn, if this is a left
+     * @throws T the result of applying the wrapped left value to throwableFn, if this is a left
      */
-    public final <E extends RuntimeException> R orThrow(Function<? super L, ? extends E> throwableFn) throws E {
-        return match(l -> {
+    public final <T extends Throwable> R orThrow(Function<? super L, ? extends T> throwableFn) throws T {
+        return match((CheckedFn1<T, L, R>) l -> {
             throw throwableFn.apply(l);
         }, id());
     }
@@ -200,13 +200,13 @@ public abstract class Either<L, R> implements Functor<R>, Bifunctor<L, R> {
     @Override
     @SuppressWarnings("unchecked")
     public final <L2> Either<L2, R> biMapL(Function<? super L, ? extends L2> fn) {
-        return (Either<L2, R>) Bifunctor.super.biMapL(fn);
+        return (Either<L2, R>) CoProduct2.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public final <R2> Either<L, R2> biMapR(Function<? super R, ? extends R2> fn) {
-        return (Either<L, R2>) Bifunctor.super.biMapR(fn);
+        return (Either<L, R2>) CoProduct2.super.biMapR(fn);
     }
 
     @Override
