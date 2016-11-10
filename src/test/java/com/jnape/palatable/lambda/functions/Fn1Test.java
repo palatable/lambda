@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.functions;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
+import java.util.function.Function;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
@@ -31,5 +33,11 @@ public class Fn1Test {
         Fn1<Integer, String> toString = Object::toString;
 
         MatcherAssert.assertThat(add2.then(toString).apply(2), is(toString.apply(add2.apply(2))));
+    }
+
+    @Test
+    public void adapt() {
+        Function<String, Integer> parseInt = Integer::parseInt;
+        assertEquals((Integer) 1, Fn1.adapt(parseInt).apply("1"));
     }
 }

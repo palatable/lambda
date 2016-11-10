@@ -65,4 +65,18 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
     default BiFunction<A, B, C> toBiFunction() {
         return this::apply;
     }
+
+    /**
+     * Static factory method for wrapping a {@link BiFunction} in an {@link Fn2}. Useful for avoid explicit casting when
+     * using method references as {@link Fn2}s.
+     *
+     * @param biFunction the biFunction to adapt
+     * @param <A>        the first input argument type
+     * @param <B>        the second input argument type
+     * @param <C>        the output type
+     * @return the Fn2
+     */
+    static <A, B, C> Fn2<A, B, C> adapt(BiFunction<A, B, C> biFunction) {
+        return biFunction::apply;
+    }
 }

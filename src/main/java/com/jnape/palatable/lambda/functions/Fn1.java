@@ -113,4 +113,17 @@ public interface Fn1<A, B> extends Functor<B>, Profunctor<A, B>, Function<A, B> 
     default <C> Fn1<A, C> andThen(Function<? super B, ? extends C> after) {
         return a -> after.apply(apply(a));
     }
+
+    /**
+     * Static factory method for wrapping a {@link Function} in an {@link Fn1}. Useful for avoid explicit casting when
+     * using method references as {@link Fn1}s.
+     *
+     * @param function the function to adapt
+     * @param <A>      the input argument type
+     * @param <B>      the output type
+     * @return the Fn1
+     */
+    static <A, B> Fn1<A, B> adapt(Function<A, B> function) {
+        return function::apply;
+    }
 }

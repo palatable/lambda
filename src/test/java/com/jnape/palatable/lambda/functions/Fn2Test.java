@@ -34,4 +34,10 @@ public class Fn2Test {
         BiFunction<String, Integer, Boolean> biFunction = CHECK_LENGTH.toBiFunction();
         assertEquals(true, biFunction.apply("abc", 3));
     }
+
+    @Test
+    public void adapt() {
+        BiFunction<String, String, String> format = String::format;
+        assertEquals("foo bar", Fn2.adapt(format).apply("foo %s", "bar"));
+    }
 }
