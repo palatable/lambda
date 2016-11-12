@@ -1,34 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <title>Lambda by palatable</title>
 
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    <title>Lambda by palatable</title>
   </head>
-
   <body>
-    <header>
-      <div class="inner">
-        <h1>Lambda</h1>
-        <h2>Functional patterns for Java</h2>
-        <a href="https://github.com/palatable/lambda" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Lambda</h1>
+        <p class="header">Functional patterns for Java</p>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/palatable/lambda/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/palatable/lambda/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/palatable/lambda">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/palatable">palatable</a></p>
+
+
+      </header>
+      <section>
+        <h1>
 <a id="λ" class="anchor" href="#%CE%BB" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>λ</h1>
 
 <p><a href="https://travis-ci.org/palatable/lambda"><img src="https://travis-ci.org/palatable/lambda.svg" alt="Build Status"></a>
@@ -55,7 +57,13 @@
 </ul>
 </li>
 <li><a href="#hmaps">HMaps</a></li>
+<li>
+<a href="#coproducts">CoProducts</a>
+
+<ul>
 <li><a href="#either">Either</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#lenses">Lenses</a></li>
@@ -95,12 +103,12 @@
 <div class="highlight highlight-text-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
     &lt;<span class="pl-ent">groupId</span>&gt;com.jnape.palatable&lt;/<span class="pl-ent">groupId</span>&gt;
     &lt;<span class="pl-ent">artifactId</span>&gt;lambda&lt;/<span class="pl-ent">artifactId</span>&gt;
-    &lt;<span class="pl-ent">version</span>&gt;1.5.1&lt;/<span class="pl-ent">version</span>&gt;
+    &lt;<span class="pl-ent">version</span>&gt;1.5.3&lt;/<span class="pl-ent">version</span>&gt;
 &lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
 
 <p><code>build.gradle</code> (<a href="https://docs.gradle.org/current/userguide/dependency_management.html">Gradle</a>):</p>
 
-<div class="highlight highlight-source-groovy-gradle"><pre>compile <span class="pl-c1">group</span>: <span class="pl-s"><span class="pl-pds">'</span>com.jnape.palatable<span class="pl-pds">'</span></span>, <span class="pl-c1">name</span>: <span class="pl-s"><span class="pl-pds">'</span>lambda<span class="pl-pds">'</span></span>, <span class="pl-c1">version</span>: <span class="pl-s"><span class="pl-pds">'</span>1.5.1<span class="pl-pds">'</span></span></pre></div>
+<div class="highlight highlight-source-groovy-gradle"><pre>compile <span class="pl-c1">group</span>: <span class="pl-s"><span class="pl-pds">'</span>com.jnape.palatable<span class="pl-pds">'</span></span>, <span class="pl-c1">name</span>: <span class="pl-s"><span class="pl-pds">'</span>lambda<span class="pl-pds">'</span></span>, <span class="pl-c1">version</span>: <span class="pl-s"><span class="pl-pds">'</span>1.5.3<span class="pl-pds">'</span></span></pre></div>
 
 <h2>
 <a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="examples">Examples</a>
@@ -151,7 +159,7 @@
 
 <span class="pl-k">Fn1&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> noOp <span class="pl-k">=</span> add<span class="pl-k">.</span>then(subtract);
 <span class="pl-c">// same as</span>
-<span class="pl-k">Fn1&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> alsoNoOp <span class="pl-k">=</span> subtract<span class="pl-k">.</span>compose(subtract);</pre></div>
+<span class="pl-k">Fn1&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> alsoNoOp <span class="pl-k">=</span> subtract<span class="pl-k">.</span>compose(add);</pre></div>
 
 <p>And partially apply some:</p>
 
@@ -217,6 +225,21 @@ add1<span class="pl-k">.</span>apply(<span class="pl-c1">2</span>);
 <span class="pl-k">Tuple4&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple4 <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>tuple(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>, <span class="pl-c1">4</span>);
 <span class="pl-k">Tuple5&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Integer</span>&gt;</span> tuple5 <span class="pl-k">=</span> <span class="pl-smi">HList</span><span class="pl-k">.</span>tuple(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>, <span class="pl-c1">4</span>, <span class="pl-c1">5</span>);</pre></div>
 
+<p><code>Index</code> can be used for type-safe retrieval and updating of elements at specific indexes:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">HCons&lt;<span class="pl-smi">Integer</span>, <span class="pl-k">HCons&lt;<span class="pl-smi">String</span>, <span class="pl-k">HCons&lt;<span class="pl-smi">Character</span>, <span class="pl-smi">HNil</span>&gt;</span>&gt;</span>&gt;</span> hList <span class="pl-k">=</span> cons(<span class="pl-c1">1</span>, cons(<span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span>, cons(<span class="pl-s"><span class="pl-pds">'</span>3<span class="pl-pds">'</span></span>, nil())));
+<span class="pl-k">HCons&lt;<span class="pl-smi">Integer</span>, <span class="pl-k">Tuple2&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Character</span>&gt;</span>&gt;</span> tuple <span class="pl-k">=</span> tuple(<span class="pl-c1">1</span>, <span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">'</span>3<span class="pl-pds">'</span></span>);
+<span class="pl-k">Tuple5&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">String</span>, <span class="pl-smi">Character</span>, <span class="pl-smi">Double</span>, <span class="pl-smi">Boolean</span>&gt;</span> longerHList <span class="pl-k">=</span> tuple(<span class="pl-c1">1</span>, <span class="pl-s"><span class="pl-pds">"</span>2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">'</span>3<span class="pl-pds">'</span></span>, <span class="pl-c1">4.0d</span>, <span class="pl-c1">false</span>);
+
+<span class="pl-k">Index&lt;<span class="pl-smi">Character</span>, <span class="pl-k">HCons&lt;<span class="pl-smi">Integer</span>, ? extends <span class="pl-k">HCons&lt;<span class="pl-smi">String</span>, ? extends <span class="pl-k">HCons&lt;<span class="pl-smi">Character</span>, ?&gt;</span>&gt;</span>&gt;</span>&gt;</span> characterIndex <span class="pl-k">=</span>
+        <span class="pl-smi">Index</span><span class="pl-k">.</span><span class="pl-k">&lt;</span><span class="pl-smi">Character</span><span class="pl-k">&gt;</span>index()<span class="pl-c1">.</span><span class="pl-k">&lt;</span><span class="pl-smi">String</span><span class="pl-k">&gt;</span>after()<span class="pl-k">.</span>after();
+
+characterIndex<span class="pl-k">.</span>get(hList); <span class="pl-c">// '3'</span>
+characterIndex<span class="pl-k">.</span>get(tuple); <span class="pl-c">// '3'</span>
+characterIndex<span class="pl-k">.</span>get(longerHList); <span class="pl-c">// '3'</span>
+
+characterIndex<span class="pl-k">.</span>set(<span class="pl-s"><span class="pl-pds">'</span>4<span class="pl-pds">'</span></span>, hList); <span class="pl-c">// HList{ 1 :: "2" :: '4' }</span></pre></div>
+
 <p>Finally, all <code>Tuple*</code> classes are instances of both <code>Functor</code> and <code>Bifunctor</code>:</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">Tuple2&lt;<span class="pl-smi">Integer</span>, <span class="pl-smi">String</span>&gt;</span> mappedTuple2 <span class="pl-k">=</span> tuple(<span class="pl-c1">1</span>, <span class="pl-c1">2</span>)<span class="pl-k">.</span>biMap(x <span class="pl-k">-</span><span class="pl-k">&gt;</span> x <span class="pl-k">+</span> <span class="pl-c1">1</span>, <span class="pl-smi">Object</span><span class="pl-k">::</span>toString);
@@ -246,18 +269,43 @@ add1<span class="pl-k">.</span>apply(<span class="pl-c1">2</span>);
 <span class="pl-k">Optional&lt;<span class="pl-smi">Integer</span>&gt;</span> anotherIntValue <span class="pl-k">=</span> hmap<span class="pl-k">.</span>get(anotherIntKey); <span class="pl-c">// Optional.empty</span></pre></div>
 
 <h3>
+<a id="coproducts" class="anchor" href="#coproducts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="coproducts">CoProducts</a>
+</h3>
+
+<p><code>CoProduct</code>s generalize unions of disparate types in a single consolidated type.   </p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">CoProduct3&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Character</span>&gt;</span> string <span class="pl-k">=</span> <span class="pl-smi">CoProduct3</span><span class="pl-k">.</span>a(<span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span>);
+<span class="pl-k">CoProduct3&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Character</span>&gt;</span> integer <span class="pl-k">=</span> <span class="pl-smi">CoProduct3</span><span class="pl-k">.</span>b(<span class="pl-c1">1</span>);
+<span class="pl-k">CoProduct3&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Character</span>&gt;</span> character <span class="pl-k">=</span> <span class="pl-smi">CoProduct3</span><span class="pl-k">.</span>c(<span class="pl-s"><span class="pl-pds">'</span>a<span class="pl-pds">'</span></span>);</pre></div>
+
+<p>Rather than supporting explicit value unwrapping, which would necessarily jeopardize type safety, <code>CoProduct</code>s support a <code>match</code> method that takes one function per possible value type and maps it to a final common result type:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">CoProduct3&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Character</span>&gt;</span> string <span class="pl-k">=</span> <span class="pl-smi">CoProduct3</span><span class="pl-k">.</span>a(<span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span>);
+<span class="pl-k">CoProduct3&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Character</span>&gt;</span> integer <span class="pl-k">=</span> <span class="pl-smi">CoProduct3</span><span class="pl-k">.</span>b(<span class="pl-c1">1</span>);
+<span class="pl-k">CoProduct3&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Character</span>&gt;</span> character <span class="pl-k">=</span> <span class="pl-smi">CoProduct3</span><span class="pl-k">.</span>c(<span class="pl-s"><span class="pl-pds">'</span>a<span class="pl-pds">'</span></span>);
+
+<span class="pl-smi">Integer</span> result <span class="pl-k">=</span> string<span class="pl-k">.</span><span class="pl-k">&lt;</span><span class="pl-smi">Integer</span><span class="pl-k">&gt;</span>match(<span class="pl-smi">String</span><span class="pl-k">::</span>length, identity(), <span class="pl-smi">Character</span><span class="pl-k">::</span>charCount); <span class="pl-c">// 6</span></pre></div>
+
+<p>Additionally, because a <code>CoProduct2&lt;A, B&gt;</code> guarantees a subset of a <code>CoProduct3&lt;A, B, C&gt;</code>, the <code>diverge</code> method exists between <code>CoProduct</code> types of single magnitude differences to make it easy to use a more convergent <code>CoProduct</code> where a more divergent <code>CoProduct</code> is expected:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">CoProduct2&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>&gt;</span> coProduct2 <span class="pl-k">=</span> <span class="pl-smi">CoProduct2</span><span class="pl-k">.</span>a(<span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span>);
+<span class="pl-k">CoProduct3&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>, <span class="pl-smi">Character</span>&gt;</span> coProduct3 <span class="pl-k">=</span> coProduct2<span class="pl-k">.</span>diverge(); <span class="pl-c">// still just the coProduct2 value, adapted to the coProduct3 shape</span></pre></div>
+
+<p>There are <code>CoProduct</code> specializations for type unions of up to 5 different types: <code>CoProduct2</code> through <code>CoProduct5</code>, respectively.</p>
+
+<h3>
 <a id="either" class="anchor" href="#either" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a name="either">Either</a>
 </h3>
 
-<p>Binary tagged unions are represented as <code>Either&lt;L, R&gt;</code>s, which resolve to one of two possible values: a <code>Left</code> value wrapping an <code>L</code>, or a <code>Right</code> value wrapping an <code>R</code> (typically an exceptional value or a successful value, respectively).</p>
+<p><code>Either&lt;L, R&gt;</code> represents a specialized <code>CoProduct2&lt;L, R&gt;</code>, which resolve to one of two possible values: a left value wrapping an <code>L</code>, or a right value wrapping an <code>R</code> (typically an exceptional value or a successful value, respectively).</p>
 
-<p>Rather than supporting explicit value unwrapping, <code>Either</code> supports many useful comprehensions to help facilitate type-safe interactions. For example, <code>Either#match</code> is used to resolve an <code>Either&lt;L,R&gt;</code> to a different type.    </p>
+<p>As with <code>CoProduct2</code>, rather than supporting explicit value unwrapping, <code>Either</code> supports many useful comprehensions to help facilitate type-safe interactions:    </p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">Either&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>&gt;</span> right <span class="pl-k">=</span> <span class="pl-smi">Either</span><span class="pl-k">.</span>right(<span class="pl-c1">1</span>);
 <span class="pl-k">Either&lt;<span class="pl-smi">String</span>, <span class="pl-smi">Integer</span>&gt;</span> left <span class="pl-k">=</span> <span class="pl-smi">Either</span><span class="pl-k">.</span>left(<span class="pl-s"><span class="pl-pds">"</span>Head fell off<span class="pl-pds">"</span></span>);
 
-<span class="pl-smi">Boolean</span> successful <span class="pl-k">=</span> right<span class="pl-k">.</span>match(l <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-c1">false</span>, r <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-c1">true</span>);
-<span class="pl-c">//-&gt; true</span>
+<span class="pl-smi">Integer</span> result <span class="pl-k">=</span> right<span class="pl-k">.</span>orElse(<span class="pl-k">-</span><span class="pl-c1">1</span>);
+<span class="pl-c">//-&gt; 1</span>
 
 <span class="pl-k">List&lt;<span class="pl-smi">Integer</span>&gt;</span> values <span class="pl-k">=</span> left<span class="pl-k">.</span>match(l <span class="pl-k">-</span><span class="pl-k">&gt;</span> <span class="pl-smi">Collections</span><span class="pl-k">.</span>emptyList(), <span class="pl-smi">Collections</span><span class="pl-k">::</span>singletonList);
 <span class="pl-c">//-&gt; [] </span></pre></div>
@@ -345,25 +393,12 @@ view(composed, singletonMap(<span class="pl-s"><span class="pl-pds">"</span>foo<
 </h2>
 
 <p><em>lambda</em> is part of <a href="http://www.github.com/palatable">palatable</a>, which is distributed under <a href="http://choosealicense.com/licenses/mit/">The MIT License</a>.</p>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/palatable/lambda/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/palatable/lambda/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/palatable/lambda"></a> is maintained by <a href="https://github.com/palatable">palatable</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
     </div>
-
-  
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
   </body>
 </html>
