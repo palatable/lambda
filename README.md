@@ -14,7 +14,8 @@ Functional patterns for Java 8
    - [HLists](#hlists)
      - [Tuples](#tuples)
    - [HMaps](#hmaps)
-   - [Either](#either)
+   - [CoProducts](#coproducts)
+     - [Either](#either)
  - [Lenses](#lenses)
  - [Notes](#notes) 
  - [License](#license)
@@ -47,14 +48,14 @@ Add the following dependency to your:
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
 </dependency>
 ```
  
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
  
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.2'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.3'
 ```
   
 
@@ -234,18 +235,47 @@ Optional<Integer> intValue = hmap.get(intKey); // Optional[1]
 Optional<Integer> anotherIntValue = hmap.get(anotherIntKey); // Optional.empty
 ```    
 
+### <a name="coproducts">CoProducts</a>
+
+`CoProduct`s generalize unions of disparate types in a single consolidated type.   
+
+```Java
+CoProduct3<String, Integer, Character> string = CoProduct3.a("string");
+CoProduct3<String, Integer, Character> integer = CoProduct3.b(1);
+CoProduct3<String, Integer, Character> character = CoProduct3.c('a');
+```
+
+Rather than supporting explicit value unwrapping, which would necessarily jeopardize type safety, `CoProduct`s support a `match` method that takes one function per possible value type and maps it to a final common result type:
+
+```Java
+CoProduct3<String, Integer, Character> string = CoProduct3.a("string");
+CoProduct3<String, Integer, Character> integer = CoProduct3.b(1);
+CoProduct3<String, Integer, Character> character = CoProduct3.c('a');
+
+Integer result = string.<Integer>match(String::length, identity(), Character::charCount); // 6
+```
+
+Additionally, because a `CoProduct2<A, B>` guarantees a subset of a `CoProduct3<A, B, C>`, the `diverge` method exists between `CoProduct` types of single magnitude differences to make it easy to use a more convergent `CoProduct` where a more divergent `CoProduct` is expected:
+  
+```Java
+CoProduct2<String, Integer> coProduct2 = CoProduct2.a("string");
+CoProduct3<String, Integer, Character> coProduct3 = coProduct2.diverge(); // still just the coProduct2 value, adapted to the coProduct3 shape
+```
+
+There are `CoProduct` specializations for type unions of up to 5 different types: `CoProduct2` through `CoProduct5`, respectively.
+
 ### <a name="either">Either</a>
 
-Binary tagged unions are represented as `Either<L, R>`s, which resolve to one of two possible values: a `Left` value wrapping an `L`, or a `Right` value wrapping an `R` (typically an exceptional value or a successful value, respectively).
+`Either<L, R>` represents a specialized `CoProduct2<L, R>`, which resolve to one of two possible values: a left value wrapping an `L`, or a right value wrapping an `R` (typically an exceptional value or a successful value, respectively).
 
-Rather than supporting explicit value unwrapping, `Either` supports many useful comprehensions to help facilitate type-safe interactions. For example, `Either#match` is used to resolve an `Either<L,R>` to a different type.    
+As with `CoProduct2`, rather than supporting explicit value unwrapping, `Either` supports many useful comprehensions to help facilitate type-safe interactions:    
 
 ```Java
 Either<String, Integer> right = Either.right(1);
 Either<String, Integer> left = Either.left("Head fell off");
 
-Boolean successful = right.match(l -> false, r -> true);
-//-> true
+Integer result = right.orElse(-1);
+//-> 1
 
 List<Integer> values = left.match(l -> Collections.emptyList(), Collections::singletonList);
 //-> [] 
