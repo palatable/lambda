@@ -20,6 +20,7 @@ public interface Semigroup<A> extends Fn2<A, A, A> {
      * @param a  the starting accumulator
      * @param as the elements to fold over
      * @return the folded result
+     * @see FoldLeft
      */
     default A foldLeft(A a, Iterable<A> as) {
         return FoldLeft.foldLeft(toBiFunction(), a, as);
@@ -32,6 +33,7 @@ public interface Semigroup<A> extends Fn2<A, A, A> {
      * @param a  the starting accumulator
      * @param as the elements to fold over
      * @return the folded result
+     * @see FoldRight
      */
     default A foldRight(A a, Iterable<A> as) {
         return FoldRight.foldRight(toBiFunction(), a, as);
