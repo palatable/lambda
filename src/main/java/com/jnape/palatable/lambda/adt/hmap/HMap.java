@@ -125,6 +125,16 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
         return map(Tuple2::_2, this);
     }
 
+    /**
+     * Return a standard {@link Map} view of the current snapshot of this {@link HMap}. Note that updates to either the
+     * {@link Map} view or to the original {@link HMap} do not propagate to the other.
+     *
+     * @return the map view
+     */
+    public Map<TypeSafeKey, Object> toMap() {
+        return new HashMap<>(table);
+    }
+
     @Override
     public Iterator<Tuple2<TypeSafeKey, Object>> iterator() {
         return map(Tuple2::fromEntry, table.entrySet()).iterator();

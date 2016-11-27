@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.adt.hmap;
 
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -126,6 +127,18 @@ public class HMapTest {
     @Test(expected = NoSuchElementException.class)
     public void demandForAbsentKey() {
         emptyHMap().demand(typeSafeKey());
+    }
+
+    @Test
+    public void toMap() {
+        TypeSafeKey<String> stringKey = typeSafeKey();
+        TypeSafeKey<Integer> intKey = typeSafeKey();
+
+        assertEquals(new HashMap<TypeSafeKey, Object>() {{
+            put(stringKey, "string");
+            put(intKey, 1);
+        }}, hMap(stringKey, "string",
+                 intKey, 1).toMap());
     }
 
     @Test
