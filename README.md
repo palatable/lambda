@@ -28,7 +28,7 @@ Lambda was born out of a desire to use some of the same canonical functions (e.g
 Some things a user of lambda most likely values:
 
 - Lazy evaluation
-- Immutablility by design
+- Immutability by design
 - Composition
 - Higher-level abstractions
 - Parametric polymorphism
@@ -48,14 +48,14 @@ Add the following dependency to your:
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>1.5.3</version>
+    <version>1.5.4</version>
 </dependency>
 ```
  
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
  
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.3'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.4'
 ```
   
 

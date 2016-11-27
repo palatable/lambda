@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 
 import java.util.function.Function;
 
@@ -13,7 +13,7 @@ import java.util.function.Function;
  * @param <A> The input Iterable element type
  * @see Any
  */
-public final class All<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Boolean> {
+public final class All<A> implements BiPredicate<Function<? super A, Boolean>, Iterable<A>> {
 
     private All() {
     }
