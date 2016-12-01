@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.functions.builtin.fn2.ReduceRight;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 
@@ -76,6 +77,20 @@ public interface Monoid<A> extends Semigroup<A> {
             @Override
             public A identity() {
                 return identity;
+            }
+
+            @Override
+            public A apply(A x, A y) {
+                return semigroup.apply(x, y);
+            }
+        };
+    }
+
+    static <A> Monoid<A> monoid(Semigroup<A> semigroup, Supplier<A> identitySupplier) {
+        return new Monoid<A>() {
+            @Override
+            public A identity() {
+                return identitySupplier.get();
             }
 
             @Override

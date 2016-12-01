@@ -10,7 +10,6 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
  * @param <C> The third argument type
  * @param <D> The return type
  * @see Fn2
- * @see com.jnape.palatable.lambda.functions.builtin.fn2.Partial3
  */
 @FunctionalInterface
 public interface Fn3<A, B, C, D> extends Fn2<A, B, Fn1<C, D>> {

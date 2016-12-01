@@ -13,7 +13,6 @@ import java.util.function.BiFunction;
  * @param <B> The second argument type
  * @param <C> The return type
  * @see Fn1
- * @see com.jnape.palatable.lambda.functions.builtin.fn2.Partial2
  */
 @FunctionalInterface
 public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {

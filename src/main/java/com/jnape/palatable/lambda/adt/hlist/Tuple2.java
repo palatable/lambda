@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
+import com.jnape.palatable.lambda.monoid.Monoid;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
@@ -90,6 +91,13 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map
         return new Tuple2<>(lFn.apply(_1()), tail().fmap(rFn));
     }
 
+    public static <_1, _2> Monoid<Tuple2<_1, _2>> monoid(Monoid<_1> _1Monoid, Monoid<_2> _2Monoid) {
+        return Monoid.monoid(
+                (x, y) -> x.biMap(_1Monoid.flip().apply(y._1()),
+                                  _2Monoid.flip().apply(y._2())),
+                tuple(_1Monoid.identity(), _2Monoid.identity()));
+    }
+
     /**
      * Static factory method for creating <code>Tuple2</code>s from {@link java.util.Map.Entry}s.
      *
@@ -101,4 +109,5 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map
     public static <K, V> Tuple2<K, V> fromEntry(Map.Entry<K, V> entry) {
         return new Tuple2<>(entry.getKey(), singletonHList(entry.getValue()));
     }
+
 }

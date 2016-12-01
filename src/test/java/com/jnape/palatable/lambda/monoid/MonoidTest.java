@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.monoid;
 
+import com.jnape.palatable.lambda.monoid.Monoid;
 import org.junit.Test;
 
 import java.util.List;
