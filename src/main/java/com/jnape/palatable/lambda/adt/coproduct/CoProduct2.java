@@ -1,10 +1,14 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 
 /**
  * A generalization of the coproduct of two types <code>A</code> and <code>B</code>. Coproducts represent the disjoint
@@ -56,6 +60,17 @@ public interface CoProduct2<A, B> extends Functor<B>, Bifunctor<A, B> {
      */
     default <C> CoProduct3<A, B, C> diverge() {
         return match(CoProduct3::a, CoProduct3::b);
+    }
+
+    /**
+     * Project this coproduct onto a tuple, such that the slot in the tuple that corresponds to this coproduct's value
+     * is present, while the other slots are absent.
+     *
+     * @return a tuple of the coproduct projection
+     */
+    default Tuple2<Optional<A>, Optional<B>> project() {
+        return match(a -> tuple(Optional.of(a), Optional.empty()),
+                     b -> tuple(Optional.empty(), Optional.of(b)));
     }
 
     @Override

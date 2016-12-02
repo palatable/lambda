@@ -1,10 +1,14 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.hlist.Tuple3;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 
 /**
  * A generalization of the coproduct of three types <code>A</code>, <code>B</code>, and <code>C</code>.
@@ -30,7 +34,6 @@ public interface CoProduct3<A, B, C> extends Functor<C>, Bifunctor<B, C> {
     <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
                 Function<? super C, ? extends R> cFn);
 
-
     /**
      * Diverge this coproduct by introducing another possible type that it could represent.
      *
@@ -40,6 +43,18 @@ public interface CoProduct3<A, B, C> extends Functor<C>, Bifunctor<B, C> {
      */
     default <D> CoProduct4<A, B, C, D> diverge() {
         return match(CoProduct4::a, CoProduct4::b, CoProduct4::c);
+    }
+
+    /**
+     * Project this coproduct onto a tuple.
+     *
+     * @return a tuple of the coproduct projection
+     * @see CoProduct2#project()
+     */
+    default Tuple3<Optional<A>, Optional<B>, Optional<C>> project() {
+        return match(a -> tuple(Optional.of(a), Optional.empty(), Optional.empty()),
+                     b -> tuple(Optional.empty(), Optional.of(b), Optional.empty()),
+                     c -> tuple(Optional.empty(), Optional.empty(), Optional.of(c)));
     }
 
     @Override

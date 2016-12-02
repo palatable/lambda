@@ -3,9 +3,12 @@ package com.jnape.palatable.lambda.adt.coproduct;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.a;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.b;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.c;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
 
@@ -34,6 +37,13 @@ public class CoProduct3Test {
         assertEquals(CoProduct4.a(1), a.diverge());
         assertEquals(CoProduct4.b("two"), b.diverge());
         assertEquals(CoProduct4.c(true), c.diverge());
+    }
+
+    @Test
+    public void project() {
+        assertEquals(tuple(Optional.of(1), Optional.empty(), Optional.empty()), CoProduct3.a(1).project());
+        assertEquals(tuple(Optional.empty(), Optional.of("b"), Optional.empty()), CoProduct3.b("b").project());
+        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.of('c')), CoProduct3.c('c').project());
     }
 
     @Test

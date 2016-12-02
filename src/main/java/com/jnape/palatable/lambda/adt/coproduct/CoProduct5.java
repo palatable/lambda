@@ -1,10 +1,14 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.hlist.Tuple5;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 
 /**
  * A generalization of the coproduct of five types <code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>, and
@@ -37,6 +41,20 @@ public interface CoProduct5<A, B, C, D, E> extends Functor<E>, Bifunctor<D, E> {
                 Function<? super C, ? extends R> cFn,
                 Function<? super D, ? extends R> dFn,
                 Function<? super E, ? extends R> eFn);
+
+    /**
+     * Project this coproduct onto a tuple.
+     *
+     * @return a tuple of the coproduct projection
+     * @see CoProduct2#project()
+     */
+    default Tuple5<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>> project() {
+        return match(a -> tuple(Optional.of(a), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()),
+                     b -> tuple(Optional.empty(), Optional.of(b), Optional.empty(), Optional.empty(), Optional.empty()),
+                     c -> tuple(Optional.empty(), Optional.empty(), Optional.of(c), Optional.empty(), Optional.empty()),
+                     d -> tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(d), Optional.empty()),
+                     e -> tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(e)));
+    }
 
     @Override
     default <F> CoProduct5<A, B, C, D, F> fmap(Function<? super E, ? extends F> fn) {

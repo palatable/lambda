@@ -3,10 +3,13 @@ package com.jnape.palatable.lambda.adt.coproduct;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct4.a;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct4.b;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct4.c;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct4.d;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
 
@@ -39,6 +42,14 @@ public class CoProduct4Test {
         assertEquals(CoProduct5.b("two"), b.diverge());
         assertEquals(CoProduct5.c(true), c.diverge());
         assertEquals(CoProduct5.d(4D), d.diverge());
+    }
+
+    @Test
+    public void project() {
+        assertEquals(tuple(Optional.of(1), Optional.empty(), Optional.empty(), Optional.empty()), CoProduct4.a(1).project());
+        assertEquals(tuple(Optional.empty(), Optional.of("b"), Optional.empty(), Optional.empty()), CoProduct4.b("b").project());
+        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.of('c'), Optional.empty()), CoProduct4.c('c').project());
+        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(4L)), CoProduct4.d(4L).project());
     }
 
     @Test
