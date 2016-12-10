@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn2;
 
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
+import com.jnape.palatable.lambda.functions.specialized.Predicate;
 
 /**
  * Type-safe equality in function form; uses {@link Object#equals}, not <code>==</code>.
@@ -22,7 +22,7 @@ public final class Eq<A> implements BiPredicate<A, A> {
         return new Eq<>();
     }
 
-    public static <A> Fn1<A, Boolean> eq(A x) {
+    public static <A> Predicate<A> eq(A x) {
         return Eq.<A>eq().apply(x);
     }
 
