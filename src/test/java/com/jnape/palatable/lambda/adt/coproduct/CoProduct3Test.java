@@ -1,17 +1,21 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.traits.CoProductProjections;
 
-import java.util.Optional;
+import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.a;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.b;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.c;
-import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class CoProduct3Test {
 
     private CoProduct3<Integer, String, Boolean> a;
@@ -19,7 +23,7 @@ public class CoProduct3Test {
     private CoProduct3<Integer, String, Boolean> c;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         a = a(1);
         b = b("two");
         c = c(true);
@@ -40,10 +44,17 @@ public class CoProduct3Test {
     }
 
     @Test
-    public void project() {
-        assertEquals(tuple(Optional.of(1), Optional.empty(), Optional.empty()), CoProduct3.a(1).project());
-        assertEquals(tuple(Optional.empty(), Optional.of("b"), Optional.empty()), CoProduct3.b("b").project());
-        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.of('c')), CoProduct3.c('c').project());
+    public void converge() {
+        Function<Boolean, CoProduct2<Integer, String>> convergenceFn = x -> x ? CoProduct2.a(1) : CoProduct2.b("false");
+        assertEquals(CoProduct2.a(1), a.converge(convergenceFn));
+        assertEquals(CoProduct2.b("two"), b.converge(convergenceFn));
+        assertEquals(CoProduct2.a(1), CoProduct3.<Integer, String, Boolean>c(true).converge(convergenceFn));
+        assertEquals(CoProduct2.b("false"), CoProduct3.<Integer, String, Boolean>c(false).converge(convergenceFn));
+    }
+
+    @TestTraits({CoProductProjections.class})
+    public Class<?> projections() {
+        return CoProduct3.class;
     }
 
     @Test

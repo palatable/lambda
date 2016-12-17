@@ -34,14 +34,10 @@ public interface CoProduct2<A, B> extends Functor<B>, Bifunctor<A, B> {
     <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn);
 
     /**
-     * Diverge this coproduct by introducing another possible type that it could represent.
-     * <p>
-     * It's important to understand that this does not alter the essential value represented by this coproduct: if the
-     * value was an <code>A</code> before divergence, it is still an <code>A</code>; likewise with <code>B</code>.
-     * <p>
-     * The purpose of this operation is to allow the use of a more convergent coproduct with a more divergent one; that
-     * is, if a <code>CoProduct3&lt;String, Integer, Boolean&gt;</code> is expected, a <code>CoProduct2&lt;String,
-     * Integer&gt;</code> should suffice.
+     * Diverge this coproduct by introducing another possible type that it could represent. As no morphisms can be
+     * provided mapping current types to the new type, this operation merely acts as a convenience method to allow the
+     * use of a more convergent coproduct with a more divergent one; that is, if a <code>CoProduct3&lt;String, Integer,
+     * Boolean&gt;</code> is expected, a <code>CoProduct2&lt;String, Integer&gt;</code> should suffice.
      * <p>
      * Generally, we use inheritance to make this a non-issue; however, with coproducts of differing magnitudes, we
      * cannot guarantee variance compatibility in one direction conveniently at construction time, and in the other
@@ -56,7 +52,7 @@ public interface CoProduct2<A, B> extends Functor<B>, Bifunctor<A, B> {
      * single magnitude difference.
      *
      * @param <C> the additional possible type of this coproduct
-     * @return a Coproduct3&lt;A, B, C&gt;
+     * @return a coproduct of the initial types plus the new type
      */
     default <C> CoProduct3<A, B, C> diverge() {
         return match(CoProduct3::a, CoProduct3::b);
@@ -71,6 +67,26 @@ public interface CoProduct2<A, B> extends Functor<B>, Bifunctor<A, B> {
     default Tuple2<Optional<A>, Optional<B>> project() {
         return match(a -> tuple(Optional.of(a), Optional.empty()),
                      b -> tuple(Optional.empty(), Optional.of(b)));
+    }
+
+    /**
+     * Convenience method for projecting this coproduct onto a tuple and then extracting the first slot value.
+     *
+     * @return an optional value representing the projection of the "a" type index
+     */
+    @SuppressWarnings("unused")
+    default Optional<A> projectA() {
+        return project()._1();
+    }
+
+    /**
+     * Convenience method for projecting this coproduct onto a tuple and then extracting the second slot value.
+     *
+     * @return an optional value representing the projection of the "b" type index
+     */
+    @SuppressWarnings("unused")
+    default Optional<B> projectB() {
+        return project()._2();
     }
 
     @Override

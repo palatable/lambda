@@ -50,6 +50,18 @@ public interface CoProduct4<A, B, C, D> extends Functor<D>, Bifunctor<C, D> {
     }
 
     /**
+     * Converge this coproduct down to a lower order coproduct by mapping the last possible type into an earlier
+     * possible type.
+     *
+     * @param convergenceFn function from last possible type to earlier type
+     * @return a coproduct of the initial types without the terminal type
+     * @see CoProduct3#converge
+     */
+    default CoProduct3<A, B, C> converge(Function<? super D, ? extends CoProduct3<A, B, C>> convergenceFn) {
+        return match(CoProduct3::a, CoProduct3::b, CoProduct3::c, convergenceFn);
+    }
+
+    /**
      * Project this coproduct onto a tuple.
      *
      * @return a tuple of the coproduct projection
@@ -60,6 +72,46 @@ public interface CoProduct4<A, B, C, D> extends Functor<D>, Bifunctor<C, D> {
                      b -> tuple(Optional.empty(), Optional.of(b), Optional.empty(), Optional.empty()),
                      c -> tuple(Optional.empty(), Optional.empty(), Optional.of(c), Optional.empty()),
                      d -> tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(d)));
+    }
+
+    /**
+     * Convenience method for projecting this coproduct onto a tuple and then extracting the first slot value.
+     *
+     * @return an optional value representing the projection of the "a" type index
+     */
+    @SuppressWarnings("unused")
+    default Optional<A> projectA() {
+        return project()._1();
+    }
+
+    /**
+     * Convenience method for projecting this coproduct onto a tuple and then extracting the second slot value.
+     *
+     * @return an optional value representing the projection of the "b" type index
+     */
+    @SuppressWarnings("unused")
+    default Optional<B> projectB() {
+        return project()._2();
+    }
+
+    /**
+     * Convenience method for projecting this coproduct onto a tuple and then extracting the third slot value.
+     *
+     * @return an optional value representing the projection of the "c" type index
+     */
+    @SuppressWarnings("unused")
+    default Optional<C> projectC() {
+        return project()._3();
+    }
+
+    /**
+     * Convenience method for projecting this coproduct onto a tuple and then extracting the fourth slot value.
+     *
+     * @return an optional value representing the projection of the "d" type index
+     */
+    @SuppressWarnings("unused")
+    default Optional<D> projectD() {
+        return project()._4();
     }
 
     @Override

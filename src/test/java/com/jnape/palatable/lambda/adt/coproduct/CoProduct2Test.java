@@ -1,16 +1,18 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Optional;
+import org.junit.runner.RunWith;
+import testsupport.traits.CoProductProjections;
 
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct2.a;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct2.b;
-import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class CoProduct2Test {
 
     private CoProduct2<Integer, Boolean> a;
@@ -34,10 +36,9 @@ public class CoProduct2Test {
         assertEquals(CoProduct3.b(true), b.diverge());
     }
 
-    @Test
-    public void project() {
-        assertEquals(tuple(Optional.of(1), Optional.empty()), CoProduct2.a(1).project());
-        assertEquals(tuple(Optional.empty(), Optional.of("b")), CoProduct2.b("b").project());
+    @TestTraits({CoProductProjections.class})
+    public Class<?> projections() {
+        return CoProduct2.class;
     }
 
     @Test

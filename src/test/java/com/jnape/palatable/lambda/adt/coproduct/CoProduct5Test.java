@@ -1,19 +1,23 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.traits.CoProductProjections;
 
-import java.util.Optional;
+import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.a;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.b;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.c;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.d;
 import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.e;
-import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class CoProduct5Test {
 
     private CoProduct5<Integer, String, Boolean, Double, Character> a;
@@ -41,14 +45,28 @@ public class CoProduct5Test {
     }
 
     @Test
-    public void project() {
-        assertEquals(tuple(Optional.of(1), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()), CoProduct5.a(1).project());
-        assertEquals(tuple(Optional.empty(), Optional.of("b"), Optional.empty(), Optional.empty(), Optional.empty()), CoProduct5.b("b").project());
-        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.of('c'), Optional.empty(), Optional.empty()), CoProduct5.c('c').project());
-        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(4L), Optional.empty()), CoProduct5.d(4L).project());
-        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(false)), CoProduct5.e(false).project());
+    public void converge() {
+        Function<Character, CoProduct4<Integer, String, Boolean, Double>> convergenceFn = x -> x.equals('a')
+                ? CoProduct4.a(1)
+                : x.equals('b')
+                ? CoProduct4.b("b")
+                : x.equals('c')
+                ? CoProduct4.c(false)
+                : CoProduct4.d(1d);
+        assertEquals(CoProduct4.a(1), a.converge(convergenceFn));
+        assertEquals(CoProduct4.b("two"), b.converge(convergenceFn));
+        assertEquals(CoProduct4.c(true), c.converge(convergenceFn));
+        assertEquals(CoProduct4.d(4D), d.converge(convergenceFn));
+        assertEquals(CoProduct4.a(1), CoProduct5.<Integer, String, Boolean, Double, Character>e('a').converge(convergenceFn));
+        assertEquals(CoProduct4.b("b"), CoProduct5.<Integer, String, Boolean, Double, Character>e('b').converge(convergenceFn));
+        assertEquals(CoProduct4.c(false), CoProduct5.<Integer, String, Boolean, Double, Character>e('c').converge(convergenceFn));
+        assertEquals(CoProduct4.d(1d), CoProduct5.<Integer, String, Boolean, Double, Character>e('d').converge(convergenceFn));
     }
 
+    @TestTraits({CoProductProjections.class})
+    public Class<?> projections() {
+        return CoProduct5.class;
+    }
 
     @Test
     public void functorProperties() {
