@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
+import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -23,7 +25,7 @@ import static java.util.Arrays.asList;
  * @param <L> The left parameter type
  * @param <R> The right parameter type
  */
-public abstract class Either<L, R> implements CoProduct2<L, R> {
+public abstract class Either<L, R> implements CoProduct2<L, R>, Functor<R>, Bifunctor<L, R> {
 
     private Either() {
     }
@@ -146,8 +148,8 @@ public abstract class Either<L, R> implements CoProduct2<L, R> {
     public final Either<L, R> merge(BiFunction<? super L, ? super L, ? extends L> leftFn,
                                     BiFunction<? super R, ? super R, ? extends R> rightFn,
                                     Either<L, R>... others) {
-        return foldLeft((x, y) -> x.match(l1 -> y.<Either<L, R>>match(l2 -> left(leftFn.apply(l1, l2)), r -> left(l1)),
-                                          r1 -> y.<Either<L, R>>match(Either::left, r2 -> right(rightFn.apply(r1, r2)))),
+        return foldLeft((x, y) -> x.match(l1 -> y.match(l2 -> left(leftFn.apply(l1, l2)), r -> left(l1)),
+                                          r1 -> y.match(Either::left, r2 -> right(rightFn.apply(r1, r2)))),
                         this,
                         asList(others));
     }
@@ -200,13 +202,13 @@ public abstract class Either<L, R> implements CoProduct2<L, R> {
     @Override
     @SuppressWarnings("unchecked")
     public final <L2> Either<L2, R> biMapL(Function<? super L, ? extends L2> fn) {
-        return (Either<L2, R>) CoProduct2.super.biMapL(fn);
+        return (Either<L2, R>) Bifunctor.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public final <R2> Either<L, R2> biMapR(Function<? super R, ? extends R2> fn) {
-        return (Either<L, R2>) CoProduct2.super.biMapR(fn);
+        return (Either<L, R2>) Bifunctor.super.biMapR(fn);
     }
 
     @Override

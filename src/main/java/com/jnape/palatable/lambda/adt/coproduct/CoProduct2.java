@@ -1,10 +1,9 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -19,9 +18,11 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
  *
  * @param <A> a type parameter representing the first possible type of this coproduct
  * @param <B> a type parameter representing the second possible type of this coproduct
+ * @see Choice2
+ * @see Either
  */
 @FunctionalInterface
-public interface CoProduct2<A, B> extends Functor<B>, Bifunctor<A, B> {
+public interface CoProduct2<A, B> {
 
     /**
      * Type-safe convergence requiring a match against all potential types.
@@ -55,7 +56,13 @@ public interface CoProduct2<A, B> extends Functor<B>, Bifunctor<A, B> {
      * @return a coproduct of the initial types plus the new type
      */
     default <C> CoProduct3<A, B, C> diverge() {
-        return match(CoProduct3::a, CoProduct3::b);
+        return new CoProduct3<A, B, C>() {
+            @Override
+            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
+                               Function<? super C, ? extends R> cFn) {
+                return CoProduct2.this.match(aFn, bFn);
+            }
+        };
     }
 
     /**
@@ -74,7 +81,6 @@ public interface CoProduct2<A, B> extends Functor<B>, Bifunctor<A, B> {
      *
      * @return an optional value representing the projection of the "a" type index
      */
-    @SuppressWarnings("unused")
     default Optional<A> projectA() {
         return project()._1();
     }
@@ -84,118 +90,7 @@ public interface CoProduct2<A, B> extends Functor<B>, Bifunctor<A, B> {
      *
      * @return an optional value representing the projection of the "b" type index
      */
-    @SuppressWarnings("unused")
     default Optional<B> projectB() {
         return project()._2();
-    }
-
-    @Override
-    default <C> CoProduct2<A, C> fmap(Function<? super B, ? extends C> fn) {
-        return biMapR(fn);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <C> CoProduct2<C, B> biMapL(Function<? super A, ? extends C> fn) {
-        return (CoProduct2<C, B>) Bifunctor.super.biMapL(fn);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <C> CoProduct2<A, C> biMapR(Function<? super B, ? extends C> fn) {
-        return (CoProduct2<A, C>) Bifunctor.super.biMapR(fn);
-    }
-
-    @Override
-    default <C, D> CoProduct2<C, D> biMap(Function<? super A, ? extends C> lFn,
-                                          Function<? super B, ? extends D> rFn) {
-        return match(a -> a(lFn.apply(a)), b -> b(rFn.apply(b)));
-    }
-
-    /**
-     * Static factory method for wrapping a value of type <code>A</code> in a {@link CoProduct2}.
-     *
-     * @param a   the value
-     * @param <A> a type parameter representing the first possible type of this coproduct
-     * @param <B> a type parameter representing the second possible type of this coproduct
-     * @return the wrapped value as a CoProduct2&lt;A, B&gt;
-     */
-    static <A, B> CoProduct2<A, B> a(A a) {
-        class _A implements CoProduct2<A, B> {
-
-            private final A a;
-
-            private _A(A a) {
-                this.a = a;
-            }
-
-            @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
-                return aFn.apply(a);
-            }
-
-            @Override
-            public boolean equals(Object other) {
-                return other instanceof _A
-                        && Objects.equals(a, ((_A) other).a);
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hash(a);
-            }
-
-            @Override
-            public String toString() {
-                return "CoProduct2{" +
-                        "a=" + a +
-                        '}';
-            }
-        }
-
-        return new _A(a);
-    }
-
-    /**
-     * Static factory method for wrapping a value of type <code>B</code> in a {@link CoProduct2}.
-     *
-     * @param b   the value
-     * @param <A> a type parameter representing the first possible type of this coproduct
-     * @param <B> a type parameter representing the second possible type of this coproduct
-     * @return the wrapped value as a CoProduct2&lt;A, B&gt;
-     */
-    static <A, B> CoProduct2<A, B> b(B b) {
-        class _B implements CoProduct2<A, B> {
-
-            private final B b;
-
-            private _B(B b) {
-                this.b = b;
-            }
-
-            @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
-                return bFn.apply(b);
-            }
-
-            @Override
-            public boolean equals(Object other) {
-                return other instanceof _B
-                        && Objects.equals(b, ((_B) other).b);
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hash(b);
-            }
-
-            @Override
-            public String toString() {
-                return "CoProduct2{" +
-                        "b=" + b +
-                        '}';
-            }
-        }
-        return new _B(b);
     }
 }

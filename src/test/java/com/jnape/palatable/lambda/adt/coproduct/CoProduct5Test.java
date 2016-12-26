@@ -1,23 +1,15 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
-import com.jnape.palatable.traitor.annotations.TestTraits;
-import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import testsupport.traits.CoProductProjections;
 
+import java.util.Optional;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.a;
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.b;
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.c;
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.d;
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct5.e;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(Traits.class)
 public class CoProduct5Test {
 
     private CoProduct5<Integer, String, Boolean, Double, Character> a;
@@ -28,11 +20,46 @@ public class CoProduct5Test {
 
     @Before
     public void setUp() {
-        a = a(1);
-        b = b("two");
-        c = c(true);
-        d = d(4D);
-        e = e('z');
+        a = new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return aFn.apply(1);
+            }
+        };
+        b = new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return bFn.apply("two");
+            }
+        };
+        c = new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return cFn.apply(true);
+            }
+        };
+        d = new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return dFn.apply(4d);
+            }
+        };
+        e = new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return eFn.apply('z');
+            }
+        };
     }
 
     @Test
@@ -46,43 +73,92 @@ public class CoProduct5Test {
 
     @Test
     public void converge() {
-        Function<Character, CoProduct4<Integer, String, Boolean, Double>> convergenceFn = x -> x.equals('a')
-                ? CoProduct4.a(1)
-                : x.equals('b')
-                ? CoProduct4.b("b")
-                : x.equals('c')
-                ? CoProduct4.c(false)
-                : CoProduct4.d(1d);
-        assertEquals(CoProduct4.a(1), a.converge(convergenceFn));
-        assertEquals(CoProduct4.b("two"), b.converge(convergenceFn));
-        assertEquals(CoProduct4.c(true), c.converge(convergenceFn));
-        assertEquals(CoProduct4.d(4D), d.converge(convergenceFn));
-        assertEquals(CoProduct4.a(1), CoProduct5.<Integer, String, Boolean, Double, Character>e('a').converge(convergenceFn));
-        assertEquals(CoProduct4.b("b"), CoProduct5.<Integer, String, Boolean, Double, Character>e('b').converge(convergenceFn));
-        assertEquals(CoProduct4.c(false), CoProduct5.<Integer, String, Boolean, Double, Character>e('c').converge(convergenceFn));
-        assertEquals(CoProduct4.d(1d), CoProduct5.<Integer, String, Boolean, Double, Character>e('d').converge(convergenceFn));
-    }
-
-    @TestTraits({CoProductProjections.class})
-    public Class<?> projections() {
-        return CoProduct5.class;
+        Function<Character, CoProduct4<Integer, String, Boolean, Double>> convergenceFn = x ->
+                x.equals('a') ? new CoProduct4<Integer, String, Boolean, Double>() {
+                    @Override
+                    public <R> R match(Function<? super Integer, ? extends R> aFn,
+                                       Function<? super String, ? extends R> bFn,
+                                       Function<? super Boolean, ? extends R> cFn,
+                                       Function<? super Double, ? extends R> dFn) {
+                        return aFn.apply(1);
+                    }
+                } : x.equals('b')
+                        ? new CoProduct4<Integer, String, Boolean, Double>() {
+                    @Override
+                    public <R> R match(Function<? super Integer, ? extends R> aFn,
+                                       Function<? super String, ? extends R> bFn,
+                                       Function<? super Boolean, ? extends R> cFn,
+                                       Function<? super Double, ? extends R> dFn) {
+                        return bFn.apply("b");
+                    }
+                } : x.equals('c')
+                        ? new CoProduct4<Integer, String, Boolean, Double>() {
+                    @Override
+                    public <R> R match(Function<? super Integer, ? extends R> aFn,
+                                       Function<? super String, ? extends R> bFn,
+                                       Function<? super Boolean, ? extends R> cFn,
+                                       Function<? super Double, ? extends R> dFn) {
+                        return cFn.apply(false);
+                    }
+                } : new CoProduct4<Integer, String, Boolean, Double>() {
+                    @Override
+                    public <R> R match(Function<? super Integer, ? extends R> aFn,
+                                       Function<? super String, ? extends R> bFn,
+                                       Function<? super Boolean, ? extends R> cFn,
+                                       Function<? super Double, ? extends R> dFn) {
+                        return dFn.apply(1d);
+                    }
+                };
+        assertEquals(1, a.converge(convergenceFn).match(id(), id(), id(), id()));
+        assertEquals("two", b.converge(convergenceFn).match(id(), id(), id(), id()));
+        assertEquals(true, c.converge(convergenceFn).match(id(), id(), id(), id()));
+        assertEquals(4D, d.converge(convergenceFn).match(id(), id(), id(), id()));
+        assertEquals(1, new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return eFn.apply('a');
+            }
+        }.converge(convergenceFn).match(id(), id(), id(), id()));
+        assertEquals("b", new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return eFn.apply('b');
+            }
+        }.converge(convergenceFn).match(id(), id(), id(), id()));
+        assertEquals(false, new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return eFn.apply('c');
+            }
+        }.converge(convergenceFn).match(id(), id(), id(), id()));
+        assertEquals(1d, new CoProduct5<Integer, String, Boolean, Double, Character>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
+                               Function<? super Character, ? extends R> eFn) {
+                return eFn.apply('d');
+            }
+        }.converge(convergenceFn).match(id(), id(), id(), id()));
     }
 
     @Test
-    public void functorProperties() {
-        assertEquals(a, a.fmap(Character::toUpperCase));
-        assertEquals(b, b.fmap(Character::toUpperCase));
-        assertEquals(c, c.fmap(Character::toUpperCase));
-        assertEquals(d, d.fmap(Character::toUpperCase));
-        assertEquals(e('Z'), e.fmap(Character::toUpperCase));
-    }
+    public void projections() {
+        assertEquals(tuple(Optional.of(1), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()), a.project());
+        assertEquals(tuple(Optional.empty(), Optional.of("two"), Optional.empty(), Optional.empty(), Optional.empty()), b.project());
+        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.of(true), Optional.empty(), Optional.empty()), c.project());
+        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(4D), Optional.empty()), d.project());
+        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of('z')), e.project());
 
-    @Test
-    public void bifunctorProperties() {
-        assertEquals(a, a.biMap(d -> -d, Character::toUpperCase));
-        assertEquals(b, b.biMap(d -> -d, Character::toUpperCase));
-        assertEquals(c, c.biMap(d -> -d, Character::toUpperCase));
-        assertEquals(d(-4D), d.biMap(d -> -d, Character::toUpperCase));
-        assertEquals(e('Z'), e.biMap(d -> -d, Character::toUpperCase));
+        assertEquals(tuple(a.projectA(), a.projectB(), a.projectC(), a.projectD(), a.projectE()), a.project());
+        assertEquals(tuple(b.projectA(), b.projectB(), b.projectC(), b.projectD(), b.projectE()), b.project());
+        assertEquals(tuple(c.projectA(), c.projectB(), c.projectC(), c.projectD(), c.projectE()), c.project());
+        assertEquals(tuple(d.projectA(), d.projectB(), d.projectC(), d.projectD(), d.projectE()), d.project());
+        assertEquals(tuple(e.projectA(), e.projectB(), e.projectC(), e.projectD(), e.projectE()), e.project());
     }
 }

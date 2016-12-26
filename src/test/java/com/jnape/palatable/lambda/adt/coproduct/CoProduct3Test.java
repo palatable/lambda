@@ -1,21 +1,15 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
-import com.jnape.palatable.traitor.annotations.TestTraits;
-import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import testsupport.traits.CoProductProjections;
 
+import java.util.Optional;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.a;
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.b;
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct3.c;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(Traits.class)
 public class CoProduct3Test {
 
     private CoProduct3<Integer, String, Boolean> a;
@@ -24,9 +18,27 @@ public class CoProduct3Test {
 
     @Before
     public void setUp() {
-        a = a(1);
-        b = b("two");
-        c = c(true);
+        a = new CoProduct3<Integer, String, Boolean>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn) {
+                return aFn.apply(1);
+            }
+        };
+        b = new CoProduct3<Integer, String, Boolean>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn) {
+                return bFn.apply("two");
+            }
+        };
+        c = new CoProduct3<Integer, String, Boolean>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn) {
+                return cFn.apply(true);
+            }
+        };
     }
 
     @Test
@@ -38,36 +50,44 @@ public class CoProduct3Test {
 
     @Test
     public void diverge() {
-        assertEquals(CoProduct4.a(1), a.diverge());
-        assertEquals(CoProduct4.b("two"), b.diverge());
-        assertEquals(CoProduct4.c(true), c.diverge());
+        assertEquals(1, a.diverge().match(id(), id(), id(), id()));
+        assertEquals("two", b.diverge().match(id(), id(), id(), id()));
+        assertEquals(true, c.diverge().match(id(), id(), id(), id()));
     }
 
     @Test
     public void converge() {
-        Function<Boolean, CoProduct2<Integer, String>> convergenceFn = x -> x ? CoProduct2.a(1) : CoProduct2.b("false");
-        assertEquals(CoProduct2.a(1), a.converge(convergenceFn));
-        assertEquals(CoProduct2.b("two"), b.converge(convergenceFn));
-        assertEquals(CoProduct2.a(1), CoProduct3.<Integer, String, Boolean>c(true).converge(convergenceFn));
-        assertEquals(CoProduct2.b("false"), CoProduct3.<Integer, String, Boolean>c(false).converge(convergenceFn));
-    }
-
-    @TestTraits({CoProductProjections.class})
-    public Class<?> projections() {
-        return CoProduct3.class;
+        Function<Boolean, CoProduct2<Integer, String>> convergenceFn = x -> x ? new CoProduct2<Integer, String>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn) {
+                return aFn.apply(-1);
+            }
+        } : new CoProduct2<Integer, String>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn) {
+                return bFn.apply("false");
+            }
+        };
+        assertEquals(1, a.converge(convergenceFn).match(id(), id()));
+        assertEquals("two", b.converge(convergenceFn).match(id(), id()));
+        assertEquals(-1, c.converge(convergenceFn).match(id(), id()));
+        assertEquals("false", new CoProduct3<Integer, String, Boolean>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
+                               Function<? super Boolean, ? extends R> cFn) {
+                return cFn.apply(false);
+            }
+        }.converge(convergenceFn).match(id(), id()));
     }
 
     @Test
-    public void functorProperties() {
-        assertEquals(a, a.fmap(bool -> !bool));
-        assertEquals(b, b.fmap(bool -> !bool));
-        assertEquals(c(false), c.fmap(bool -> !bool));
-    }
+    public void projections() {
+        assertEquals(tuple(Optional.of(1), Optional.empty(), Optional.empty()), a.project());
+        assertEquals(tuple(Optional.empty(), Optional.of("two"), Optional.empty()), b.project());
+        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.of(true)), c.project());
 
-    @Test
-    public void bifunctorProperties() {
-        assertEquals(a, a.biMap(String::toUpperCase, bool -> !bool));
-        assertEquals(b("TWO"), b.biMap(String::toUpperCase, bool -> !bool));
-        assertEquals(c(false), c.biMap(String::toUpperCase, bool -> !bool));
+        assertEquals(tuple(a.projectA(), a.projectB(), a.projectC()), a.project());
+        assertEquals(tuple(b.projectA(), b.projectB(), b.projectC()), b.project());
+        assertEquals(tuple(c.projectA(), c.projectB(), c.projectC()), c.project());
     }
 }

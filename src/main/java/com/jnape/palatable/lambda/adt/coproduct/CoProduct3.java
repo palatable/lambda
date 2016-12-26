@@ -1,10 +1,7 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple3;
-import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -19,7 +16,7 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
  * @see CoProduct2
  */
 @FunctionalInterface
-public interface CoProduct3<A, B, C> extends Functor<C>, Bifunctor<B, C> {
+public interface CoProduct3<A, B, C> {
 
     /**
      * Type-safe convergence requiring a match against all potential types.
@@ -42,7 +39,13 @@ public interface CoProduct3<A, B, C> extends Functor<C>, Bifunctor<B, C> {
      * @see CoProduct2#diverge()
      */
     default <D> CoProduct4<A, B, C, D> diverge() {
-        return match(CoProduct4::a, CoProduct4::b, CoProduct4::c);
+        return new CoProduct4<A, B, C, D>() {
+            @Override
+            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
+                               Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn) {
+                return CoProduct3.this.match(aFn, bFn, cFn);
+            }
+        };
     }
 
     /**
@@ -59,7 +62,17 @@ public interface CoProduct3<A, B, C> extends Functor<C>, Bifunctor<B, C> {
      * @return a coproduct of the initial types without the terminal type
      */
     default CoProduct2<A, B> converge(Function<? super C, ? extends CoProduct2<A, B>> convergenceFn) {
-        return match(CoProduct2::a, CoProduct2::b, convergenceFn);
+        return match(a -> new CoProduct2<A, B>() {
+            @Override
+            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
+                return aFn.apply(a);
+            }
+        }, b -> new CoProduct2<A, B>() {
+            @Override
+            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
+                return bFn.apply(b);
+            }
+        }, convergenceFn);
     }
 
     /**
@@ -79,7 +92,6 @@ public interface CoProduct3<A, B, C> extends Functor<C>, Bifunctor<B, C> {
      *
      * @return an optional value representing the projection of the "a" type index
      */
-    @SuppressWarnings("unused")
     default Optional<A> projectA() {
         return project()._1();
     }
@@ -89,7 +101,6 @@ public interface CoProduct3<A, B, C> extends Functor<C>, Bifunctor<B, C> {
      *
      * @return an optional value representing the projection of the "b" type index
      */
-    @SuppressWarnings("unused")
     default Optional<B> projectB() {
         return project()._2();
     }
@@ -99,169 +110,7 @@ public interface CoProduct3<A, B, C> extends Functor<C>, Bifunctor<B, C> {
      *
      * @return an optional value representing the projection of the "c" type index
      */
-    @SuppressWarnings("unused")
     default Optional<C> projectC() {
         return project()._3();
-    }
-
-    @Override
-    default <D> CoProduct3<A, B, D> fmap(Function<? super C, ? extends D> fn) {
-        return biMapR(fn);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <D> CoProduct3<A, D, C> biMapL(Function<? super B, ? extends D> fn) {
-        return (CoProduct3<A, D, C>) Bifunctor.super.biMapL(fn);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    default <D> CoProduct3<A, B, D> biMapR(Function<? super C, ? extends D> fn) {
-        return (CoProduct3<A, B, D>) Bifunctor.super.biMapR(fn);
-    }
-
-    @Override
-    default <D, E> CoProduct3<A, D, E> biMap(Function<? super B, ? extends D> lFn,
-                                             Function<? super C, ? extends E> rFn) {
-        return match(CoProduct3::a, b -> b(lFn.apply(b)), c -> c(rFn.apply(c)));
-    }
-
-    /**
-     * Static factory method for wrapping a value of type <code>A</code> in a {@link CoProduct3}.
-     *
-     * @param a   the value
-     * @param <A> a type parameter representing the first possible type of this coproduct
-     * @param <B> a type parameter representing the second possible type of this coproduct
-     * @param <C> a type parameter representing the third possible type of this coproduct
-     * @return the wrapped value as a CoProduct3&lt;A, B, C&gt;
-     */
-    static <A, B, C> CoProduct3<A, B, C> a(A a) {
-        class _A implements CoProduct3<A, B, C> {
-
-            private final A a;
-
-            private _A(A a) {
-                this.a = a;
-            }
-
-            @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                               Function<? super C, ? extends R> cFn) {
-                return aFn.apply(a);
-            }
-
-            @Override
-            public boolean equals(Object other) {
-                return other instanceof _A
-                        && Objects.equals(a, ((_A) other).a);
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hash(a);
-            }
-
-            @Override
-            public String toString() {
-                return "CoProduct3{" +
-                        "a=" + a +
-                        '}';
-            }
-        }
-
-        return new _A(a);
-    }
-
-    /**
-     * Static factory method for wrapping a value of type <code>A</code> in a {@link CoProduct3}.
-     *
-     * @param b   the value
-     * @param <A> a type parameter representing the first possible type of this coproduct
-     * @param <B> a type parameter representing the second possible type of this coproduct
-     * @param <C> a type parameter representing the third possible type of this coproduct
-     * @return the wrapped value as a CoProduct3&lt;A, B, C&gt;
-     */
-    static <A, B, C> CoProduct3<A, B, C> b(B b) {
-        class _B implements CoProduct3<A, B, C> {
-
-            private final B b;
-
-            private _B(B b) {
-                this.b = b;
-            }
-
-            @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                               Function<? super C, ? extends R> cFn) {
-                return bFn.apply(b);
-            }
-
-            @Override
-            public boolean equals(Object other) {
-                return other instanceof _B
-                        && Objects.equals(b, ((_B) other).b);
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hash(b);
-            }
-
-            @Override
-            public String toString() {
-                return "CoProduct3{" +
-                        "b=" + b +
-                        '}';
-            }
-        }
-
-        return new _B(b);
-    }
-
-    /**
-     * Static factory method for wrapping a value of type <code>A</code> in a {@link CoProduct3}.
-     *
-     * @param c   the value
-     * @param <A> a type parameter representing the first possible type of this coproduct
-     * @param <B> a type parameter representing the second possible type of this coproduct
-     * @param <C> a type parameter representing the third possible type of this coproduct
-     * @return the wrapped value as a CoProduct3&lt;A, B, C&gt;
-     */
-    static <A, B, C> CoProduct3<A, B, C> c(C c) {
-        class _C implements CoProduct3<A, B, C> {
-
-            private final C c;
-
-            private _C(C c) {
-                this.c = c;
-            }
-
-            @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                               Function<? super C, ? extends R> cFn) {
-                return cFn.apply(c);
-            }
-
-            @Override
-            public boolean equals(Object other) {
-                return other instanceof _C
-                        && Objects.equals(c, ((_C) other).c);
-            }
-
-            @Override
-            public int hashCode() {
-                return Objects.hash(c);
-            }
-
-            @Override
-            public String toString() {
-                return "CoProduct3{" +
-                        "c=" + c +
-                        '}';
-            }
-        }
-
-        return new _C(c);
     }
 }

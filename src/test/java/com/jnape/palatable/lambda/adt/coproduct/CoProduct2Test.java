@@ -1,18 +1,15 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
-import com.jnape.palatable.traitor.annotations.TestTraits;
-import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import testsupport.traits.CoProductProjections;
 
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct2.a;
-import static com.jnape.palatable.lambda.adt.coproduct.CoProduct2.b;
+import java.util.Optional;
+import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(Traits.class)
 public class CoProduct2Test {
 
     private CoProduct2<Integer, Boolean> a;
@@ -20,36 +17,35 @@ public class CoProduct2Test {
 
     @Before
     public void setUp() {
-        a = a(1);
-        b = b(true);
-    }
-
-    @Test
-    public void match() {
-        assertEquals(1, a.match(id(), id()));
-        assertEquals(true, b.match(id(), id()));
+        a = new CoProduct2<Integer, Boolean>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super Boolean, ? extends R> bFn) {
+                return aFn.apply(1);
+            }
+        };
+        b = new CoProduct2<Integer, Boolean>() {
+            @Override
+            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super Boolean, ? extends R> bFn) {
+                return bFn.apply(true);
+            }
+        };
     }
 
     @Test
     public void diverge() {
-        assertEquals(CoProduct3.a(1), a.diverge());
-        assertEquals(CoProduct3.b(true), b.diverge());
-    }
+        CoProduct3<Integer, Boolean, String> divergeA = a.diverge();
+        assertEquals(1, divergeA.match(id(), id(), id()));
 
-    @TestTraits({CoProductProjections.class})
-    public Class<?> projections() {
-        return CoProduct2.class;
-    }
-
-    @Test
-    public void functorProperties() {
-        assertEquals(a, a.fmap(bool -> !bool));
-        assertEquals(b(false), b.fmap(bool -> !bool));
+        CoProduct3<Integer, Boolean, String> divergeB = b.diverge();
+        assertEquals(true, divergeB.match(id(), id(), id()));
     }
 
     @Test
-    public void bifunctorProperties() {
-        assertEquals(a(-1), a.biMap(i -> i * -1, bool -> !bool));
-        assertEquals(b(false), b.biMap(i -> i * -1, bool -> !bool));
+    public void projections() {
+        assertEquals(tuple(Optional.of(1), Optional.empty()), a.project());
+        assertEquals(tuple(Optional.empty(), Optional.of(true)), b.project());
+
+        assertEquals(tuple(a.projectA(), a.projectB()), a.project());
+        assertEquals(tuple(b.projectA(), b.projectB()), b.project());
     }
 }
