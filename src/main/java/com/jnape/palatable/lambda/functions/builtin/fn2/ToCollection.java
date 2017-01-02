@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.functions.builtin.fn1;
+package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
