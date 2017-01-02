@@ -91,8 +91,8 @@ public final class MapLens {
      * @param <V> the value type
      * @return a lens that focuses on the values of a map
      */
-    public static <K, V> Lens<Map<K, V>, Map<K, V>, Collection<V>, Collection<V>> values() {
-        return lens(Map::values, (m, vs) -> {
+    public static <K, V> Lens.Simple<Map<K, V>, Collection<V>> values() {
+        return simpleLens(Map::values, (m, vs) -> {
             Set<V> valueSet = new HashSet<>(vs);
             Set<K> matchingKeys = m.entrySet().stream()
                     .filter(kv -> valueSet.contains(kv.getValue()))

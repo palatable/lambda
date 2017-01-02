@@ -12,7 +12,7 @@ import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.t
  * @see CheckedFn1
  */
 @FunctionalInterface
-public interface CheckedSupplier<E extends Exception, T> extends Supplier<T> {
+public interface CheckedSupplier<E extends Throwable, T> extends Supplier<T> {
 
     @Override
     default T get() {
