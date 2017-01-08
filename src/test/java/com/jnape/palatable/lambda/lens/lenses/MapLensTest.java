@@ -14,8 +14,11 @@ import java.util.Set;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static com.jnape.palatable.lambda.lens.lenses.MapLens.keys;
+import static com.jnape.palatable.lambda.lens.lenses.MapLens.mappingValues;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+import static java.util.Collections.unmodifiableMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -133,5 +136,28 @@ public class MapLensTest {
         assertEquals(new HashMap<Integer, String>() {{
             put(1, "foo");
         }}, view(inverted, withDuplicateValues));
+    }
+
+    @Test
+    public void mappingValuesRetainsMapStructureWithMappedValues() {
+        Map<String, String> m = unmodifiableMap(new HashMap<String, String>() {{
+            put("foo", "1");
+            put("bar", "2");
+            put("baz", "3");
+        }});
+        Lens.Simple<Map<String, String>, Map<String, Integer>> mappingValues = mappingValues(Integer::parseInt);
+
+        assertEquals(new HashMap<String, Integer>() {{
+            put("foo", 1);
+            put("bar", 2);
+            put("baz", 3);
+        }}, view(mappingValues, m));
+
+        Map<String, String> updated = set(mappingValues, unmodifiableMap(new HashMap<String, Integer>() {{
+            put("foo", 2);
+            put("bar", 1);
+            put("baz", 3);
+        }}), m);
+        assertEquals(singletonMap("baz", "3"), updated);
     }
 }
