@@ -108,4 +108,16 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
                                                                          Function<? super _5, ? extends _5Prime> rFn) {
         return new Tuple5<>(_1(), tail().biMap(lFn, rFn));
     }
+
+    /**
+     * Given a value of type <code>A</code>, produced an instance of this tuple with each slot set to that value.
+     *
+     * @param a   the value to fill the tuple with
+     * @param <A> the value type
+     * @return the filled tuple
+     * @see Tuple2#fill
+     */
+    public static <A> Tuple5<A, A, A, A, A> fill(A a) {
+        return tuple(a, a, a, a, a);
+    }
 }

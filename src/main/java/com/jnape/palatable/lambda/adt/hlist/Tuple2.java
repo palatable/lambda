@@ -57,8 +57,8 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map
      * Destructure and apply this tuple to a function accepting the same number of arguments as this tuple's
      * slots. This can be thought of as a kind of dual to uncurrying a function and applying a tuple to it.
      *
-     * @param fn the function to apply
-     * @param <R>        the return type of the function
+     * @param fn  the function to apply
+     * @param <R> the return type of the function
      * @return the result of applying the destructured tuple to the function
      */
     public <R> R into(BiFunction<? super _1, ? super _2, ? extends R> fn) {
@@ -115,4 +115,14 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map
         return new Tuple2<>(entry.getKey(), singletonHList(entry.getValue()));
     }
 
+    /**
+     * Given a value of type <code>A</code>, produced an instance of this tuple with each slot set to that value.
+     *
+     * @param a   the value to fill the tuple with
+     * @param <A> the value type
+     * @return the filled tuple
+     */
+    public static <A> Tuple2<A, A> fill(A a) {
+        return tuple(a, a);
+    }
 }

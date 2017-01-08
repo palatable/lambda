@@ -64,6 +64,11 @@ public class Tuple4Test {
     }
 
     @Test
+    public void fill() {
+        assertEquals(tuple("foo", "foo", "foo", "foo"), Tuple4.fill("foo"));
+    }
+
+    @Test
     public void functorProperties() {
         assertEquals(new Tuple4<>(1, new Tuple3<>("2", new Tuple2<>('3', new SingletonHList<>(true)))), tuple4.fmap(x -> !x));
     }

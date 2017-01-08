@@ -62,6 +62,11 @@ public class Tuple2Test {
     }
 
     @Test
+    public void fill() {
+        assertEquals(tuple("foo", "foo"), Tuple2.fill("foo"));
+    }
+
+    @Test
     public void functorProperties() {
         assertEquals(new Tuple2<>(1, new SingletonHList<>("2")), tuple2.fmap(Object::toString));
     }

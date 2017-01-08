@@ -98,4 +98,16 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements Fun
                                                                  Function<? super _3, ? extends _3Prime> rFn) {
         return new Tuple3<>(_1(), tail().biMap(lFn, rFn));
     }
+
+    /**
+     * Given a value of type <code>A</code>, produced an instance of this tuple with each slot set to that value.
+     *
+     * @param a   the value to fill the tuple with
+     * @param <A> the value type
+     * @return the filled tuple
+     * @see Tuple2#fill
+     */
+    public static <A> Tuple3<A, A, A> fill(A a) {
+        return tuple(a, a, a);
+    }
 }
