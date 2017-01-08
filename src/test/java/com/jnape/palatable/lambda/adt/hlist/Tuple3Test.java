@@ -55,6 +55,12 @@ public class Tuple3Test {
     }
 
     @Test
+    public void into() {
+        Tuple3<String, Integer, Double> tuple = tuple("foo", 1, 2.0d);
+        assertEquals("foo12.0", tuple.into((s, i, d) -> s + i + d));
+    }
+
+    @Test
     public void functorProperties() {
         assertEquals(new Tuple3<>(1, new Tuple2<>("2", new SingletonHList<>("3"))), tuple3.fmap(Object::toString));
     }

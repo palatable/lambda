@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -50,6 +51,18 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map
      */
     public _2 _2() {
         return _2;
+    }
+
+    /**
+     * Destructure and apply this tuple to a function accepting the same number of arguments as this tuple's
+     * slots. This can be thought of as a kind of dual to uncurrying a function and applying a tuple to it.
+     *
+     * @param fn the function to apply
+     * @param <R>        the return type of the function
+     * @return the result of applying the destructured tuple to the function
+     */
+    public <R> R into(BiFunction<? super _1, ? super _2, ? extends R> fn) {
+        return fn.apply(_1, _2);
     }
 
     @Override

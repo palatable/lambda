@@ -58,6 +58,12 @@ public class Tuple4Test {
     }
 
     @Test
+    public void into() {
+        Tuple4<String, Integer, Double, Boolean> tuple = tuple("foo", 1, 2.0d, false);
+        assertEquals("foo12.0false", tuple.into((s, i, d, b) -> s + i + d + b));
+    }
+
+    @Test
     public void functorProperties() {
         assertEquals(new Tuple4<>(1, new Tuple3<>("2", new Tuple2<>('3', new SingletonHList<>(true)))), tuple4.fmap(x -> !x));
     }

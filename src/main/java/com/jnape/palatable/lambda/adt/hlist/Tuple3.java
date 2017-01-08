@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
+import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
@@ -60,6 +61,19 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements Fun
      */
     public _3 _3() {
         return _3;
+    }
+
+    /**
+     * Destructure and apply this tuple to a function accepting the same number of arguments as this tuple's
+     * slots.
+     *
+     * @param fn  the function to apply
+     * @param <R> the return type of the function
+     * @return the result of applying the destructured tuple to the function
+     * @see Tuple2#into
+     */
+    public <R> R into(Fn3<? super _1, ? super _2, ? super _3, ? extends R> fn) {
+        return fn.apply(_1, _2, _3);
     }
 
     @Override
