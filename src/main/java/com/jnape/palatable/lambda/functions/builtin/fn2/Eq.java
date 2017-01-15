@@ -10,6 +10,8 @@ import com.jnape.palatable.lambda.functions.specialized.Predicate;
  */
 public final class Eq<A> implements BiPredicate<A, A> {
 
+    private static final Eq INSTANCE = new Eq();
+
     private Eq() {
     }
 
@@ -18,8 +20,9 @@ public final class Eq<A> implements BiPredicate<A, A> {
         return x == null ? y == null : x.equals(y);
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Eq<A> eq() {
-        return new Eq<>();
+        return INSTANCE;
     }
 
     public static <A> Predicate<A> eq(A x) {

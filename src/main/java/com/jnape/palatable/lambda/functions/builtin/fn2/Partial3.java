@@ -16,6 +16,8 @@ import com.jnape.palatable.lambda.functions.Fn3;
  */
 public final class Partial3<A, B, C, D> implements Fn2<Fn3<A, B, C, D>, A, Fn2<B, C, D>> {
 
+    private static final Partial3 INSTANCE = new Partial3();
+
     private Partial3() {
     }
 
@@ -24,8 +26,9 @@ public final class Partial3<A, B, C, D> implements Fn2<Fn3<A, B, C, D>, A, Fn2<B
         return fn.apply(a);
     }
 
+    @SuppressWarnings("unchecked")
     public static <A, B, C, D> Partial3<A, B, C, D> partial3() {
-        return new Partial3<>();
+        return INSTANCE;
     }
 
     public static <A, B, C, D> Fn1<A, Fn2<B, C, D>> partial3(Fn3<A, B, C, D> fn) {

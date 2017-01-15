@@ -28,7 +28,7 @@ public final class Last<A> implements Fn1<Iterable<A>, Optional<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Last<A> last() {
-        return (Last<A>) INSTANCE;
+        return INSTANCE;
     }
 
     public static <A> Optional<A> last(Iterable<A> as) {

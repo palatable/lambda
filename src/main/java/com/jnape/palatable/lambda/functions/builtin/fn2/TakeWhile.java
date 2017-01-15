@@ -17,6 +17,8 @@ import java.util.function.Function;
  */
 public final class TakeWhile<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Iterable<A>> {
 
+    private static final TakeWhile INSTANCE = new TakeWhile();
+
     private TakeWhile() {
     }
 
@@ -25,8 +27,9 @@ public final class TakeWhile<A> implements Fn2<Function<? super A, Boolean>, Ite
         return () -> new PredicatedTakingIterator<>(predicate, as.iterator());
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> TakeWhile<A> takeWhile() {
-        return new TakeWhile<>();
+        return INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> takeWhile(Function<? super A, Boolean> predicate) {

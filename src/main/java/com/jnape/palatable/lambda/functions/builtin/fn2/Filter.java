@@ -16,6 +16,8 @@ import java.util.function.Function;
  */
 public final class Filter<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Iterable<A>> {
 
+    private static final Filter INSTANCE = new Filter();
+
     private Filter() {
     }
 
@@ -24,8 +26,9 @@ public final class Filter<A> implements Fn2<Function<? super A, Boolean>, Iterab
         return () -> new FilteringIterator<>(predicate, as.iterator());
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Filter<A> filter() {
-        return new Filter<>();
+        return INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> filter(Function<? super A, Boolean> predicate) {

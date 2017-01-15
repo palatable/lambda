@@ -13,6 +13,8 @@ import static java.util.Arrays.asList;
  */
 public final class Cycle<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
+    private static final Cycle INSTANCE = new Cycle();
+
     private Cycle() {
     }
 
@@ -21,8 +23,9 @@ public final class Cycle<A> implements Fn1<Iterable<A>, Iterable<A>> {
         return () -> new CyclicIterator<>(as.iterator());
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Cycle<A> cycle() {
-        return new Cycle<>();
+        return INSTANCE;
     }
 
     public static <A> Iterable<A> cycle(Iterable<A> as) {

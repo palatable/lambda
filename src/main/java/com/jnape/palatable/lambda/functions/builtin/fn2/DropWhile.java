@@ -18,6 +18,8 @@ import java.util.function.Function;
 
 public final class DropWhile<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Iterable<A>> {
 
+    private static final DropWhile INSTANCE = new DropWhile();
+
     private DropWhile() {
     }
 
@@ -26,8 +28,9 @@ public final class DropWhile<A> implements Fn2<Function<? super A, Boolean>, Ite
         return () -> new PredicatedDroppingIterator<>(predicate, as.iterator());
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> DropWhile<A> dropWhile() {
-        return new DropWhile<>();
+        return INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> dropWhile(Function<? super A, Boolean> predicate) {

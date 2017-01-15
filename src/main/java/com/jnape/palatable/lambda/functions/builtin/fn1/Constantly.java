@@ -11,6 +11,8 @@ import com.jnape.palatable.lambda.functions.Fn2;
  */
 public final class Constantly<A, B> implements Fn2<A, B, A> {
 
+    private static final Constantly INSTANCE = new Constantly();
+
     private Constantly() {
     }
 
@@ -19,8 +21,9 @@ public final class Constantly<A, B> implements Fn2<A, B, A> {
         return a;
     }
 
+    @SuppressWarnings("unchecked")
     public static <A, B> Constantly<A, B> constantly() {
-        return new Constantly<>();
+        return INSTANCE;
     }
 
     public static <A, B> Fn1<B, A> constantly(A a) {

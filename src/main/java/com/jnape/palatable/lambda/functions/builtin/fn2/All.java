@@ -15,6 +15,8 @@ import java.util.function.Function;
  */
 public final class All<A> implements BiPredicate<Function<? super A, Boolean>, Iterable<A>> {
 
+    private static final All INSTANCE = new All();
+
     private All() {
     }
 
@@ -27,8 +29,9 @@ public final class All<A> implements BiPredicate<Function<? super A, Boolean>, I
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> All<A> all() {
-        return new All<>();
+        return INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Boolean> all(Function<? super A, Boolean> predicate) {

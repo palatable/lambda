@@ -15,6 +15,8 @@ import com.jnape.palatable.lambda.iterators.TakingIterator;
  */
 public final class Take<A> implements Fn2<Integer, Iterable<A>, Iterable<A>> {
 
+    private static final Take INSTANCE = new Take();
+
     private Take() {
     }
 
@@ -23,8 +25,9 @@ public final class Take<A> implements Fn2<Integer, Iterable<A>, Iterable<A>> {
         return () -> new TakingIterator<>(n, as.iterator());
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Take<A> take() {
-        return new Take<>();
+        return INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> take(int n) {

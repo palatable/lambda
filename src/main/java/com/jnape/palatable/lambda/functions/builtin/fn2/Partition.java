@@ -26,6 +26,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
  */
 public final class Partition<A, B, C> implements Fn2<Function<? super A, ? extends Either<B, C>>, Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> {
 
+    private static final Partition INSTANCE = new Partition();
+
     private Partition() {
     }
 
@@ -44,8 +46,9 @@ public final class Partition<A, B, C> implements Fn2<Function<? super A, ? exten
         return map(Optional::get, filter(Optional::isPresent, map(Either::toOptional, eithers)));
     }
 
+    @SuppressWarnings("unchecked")
     public static <A, B, C> Partition<A, B, C> partition() {
-        return new Partition<>();
+        return INSTANCE;
     }
 
     public static <A, B, C> Fn1<Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> partition(

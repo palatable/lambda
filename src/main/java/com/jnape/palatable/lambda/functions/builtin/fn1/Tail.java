@@ -12,6 +12,8 @@ import java.util.Iterator;
  */
 public final class Tail<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
+    private static final Tail INSTANCE = new Tail();
+
     private Tail() {
     }
 
@@ -25,8 +27,9 @@ public final class Tail<A> implements Fn1<Iterable<A>, Iterable<A>> {
         };
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Tail<A> tail() {
-        return new Tail<>();
+        return INSTANCE;
     }
 
     public static <A> Iterable<A> tail(Iterable<A> as) {

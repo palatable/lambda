@@ -15,6 +15,8 @@ import java.util.function.Function;
  */
 public final class Map<A, B> implements Fn2<Function<? super A, ? extends B>, Iterable<A>, Iterable<B>> {
 
+    private static final Map INSTANCE = new Map();
+
     private Map() {
     }
 
@@ -23,8 +25,9 @@ public final class Map<A, B> implements Fn2<Function<? super A, ? extends B>, It
         return () -> new MappingIterator<>(fn, as.iterator());
     }
 
+    @SuppressWarnings("unchecked")
     public static <A, B> Map<A, B> map() {
-        return new Map<>();
+        return INSTANCE;
     }
 
     public static <A, B> Fn1<Iterable<A>, Iterable<B>> map(Function<? super A, ? extends B> fn) {

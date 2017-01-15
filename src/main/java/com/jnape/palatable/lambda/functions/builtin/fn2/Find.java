@@ -20,6 +20,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.DropWhile.dropWhi
  */
 public final class Find<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Optional<A>> {
 
+    private static final Find INSTANCE = new Find();
+
     private Find() {
     }
 
@@ -28,8 +30,9 @@ public final class Find<A> implements Fn2<Function<? super A, Boolean>, Iterable
         return head(dropWhile(((Predicate<A>) predicate::apply).negate(), as));
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Find<A> find() {
-        return new Find<>();
+        return INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Optional<A>> find(Function<? super A, Boolean> predicate) {

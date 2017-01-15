@@ -25,6 +25,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  */
 public final class FoldRight<A, B> implements Fn3<BiFunction<? super A, ? super B, ? extends B>, B, Iterable<A>, B> {
 
+    private static final FoldRight INSTANCE = new FoldRight();
+
     private FoldRight() {
     }
 
@@ -33,8 +35,9 @@ public final class FoldRight<A, B> implements Fn3<BiFunction<? super A, ? super 
         return foldLeft((b, a) -> fn.apply(a, b), acc, reverse(as));
     }
 
+    @SuppressWarnings("unchecked")
     public static <A, B> FoldRight<A, B> foldRight() {
-        return new FoldRight<>();
+        return INSTANCE;
     }
 
     public static <A, B> Fn2<B, Iterable<A>, B> foldRight(BiFunction<? super A, ? super B, ? extends B> fn) {

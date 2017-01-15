@@ -19,6 +19,8 @@ import java.util.function.BiFunction;
  */
 public final class ZipWith<A, B, C> implements Fn3<BiFunction<? super A, ? super B, ? extends C>, Iterable<A>, Iterable<B>, Iterable<C>> {
 
+    private static final ZipWith INSTANCE = new ZipWith();
+
     private ZipWith() {
     }
 
@@ -27,8 +29,9 @@ public final class ZipWith<A, B, C> implements Fn3<BiFunction<? super A, ? super
         return () -> new ZippingIterator<>(zipper, as.iterator(), bs.iterator());
     }
 
+    @SuppressWarnings("unchecked")
     public static <A, B, C> ZipWith<A, B, C> zipWith() {
-        return new ZipWith<>();
+        return INSTANCE;
     }
 
     public static <A, B, C> Fn2<Iterable<A>, Iterable<B>, Iterable<C>> zipWith(

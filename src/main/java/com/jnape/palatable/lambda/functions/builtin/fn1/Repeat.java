@@ -10,6 +10,8 @@ import com.jnape.palatable.lambda.iterators.RepetitiousIterator;
  */
 public final class Repeat<A> implements Fn1<A, Iterable<A>> {
 
+    private static final Repeat INSTANCE = new Repeat();
+
     private Repeat() {
     }
 
@@ -18,8 +20,9 @@ public final class Repeat<A> implements Fn1<A, Iterable<A>> {
         return () -> new RepetitiousIterator<>(a);
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Repeat<A> repeat() {
-        return new Repeat<>();
+        return INSTANCE;
     }
 
     public static <A> Iterable<A> repeat(A a) {

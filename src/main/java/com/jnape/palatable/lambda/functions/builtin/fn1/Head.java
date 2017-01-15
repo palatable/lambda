@@ -13,6 +13,8 @@ import java.util.Optional;
  */
 public final class Head<A> implements Fn1<Iterable<A>, Optional<A>> {
 
+    private static final Head INSTANCE = new Head();
+
     private Head() {
     }
 
@@ -24,8 +26,9 @@ public final class Head<A> implements Fn1<Iterable<A>, Optional<A>> {
                 : Optional.empty();
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Head<A> head() {
-        return new Head<>();
+        return INSTANCE;
     }
 
     public static <A> Optional<A> head(Iterable<A> as) {
