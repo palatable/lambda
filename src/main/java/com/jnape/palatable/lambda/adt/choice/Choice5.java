@@ -18,7 +18,7 @@ import java.util.function.Function;
  * @param <E> a type parameter representing the fifth possible type of this choice
  * @see Choice4
  */
-public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E>, Functor<E, Choice5<A, B, C, D, ?>>, Bifunctor<D, E> {
+public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E>, Functor<E, Choice5<A, B, C, D, ?>>, Bifunctor<D, E, Choice5<A, B, C, ?, ?>> {
 
     private Choice5() {
     }
