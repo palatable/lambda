@@ -5,7 +5,7 @@ import com.jnape.palatable.lambda.functor.Profunctor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-public final class InvocationRecordingProfunctor<A, B> implements Profunctor<A, B> {
+public final class InvocationRecordingProfunctor<A, B> implements Profunctor<A, B, InvocationRecordingProfunctor> {
     private final AtomicReference<Function> leftFn;
     private final AtomicReference<Function> rightFn;
 
@@ -17,9 +17,9 @@ public final class InvocationRecordingProfunctor<A, B> implements Profunctor<A, 
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C, D> Profunctor<C, D> diMap(Function<C, A> lFn, Function<B, D> rFn) {
+    public <C, D> InvocationRecordingProfunctor<C, D> diMap(Function<C, A> lFn, Function<B, D> rFn) {
         leftFn.set(lFn);
         rightFn.set(rFn);
-        return (Profunctor<C, D>) this;
+        return (InvocationRecordingProfunctor<C, D>) this;
     }
 }
