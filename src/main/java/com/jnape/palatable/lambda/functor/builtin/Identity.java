@@ -9,7 +9,7 @@ import java.util.function.Function;
  *
  * @param <A> the value type
  */
-public final class Identity<A> implements Functor<A> {
+public final class Identity<A> implements Functor<A, Identity> {
 
     private final A a;
 

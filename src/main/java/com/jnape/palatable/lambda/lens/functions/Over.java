@@ -32,7 +32,7 @@ public final class Over<S, T, A, B> implements Fn3<Lens<S, T, A, B>, Function<? 
 
     @Override
     public T apply(Lens<S, T, A, B> lens, Function<? super A, ? extends B> fn, S s) {
-        return lens.<Identity<T>, Identity<B>>fix()
+        return lens.<Identity, Identity<T>, Identity<B>>fix()
                 .apply(fn.andThen((Function<B, Identity<B>>) Identity::new), s)
                 .runIdentity();
     }

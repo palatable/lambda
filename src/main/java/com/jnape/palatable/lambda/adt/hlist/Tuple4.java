@@ -20,7 +20,7 @@ import java.util.function.Function;
  * @see Tuple3
  * @see Tuple5
  */
-public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implements Functor<_4>, Bifunctor<_3, _4> {
+public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implements Functor<_4, Tuple4<_1, _2, _3, ?>>, Bifunctor<_3, _4, Tuple4<_1, _2, ?, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;

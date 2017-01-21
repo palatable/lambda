@@ -13,7 +13,7 @@ import java.util.function.Function;
  * @param <B> The result type
  */
 @FunctionalInterface
-public interface Fn1<A, B> extends Functor<B>, Profunctor<A, B>, Function<A, B> {
+public interface Fn1<A, B> extends Functor<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, Function<A, B> {
 
     /**
      * Invoke this function with the given argument.

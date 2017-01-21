@@ -27,7 +27,7 @@ public final class View<S, T, A, B> implements Fn2<Lens<S, T, A, B>, S, A> {
 
     @Override
     public A apply(Lens<S, T, A, B> lens, S s) {
-        return lens.<Const<A, T>, Const<A, B>>fix().apply(Const::new, s).runConst();
+        return lens.<Const<A, ?>, Const<A, T>, Const<A, B>>fix().apply(Const::new, s).runConst();
     }
 
     @SuppressWarnings("unchecked")

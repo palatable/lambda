@@ -16,7 +16,7 @@ import java.util.function.Function;
  * @see Tuple4
  * @see Tuple5
  */
-public class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1> {
+public class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1, SingletonHList> {
 
     SingletonHList(_1 _1) {
         super(_1, nil());

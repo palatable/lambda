@@ -132,9 +132,10 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
  * @param <B> the type of the "smaller" update value
  */
 @FunctionalInterface
-public interface Lens<S, T, A, B> extends Functor<T> {
+public interface Lens<S, T, A, B> extends Functor<T, Lens<S, ?, A, B>> {
 
-    <FT extends Functor<T>, FB extends Functor<B>> FT apply(Function<? super A, ? extends FB> fn, S s);
+    <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
+            Function<? super A, ? extends FB> fn, S s);
 
     /**
      * Fix this lens against some functor, producing a non-polymorphic runnable lens as an {@link Fn2}.
@@ -146,7 +147,7 @@ public interface Lens<S, T, A, B> extends Functor<T> {
      * @param <FB> the type of the lifted B
      * @return the lens, "fixed" to the functor
      */
-    default <FT extends Functor<T>, FB extends Functor<B>> Fixed<S, T, A, B, FT, FB> fix() {
+    default <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> Fixed<S, T, A, B, F, FT, FB> fix() {
         return this::apply;
     }
 
@@ -239,8 +240,9 @@ public interface Lens<S, T, A, B> extends Functor<T> {
         return new Lens<S, T, A, B>() {
             @Override
             @SuppressWarnings("unchecked")
-            public <FT extends Functor<T>, FB extends Functor<B>> FT apply(Function<? super A, ? extends FB> fn,
-                                                                           S s) {
+            public <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
+                    Function<? super A, ? extends FB> fn,
+                    S s) {
                 return (FT) fn.apply(getter.apply(s)).fmap(b -> setter.apply(s, b));
             }
         };
@@ -272,7 +274,7 @@ public interface Lens<S, T, A, B> extends Functor<T> {
     interface Simple<S, A> extends Lens<S, S, A, A> {
 
         @Override
-        default <FS extends Functor<S>, FA extends Functor<A>> Fixed<S, A, FS, FA> fix() {
+        default <F extends Functor, FS extends Functor<S, F>, FA extends Functor<A, F>> Fixed<S, A, F, FS, FA> fix() {
             return this::apply;
         }
 
@@ -294,8 +296,8 @@ public interface Lens<S, T, A, B> extends Functor<T> {
          * @param <FA> the type of the lifted A
          */
         @FunctionalInterface
-        interface Fixed<S, A, FS extends Functor<S>, FA extends Functor<A>>
-                extends Lens.Fixed<S, S, A, A, FS, FA> {
+        interface Fixed<S, A, F extends Functor, FS extends Functor<S, F>, FA extends Functor<A, F>>
+                extends Lens.Fixed<S, S, A, A, F, FS, FA> {
         }
     }
 
@@ -307,11 +309,12 @@ public interface Lens<S, T, A, B> extends Functor<T> {
      * @param <T>  the type of the "larger" value for putting
      * @param <A>  the type of the "smaller" value that is read
      * @param <B>  the type of the "smaller" update value
+     * @param <F>  the functor unification type between FT and FB
      * @param <FT> the type of the lifted T
      * @param <FB> the type of the lifted B
      */
     @FunctionalInterface
-    interface Fixed<S, T, A, B, FT extends Functor<T>, FB extends Functor<B>>
+    interface Fixed<S, T, A, B, F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>>
             extends Fn2<Function<? super A, ? extends FB>, S, FT> {
     }
 }
