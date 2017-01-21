@@ -1,0 +1,42 @@
+package com.jnape.palatable.lambda.recursionschemes;
+
+import com.jnape.palatable.lambda.functor.Functor;
+
+/**
+ * A type-level encoding of the least fixed point of a given functor; that is, given a <code>{@link
+ * Functor}&lt;X&gt;</code> <code>f</code> and a value <code>x</code> of type <code>X</code>, <code>x</code> is the
+ * least fixed point of <code>f</code> if, and only if, for all functions <code>fn</code>, <code>f.fmap(fn) ==
+ * f</code>.
+ * <p>
+ * This encoding is foundational to the recursion schemes contained in this package, as it provides a generic,
+ * arbitrarily deep recursive type signature corresponding to inductive and co-inductive types.
+ * <p>
+ * For more information, read about
+ * <a href="https://www.schoolofhaskell.com/user/bartosz/understanding-algebras" target="_top">Fix</a>.
+ *
+ * @param <F>       the functor unification type
+ * @param <Unfixed> the type corresponding to the unfixed functor
+ */
+@FunctionalInterface
+public interface Fix<F extends Functor, Unfixed extends Functor<?, ? extends F>> {
+
+    /**
+     * Unfix the currently fixed functor.
+     *
+     * @return the unfixed functor
+     */
+    Unfixed unfix();
+
+    /**
+     * Fix a {@link Functor} f.
+     *
+     * @param unfixed   the unfixed functor
+     * @param <F>       the functor unification type
+     * @param <Unfixed> the type corresponding to the unfixed functor
+     * @return the fixed functor
+     */
+    static <F extends Functor, Unfixed extends Functor<? extends Fix<F, ?>, F>> Fix<F, Unfixed> fix(Unfixed unfixed) {
+        return () -> unfixed;
+    }
+}
+
