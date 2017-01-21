@@ -18,7 +18,7 @@ import java.util.function.Function;
  * @see Choice3
  * @see Choice5
  */
-public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D>, Functor<D>, Bifunctor<C, D> {
+public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D>, Functor<D, Choice4<A, B, C, ?>>, Bifunctor<C, D> {
 
     private Choice4() {
     }

@@ -25,7 +25,7 @@ import static java.util.Arrays.asList;
  * @param <L> The left parameter type
  * @param <R> The right parameter type
  */
-public abstract class Either<L, R> implements CoProduct2<L, R>, Functor<R>, Bifunctor<L, R> {
+public abstract class Either<L, R> implements CoProduct2<L, R>, Functor<R, Either<L, ?>>, Bifunctor<L, R> {
 
     private Either() {
     }
