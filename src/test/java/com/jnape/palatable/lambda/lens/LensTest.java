@@ -27,13 +27,13 @@ public class LensTest {
 
     @Test
     public void setsUnderIdentity() {
-        Set<Integer> ints = LENS.<Identity<Set<Integer>>, Identity<Integer>>apply(s -> new Identity<>(s.length()), asList("foo", "bar", "baz")).runIdentity();
+        Set<Integer> ints = LENS.<Identity, Identity<Set<Integer>>, Identity<Integer>>apply(s -> new Identity<>(s.length()), asList("foo", "bar", "baz")).runIdentity();
         assertEquals(singleton(3), ints);
     }
 
     @Test
     public void viewsUnderConst() {
-        Integer i = LENS.<Const<Integer, Set<Integer>>, Const<Integer, Integer>>apply(s -> new Const<>(s.length()), asList("foo", "bar", "baz")).runConst();
+        Integer i = LENS.<Const<Integer, ?>, Const<Integer, Set<Integer>>, Const<Integer, Integer>>apply(s -> new Const<>(s.length()), asList("foo", "bar", "baz")).runConst();
         assertEquals((Integer) 3, i);
     }
 
@@ -42,8 +42,8 @@ public class LensTest {
         Fn1<String, Const<Integer, Integer>> fn = s -> new Const<>(s.length());
         List<String> s = singletonList("foo");
 
-        Integer fixedLensResult = LENS.<Const<Integer, Set<Integer>>, Const<Integer, Integer>>fix().apply(fn, s).runConst();
-        Integer unfixedLensResult = LENS.<Const<Integer, Set<Integer>>, Const<Integer, Integer>>apply(fn, s).runConst();
+        Integer fixedLensResult = LENS.<Const<Integer, ?>, Const<Integer, Set<Integer>>, Const<Integer, Integer>>fix().apply(fn, s).runConst();
+        Integer unfixedLensResult = LENS.<Const<Integer, ?>, Const<Integer, Set<Integer>>, Const<Integer, Integer>>apply(fn, s).runConst();
 
         assertEquals(unfixedLensResult, fixedLensResult);
     }
@@ -62,7 +62,7 @@ public class LensTest {
                 .mapA(Optional::ofNullable)
                 .mapB((Optional<Integer> optI) -> optI.orElse(-1));
 
-        Lens.Fixed<Optional<String>, Optional<Boolean>, Optional<Character>, Optional<Integer>, Identity<Optional<Boolean>>, Identity<Optional<Integer>>> fixed = theGambit.fix();
+        Lens.Fixed<Optional<String>, Optional<Boolean>, Optional<Character>, Optional<Integer>, Identity, Identity<Optional<Boolean>>, Identity<Optional<Integer>>> fixed = theGambit.fix();
         assertEquals(Optional.of(true), fixed.apply(optC -> new Identity<>(optC.map(c -> parseInt(Character.toString(c)))), Optional.of("321")).runIdentity());
     }
 

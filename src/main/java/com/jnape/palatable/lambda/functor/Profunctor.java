@@ -52,7 +52,7 @@ public interface Profunctor<A, B> {
      * @param <C> the new right parameter type
      * @param lFn the left parameter mapping function
      * @param rFn the right parameter mapping function
-     * @return a profunctor over Z (the new left parameter type) and C (the new right parameter tyep)
+     * @return a profunctor over Z (the new left parameter type) and C (the new right parameter type)
      */
     <Z, C> Profunctor<Z, C> diMap(Function<Z, A> lFn, Function<B, C> rFn);
 }

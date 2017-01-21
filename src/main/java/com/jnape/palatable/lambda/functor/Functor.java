@@ -19,7 +19,7 @@ import java.util.function.Function;
  * @see com.jnape.palatable.lambda.adt.Either
  */
 @FunctionalInterface
-public interface Functor<A> {
+public interface Functor<A, F extends Functor> {
 
     /**
      * Covariantly transmute this functor's parameter using the given mapping function. Generally this method is
@@ -29,5 +29,5 @@ public interface Functor<A> {
      * @param fn  the mapping function
      * @return a functor over B (the new parameter type)
      */
-    <B> Functor<B> fmap(Function<? super A, ? extends B> fn);
+    <B> Functor<B, F> fmap(Function<? super A, ? extends B> fn);
 }

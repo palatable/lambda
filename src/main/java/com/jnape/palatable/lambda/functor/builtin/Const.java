@@ -14,7 +14,7 @@ import java.util.function.Function;
  * @param <A> the left parameter type, and the type of the stored value
  * @param <B> the right (phantom) parameter type
  */
-public final class Const<A, B> implements Functor<B>, Bifunctor<A, B> {
+public final class Const<A, B> implements Functor<B, Const<A, ?>>, Bifunctor<A, B> {
 
     private final A a;
 
