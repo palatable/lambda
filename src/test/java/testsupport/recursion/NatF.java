@@ -11,8 +11,8 @@ public abstract class NatF<A> implements Functor<A, NatF>, CoProduct2<NatF.Z<A>,
         return new Z<>();
     }
 
-    public static <A> NatF<A> s(@SuppressWarnings("unused") A a) {
-        return new S<>();
+    public static <A> NatF<A> s(A a) {
+        return new S<>(a);
     }
 
     public static final class Z<A> extends NatF<A> {
@@ -33,13 +33,20 @@ public abstract class NatF<A> implements Functor<A, NatF>, CoProduct2<NatF.Z<A>,
     }
 
     public static final class S<A> extends NatF<A> {
-        private S() {
+        private final A a;
+
+        private S(A a) {
+            this.a = a;
+        }
+
+        public A carrier() {
+            return a;
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public <B> NatF<B> fmap(Function<? super A, ? extends B> fn) {
-            return (NatF<B>) this;
+            return new S<>(fn.apply(a));
         }
 
         @Override
