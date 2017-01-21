@@ -19,7 +19,7 @@ import java.util.function.Function;
  * @see Tuple4
  * @see Tuple5
  */
-public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map.Entry<_1, _2>, Functor<_2, Tuple2<_1, ?>>, Bifunctor<_1, _2> {
+public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map.Entry<_1, _2>, Functor<_2, Tuple2<_1, ?>>, Bifunctor<_1, _2, Tuple2> {
 
     private final _1 _1;
     private final _2 _2;
