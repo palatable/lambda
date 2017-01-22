@@ -3,6 +3,7 @@ package testsupport.recursion;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functor.Functor;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public abstract class ListF<A, B> implements Functor<B, ListF<A, ?>>, CoProduct2<ListF.Nil<A, B>, ListF.Cons<A, B>> {
@@ -27,6 +28,16 @@ public abstract class ListF<A, B> implements Functor<B, ListF<A, ?>>, CoProduct2
         public <R> R match(Function<? super Nil<A, B>, ? extends R> aFn,
                            Function<? super Cons<A, B>, ? extends R> bFn) {
             return aFn.apply(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Nil;
+        }
+
+        @Override
+        public int hashCode() {
+            return 31;
         }
     }
 
@@ -58,6 +69,20 @@ public abstract class ListF<A, B> implements Functor<B, ListF<A, ?>>, CoProduct2
         public <R> R match(Function<? super Nil<A, B>, ? extends R> aFn,
                            Function<? super Cons<A, B>, ? extends R> bFn) {
             return bFn.apply(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Cons) {
+                Cons that = (Cons) obj;
+                return Objects.equals(head, that.head) && Objects.equals(tail, that.tail);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * Objects.hashCode(head) + Objects.hashCode(tail);
         }
     }
 }

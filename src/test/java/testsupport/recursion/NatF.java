@@ -3,6 +3,7 @@ package testsupport.recursion;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functor.Functor;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public abstract class NatF<A> implements Functor<A, NatF>, CoProduct2<NatF.Z<A>, NatF.S<A>> {
@@ -30,6 +31,16 @@ public abstract class NatF<A> implements Functor<A, NatF>, CoProduct2<NatF.Z<A>,
         public <R> R match(Function<? super Z<A>, ? extends R> aFn, Function<? super S<A>, ? extends R> bFn) {
             return aFn.apply(this);
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Z;
+        }
+
+        @Override
+        public int hashCode() {
+            return 31;
+        }
     }
 
     public static final class S<A> extends NatF<A> {
@@ -52,6 +63,11 @@ public abstract class NatF<A> implements Functor<A, NatF>, CoProduct2<NatF.Z<A>,
         @Override
         public <R> R match(Function<? super Z<A>, ? extends R> aFn, Function<? super S<A>, ? extends R> bFn) {
             return bFn.apply(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof S && Objects.equals(carrier(), ((S) obj).carrier());
         }
     }
 }

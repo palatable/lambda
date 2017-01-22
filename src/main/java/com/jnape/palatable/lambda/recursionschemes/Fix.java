@@ -2,6 +2,8 @@ package com.jnape.palatable.lambda.recursionschemes;
 
 import com.jnape.palatable.lambda.functor.Functor;
 
+import java.util.Objects;
+
 /**
  * A type-level encoding of the least fixed point of a given functor; that is, given a <code>{@link
  * Functor}&lt;X&gt;</code> <code>f</code> and a value <code>x</code> of type <code>X</code>, <code>x</code> is the
@@ -36,7 +38,22 @@ public interface Fix<F extends Functor, Unfixed extends Functor<?, ? extends F>>
      * @return the fixed functor
      */
     static <F extends Functor, Unfixed extends Functor<? extends Fix<F, ?>, F>> Fix<F, Unfixed> fix(Unfixed unfixed) {
-        return () -> unfixed;
+        return new Fix<F, Unfixed>() {
+            @Override
+            public Unfixed unfix() {
+                return unfixed;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return (obj instanceof Fix) && Objects.equals(unfixed, ((Fix) obj).unfix());
+            }
+
+            @Override
+            public int hashCode() {
+                return 31 * Objects.hashCode(unfixed);
+            }
+        };
     }
 }
 
