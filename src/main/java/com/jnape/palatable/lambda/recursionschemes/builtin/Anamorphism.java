@@ -8,9 +8,12 @@ import fix.Coalgebra;
 
 import static com.jnape.palatable.lambda.recursionschemes.Fix.fix;
 
-public class Anamorphism<A, F extends Functor, FA extends Functor<A, F>> implements Fn2<Coalgebra<A, FA>, A, Fix<F, Functor<Fix<F, ?>, F>>> {
+public final class Anamorphism<A, F extends Functor, FA extends Functor<A, F>> implements Fn2<Coalgebra<A, FA>, A, Fix<F, Functor<Fix<F, ?>, F>>> {
 
     private static final Anamorphism INSTANCE = new Anamorphism();
+
+    private Anamorphism() {
+    }
 
     @Override
     public Fix<F, Functor<Fix<F, ?>, F>> apply(Coalgebra<A, FA> coalgebra, A a) {

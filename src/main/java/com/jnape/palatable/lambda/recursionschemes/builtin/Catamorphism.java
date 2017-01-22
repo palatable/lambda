@@ -6,9 +6,12 @@ import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.recursionschemes.Algebra;
 import com.jnape.palatable.lambda.recursionschemes.Fix;
 
-public class Catamorphism<A, F extends Functor, FA extends Functor<A, F>> implements Fn2<Algebra<FA, A>, Fix<F, ? extends Functor<? extends Fix<F, ?>, F>>, A> {
+public final class Catamorphism<A, F extends Functor, FA extends Functor<A, F>> implements Fn2<Algebra<FA, A>, Fix<F, ? extends Functor<? extends Fix<F, ?>, F>>, A> {
 
     private static final Catamorphism INSTANCE = new Catamorphism();
+
+    private Catamorphism() {
+    }
 
     @Override
     @SuppressWarnings("unchecked")
