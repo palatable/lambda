@@ -7,9 +7,6 @@ import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.recursionschemes.Algebra;
 import fix.Coalgebra;
 
-import static com.jnape.palatable.lambda.recursionschemes.builtin.Anamorphism.ana;
-import static com.jnape.palatable.lambda.recursionschemes.builtin.Catamorphism.cata;
-
 public final class Hylomorphism<A, B, F extends Functor, FA extends Functor<A, F>, FB extends Functor<B, F>> implements Fn3<Algebra<FB, B>, Coalgebra<A, FA>, A, B> {
 
     private static final Hylomorphism INSTANCE = new Hylomorphism();
@@ -17,10 +14,29 @@ public final class Hylomorphism<A, B, F extends Functor, FA extends Functor<A, F
     private Hylomorphism() {
     }
 
+    @SuppressWarnings("unchecked")
+    public A fapply(Algebra<FA, A> algebra, Coalgebra<A, FA> coalgebra, A a) {
+        A x = a;
+        FA fa = coalgebra.apply(x);
+        FA previous = null;
+        while (fa != previous) {
+            previous = fa;
+            if (fa.fmap(a1 -> algebra.apply(coalgebra.apply(a1))).equals(fa))
+                return x;
+            x = algebra.apply(previous);
+            fa = coalgebra.apply(algebra.apply(fa));
+        }
+
+        return x;
+//
+//        return algebra.apply((FB) coalgebra.apply(a).fmap(hylo(algebra, coalgebra)));
+//        return cata(algebra).compose(ana(coalgebra)).apply(a);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public B apply(Algebra<FB, B> algebra, Coalgebra<A, FA> coalgebra, A a) {
-        return cata(algebra).compose(ana(coalgebra)).apply(a);
+        return algebra.apply((FB) coalgebra.apply(a).fmap(hylo(algebra, coalgebra)));
     }
 
     @SuppressWarnings("unchecked")
