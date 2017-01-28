@@ -20,6 +20,8 @@ import com.jnape.palatable.lambda.lens.Lens;
  */
 public final class View<S, T, A, B> implements Fn2<Lens<S, T, A, B>, S, A> {
 
+    private static final View INSTANCE = new View();
+
     private View() {
     }
 
@@ -28,8 +30,9 @@ public final class View<S, T, A, B> implements Fn2<Lens<S, T, A, B>, S, A> {
         return lens.<Const<A, ?>, Const<A, T>, Const<A, B>>fix().apply(Const::new, s).runConst();
     }
 
+    @SuppressWarnings("unchecked")
     public static <S, T, A, B> View<S, T, A, B> view() {
-        return new View<>();
+        return INSTANCE;
     }
 
     public static <S, T, A, B> Fn1<S, A> view(Lens<S, T, A, B> lens) {
