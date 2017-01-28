@@ -5,7 +5,11 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.recursionschemes.Algebra;
+import com.jnape.palatable.lambda.recursionschemes.Thunk;
 import fix.Coalgebra;
+
+import static com.jnape.palatable.lambda.recursionschemes.builtin.Anamorphism.ana;
+import static com.jnape.palatable.lambda.recursionschemes.builtin.Catamorphism.cata;
 
 public final class Hylomorphism<A, B, F extends Functor, FA extends Functor<A, F>, FB extends Functor<B, F>> implements Fn3<Algebra<FB, B>, Coalgebra<A, FA>, A, B> {
 
@@ -14,7 +18,7 @@ public final class Hylomorphism<A, B, F extends Functor, FA extends Functor<A, F
     private Hylomorphism() {
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "Duplicates"})
     public A fapply(Algebra<FA, A> algebra, Coalgebra<A, FA> coalgebra, A a) {
         A x = a;
         FA fa = coalgebra.apply(x);
@@ -28,15 +32,28 @@ public final class Hylomorphism<A, B, F extends Functor, FA extends Functor<A, F
         }
 
         return x;
-//
-//        return algebra.apply((FB) coalgebra.apply(a).fmap(hylo(algebra, coalgebra)));
-//        return cata(algebra).compose(ana(coalgebra)).apply(a);
     }
 
+    @SuppressWarnings({"unchecked", "Duplicates"})
+    public B fapply2(Algebra<FB, B> algebra, Coalgebra<A, FA> coalgebra, A a) {
+        A x = a;
+        B currentB = null;
+        FA fa = coalgebra.apply(x);
+        FA previous = null;
+        while (fa != previous) {
+            previous = fa;
+            final FA foo = fa;
+            Thunk<B, F> bfThunk = new Thunk<>(() -> foo.fmap(a1 -> fapply2(algebra, coalgebra, a1)));
+            currentB = algebra.apply((FB) bfThunk.get());
+        }
+        return currentB;
+    }
+
+
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "Duplicates"})
     public B apply(Algebra<FB, B> algebra, Coalgebra<A, FA> coalgebra, A a) {
-        return algebra.apply((FB) coalgebra.apply(a).fmap(hylo(algebra, coalgebra)));
+        return cata(algebra).compose(ana(coalgebra)).apply(a);
     }
 
     @SuppressWarnings("unchecked")

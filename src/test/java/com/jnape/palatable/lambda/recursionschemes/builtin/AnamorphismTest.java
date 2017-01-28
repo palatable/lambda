@@ -25,15 +25,12 @@ public class AnamorphismTest {
                      ana(elements, 0));
     }
 
-    @Test
+    //    @Test
+    //todo: wip
     public void unfoldingInfiniteCodata() {
-        Coalgebra<Integer, NatF<Integer>> naturals = i -> {
-            if (i % 10000 == 0)
-                System.out.println("i = " + i);
-            return NatF.s(i + 1);
-        };
-        Algebra<NatF<Integer>, Integer> sum = nat -> nat.match(z -> 0, s -> s.carrier() + 1);
-        Integer x = Hylomorphism.<Integer, Integer, NatF, NatF<Integer>, NatF<Integer>>hylo().fapply(sum, naturals, 0);
+        Coalgebra<Integer, NatF<Integer>> naturals = i -> NatF.s(i + 1);
+        Algebra<NatF<String>, String> sum = nat -> nat.match(z -> "0", s -> s.carrier() + 1);
+        String x = Hylomorphism.<Integer, String, NatF, NatF<Integer>, NatF<String>>hylo().apply(sum, naturals, 0);
         System.out.println(x);
 
     }
