@@ -10,7 +10,6 @@ package com.jnape.palatable.lambda.adt.hmap;
  *
  * @param <T> The type of the value that this key maps to inside an HMap
  */
-@SuppressWarnings("unused")
 public interface TypeSafeKey<T> {
 
     /**

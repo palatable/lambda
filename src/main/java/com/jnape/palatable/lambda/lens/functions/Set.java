@@ -25,6 +25,8 @@ import static com.jnape.palatable.lambda.lens.functions.Over.over;
  */
 public final class Set<S, T, A, B> implements Fn3<Lens<S, T, A, B>, B, S, T> {
 
+    private static final Set INSTANCE = new Set();
+
     private Set() {
     }
 
@@ -33,8 +35,9 @@ public final class Set<S, T, A, B> implements Fn3<Lens<S, T, A, B>, B, S, T> {
         return over(lens, constantly(b), s);
     }
 
+    @SuppressWarnings("unchecked")
     public static <S, T, A, B> Set<S, T, A, B> set() {
-        return new Set<>();
+        return INSTANCE;
     }
 
     public static <S, T, A, B> Fn2<B, S, T> set(Lens<S, T, A, B> lens) {

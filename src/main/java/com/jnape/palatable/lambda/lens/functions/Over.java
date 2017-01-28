@@ -25,6 +25,8 @@ import java.util.function.Function;
  */
 public final class Over<S, T, A, B> implements Fn3<Lens<S, T, A, B>, Function<? super A, ? extends B>, S, T> {
 
+    private static final Over INSTANCE = new Over();
+
     private Over() {
     }
 
@@ -35,8 +37,9 @@ public final class Over<S, T, A, B> implements Fn3<Lens<S, T, A, B>, Function<? 
                 .runIdentity();
     }
 
+    @SuppressWarnings("unchecked")
     public static <S, T, A, B> Over<S, T, A, B> over() {
-        return new Over<>();
+        return (Over<S, T, A, B>) INSTANCE;
     }
 
     public static <S, T, A, B> Fn2<Function<? super A, ? extends B>, S, T> over(
