@@ -239,7 +239,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R>, Functor<R>, Bifu
      */
     public static <L, R> Either<L, R> fromOptional(Optional<R> optional, Supplier<L> leftFn) {
         return optional.<Either<L, R>>map(Either::right)
-                .orElse(left(leftFn.get()));
+                .orElseGet(() -> left(leftFn.get()));
     }
 
     /**
