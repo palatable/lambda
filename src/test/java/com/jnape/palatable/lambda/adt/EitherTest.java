@@ -142,6 +142,15 @@ public class EitherTest {
     }
 
     @Test
+    public void fromOptionalDoesNotEvaluateLeftFnForRight() {
+        Optional<Integer> present = Optional.of(1);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        fromOptional(present, atomicInteger::incrementAndGet);
+
+        assertThat(atomicInteger.get(), is(0));
+    }
+
+    @Test
     public void functorProperties() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);
