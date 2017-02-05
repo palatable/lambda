@@ -48,14 +48,14 @@ Add the following dependency to your:
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>1.5.4</version>
+    <version>1.5.5</version>
 </dependency>
 ```
  
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
  
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.4'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.5'
 ```
   
 
