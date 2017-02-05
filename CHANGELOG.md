@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `toMap`, `last`, `cons`, `prependAll`, `intersperse`
 - `Tuple2/3/4#into`, for applying the values in a tuple as positional arguments to a function.
 - `First` and `Last` monoids over `Optional`
+- `And` and `Or` monoids over `Boolean`
 
 ### Changed
 - `CoProductN.[a-e]()` static factory methods moved to equivalent `ChoiceN` class. Coproduct interfaces now solely represent methods, no longer have anonymous implementations, and no longer require a `Functor` constraint
