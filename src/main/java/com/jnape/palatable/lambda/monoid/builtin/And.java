@@ -4,7 +4,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 /**
- * A {@link Monoid} instance formed by <code>Boolean</code>. Equivalent to logical <code>&&</code>.
+ * A {@link Monoid} instance formed by <code>Boolean</code>. Equivalent to logical <code>&amp;&amp;</code>.
  *
  * @see Or
  * @see Monoid

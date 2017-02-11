@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * Given a {@link Supplier} of some {@link Map} <code>M</code>, create an instance of <code>M</code> and put
  * all of the entries in the provided <code>Iterable</code> into the instance. Note that instances of <code>M</code>
- * must support {@link Map#put} (which is to say, must not throw on invocation).
+ * must support {@link java.util.Map#put} (which is to say, must not throw on invocation).
  *
  * @param <K> the key element type
  * @param <V> the value element type
