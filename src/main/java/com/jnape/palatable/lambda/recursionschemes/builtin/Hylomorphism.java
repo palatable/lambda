@@ -5,7 +5,6 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.recursionschemes.Algebra;
-import com.jnape.palatable.lambda.recursionschemes.Thunk;
 import fix.Coalgebra;
 
 import static com.jnape.palatable.lambda.recursionschemes.builtin.Anamorphism.ana;
@@ -19,7 +18,7 @@ public final class Hylomorphism<A, B, F extends Functor, FA extends Functor<A, F
     }
 
     @SuppressWarnings({"unchecked", "Duplicates"})
-    public A fapply(Algebra<FA, A> algebra, Coalgebra<A, FA> coalgebra, A a) {
+    public A effortTowardsFusion(Algebra<FA, A> algebra, Coalgebra<A, FA> coalgebra, A a) {
         A x = a;
         FA fa = coalgebra.apply(x);
         FA previous = null;
@@ -34,24 +33,8 @@ public final class Hylomorphism<A, B, F extends Functor, FA extends Functor<A, F
         return x;
     }
 
-    @SuppressWarnings({"unchecked", "Duplicates"})
-    public B fapply2(Algebra<FB, B> algebra, Coalgebra<A, FA> coalgebra, A a) {
-        A x = a;
-        B currentB = null;
-        FA fa = coalgebra.apply(x);
-        FA previous = null;
-        while (fa != previous) {
-            previous = fa;
-            final FA foo = fa;
-            Thunk<B, F> bfThunk = new Thunk<>(() -> foo.fmap(a1 -> fapply2(algebra, coalgebra, a1)));
-            currentB = algebra.apply((FB) bfThunk.get());
-        }
-        return currentB;
-    }
-
-
     @Override
-    @SuppressWarnings({"unchecked", "Duplicates"})
+    @SuppressWarnings("unchecked")
     public B apply(Algebra<FB, B> algebra, Coalgebra<A, FA> coalgebra, A a) {
         return cata(algebra).compose(ana(coalgebra)).apply(a);
     }
