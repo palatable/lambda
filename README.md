@@ -48,16 +48,15 @@ Add the following dependency to your:
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>1.5.5</version>
+    <version>1.5.6</version>
 </dependency>
 ```
  
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
  
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.5'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.6'
 ```
-  
 
 <a name="examples">Examples</a>
 --------
@@ -237,20 +236,20 @@ Optional<Integer> anotherIntValue = hmap.get(anotherIntKey); // Optional.empty
 
 ### <a name="coproducts">CoProducts</a>
 
-`CoProduct`s generalize unions of disparate types in a single consolidated type.   
+`CoProduct`s generalize unions of disparate types in a single consolidated type, and the `ChoiceN` ADTs represent canonical implementations of these coproduct types.
 
 ```Java
-CoProduct3<String, Integer, Character> string = CoProduct3.a("string");
-CoProduct3<String, Integer, Character> integer = CoProduct3.b(1);
-CoProduct3<String, Integer, Character> character = CoProduct3.c('a');
+CoProduct3<String, Integer, Character> string = Choice3.a("string");
+CoProduct3<String, Integer, Character> integer = Choice3.b(1);
+CoProduct3<String, Integer, Character> character = Choice3.c('a');
 ```
 
 Rather than supporting explicit value unwrapping, which would necessarily jeopardize type safety, `CoProduct`s support a `match` method that takes one function per possible value type and maps it to a final common result type:
 
 ```Java
-CoProduct3<String, Integer, Character> string = CoProduct3.a("string");
-CoProduct3<String, Integer, Character> integer = CoProduct3.b(1);
-CoProduct3<String, Integer, Character> character = CoProduct3.c('a');
+CoProduct3<String, Integer, Character> string = Choice3.a("string");
+CoProduct3<String, Integer, Character> integer = Choice3.b(1);
+CoProduct3<String, Integer, Character> character = Choice3.c('a');
 
 Integer result = string.<Integer>match(String::length, identity(), Character::charCount); // 6
 ```
@@ -258,11 +257,11 @@ Integer result = string.<Integer>match(String::length, identity(), Character::ch
 Additionally, because a `CoProduct2<A, B>` guarantees a subset of a `CoProduct3<A, B, C>`, the `diverge` method exists between `CoProduct` types of single magnitude differences to make it easy to use a more convergent `CoProduct` where a more divergent `CoProduct` is expected:
   
 ```Java
-CoProduct2<String, Integer> coProduct2 = CoProduct2.a("string");
+CoProduct2<String, Integer> coProduct2 = Choice2.a("string");
 CoProduct3<String, Integer, Character> coProduct3 = coProduct2.diverge(); // still just the coProduct2 value, adapted to the coProduct3 shape
 ```
 
-There are `CoProduct` specializations for type unions of up to 5 different types: `CoProduct2` through `CoProduct5`, respectively.
+There are `CoProduct` and `Choice` specializations for type unions of up to 5 different types: `CoProduct2` through `CoProduct5`, and `Choice2` through `Choice5`, respectively.
 
 ### <a name="either">Either</a>
 

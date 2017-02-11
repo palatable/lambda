@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [1.5.6] - 2017-02-11
 ### Added
 - `ChoiceN` types, representing concrete coproduct implementations that are also `Functor` and `BiFunctor`
 - `toMap`, `last`, `cons`, `prependAll`, `intersperse`
@@ -98,7 +100,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.5.5...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.5.6...HEAD
+[1.5.6]: https://github.com/palatable/lambda/compare/lambda-1.5.5...1.5.6
 [1.5.5]: https://github.com/palatable/lambda/compare/lambda-1.5.4...lambda-1.5.5
 [1.5.4]: https://github.com/palatable/lambda/compare/lambda-1.5.3...lambda-1.5.4
 [1.5.3]: https://github.com/palatable/lambda/compare/lambda-1.5.2...lambda-1.5.3
