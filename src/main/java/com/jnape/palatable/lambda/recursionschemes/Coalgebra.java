@@ -1,4 +1,4 @@
-package fix;
+package com.jnape.palatable.lambda.recursionschemes;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Functor;

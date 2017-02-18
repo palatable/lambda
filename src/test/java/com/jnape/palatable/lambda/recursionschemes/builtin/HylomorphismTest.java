@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.recursionschemes.builtin;
 
 import com.jnape.palatable.lambda.recursionschemes.Algebra;
-import fix.Coalgebra;
+import com.jnape.palatable.lambda.recursionschemes.Coalgebra;
 import org.junit.Test;
 import testsupport.recursion.ListF;
 import testsupport.recursion.NatF;

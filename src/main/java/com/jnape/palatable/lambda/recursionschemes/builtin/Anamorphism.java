@@ -3,9 +3,9 @@ package com.jnape.palatable.lambda.recursionschemes.builtin;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.recursionschemes.Coalgebra;
 import com.jnape.palatable.lambda.recursionschemes.Fix;
 import com.jnape.palatable.lambda.recursionschemes.Thunk;
-import fix.Coalgebra;
 
 import static com.jnape.palatable.lambda.recursionschemes.Fix.fix;
 

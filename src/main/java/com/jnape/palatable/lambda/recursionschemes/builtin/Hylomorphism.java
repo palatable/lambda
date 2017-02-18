@@ -5,7 +5,7 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.recursionschemes.Algebra;
-import fix.Coalgebra;
+import com.jnape.palatable.lambda.recursionschemes.Coalgebra;
 
 import static com.jnape.palatable.lambda.recursionschemes.builtin.Anamorphism.ana;
 import static com.jnape.palatable.lambda.recursionschemes.builtin.Catamorphism.cata;

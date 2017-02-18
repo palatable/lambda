@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.recursionschemes;
 
-import fix.Coalgebra;
 import org.junit.Test;
 import testsupport.recursion.ListF;
 import testsupport.recursion.NatF;
