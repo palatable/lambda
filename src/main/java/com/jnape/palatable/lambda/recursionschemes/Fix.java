@@ -53,6 +53,11 @@ public interface Fix<F extends Functor, Unfixed extends Functor<?, ? extends F>>
             public int hashCode() {
                 return 31 * Objects.hashCode(unfixed);
             }
+
+            @Override
+            public String toString() {
+                return "fix(" + unfixed + ")";
+            }
         };
     }
 }

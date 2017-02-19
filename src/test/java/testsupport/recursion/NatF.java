@@ -41,6 +41,11 @@ public abstract class NatF<A> implements Functor<A, NatF>, CoProduct2<NatF.Z<A>,
         public int hashCode() {
             return 31;
         }
+
+        @Override
+        public String toString() {
+            return "z()";
+        }
     }
 
     public static final class S<A> extends NatF<A> {
@@ -68,6 +73,11 @@ public abstract class NatF<A> implements Functor<A, NatF>, CoProduct2<NatF.Z<A>,
         @Override
         public boolean equals(Object obj) {
             return obj instanceof S && Objects.equals(carrier(), ((S) obj).carrier());
+        }
+
+        @Override
+        public String toString() {
+            return "s(" + a + ")";
         }
     }
 }

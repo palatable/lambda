@@ -39,6 +39,11 @@ public abstract class ListF<A, B> implements Functor<B, ListF<A, ?>>, CoProduct2
         public int hashCode() {
             return 31;
         }
+
+        @Override
+        public String toString() {
+            return "nil()";
+        }
     }
 
     public static final class Cons<A, B> extends ListF<A, B> {
@@ -83,6 +88,11 @@ public abstract class ListF<A, B> implements Functor<B, ListF<A, ?>>, CoProduct2
         @Override
         public int hashCode() {
             return 31 * Objects.hashCode(head) + Objects.hashCode(tail);
+        }
+
+        @Override
+        public String toString() {
+            return "cons(" + head + ", " + tail + ")";
         }
     }
 }

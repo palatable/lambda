@@ -15,6 +15,21 @@ public final class List<A> implements Fix<ListF<A, ?>, ListF<A, List<A>>> {
         return unfixed;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof List && unfixed.equals(((List) other).unfix());
+    }
+
+    @Override
+    public int hashCode() {
+        return unfixed.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return unfixed.toString();
+    }
+
     public static <A> List<A> nil() {
         return new List<>(ListF.nil());
     }
