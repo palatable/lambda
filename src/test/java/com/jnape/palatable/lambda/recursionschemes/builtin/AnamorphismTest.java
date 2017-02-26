@@ -1,8 +1,7 @@
 package com.jnape.palatable.lambda.recursionschemes.builtin;
 
-import com.jnape.palatable.lambda.recursionschemes.Algebra;
-import com.jnape.palatable.lambda.recursionschemes.Fix;
 import com.jnape.palatable.lambda.recursionschemes.Coalgebra;
+import com.jnape.palatable.lambda.recursionschemes.Fix;
 import org.junit.Test;
 import testsupport.recursion.ListF;
 import testsupport.recursion.NatF;
@@ -23,15 +22,5 @@ public class AnamorphismTest {
         assertEquals(Fix.fix(ListF.nil()), ana(elements, 4));
         assertEquals(Fix.<ListF<Integer, ?>, ListF<Integer, Fix<ListF<Integer, ?>, ?>>>fix(ListF.cons(0, fix(ListF.cons(1, fix(ListF.cons(2, fix(ListF.nil()))))))),
                      ana(elements, 0));
-    }
-
-    //    @Test
-    //todo: wip
-    public void unfoldingInfiniteCodata() {
-        Coalgebra<Integer, NatF<Integer>> naturals = i -> NatF.s(i + 1);
-        Algebra<NatF<String>, String> sum = nat -> nat.match(z -> "0", s -> s.carrier() + 1);
-        String x = Hylomorphism.<Integer, String, NatF, NatF<Integer>, NatF<String>>hylo().apply(sum, naturals, 0);
-        System.out.println(x);
-
     }
 }

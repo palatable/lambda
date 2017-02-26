@@ -5,7 +5,6 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.recursionschemes.Coalgebra;
 import com.jnape.palatable.lambda.recursionschemes.Fix;
-import com.jnape.palatable.lambda.recursionschemes.Thunk;
 
 import static com.jnape.palatable.lambda.recursionschemes.Fix.fix;
 
@@ -18,7 +17,7 @@ public final class Anamorphism<A, F extends Functor, FA extends Functor<A, F>> i
 
     @Override
     public Fix<F, Functor<Fix<F, ?>, F>> apply(Coalgebra<A, FA> coalgebra, A a) {
-        return fix(new Thunk<>(() -> coalgebra.apply(a)).<Fix<F, ?>>fmap(ana(coalgebra)).get());
+        return fix(coalgebra.apply(a).fmap(ana(coalgebra)));
     }
 
     @SuppressWarnings("unchecked")

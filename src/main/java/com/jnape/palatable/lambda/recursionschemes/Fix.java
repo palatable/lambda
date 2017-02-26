@@ -1,6 +1,12 @@
 package com.jnape.palatable.lambda.recursionschemes;
 
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.recursionschemes.builtin.Anamorphism;
+import com.jnape.palatable.lambda.recursionschemes.builtin.Catamorphism;
+import com.jnape.palatable.lambda.recursionschemes.builtin.Histomorphism;
+import com.jnape.palatable.lambda.recursionschemes.builtin.Hylomorphism;
+import com.jnape.palatable.lambda.recursionschemes.builtin.Paramorphism;
+import com.jnape.palatable.lambda.recursionschemes.builtin.Zygomorphism;
 
 import java.util.Objects;
 
@@ -18,6 +24,12 @@ import java.util.Objects;
  *
  * @param <F>       the functor unification type
  * @param <Unfixed> the type corresponding to the unfixed functor
+ * @see Anamorphism
+ * @see Catamorphism
+ * @see Histomorphism
+ * @see Hylomorphism
+ * @see Paramorphism
+ * @see Zygomorphism
  */
 @FunctionalInterface
 public interface Fix<F extends Functor, Unfixed extends Functor<?, ? extends F>> {
