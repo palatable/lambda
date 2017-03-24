@@ -1,21 +1,24 @@
 package com.jnape.palatable.lambda.functions;
 
-import org.hamcrest.MatcherAssert;
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.EqualityAwareFn1;
+import testsupport.traits.FunctorLaws;
 
 import java.util.function.Function;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class Fn1Test {
 
-    @Test
-    public void functorProperties() {
-        Fn1<Integer, Integer> add2 = integer -> integer + 2;
-        Fn1<Integer, String> toString = Object::toString;
-
-        MatcherAssert.assertThat(add2.fmap(toString).apply(2), is(toString.apply(add2.apply(2))));
+    @TestTraits({FunctorLaws.class})
+    public Fn1<String, Integer> testSubject() {
+        return new EqualityAwareFn1<>("1", Integer::parseInt);
     }
 
     @Test
@@ -32,7 +35,7 @@ public class Fn1Test {
         Fn1<Integer, Integer> add2 = integer -> integer + 2;
         Fn1<Integer, String> toString = Object::toString;
 
-        MatcherAssert.assertThat(add2.then(toString).apply(2), is(toString.apply(add2.apply(2))));
+        assertThat(add2.then(toString).apply(2), is(toString.apply(add2.apply(2))));
     }
 
     @Test

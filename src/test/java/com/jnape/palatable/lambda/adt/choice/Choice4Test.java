@@ -1,7 +1,11 @@
 package com.jnape.palatable.lambda.adt.choice;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.traits.FunctorLaws;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice4.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice4.b;
@@ -9,6 +13,7 @@ import static com.jnape.palatable.lambda.adt.choice.Choice4.c;
 import static com.jnape.palatable.lambda.adt.choice.Choice4.d;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class Choice4Test {
 
     private Choice4<Integer, String, Boolean, Double> a;
@@ -22,6 +27,26 @@ public class Choice4Test {
         b = b("two");
         c = c(true);
         d = d(4D);
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Choice4<String, Integer, Boolean, Character> testSubjectA() {
+        return a("foo");
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Choice4<String, Integer, Boolean, Character> testSubjectB() {
+        return b(1);
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Choice4<String, Integer, Boolean, Character> testSubjectC() {
+        return c(true);
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Choice4<String, Integer, Boolean, Character> testSubjectD() {
+        return d('a');
     }
 
     @Test
@@ -38,14 +63,6 @@ public class Choice4Test {
         assertEquals(Choice5.b("two"), b.diverge());
         assertEquals(Choice5.c(true), c.diverge());
         assertEquals(Choice5.d(4D), d.diverge());
-    }
-
-    @Test
-    public void functorProperties() {
-        assertEquals(a, a.fmap(d -> -d));
-        assertEquals(b, b.fmap(d -> -d));
-        assertEquals(c, c.fmap(d -> -d));
-        assertEquals(d(-4D), d.fmap(d -> -d));
     }
 
     @Test

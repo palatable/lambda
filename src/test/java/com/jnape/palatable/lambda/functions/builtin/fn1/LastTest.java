@@ -17,7 +17,7 @@ public class LastTest {
     }
 
     @Test
-    public void emptyForEmpyIterables() {
+    public void emptyForEmptyIterables() {
         assertEquals(Optional.empty(), last(emptyList()));
     }
 }

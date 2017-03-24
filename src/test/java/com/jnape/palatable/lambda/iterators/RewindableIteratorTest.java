@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.iterators;
 
-import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,7 @@ public class RewindableIteratorTest {
         rewindableIterator.next();
         rewindableIterator.rewind();
 
-        assertThat(rewindableIterator.next(), Is.<Object>is(2));
+        assertThat(rewindableIterator.next(), is(2));
     }
 
     @Test
@@ -62,12 +61,12 @@ public class RewindableIteratorTest {
     }
 
     @Test
+    @SuppressWarnings("Duplicates")
     public void doesNotHaveNextIfNoMoreElementsAndIsNotRewound() {
         mockIteratorToHaveValues(iterator, 1, 2, 3);
         rewindableIterator.next();
         rewindableIterator.next();
         rewindableIterator.next();
-
         assertThat(rewindableIterator.hasNext(), is(false));
     }
 }

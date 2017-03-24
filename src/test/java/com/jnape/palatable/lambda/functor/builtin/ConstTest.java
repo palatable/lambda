@@ -1,14 +1,19 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.traits.FunctorLaws;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class ConstTest {
 
-    @Test
-    public void functorProperties() {
-        assertEquals("foo", new Const<String, Integer>("foo").fmap(x -> x + 1).runConst());
+    @TestTraits({FunctorLaws.class})
+    public Const testSubject() {
+        return new Const<>(1);
     }
 
     @Test

@@ -1,7 +1,11 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.traits.FunctorLaws;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.junit.Assert.assertEquals;
@@ -10,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+@RunWith(Traits.class)
 public class Tuple3Test {
 
     private Tuple3<Integer, String, Character> tuple3;
@@ -17,6 +22,11 @@ public class Tuple3Test {
     @Before
     public void setUp() {
         tuple3 = new Tuple3<>(1, new Tuple2<>("2", new SingletonHList<>('3')));
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Tuple3 testSubject() {
+        return tuple("one", 2, 3d);
     }
 
     @Test
@@ -63,11 +73,6 @@ public class Tuple3Test {
     @Test
     public void fill() {
         assertEquals(tuple("foo", "foo", "foo"), Tuple3.fill("foo"));
-    }
-
-    @Test
-    public void functorProperties() {
-        assertEquals(new Tuple3<>(1, new Tuple2<>("2", new SingletonHList<>("3"))), tuple3.fmap(Object::toString));
     }
 
     @Test

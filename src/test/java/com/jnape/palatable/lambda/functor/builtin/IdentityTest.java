@@ -1,13 +1,15 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
-import org.junit.Test;
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
+import org.junit.runner.RunWith;
+import testsupport.traits.FunctorLaws;
 
-import static org.junit.Assert.assertEquals;
-
+@RunWith(Traits.class)
 public class IdentityTest {
 
-    @Test
-    public void functorProperties() {
-        assertEquals("FOO", new Identity<>("foo").fmap(String::toUpperCase).runIdentity());
+    @TestTraits({FunctorLaws.class})
+    public Identity testSubject() {
+        return new Identity<>("");
     }
 }

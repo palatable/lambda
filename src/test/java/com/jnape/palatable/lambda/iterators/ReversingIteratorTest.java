@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.iterators;
 
-import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,11 +39,11 @@ public class ReversingIteratorTest {
     public void reversesIterator() {
         mockIteratorToHaveValues(iterator, 1, 2, 3, 4, 5);
 
-        assertThat(reversingIterator.next(), Is.<Object>is(5));
-        assertThat(reversingIterator.next(), Is.<Object>is(4));
-        assertThat(reversingIterator.next(), Is.<Object>is(3));
-        assertThat(reversingIterator.next(), Is.<Object>is(2));
-        assertThat(reversingIterator.next(), Is.<Object>is(1));
+        assertThat(reversingIterator.next(), is(5));
+        assertThat(reversingIterator.next(), is(4));
+        assertThat(reversingIterator.next(), is(3));
+        assertThat(reversingIterator.next(), is(2));
+        assertThat(reversingIterator.next(), is(1));
     }
 
     @Test
@@ -54,6 +53,7 @@ public class ReversingIteratorTest {
     }
 
     @Test
+    @SuppressWarnings("Duplicates")
     public void doesNotHaveNextIfFinishedReversingIterator() {
         mockIteratorToHaveValues(iterator, 1, 2, 3);
         reversingIterator.next();

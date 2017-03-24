@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.iterators;
 
-import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +39,6 @@ public class DroppingIteratorTest {
     @Test
     public void dropsElementsOnNextIfNotAlreadyDropped() {
         mockIteratorToHaveValues(iterator, 1, 2, 3, 4, 5, 6);
-        assertThat(droppingIterator.next(), Is.<Object>is(6));
+        assertThat(droppingIterator.next(), is(6));
     }
 }

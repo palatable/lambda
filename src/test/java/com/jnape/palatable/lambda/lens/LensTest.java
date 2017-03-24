@@ -3,7 +3,12 @@ package com.jnape.palatable.lambda.lens;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.EqualityAwareLens;
+import testsupport.traits.FunctorLaws;
 
 import java.util.List;
 import java.util.Map;
@@ -15,15 +20,22 @@ import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class LensTest {
 
     private static final Lens<Map<String, List<String>>, Map<String, Set<Integer>>, List<String>, Set<Integer>> EARLIER_LENS = lens(m -> m.get("foo"), (m, s) -> singletonMap("foo", s));
     private static final Lens<List<String>, Set<Integer>, String, Integer>                                      LENS         = lens(xs -> xs.get(0), (xs, i) -> singleton(i));
+
+    @TestTraits({FunctorLaws.class})
+    public Lens<Map<String, Integer>, List<Integer>, Integer, String> testSubject() {
+        return new EqualityAwareLens<>(emptyMap(), lens(m -> m.get("foo"), (m, s) -> singletonList(m.get(s))));
+    }
 
     @Test
     public void setsUnderIdentity() {
@@ -46,11 +58,6 @@ public class LensTest {
         Integer unfixedLensResult = LENS.<Const<Integer, ?>, Const<Integer, Set<Integer>>, Const<Integer, Integer>>apply(fn, s).runConst();
 
         assertEquals(unfixedLensResult, fixedLensResult);
-    }
-
-    @Test
-    public void functorProperties() {
-        assertEquals(false, set(LENS.fmap(Set::isEmpty), 1, singletonList("foo")));
     }
 
     @Test

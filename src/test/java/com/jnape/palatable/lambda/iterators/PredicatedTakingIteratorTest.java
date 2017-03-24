@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -47,14 +48,14 @@ public class PredicatedTakingIteratorTest {
 
     @Test(expected = NoSuchElementException.class)
     public void throwsExceptionIfNextAfterFailedPredicate() {
-        Iterable<String> words = asList("no");
+        Iterable<String> words = singletonList("no");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<>(HAS_FOUR_LETTERS, words.iterator());
         predicatedTakingIterator.next();
     }
 
     @Test
     public void takesEverythingIfPredicateNeverFails() {
-        Iterable<String> words = asList("yeah");
+        Iterable<String> words = singletonList("yeah");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<>(HAS_FOUR_LETTERS, words.iterator());
         assertThat(predicatedTakingIterator.next(), is("yeah"));
         assertThat(predicatedTakingIterator.hasNext(), is(false));

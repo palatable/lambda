@@ -1,8 +1,12 @@
 package com.jnape.palatable.lambda.adt;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import testsupport.traits.FunctorLaws;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,10 +20,21 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+@RunWith(Traits.class)
 public class EitherTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    @TestTraits({FunctorLaws.class})
+    public Either testRightTraits() {
+        return right(1);
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Either testLeftTraits() {
+        return left("foo");
+    }
 
     @Test
     public void recoverLiftsLeftAndFlattensRight() {
@@ -148,15 +163,6 @@ public class EitherTest {
         fromOptional(present, atomicInteger::incrementAndGet);
 
         assertThat(atomicInteger.get(), is(0));
-    }
-
-    @Test
-    public void functorProperties() {
-        Either<String, Integer> left = left("foo");
-        Either<String, Integer> right = right(1);
-
-        assertThat(left.fmap(r -> r + 1), is(left));
-        assertThat(right.fmap(r -> r + 1), is(right(2)));
     }
 
     @Test

@@ -1,12 +1,18 @@
 package com.jnape.palatable.lambda.adt.choice;
 
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.traits.FunctorLaws;
 
+import static com.jnape.palatable.lambda.adt.choice.Choice3.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice3.b;
 import static com.jnape.palatable.lambda.adt.choice.Choice3.c;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class Choice3Test {
 
     private Choice3<Integer, String, Boolean> a;
@@ -18,6 +24,21 @@ public class Choice3Test {
         a = Choice3.a(1);
         b = Choice3.b("two");
         c = Choice3.c(true);
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Choice3<String, Integer, Boolean> testSubjectA() {
+        return a("foo");
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Choice3<String, Integer, Boolean> testSubjectB() {
+        return b(1);
+    }
+
+    @TestTraits({FunctorLaws.class})
+    public Choice3<String, Integer, Boolean> testSubjectC() {
+        return c(true);
     }
 
     @Test
@@ -32,13 +53,6 @@ public class Choice3Test {
         assertEquals(Choice4.a(1), a.diverge());
         assertEquals(Choice4.b("two"), b.diverge());
         assertEquals(Choice4.c(true), c.diverge());
-    }
-
-    @Test
-    public void functorProperties() {
-        assertEquals(a, a.fmap(bool -> !bool));
-        assertEquals(b, b.fmap(bool -> !bool));
-        assertEquals(c(false), c.fmap(bool -> !bool));
     }
 
     @Test
