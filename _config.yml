@@ -1,0 +1,8 @@
+title: Lambda
+description: Functional patterns for Java
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-dinky
+
+gems:
+  - jekyll-mentions
