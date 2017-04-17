@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
-import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -10,7 +10,7 @@ import java.util.function.Function;
  *
  * @param <A> the value type
  */
-public final class Identity<A> implements Functor<A, Identity> {
+public final class Identity<A> implements Applicative<A, Identity> {
 
     private final A a;
 
@@ -35,8 +35,19 @@ public final class Identity<A> implements Functor<A, Identity> {
      * @return an Identity over B (the new value)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <B> Identity<B> fmap(Function<? super A, ? extends B> fn) {
-        return new Identity<>(fn.apply(a));
+        return (Identity<B>) Applicative.super.fmap(fn);
+    }
+
+    @Override
+    public <B> Identity<B> pure(B b) {
+        return new Identity<>(b);
+    }
+
+    @Override
+    public <B> Identity<B> zip(Applicative<Function<? super A, ? extends B>, Identity> appFn) {
+        return new Identity<>(appFn.<Identity<Function<? super A, ? extends B>>>coerce().runIdentity().apply(a));
     }
 
     @Override

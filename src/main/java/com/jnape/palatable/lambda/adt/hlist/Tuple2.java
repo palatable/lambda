@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -19,7 +19,8 @@ import java.util.function.Function;
  * @see Tuple4
  * @see Tuple5
  */
-public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map.Entry<_1, _2>, Functor<_2, Tuple2<_1, ?>>, Bifunctor<_1, _2, Tuple2> {
+public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>>
+        implements Map.Entry<_1, _2>, Applicative<_2, Tuple2<_1, ?>>, Bifunctor<_1, _2, Tuple2> {
 
     private final _1 _1;
     private final _2 _2;
@@ -81,8 +82,9 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <_2Prime> Tuple2<_1, _2Prime> fmap(Function<? super _2, ? extends _2Prime> fn) {
-        return tuple(_1(), fn.apply(_2()));
+        return (Tuple2<_1, _2Prime>) Applicative.super.fmap(fn);
     }
 
     @Override
@@ -101,6 +103,17 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements Map
     public <_1Prime, _2Prime> Tuple2<_1Prime, _2Prime> biMap(Function<? super _1, ? extends _1Prime> lFn,
                                                              Function<? super _2, ? extends _2Prime> rFn) {
         return new Tuple2<>(lFn.apply(_1()), tail().fmap(rFn));
+    }
+
+    @Override
+    public <_2Prime> Tuple2<_1, _2Prime> pure(_2Prime _2Prime) {
+        return tuple(_1, _2Prime);
+    }
+
+    @Override
+    public <_2Prime> Tuple2<_1, _2Prime> zip(
+            Applicative<Function<? super _2, ? extends _2Prime>, Tuple2<_1, ?>> appFn) {
+        return biMapR(appFn.<Tuple2<_1, Function<? super _2, ? extends _2Prime>>>coerce()._2());
     }
 
     /**

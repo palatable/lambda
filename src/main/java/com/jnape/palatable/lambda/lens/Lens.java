@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.lens;
 
 import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.function.BiFunction;
@@ -132,7 +133,7 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
  * @param <B> the type of the "smaller" update value
  */
 @FunctionalInterface
-public interface Lens<S, T, A, B> extends Functor<T, Lens<S, ?, A, B>> {
+public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>> {
 
     <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
             Function<? super A, ? extends FB> fn, S s);
@@ -152,8 +153,23 @@ public interface Lens<S, T, A, B> extends Functor<T, Lens<S, ?, A, B>> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
-        return compose(Lens.<S, U, S, T>lens(id(), (s, t) -> fn.apply(t)));
+        return (Lens<S, U, A, B>) Applicative.super.fmap(fn);
+    }
+
+    @Override
+    default <U> Lens<S, U, A, B> pure(U u) {
+        return lens(view(this), (s, b) -> u);
+    }
+
+
+
+    @Override
+    default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
+        return lens(view(this),
+                    (s, b) -> set(appFn.<Lens<S, Function<? super T, ? extends U>, A, B>>coerce(), b, s)
+                            .apply(set(this, b, s)));
     }
 
     /**

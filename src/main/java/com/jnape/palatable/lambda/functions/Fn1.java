@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Profunctor;
 
 import java.util.function.Function;
@@ -13,7 +13,7 @@ import java.util.function.Function;
  * @param <B> The result type
  */
 @FunctionalInterface
-public interface Fn1<A, B> extends Functor<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, Function<A, B> {
+public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, Function<A, B> {
 
     /**
      * Invoke this function with the given argument.
@@ -44,8 +44,24 @@ public interface Fn1<A, B> extends Functor<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>,
      * @see Fn1#then(Function)
      */
     @Override
+    @SuppressWarnings("unchecked")
     default <C> Fn1<A, C> fmap(Function<? super B, ? extends C> f) {
-        return a -> f.apply(apply(a));
+        return (Fn1<A, C>) Applicative.super.fmap(f);
+    }
+
+    @Override
+    default <C> Fn1<A, C> pure(C c) {
+        return __ -> c;
+    }
+
+    @Override
+    default <C> Fn1<A, C> zip(Applicative<Function<? super B, ? extends C>, Fn1<A, ?>> appFn) {
+        return a -> appFn.<Fn1<A, Function<? super B, ? extends C>>>coerce().apply(a).apply(apply(a));
+    }
+
+    @SuppressWarnings("unchecked")
+    default <C> Fn1<A, C> zip(Fn2<A, B, C> appFn) {
+        return zip((Fn1<A, Function<? super B, ? extends C>>) (Object) appFn);
     }
 
     /**

@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
-import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.Function;
 
@@ -16,7 +16,7 @@ import java.util.function.Function;
  * @see Tuple4
  * @see Tuple5
  */
-public class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1, SingletonHList> {
+public class SingletonHList<_1> extends HCons<_1, HNil> implements Applicative<_1, SingletonHList> {
 
     SingletonHList(_1 _1) {
         super(_1, nil());
@@ -28,7 +28,21 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Functor<_1, S
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <_1Prime> SingletonHList<_1Prime> fmap(Function<? super _1, ? extends _1Prime> fn) {
-        return new SingletonHList<>(fn.apply(head()));
+        return (SingletonHList<_1Prime>) Applicative.super.fmap(fn);
+    }
+
+    @Override
+    public <_1Prime> SingletonHList<_1Prime> pure(_1Prime _1Prime) {
+        return singletonHList(_1Prime);
+    }
+
+    @Override
+    public <_1Prime> SingletonHList<_1Prime> zip(
+            Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList> appFn) {
+        return new SingletonHList<>(appFn.<SingletonHList<Function<? super _1, ? extends _1Prime>>>coerce()
+                                            .head()
+                                            .apply(head()));
     }
 }

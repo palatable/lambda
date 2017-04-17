@@ -5,6 +5,7 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.EqualityAwareFn1;
+import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 
 import java.util.function.Function;
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class Fn1Test {
 
-    @TestTraits({FunctorLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
     public Fn1<String, Integer> testSubject() {
         return new EqualityAwareFn1<>("1", Integer::parseInt);
     }

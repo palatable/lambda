@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.adt.choice;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct4;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct5;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
@@ -18,7 +19,7 @@ import java.util.function.Function;
  * @param <E> a type parameter representing the fifth possible type of this choice
  * @see Choice4
  */
-public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E>, Functor<E, Choice5<A, B, C, D, ?>>, Bifunctor<D, E, Choice5<A, B, C, ?, ?>> {
+public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E>, Applicative<E, Choice5<A, B, C, D, ?>>, Bifunctor<D, E, Choice5<A, B, C, ?, ?>> {
 
     private Choice5() {
     }
@@ -33,8 +34,9 @@ public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <F> Choice5<A, B, C, D, F> fmap(Function<? super E, ? extends F> fn) {
-        return biMapR(fn);
+        return (Choice5<A, B, C, D, F>) Applicative.super.fmap(fn);
     }
 
     @Override
@@ -54,6 +56,17 @@ public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E
     public <F, G> Choice5<A, B, C, F, G> biMap(Function<? super D, ? extends F> lFn,
                                                Function<? super E, ? extends G> rFn) {
         return match(Choice5::a, Choice5::b, Choice5::c, d -> d(lFn.apply(d)), e -> e(rFn.apply(e)));
+    }
+
+    @Override
+    public <F> Choice5<A, B, C, D, F> pure(F f) {
+        return e(f);
+    }
+
+    @Override
+    public <F> Choice5<A, B, C, D, F> zip(Applicative<Function<? super E, ? extends F>, Choice5<A, B, C, D, ?>> appFn) {
+        return appFn.<Choice5<A, B, C, D, Function<? super E, ? extends F>>>coerce()
+                .match(Choice5::a, Choice5::b, Choice5::c, Choice5::d, this::biMapR);
     }
 
     /**

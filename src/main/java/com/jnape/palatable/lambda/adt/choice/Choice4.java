@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.adt.choice;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct4;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 
@@ -18,7 +19,7 @@ import java.util.function.Function;
  * @see Choice3
  * @see Choice5
  */
-public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D>, Functor<D, Choice4<A, B, C, ?>>, Bifunctor<C, D, Choice4<A, B, ?, ?>> {
+public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D>, Applicative<D, Choice4<A, B, C, ?>>, Bifunctor<C, D, Choice4<A, B, ?, ?>> {
 
     private Choice4() {
     }
@@ -37,8 +38,9 @@ public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D>, Fun
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public final <E> Choice4<A, B, C, E> fmap(Function<? super D, ? extends E> fn) {
-        return biMapR(fn);
+        return (Choice4<A, B, C, E>) Applicative.super.fmap(fn);
     }
 
     @Override
@@ -57,6 +59,17 @@ public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D>, Fun
     public final <E, F> Choice4<A, B, E, F> biMap(Function<? super C, ? extends E> lFn,
                                                   Function<? super D, ? extends F> rFn) {
         return match(Choice4::a, Choice4::b, c -> c(lFn.apply(c)), d -> d(rFn.apply(d)));
+    }
+
+    @Override
+    public <E> Choice4<A, B, C, E> pure(E e) {
+        return d(e);
+    }
+
+    @Override
+    public <E> Choice4<A, B, C, E> zip(Applicative<Function<? super D, ? extends E>, Choice4<A, B, C, ?>> appFn) {
+        return appFn.<Choice4<A, B, C, Function<? super D, ? extends E>>>coerce()
+                .match(Choice4::a, Choice4::b, Choice4::c, this::biMapR);
     }
 
     /**

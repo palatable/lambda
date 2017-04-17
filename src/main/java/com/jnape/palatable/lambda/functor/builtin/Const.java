@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.function.Function;
 
@@ -14,7 +14,7 @@ import java.util.function.Function;
  * @param <A> the left parameter type, and the type of the stored value
  * @param <B> the right (phantom) parameter type
  */
-public final class Const<A, B> implements Functor<B, Const<A, ?>>, Bifunctor<A, B, Const> {
+public final class Const<A, B> implements Applicative<B, Const<A, ?>>, Bifunctor<A, B, Const> {
 
     private final A a;
 
@@ -42,6 +42,18 @@ public final class Const<A, B> implements Functor<B, Const<A, ?>>, Bifunctor<A, 
     @Override
     @SuppressWarnings("unchecked")
     public <C> Const<A, C> fmap(Function<? super B, ? extends C> fn) {
+        return (Const<A, C>) Applicative.super.fmap(fn);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <C> Const<A, C> pure(C c) {
+        return (Const<A, C>) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <C> Const<A, C> zip(Applicative<Function<? super B, ? extends C>, Const<A, ?>> appFn) {
         return (Const<A, C>) this;
     }
 

@@ -2,8 +2,8 @@ package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functions.Fn4;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.function.Function;
 
@@ -20,7 +20,8 @@ import java.util.function.Function;
  * @see Tuple3
  * @see Tuple5
  */
-public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implements Functor<_4, Tuple4<_1, _2, _3, ?>>, Bifunctor<_3, _4, Tuple4<_1, _2, ?, ?>> {
+public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>>
+        implements Applicative<_4, Tuple4<_1, _2, _3, ?>>, Bifunctor<_3, _4, Tuple4<_1, _2, ?, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -89,8 +90,9 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <_4Prime> Tuple4<_1, _2, _3, _4Prime> fmap(Function<? super _4, ? extends _4Prime> fn) {
-        return biMapR(fn);
+        return (Tuple4<_1, _2, _3, _4Prime>) Applicative.super.fmap(fn);
     }
 
     @Override
@@ -109,6 +111,17 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     public <_3Prime, _4Prime> Tuple4<_1, _2, _3Prime, _4Prime> biMap(Function<? super _3, ? extends _3Prime> lFn,
                                                                      Function<? super _4, ? extends _4Prime> rFn) {
         return new Tuple4<>(_1(), tail().biMap(lFn, rFn));
+    }
+
+    @Override
+    public <_4Prime> Tuple4<_1, _2, _3, _4Prime> pure(_4Prime _4Prime) {
+        return tuple(_1, _2, _3, _4Prime);
+    }
+
+    @Override
+    public <_4Prime> Tuple4<_1, _2, _3, _4Prime> zip(
+            Applicative<Function<? super _4, ? extends _4Prime>, Tuple4<_1, _2, _3, ?>> appFn) {
+        return biMapR(appFn.<Tuple4<_1, _2, _3, Function<? super _4, ? extends _4Prime>>>coerce()._4());
     }
 
     /**

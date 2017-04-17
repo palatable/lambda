@@ -3,8 +3,8 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -25,7 +25,7 @@ import static java.util.Arrays.asList;
  * @param <L> The left parameter type
  * @param <R> The right parameter type
  */
-public abstract class Either<L, R> implements CoProduct2<L, R>, Functor<R, Either<L, ?>>, Bifunctor<L, R, Either> {
+public abstract class Either<L, R> implements CoProduct2<L, R>, Applicative<R, Either<L, ?>>, Bifunctor<L, R, Either> {
 
     private Either() {
     }
@@ -195,8 +195,9 @@ public abstract class Either<L, R> implements CoProduct2<L, R>, Functor<R, Eithe
     public abstract <V> V match(Function<? super L, ? extends V> leftFn, Function<? super R, ? extends V> rightFn);
 
     @Override
+    @SuppressWarnings("unchecked")
     public final <R2> Either<L, R2> fmap(Function<? super R, ? extends R2> fn) {
-        return biMapR(fn);
+        return (Either<L, R2>) Applicative.super.fmap(fn);
     }
 
     @Override
@@ -215,6 +216,16 @@ public abstract class Either<L, R> implements CoProduct2<L, R>, Functor<R, Eithe
     public final <L2, R2> Either<L2, R2> biMap(Function<? super L, ? extends L2> leftFn,
                                                Function<? super R, ? extends R2> rightFn) {
         return match(l -> left(leftFn.apply(l)), r -> right(rightFn.apply(r)));
+    }
+
+    @Override
+    public <R2> Either<L, R2> pure(R2 r2) {
+        return right(r2);
+    }
+
+    @Override
+    public <R2> Either<L, R2> zip(Applicative<Function<? super R, ? extends R2>, Either<L, ?>> appFn) {
+        return appFn.<Either<L, Function<? super R, ? extends R2>>>coerce().flatMap(this::biMapR);
     }
 
     /**

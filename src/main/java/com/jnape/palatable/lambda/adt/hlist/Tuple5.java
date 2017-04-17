@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.function.Function;
 
@@ -20,7 +20,8 @@ import java.util.function.Function;
  * @see Tuple3
  * @see Tuple4
  */
-public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>> implements Functor<_5, Tuple5<_1, _2, _3, _4, ?>>, Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>> {
+public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>>
+        implements Applicative<_5, Tuple5<_1, _2, _3, _4, ?>>, Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -87,8 +88,9 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> fmap(Function<? super _5, ? extends _5Prime> fn) {
-        return biMapR(fn);
+        return (Tuple5<_1, _2, _3, _4, _5Prime>) Applicative.super.fmap(fn);
     }
 
     @Override
@@ -107,6 +109,17 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     public <_4Prime, _5Prime> Tuple5<_1, _2, _3, _4Prime, _5Prime> biMap(Function<? super _4, ? extends _4Prime> lFn,
                                                                          Function<? super _5, ? extends _5Prime> rFn) {
         return new Tuple5<>(_1(), tail().biMap(lFn, rFn));
+    }
+
+    @Override
+    public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> pure(_5Prime _5Prime) {
+        return tuple(_1, _2, _3, _4, _5Prime);
+    }
+
+    @Override
+    public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> zip(
+            Applicative<Function<? super _5, ? extends _5Prime>, Tuple5<_1, _2, _3, _4, ?>> appFn) {
+        return biMapR(appFn.<Tuple5<_1, _2, _3, _4, Function<? super _5, ? extends _5Prime>>>coerce()._5());
     }
 
     /**

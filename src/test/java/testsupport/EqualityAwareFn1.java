@@ -1,6 +1,7 @@
 package testsupport;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.Function;
 
@@ -23,6 +24,16 @@ public final class EqualityAwareFn1<A, B> implements Fn1<A, B> {
     @Override
     public <C> EqualityAwareFn1<A, C> fmap(Function<? super B, ? extends C> f) {
         return new EqualityAwareFn1<>(a, fn.fmap(f));
+    }
+
+    @Override
+    public <C> EqualityAwareFn1<A, C> zip(Applicative<Function<? super B, ? extends C>, Fn1<A, ?>> appFn) {
+        return new EqualityAwareFn1<>(a, fn.zip(appFn));
+    }
+
+    @Override
+    public <C> EqualityAwareFn1<A, C> pure(C c) {
+        return new EqualityAwareFn1<>(a, fn.pure(c));
     }
 
     @Override

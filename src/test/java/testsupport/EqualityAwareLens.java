@@ -1,5 +1,6 @@
 package testsupport;
 
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.lens.Lens;
@@ -25,6 +26,17 @@ public final class EqualityAwareLens<S, T, A, B> implements Lens<S, T, A, B> {
     @Override
     public <U> EqualityAwareLens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
         return new EqualityAwareLens<>(s, lens.fmap(fn));
+    }
+
+    @Override
+    public <U> EqualityAwareLens<S, U, A, B> pure(U u) {
+        return new EqualityAwareLens<>(s, lens.pure(u));
+    }
+
+    @Override
+    public <U> EqualityAwareLens<S, U, A, B> zip(
+            Applicative<Function<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
+        return new EqualityAwareLens<>(s, lens.zip(appFn));
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.adt;
 
 import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 
 import java.util.Optional;
@@ -16,6 +18,7 @@ import java.util.function.BiFunction;
 import static com.jnape.palatable.lambda.adt.Either.fromOptional;
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
+import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -26,14 +29,9 @@ public class EitherTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @TestTraits({FunctorLaws.class})
-    public Either testRightTraits() {
-        return right(1);
-    }
-
-    @TestTraits({FunctorLaws.class})
-    public Either testLeftTraits() {
-        return left("foo");
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
+    public Subjects<Either<String, Integer>> testSubjects() {
+        return subjects(left("foo"), right(1));
     }
 
     @Test

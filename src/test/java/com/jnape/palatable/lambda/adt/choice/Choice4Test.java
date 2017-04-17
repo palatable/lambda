@@ -1,16 +1,19 @@
 package com.jnape.palatable.lambda.adt.choice;
 
 import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice4.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice4.b;
 import static com.jnape.palatable.lambda.adt.choice.Choice4.c;
 import static com.jnape.palatable.lambda.adt.choice.Choice4.d;
+import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Traits.class)
@@ -29,24 +32,9 @@ public class Choice4Test {
         d = d(4D);
     }
 
-    @TestTraits({FunctorLaws.class})
-    public Choice4<String, Integer, Boolean, Character> testSubjectA() {
-        return a("foo");
-    }
-
-    @TestTraits({FunctorLaws.class})
-    public Choice4<String, Integer, Boolean, Character> testSubjectB() {
-        return b(1);
-    }
-
-    @TestTraits({FunctorLaws.class})
-    public Choice4<String, Integer, Boolean, Character> testSubjectC() {
-        return c(true);
-    }
-
-    @TestTraits({FunctorLaws.class})
-    public Choice4<String, Integer, Boolean, Character> testSubjectD() {
-        return d('a');
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
+    public Subjects<Choice4<String, Integer, Boolean, Character>> testSubjects() {
+        return subjects(a("foo"), b(1), c(true), d('a'));
     }
 
     @Test

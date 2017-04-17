@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Added
+- `Applicative` arrives; all functors gain applicative properties
+
 ### Changed
 - `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter
 - `Identity` supports value equality
