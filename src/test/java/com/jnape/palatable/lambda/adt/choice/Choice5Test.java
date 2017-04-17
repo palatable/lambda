@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice5.a;
@@ -35,7 +36,7 @@ public class Choice5Test {
         e = e('z');
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class})
     public Subjects<Choice5<String, Integer, Boolean, Character, Double>> testSubjects() {
         return subjects(Choice5.a("foo"), Choice5.b(1), Choice5.c(true), Choice5.d('a'), Choice5.e(2d));
     }
@@ -47,14 +48,5 @@ public class Choice5Test {
         assertEquals(Choice4.c(true), c.converge(e -> Choice4.b(e.toString())));
         assertEquals(Choice4.d(4d), d.converge(e -> Choice4.b(e.toString())));
         assertEquals(Choice4.b("z"), e.converge(e -> Choice4.b(e.toString())));
-    }
-
-    @Test
-    public void bifunctorProperties() {
-        assertEquals(a, a.biMap(d -> -d, Character::toUpperCase));
-        assertEquals(b, b.biMap(d -> -d, Character::toUpperCase));
-        assertEquals(c, c.biMap(d -> -d, Character::toUpperCase));
-        assertEquals(d(-4D), d.biMap(d -> -d, Character::toUpperCase));
-        assertEquals(e('Z'), e.biMap(d -> -d, Character::toUpperCase));
     }
 }

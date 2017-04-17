@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter
 - `Identity` supports value equality
+- `Const` supports value equality
 
 ## [1.5.6] - 2017-02-11
 ### Added

@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice4.a;
@@ -32,7 +33,7 @@ public class Choice4Test {
         d = d(4D);
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class})
     public Subjects<Choice4<String, Integer, Boolean, Character>> testSubjects() {
         return subjects(a("foo"), b(1), c(true), d('a'));
     }
@@ -51,13 +52,5 @@ public class Choice4Test {
         assertEquals(Choice5.b("two"), b.diverge());
         assertEquals(Choice5.c(true), c.diverge());
         assertEquals(Choice5.d(4D), d.diverge());
-    }
-
-    @Test
-    public void bifunctorProperties() {
-        assertEquals(a, a.biMap(c -> !c, d -> -d));
-        assertEquals(b, b.biMap(c -> !c, d -> -d));
-        assertEquals(c(false), c.biMap(c -> !c, d -> -d));
-        assertEquals(d(-4D), d.biMap(c -> !c, d -> -d));
     }
 }

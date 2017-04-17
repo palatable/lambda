@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.functor.builtin;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -29,6 +30,16 @@ public final class Const<A, B> implements Applicative<B, Const<A, ?>>, Bifunctor
      */
     public A runConst() {
         return a;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Const && Objects.equals(a, ((Const) other).a);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(a);
     }
 
     /**

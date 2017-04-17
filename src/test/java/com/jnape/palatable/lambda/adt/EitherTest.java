@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 
 import java.util.Optional;
@@ -29,7 +30,7 @@ public class EitherTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class})
     public Subjects<Either<String, Integer>> testSubjects() {
         return subjects(left("foo"), right(1));
     }
@@ -161,15 +162,6 @@ public class EitherTest {
         fromOptional(present, atomicInteger::incrementAndGet);
 
         assertThat(atomicInteger.get(), is(0));
-    }
-
-    @Test
-    public void bifunctorProperties() {
-        Either<String, Integer> left = left("foo");
-        Either<String, Integer> right = right(1);
-
-        assertThat(left.biMap(l -> l + "bar", r -> r + 1), is(left("foobar")));
-        assertThat(right.biMap(l -> l + "bar", r -> r + 1), is(right(2)));
     }
 
     @Test

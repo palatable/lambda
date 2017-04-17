@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -25,7 +26,7 @@ public class Tuple3Test {
         tuple3 = new Tuple3<>(1, new Tuple2<>("2", new SingletonHList<>('3')));
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class})
     public Tuple3 testSubject() {
         return tuple("one", 2, 3d);
     }
@@ -74,10 +75,5 @@ public class Tuple3Test {
     @Test
     public void fill() {
         assertEquals(tuple("foo", "foo", "foo"), Tuple3.fill("foo"));
-    }
-
-    @Test
-    public void bifunctorProperties() {
-        assertEquals(new Tuple3<>(1, new Tuple2<>(2, new SingletonHList<>("3"))), tuple3.biMap(Integer::parseInt, Object::toString));
     }
 }

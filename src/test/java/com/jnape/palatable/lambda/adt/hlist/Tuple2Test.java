@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class Tuple2Test {
         tuple2 = new Tuple2<>(1, new SingletonHList<>(2));
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class})
     public Tuple2 testSubject() {
         return tuple("one", 2);
     }
@@ -75,11 +76,6 @@ public class Tuple2Test {
     @Test
     public void fill() {
         assertEquals(tuple("foo", "foo"), Tuple2.fill("foo"));
-    }
-
-    @Test
-    public void bifunctorProperties() {
-        assertEquals(new Tuple2<>("1", new SingletonHList<>("2")), tuple2.biMap(Object::toString, Object::toString));
     }
 
     @Test
