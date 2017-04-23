@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Added
 - `Applicative` arrives; all functors gain applicative properties
+- `Either#invert` is pulled up into `CoProduct2`
 
 ### Changed
 - `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter

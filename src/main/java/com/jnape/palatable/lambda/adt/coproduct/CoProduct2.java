@@ -93,4 +93,18 @@ public interface CoProduct2<A, B> {
     default Optional<B> projectB() {
         return project()._2();
     }
+
+    /**
+     * Swap the type parameters.
+     *
+     * @return The inverted coproduct
+     */
+    default CoProduct2<B, A> invert() {
+        return new CoProduct2<B, A>() {
+            @Override
+            public <R> R match(Function<? super B, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
+                return CoProduct2.this.match(bFn, aFn);
+            }
+        };
+    }
 }

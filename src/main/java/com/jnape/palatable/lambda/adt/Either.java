@@ -123,12 +123,6 @@ public abstract class Either<L, R> implements CoProduct2<L, R>, Applicative<R, E
         return match(leftFn, rightFn);
     }
 
-    /**
-     * Transform an <code>Either&lt;L, R&gt;</code> into an <code>Either&lt;R, L&gt;</code>, preserving the current
-     * values.
-     *
-     * @return The inverted either
-     */
     public final Either<R, L> invert() {
         return flatMap(Either::right, Either::left);
     }

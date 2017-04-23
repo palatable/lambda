@@ -48,4 +48,10 @@ public class CoProduct2Test {
         assertEquals(tuple(a.projectA(), a.projectB()), a.project());
         assertEquals(tuple(b.projectA(), b.projectB()), b.project());
     }
+
+    @Test
+    public void invert() {
+        assertEquals(Optional.of(1), a.invert().projectB());
+        assertEquals(Optional.of(true), b.invert().projectA());
+    }
 }
