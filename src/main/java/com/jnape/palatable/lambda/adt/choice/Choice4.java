@@ -19,7 +19,7 @@ import java.util.function.Function;
  * @see Choice3
  * @see Choice5
  */
-public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D>, Applicative<D, Choice4<A, B, C, ?>>, Bifunctor<C, D, Choice4<A, B, ?, ?>> {
+public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D, Choice4<A, B, C, D>>, Applicative<D, Choice4<A, B, C, ?>>, Bifunctor<C, D, Choice4<A, B, ?, ?>> {
 
     private Choice4() {
     }
@@ -30,7 +30,7 @@ public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D>, App
     }
 
     @Override
-    public Choice3<A, B, C> converge(Function<? super D, ? extends CoProduct3<A, B, C>> convergenceFn) {
+    public Choice3<A, B, C> converge(Function<? super D, ? extends CoProduct3<A, B, C, ?>> convergenceFn) {
         return match(Choice3::a,
                      Choice3::b,
                      Choice3::c,

@@ -24,7 +24,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
  * @param <C> The output right Iterable element type, as well as the CoProduct2 B type
  * @see CoProduct2
  */
-public final class Partition<A, B, C> implements Fn2<Function<? super A, ? extends CoProduct2<B, C>>, Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> {
+public final class Partition<A, B, C> implements Fn2<Function<? super A, ? extends CoProduct2<B, C, ?>>, Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> {
 
     private static final Partition INSTANCE = new Partition();
 
@@ -32,9 +32,9 @@ public final class Partition<A, B, C> implements Fn2<Function<? super A, ? exten
     }
 
     @Override
-    public Tuple2<Iterable<B>, Iterable<C>> apply(Function<? super A, ? extends CoProduct2<B, C>> function,
+    public Tuple2<Iterable<B>, Iterable<C>> apply(Function<? super A, ? extends CoProduct2<B, C, ?>> function,
                                                   Iterable<A> as) {
-        Iterable<CoProduct2<B, C>> coproducts = map(function, as);
+        Iterable<CoProduct2<B, C, ?>> coproducts = map(function, as);
 
         Iterable<B> lefts = map(Optional::get, filter(Optional::isPresent, map(CoProduct2::projectA, coproducts)));
         Iterable<C> rights = map(Optional::get, filter(Optional::isPresent, map(CoProduct2::projectB, coproducts)));
@@ -48,12 +48,12 @@ public final class Partition<A, B, C> implements Fn2<Function<? super A, ? exten
     }
 
     public static <A, B, C> Fn1<Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> partition(
-            Function<? super A, ? extends CoProduct2<B, C>> function) {
+            Function<? super A, ? extends CoProduct2<B, C, ?>> function) {
         return Partition.<A, B, C>partition().apply(function);
     }
 
     public static <A, B, C> Tuple2<Iterable<B>, Iterable<C>> partition(
-            Function<? super A, ? extends CoProduct2<B, C>> function,
+            Function<? super A, ? extends CoProduct2<B, C, ?>> function,
             Iterable<A> as) {
         return Partition.<A, B, C>partition(function).apply(as);
     }

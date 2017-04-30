@@ -45,7 +45,7 @@ public class PartitionTest {
 
     @Test
     public void infiniteListSupport() {
-        Iterable<CoProduct2<String, Integer>> coproducts = cycle(a("left"), b(1));
+        Iterable<CoProduct2<String, Integer, ?>> coproducts = cycle(a("left"), b(1));
         Tuple2<Iterable<String>, Iterable<Integer>> partition = partition(id(), coproducts);
 
         assertThat(take(3, partition._1()), iterates("left", "left", "left"));

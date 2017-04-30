@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
  * @see CoProduct2
  */
 @FunctionalInterface
-public interface CoProduct3<A, B, C> {
+public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
 
     /**
      * Type-safe convergence requiring a match against all potential types.
@@ -38,8 +38,8 @@ public interface CoProduct3<A, B, C> {
      * @return a Coproduct4&lt;A, B, C, D&gt;
      * @see CoProduct2#diverge()
      */
-    default <D> CoProduct4<A, B, C, D> diverge() {
-        return new CoProduct4<A, B, C, D>() {
+    default <D> CoProduct4<A, B, C, D, ? extends CoProduct4<A, B, C, D, ?>> diverge() {
+        return new CoProduct4<A, B, C, D, CoProduct4<A, B, C, D, ?>>() {
             @Override
             public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
                                Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn) {
@@ -61,13 +61,14 @@ public interface CoProduct3<A, B, C> {
      * @param convergenceFn function from last possible type to earlier type
      * @return a coproduct of the initial types without the terminal type
      */
-    default CoProduct2<A, B> converge(Function<? super C, ? extends CoProduct2<A, B>> convergenceFn) {
-        return match(a -> new CoProduct2<A, B>() {
+    default CoProduct2<A, B, ? extends CoProduct2<A, B, ?>> converge(
+            Function<? super C, ? extends CoProduct2<A, B, ?>> convergenceFn) {
+        return match(a -> new CoProduct2<A, B, CoProduct2<A, B, ?>>() {
             @Override
             public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
                 return aFn.apply(a);
             }
-        }, b -> new CoProduct2<A, B>() {
+        }, b -> new CoProduct2<A, B, CoProduct2<A, B, ?>>() {
             @Override
             public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
                 return bFn.apply(b);
@@ -112,5 +113,25 @@ public interface CoProduct3<A, B, C> {
      */
     default Optional<C> projectC() {
         return project()._3();
+    }
+
+    /**
+     * Embed this coproduct inside another value; that is, given morphisms from this coproduct to <code>R</code>, apply
+     * the appropriate morphism to this coproduct as a whole. Like {@link CoProduct3#match}, but without unwrapping the
+     * value.
+     *
+     * @param aFn morphism <code>A v B v C -&gt; R</code>, applied in the <code>A</code> case
+     * @param bFn morphism <code>A v B v C -&gt; R</code>, applied in the <code>B</code> case
+     * @param cFn morphism <code>A v B v C -&gt; R</code>, applied in the <code>C</code> case
+     * @param <R> result type
+     * @return the result of applying the appropriate morphism to this coproduct
+     */
+    @SuppressWarnings("unchecked")
+    default <R> R embed(Function<? super CP3, ? extends R> aFn,
+                        Function<? super CP3, ? extends R> bFn,
+                        Function<? super CP3, ? extends R> cFn) {
+        return match(__ -> aFn.apply((CP3) this),
+                     __ -> bFn.apply((CP3) this),
+                     __ -> cFn.apply((CP3) this));
     }
 }

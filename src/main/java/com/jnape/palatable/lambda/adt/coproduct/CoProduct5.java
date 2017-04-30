@@ -19,7 +19,7 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
  * @see CoProduct2
  */
 @FunctionalInterface
-public interface CoProduct5<A, B, C, D, E> {
+public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E, ?>> {
 
     /**
      * Type-safe convergence requiring a match against all potential types.
@@ -46,26 +46,27 @@ public interface CoProduct5<A, B, C, D, E> {
      * @param convergenceFn morphism <code>E -&gt; {@link CoProduct4}&lt;A, B, C, D&gt;</code>
      * @return a CoProduct4&lt;A, B, C, D&gt;
      */
-    default CoProduct4<A, B, C, D> converge(Function<? super E, ? extends CoProduct4<A, B, C, D>> convergenceFn) {
-        return match(a -> new CoProduct4<A, B, C, D>() {
+    default CoProduct4<A, B, C, D, ? extends CoProduct4<A, B, C, D, ?>> converge(
+            Function<? super E, ? extends CoProduct4<A, B, C, D, ?>> convergenceFn) {
+        return match(a -> new CoProduct4<A, B, C, D, CoProduct4<A, B, C, D, ?>>() {
             @Override
             public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
                                Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn) {
                 return aFn.apply(a);
             }
-        }, b -> new CoProduct4<A, B, C, D>() {
+        }, b -> new CoProduct4<A, B, C, D, CoProduct4<A, B, C, D, ?>>() {
             @Override
             public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
                                Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn) {
                 return bFn.apply(b);
             }
-        }, c -> new CoProduct4<A, B, C, D>() {
+        }, c -> new CoProduct4<A, B, C, D, CoProduct4<A, B, C, D, ?>>() {
             @Override
             public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
                                Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn) {
                 return cFn.apply(c);
             }
-        }, d -> new CoProduct4<A, B, C, D>() {
+        }, d -> new CoProduct4<A, B, C, D, CoProduct4<A, B, C, D, ?>>() {
             @Override
             public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
                                Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn) {
@@ -131,5 +132,31 @@ public interface CoProduct5<A, B, C, D, E> {
      */
     default Optional<E> projectE() {
         return project()._5();
+    }
+
+    /**
+     * Embed this coproduct inside another value; that is, given morphisms from this coproduct to <code>R</code>, apply
+     * the appropriate morphism to this coproduct as a whole. Like {@link CoProduct5#match}, but without unwrapping the
+     * value.
+     *
+     * @param aFn morphism <code>A v B v C v D v E -&gt; R</code>, applied in the <code>A</code> case
+     * @param bFn morphism <code>A v B v C v D v E -&gt; R</code>, applied in the <code>B</code> case
+     * @param cFn morphism <code>A v B v C v D v E -&gt; R</code>, applied in the <code>C</code> case
+     * @param dFn morphism <code>A v B v C v D v E -&gt; R</code>, applied in the <code>D</code> case
+     * @param eFn morphism <code>A v B v C v D v E -&gt; R</code>, applied in the <code>E</code> case
+     * @param <R> result type
+     * @return the result of applying the appropriate morphism to this coproduct
+     */
+    @SuppressWarnings("unchecked")
+    default <R> R embed(Function<? super CP5, ? extends R> aFn,
+                        Function<? super CP5, ? extends R> bFn,
+                        Function<? super CP5, ? extends R> cFn,
+                        Function<? super CP5, ? extends R> dFn,
+                        Function<? super CP5, ? extends R> eFn) {
+        return match(__ -> aFn.apply((CP5) this),
+                     __ -> bFn.apply((CP5) this),
+                     __ -> cFn.apply((CP5) this),
+                     __ -> dFn.apply((CP5) this),
+                     __ -> eFn.apply((CP5) this));
     }
 }

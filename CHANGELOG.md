@@ -6,12 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Added
 - `Applicative` arrives; all functors gain applicative properties
-- `Either#invert` is pulled up into `CoProduct2`
+- `Either#invert` is pulled up into `CoProduct2` and additionally specialized for `Choice2`
+- `CoProductN#embed` 
 
 ### Changed
 - `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter
 - `Identity` supports value equality
 - `Const` supports value equality
+- `partition` now only requires iterables of `CoProudct2`
+- `CoProductN`s receive a unification parameter, which trickles down to `Either` and `Choice`s
 
 ## [1.5.6] - 2017-02-11
 ### Added

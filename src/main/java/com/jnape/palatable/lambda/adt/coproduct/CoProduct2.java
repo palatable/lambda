@@ -22,7 +22,7 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
  * @see Either
  */
 @FunctionalInterface
-public interface CoProduct2<A, B> {
+public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
 
     /**
      * Type-safe convergence requiring a match against all potential types.
@@ -30,7 +30,7 @@ public interface CoProduct2<A, B> {
      * @param aFn morphism <code>A -&gt; R</code>
      * @param bFn morphism <code>B -&gt; R</code>
      * @param <R> result type
-     * @return the result of applying the appropriate morphism from whichever type is represented by this coproduct to R
+     * @return the result of applying the appropriate morphism to this coproduct's unwrapped value
      */
     <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn);
 
@@ -55,8 +55,8 @@ public interface CoProduct2<A, B> {
      * @param <C> the additional possible type of this coproduct
      * @return a coproduct of the initial types plus the new type
      */
-    default <C> CoProduct3<A, B, C> diverge() {
-        return new CoProduct3<A, B, C>() {
+    default <C> CoProduct3<A, B, C, ? extends CoProduct3<A, B, C, ?>> diverge() {
+        return new CoProduct3<A, B, C, CoProduct3<A, B, C, ?>>() {
             @Override
             public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
                                Function<? super C, ? extends R> cFn) {
@@ -99,12 +99,28 @@ public interface CoProduct2<A, B> {
      *
      * @return The inverted coproduct
      */
-    default CoProduct2<B, A> invert() {
-        return new CoProduct2<B, A>() {
+    default CoProduct2<B, A, ? extends CoProduct2<B, A, ?>> invert() {
+        return new CoProduct2<B, A, CoProduct2<B, A, ?>>() {
             @Override
             public <R> R match(Function<? super B, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
                 return CoProduct2.this.match(bFn, aFn);
             }
         };
+    }
+
+    /**
+     * Embed this coproduct inside another value; that is, given morphisms from this coproduct to <code>R</code>, apply
+     * the appropriate morphism to this coproduct as a whole. Like {@link CoProduct2#match}, but without unwrapping the
+     * value.
+     *
+     * @param aFn morphism <code>A v B -&gt; R</code>, applied in the <code>A</code> case
+     * @param bFn morphism <code>A v B -&gt; R</code>, applied in the <code>B</code> case
+     * @param <R> result type
+     * @return the result of applying the appropriate morphism to this coproduct
+     */
+    @SuppressWarnings("unchecked")
+    default <R> R embed(Function<? super CP2, ? extends R> aFn,
+                        Function<? super CP2, ? extends R> bFn) {
+        return match(__ -> aFn.apply((CP2) this), __ -> bFn.apply((CP2) this));
     }
 }

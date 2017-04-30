@@ -19,13 +19,13 @@ import java.util.function.Function;
  * @param <E> a type parameter representing the fifth possible type of this choice
  * @see Choice4
  */
-public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E>, Applicative<E, Choice5<A, B, C, D, ?>>, Bifunctor<D, E, Choice5<A, B, C, ?, ?>> {
+public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E, Choice5<A, B, C, D, E>>, Applicative<E, Choice5<A, B, C, D, ?>>, Bifunctor<D, E, Choice5<A, B, C, ?, ?>> {
 
     private Choice5() {
     }
 
     @Override
-    public Choice4<A, B, C, D> converge(Function<? super E, ? extends CoProduct4<A, B, C, D>> convergenceFn) {
+    public Choice4<A, B, C, D> converge(Function<? super E, ? extends CoProduct4<A, B, C, D, ?>> convergenceFn) {
         return match(Choice4::a,
                      Choice4::b,
                      Choice4::c,

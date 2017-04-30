@@ -12,18 +12,18 @@ import static org.junit.Assert.assertEquals;
 
 public class CoProduct2Test {
 
-    private CoProduct2<Integer, Boolean> a;
-    private CoProduct2<Integer, Boolean> b;
+    private CoProduct2<Integer, Boolean, ?> a;
+    private CoProduct2<Integer, Boolean, ?> b;
 
     @Before
     public void setUp() {
-        a = new CoProduct2<Integer, Boolean>() {
+        a = new CoProduct2<Integer, Boolean, CoProduct2<Integer, Boolean, ?>>() {
             @Override
             public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super Boolean, ? extends R> bFn) {
                 return aFn.apply(1);
             }
         };
-        b = new CoProduct2<Integer, Boolean>() {
+        b = new CoProduct2<Integer, Boolean, CoProduct2<Integer, Boolean, ?>>() {
             @Override
             public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super Boolean, ? extends R> bFn) {
                 return bFn.apply(true);
@@ -33,10 +33,10 @@ public class CoProduct2Test {
 
     @Test
     public void diverge() {
-        CoProduct3<Integer, Boolean, String> divergeA = a.diverge();
+        CoProduct3<Integer, Boolean, String, ?> divergeA = a.diverge();
         assertEquals(1, divergeA.match(id(), id(), id()));
 
-        CoProduct3<Integer, Boolean, String> divergeB = b.diverge();
+        CoProduct3<Integer, Boolean, String, ?> divergeB = b.diverge();
         assertEquals(true, divergeB.match(id(), id(), id()));
     }
 
@@ -53,5 +53,11 @@ public class CoProduct2Test {
     public void invert() {
         assertEquals(Optional.of(1), a.invert().projectB());
         assertEquals(Optional.of(true), b.invert().projectA());
+    }
+
+    @Test
+    public void embed() {
+        assertEquals(Optional.of(a), a.embed(Optional::of, Optional::of));
+        assertEquals(Optional.of(b), b.embed(Optional::of, Optional::of));
     }
 }

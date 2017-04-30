@@ -25,7 +25,7 @@ import static java.util.Arrays.asList;
  * @param <L> The left parameter type
  * @param <R> The right parameter type
  */
-public abstract class Either<L, R> implements CoProduct2<L, R>, Applicative<R, Either<L, ?>>, Bifunctor<L, R, Either> {
+public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Applicative<R, Either<L, ?>>, Bifunctor<L, R, Either> {
 
     private Either() {
     }
@@ -123,6 +123,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R>, Applicative<R, E
         return match(leftFn, rightFn);
     }
 
+    @Override
     public final Either<R, L> invert() {
         return flatMap(Either::right, Either::left);
     }
@@ -186,6 +187,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R>, Applicative<R, E
      * @param <V>     the result type
      * @return the result of applying the appropriate mapping function to the wrapped value
      */
+    @Override
     public abstract <V> V match(Function<? super L, ? extends V> leftFn, Function<? super R, ? extends V> rightFn);
 
     @Override
