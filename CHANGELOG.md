@@ -7,7 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 - `Applicative` arrives; all functors gain applicative properties
 - `Either#invert` is pulled up into `CoProduct2` and additionally specialized for `Choice2`
-- `CoProductN#embed` 
+- `CoProductN#embed`
+- `not`, used for negating predicate functions
+- `empty`, used to test if an Iterable is empty
 
 ### Changed
 - `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter
