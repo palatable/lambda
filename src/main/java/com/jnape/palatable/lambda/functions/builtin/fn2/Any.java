@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn2;
 
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
+import com.jnape.palatable.lambda.functions.specialized.Predicate;
 
 import java.util.function.Function;
 
@@ -34,7 +34,7 @@ public final class Any<A> implements BiPredicate<Function<? super A, Boolean>, I
         return INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Boolean> any(Function<? super A, Boolean> predicate) {
+    public static <A> Predicate<Iterable<A>> any(Function<? super A, Boolean> predicate) {
         return Any.<A>any().apply(predicate);
     }
 
