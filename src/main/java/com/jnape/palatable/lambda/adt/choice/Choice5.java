@@ -52,7 +52,6 @@ public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <F, G> Choice5<A, B, C, F, G> biMap(Function<? super D, ? extends F> lFn,
                                                Function<? super E, ? extends G> rFn) {
         return match(Choice5::a, Choice5::b, Choice5::c, d -> d(lFn.apply(d)), e -> e(rFn.apply(e)));
@@ -67,6 +66,16 @@ public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E
     public <F> Choice5<A, B, C, D, F> zip(Applicative<Function<? super E, ? extends F>, Choice5<A, B, C, D, ?>> appFn) {
         return appFn.<Choice5<A, B, C, D, Function<? super E, ? extends F>>>coerce()
                 .match(Choice5::a, Choice5::b, Choice5::c, Choice5::d, this::biMapR);
+    }
+
+    @Override
+    public <F> Choice5<A, B, C, D, F> discardL(Applicative<F, Choice5<A, B, C, D, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <F> Choice5<A, B, C, D, E> discardR(Applicative<F, Choice5<A, B, C, D, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
     }
 
     /**

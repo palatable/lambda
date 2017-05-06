@@ -72,6 +72,16 @@ public abstract class Choice4<A, B, C, D> implements CoProduct4<A, B, C, D, Choi
                 .match(Choice4::a, Choice4::b, Choice4::c, this::biMapR);
     }
 
+    @Override
+    public <E> Choice4<A, B, C, E> discardL(Applicative<E, Choice4<A, B, C, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <E> Choice4<A, B, C, D> discardR(Applicative<E, Choice4<A, B, C, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
     /**
      * Static factory method for wrapping a value of type <code>A</code> in a {@link Choice4}.
      *

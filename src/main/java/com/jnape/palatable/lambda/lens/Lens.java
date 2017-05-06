@@ -163,13 +163,19 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>> {
         return lens(view(this), (s, b) -> u);
     }
 
+    @Override
+    default <U> Lens<S, U, A, B> discardL(Applicative<U, Lens<S, ?, A, B>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
 
+    @Override
+    default <U> Lens<S, T, A, B> discardR(Applicative<U, Lens<S, ?, A, B>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
 
     @Override
     default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
-        return lens(view(this),
-                    (s, b) -> set(appFn.<Lens<S, Function<? super T, ? extends U>, A, B>>coerce(), b, s)
-                            .apply(set(this, b, s)));
+        return lens(view(this), (s, b) -> set(appFn.<Lens<S, Function<? super T, ? extends U>, A, B>>coerce(), b, s).apply(set(this, b, s)));
     }
 
     /**

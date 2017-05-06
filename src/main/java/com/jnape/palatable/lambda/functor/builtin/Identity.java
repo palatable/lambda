@@ -51,6 +51,16 @@ public final class Identity<A> implements Applicative<A, Identity> {
     }
 
     @Override
+    public <B> Identity<B> discardL(Applicative<B, Identity> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <B> Identity<A> discardR(Applicative<B, Identity> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
     public boolean equals(Object other) {
         return other instanceof Identity && Objects.equals(a, ((Identity) other).a);
     }

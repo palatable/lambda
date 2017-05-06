@@ -2,12 +2,29 @@ package com.jnape.palatable.lambda.functor;
 
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+
 /**
- * Generic interface for the applicative functor type, which supports a lifting operation <code>pure</code> and a
- * flattening application <code>zip</code>.
+ * An interface representing applicative functors - functors that can have their results combined with other functors
+ * of the same instance in a context-free manner.
+ * <p>
+ * The same rules that apply to <code>Functor</code> apply to <code>Applicative</code>, along with the following
+ * additional 4 laws:
+ * <ul>
+ * <li>identity: <code>v.zip(pureId).equals(v)</code></li>
+ * <li>composition: <code>w.zip(v.zip(u.zip(pureCompose))).equals((w.zip(v)).zip(u))</code></li>
+ * <li>homomorphism: <code>pureX.zip(pureF).equals(pureFx)</code></li>
+ * <li>interchange: <code>pureY.zip(u).equals(u.zip(pure(f -> f.apply(y))))</code></li>
+ * </ul>
+ * As with <code>Functor</code>, <code>Applicative</code> instances that do not satisfy all of the functor laws, as well
+ * as the above applicative laws, are not well-behaved and often break down in surprising ways.
+ * <p>
+ * For more information, read about
+ * <a href="https://en.wikipedia.org/wiki/Applicative_functor" target="_top">Applicative Functors</a>.
  *
  * @param <A>   The type of the parameter
- * @param <App> The unification parameter
+ * @param <App> The unification parameter to more tightly type-constrain Applicatives to themselves
  */
 public interface Applicative<A, App extends Applicative> extends Functor<A, App> {
 
@@ -22,7 +39,7 @@ public interface Applicative<A, App extends Applicative> extends Functor<A, App>
 
     /**
      * Given another instance of this applicative over a mapping function, "zip" the two instances together using
-     * whatever application semantics the current applicative supports
+     * whatever application semantics the current applicative supports.
      *
      * @param appFn the other applicative instance
      * @param <B>   the resulting applicative parameter type
@@ -33,6 +50,30 @@ public interface Applicative<A, App extends Applicative> extends Functor<A, App>
     @Override
     default <B> Applicative<B, App> fmap(Function<? super A, ? extends B> fn) {
         return zip(pure(fn));
+    }
+
+    /**
+     * Sequence both this <code>Applicative</code> and <code>appB</code>, discarding this <code>Applicative's</code>
+     * result and returning <code>appB</code>. This is generally useful for sequentially performing side-effects.
+     *
+     * @param appB the other Applicative
+     * @param <B>  the type of the returned Applicative's parameter
+     * @return appB
+     */
+    default <B> Applicative<B, App> discardL(Applicative<B, App> appB) {
+        return appB.zip(zip(pure(constantly(id()))));
+    }
+
+    /**
+     * Sequence both this <code>Applicative</code> and <code>appB</code>, discarding <code>appB's</code> result and
+     * returning this <code>Applicative</code>. This is generally useful for sequentially performing side-effects.
+     *
+     * @param appB the other Applicative
+     * @param <B>  the type of appB's parameter
+     * @return this Applicative
+     */
+    default <B> Applicative<A, App> discardR(Applicative<B, App> appB) {
+        return appB.zip(zip(pure(constantly())));
     }
 
     /**

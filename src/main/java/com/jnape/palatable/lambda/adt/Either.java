@@ -224,6 +224,16 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Ap
         return appFn.<Either<L, Function<? super R, ? extends R2>>>coerce().flatMap(this::biMapR);
     }
 
+    @Override
+    public <R2> Either<L, R2> discardL(Applicative<R2, Either<L, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <R2> Either<L, R> discardR(Applicative<R2, Either<L, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
     /**
      * In the left case, returns an {@link Optional#empty}; otherwise, returns {@link Optional#ofNullable} around the
      * right value.

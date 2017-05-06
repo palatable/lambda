@@ -45,4 +45,14 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Applicative<_
                                             .head()
                                             .apply(head()));
     }
+
+    @Override
+    public <_1Prime> SingletonHList<_1Prime> discardL(Applicative<_1Prime, SingletonHList> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <_1Prime> SingletonHList<_1> discardR(Applicative<_1Prime, SingletonHList> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
 }

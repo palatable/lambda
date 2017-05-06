@@ -69,6 +69,16 @@ public abstract class Choice3<A, B, C> implements CoProduct3<A, B, C, Choice3<A,
                 .match(Choice3::a, Choice3::b, this::biMapR);
     }
 
+    @Override
+    public <D> Choice3<A, B, D> discardL(Applicative<D, Choice3<A, B, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <D> Choice3<A, B, C> discardR(Applicative<D, Choice3<A, B, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
     /**
      * Static factory method for wrapping a value of type <code>A</code> in a {@link Choice3}.
      *

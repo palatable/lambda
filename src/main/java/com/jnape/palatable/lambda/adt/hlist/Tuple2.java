@@ -116,6 +116,16 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>>
         return biMapR(appFn.<Tuple2<_1, Function<? super _2, ? extends _2Prime>>>coerce()._2());
     }
 
+    @Override
+    public <_2Prime> Tuple2<_1, _2Prime> discardL(Applicative<_2Prime, Tuple2<_1, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <_2Prime> Tuple2<_1, _2> discardR(Applicative<_2Prime, Tuple2<_1, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
     /**
      * Static factory method for creating <code>Tuple2</code>s from {@link java.util.Map.Entry}s.
      *

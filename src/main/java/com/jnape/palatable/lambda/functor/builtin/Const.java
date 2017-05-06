@@ -68,6 +68,16 @@ public final class Const<A, B> implements Applicative<B, Const<A, ?>>, Bifunctor
         return (Const<A, C>) this;
     }
 
+    @Override
+    public <C> Const<A, C> discardL(Applicative<C, Const<A, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <C> Const<A, B> discardR(Applicative<C, Const<A, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
     /**
      * Covariantly map over the left parameter type (the value).
      *

@@ -64,6 +64,16 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
         return zip((Fn1<A, Function<? super B, ? extends C>>) (Object) appFn);
     }
 
+    @Override
+    default <C> Fn1<A, C> discardL(Applicative<C, Fn1<A, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    default <C> Fn1<A, B> discardR(Applicative<C, Fn1<A, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
     /**
      * Contravariantly map over the argument to this function, producing a function that takes the new argument type,
      * and produces the same result.

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static java.util.Arrays.asList;
 import static java.util.function.Function.identity;
 
@@ -18,7 +19,7 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
     public void test(Applicative<?, App> applicative) {
         Iterable<Optional<String>> testResults = Map.<Function<Applicative<?, App>, Optional<String>>, Optional<String>>map(
                 f -> f.apply(applicative),
-                asList(this::testIdentity, this::testComposition, this::testHomomorphism, this::testInterchange)
+                asList(this::testIdentity, this::testComposition, this::testHomomorphism, this::testInterchange, this::testDiscardL, this::testDiscardR)
         );
         Present.<String>present((x, y) -> x + "\n\t - " + y)
                 .reduceLeft(testResults)
@@ -71,5 +72,23 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
         return pureY.zip(u).equals(u.zip(applicative.pure(f -> f.apply(y))))
                 ? Optional.empty()
                 : Optional.of("interchange (pureY.zip(u).equals(u.zip(applicative.pure(f -> f.apply(y)))))");
+    }
+
+    private Optional<String> testDiscardL(Applicative<?, App> applicative) {
+        Applicative<String, App> u = applicative.pure("u");
+        Applicative<String, App> v = applicative.pure("v");
+
+        return u.discardL(v).equals(v.zip(u.zip(applicative.pure(constantly(identity())))))
+                ? Optional.empty()
+                : Optional.of("discardL u.discardL(v).equals(v.zip(u.zip(applicative.pure(constantly(identity())))))");
+    }
+
+    private Optional<String> testDiscardR(Applicative<?, App> applicative) {
+        Applicative<String, App> u = applicative.pure("u");
+        Applicative<String, App> v = applicative.pure("v");
+
+        return u.discardR(v).equals(v.zip(u.zip(applicative.pure(constantly()))))
+                ? Optional.empty()
+                : Optional.of("discardR u.discardR(v).equals(v.zip(u.zip(applicative.pure(constantly()))))");
     }
 }

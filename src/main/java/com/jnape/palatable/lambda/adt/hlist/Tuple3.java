@@ -112,6 +112,16 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>>
         return biMapR(appFn.<Tuple3<_1, _2, Function<? super _3, ? extends _3Prime>>>coerce()._3());
     }
 
+    @Override
+    public <_3Prime> Tuple3<_1, _2, _3Prime> discardL(Applicative<_3Prime, Tuple3<_1, _2, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <_3Prime> Tuple3<_1, _2, _3> discardR(Applicative<_3Prime, Tuple3<_1, _2, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
     /**
      * Given a value of type <code>A</code>, produced an instance of this tuple with each slot set to that value.
      *
