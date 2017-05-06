@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Const` supports value equality
 - `partition` now only requires iterables of `CoProudct2`
 - `CoProductN`s receive a unification parameter, which trickles down to `Either` and `Choice`s
+- Renaming `Concat` semigroup and monoid to more appropriate `AddAll`
 
 ## [1.5.6] - 2017-02-11
 ### Added

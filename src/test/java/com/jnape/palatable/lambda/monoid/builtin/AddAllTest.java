@@ -6,20 +6,20 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.jnape.palatable.lambda.monoid.builtin.Concat.concat;
+import static com.jnape.palatable.lambda.monoid.builtin.AddAll.addAll;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
 
-public class ConcatTest {
+public class AddAllTest {
 
     @Test
     public void monoid() {
-        Monoid<Set<Integer>> concat = concat(HashSet::new);
+        Monoid<Set<Integer>> addAll = addAll(HashSet::new);
 
-        assertEquals(new HashSet<>(), concat.identity());
+        assertEquals(new HashSet<>(), addAll.identity());
         assertEquals(new HashSet<Integer>() {{
             add(1);
             add(2);
-        }}, concat.apply(new HashSet<>(singleton(1)), new HashSet<>(singleton(2))));
+        }}, addAll.apply(new HashSet<>(singleton(1)), new HashSet<>(singleton(2))));
     }
 }
