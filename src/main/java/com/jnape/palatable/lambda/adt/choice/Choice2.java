@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -19,7 +20,7 @@ import java.util.function.Function;
  * @see Either
  * @see Choice3
  */
-public abstract class Choice2<A, B> implements CoProduct2<A, B, Choice2<A, B>>, Applicative<B, Choice2<A, ?>>, Bifunctor<A, B, Choice2> {
+public abstract class Choice2<A, B> implements CoProduct2<A, B, Choice2<A, B>>, Applicative<B, Choice2<A, ?>>, Bifunctor<A, B, Choice2>, Traversable<B, Choice2<A, ?>> {
 
     private Choice2() {
     }
@@ -77,6 +78,14 @@ public abstract class Choice2<A, B> implements CoProduct2<A, B, Choice2<A, B>>, 
     @Override
     public <C> Choice2<A, B> discardR(Applicative<C, Choice2<A, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <C, App extends Applicative> Applicative<Choice2<A, C>, App> traverse(
+            Function<? super B, ? extends Applicative<C, App>> fn,
+            Function<? super Traversable<C, Choice2<A, ?>>, ? extends Applicative<? extends Traversable<C, Choice2<A, ?>>, App>> pure) {
+        return match(a -> pure.apply(a(a)).fmap(x -> (Choice2<A, C>) x),
+                     b -> fn.apply(b).fmap(Choice2::b));
     }
 
     /**

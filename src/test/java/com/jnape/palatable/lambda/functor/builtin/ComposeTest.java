@@ -4,15 +4,13 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
-import testsupport.traits.TraversableLaws;
 
 @RunWith(Traits.class)
-public class ConstTest {
+public class ComposeTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class, TraversableLaws.class})
-    public Const testSubject() {
-        return new Const<>(1);
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
+    public Compose<Identity, Identity, Integer> testSubject() {
+        return new Compose<>(new Identity<>(new Identity<>(1)));
     }
 }

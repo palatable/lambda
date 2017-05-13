@@ -3,8 +3,11 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A 5-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -21,7 +24,7 @@ import java.util.function.Function;
  * @see Tuple4
  */
 public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>>
-        implements Applicative<_5, Tuple5<_1, _2, _3, _4, ?>>, Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>> {
+        implements Applicative<_5, Tuple5<_1, _2, _3, _4, ?>>, Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>>, Traversable<_5, Tuple5<_1, _2, _3, _4, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -130,6 +133,13 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5> discardR(Applicative<_5Prime, Tuple5<_1, _2, _3, _4, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <_5Prime, App extends Applicative> Applicative<Tuple5<_1, _2, _3, _4, _5Prime>, App> traverse(
+            Function<? super _5, ? extends Applicative<_5Prime, App>> fn,
+            Function<? super Traversable<_5Prime, Tuple5<_1, _2, _3, _4, ?>>, ? extends Applicative<? extends Traversable<_5Prime, Tuple5<_1, _2, _3, _4, ?>>, App>> pure) {
+        return fn.apply(_5).fmap(_5Prime -> fmap(constantly(_5Prime)));
     }
 
     /**

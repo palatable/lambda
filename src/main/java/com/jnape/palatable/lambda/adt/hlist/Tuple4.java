@@ -4,8 +4,11 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functions.Fn4;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A 4-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -21,7 +24,7 @@ import java.util.function.Function;
  * @see Tuple5
  */
 public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>>
-        implements Applicative<_4, Tuple4<_1, _2, _3, ?>>, Bifunctor<_3, _4, Tuple4<_1, _2, ?, ?>> {
+        implements Applicative<_4, Tuple4<_1, _2, _3, ?>>, Bifunctor<_3, _4, Tuple4<_1, _2, ?, ?>>, Traversable<_4, Tuple4<_1, _2, _3, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -132,6 +135,13 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>>
     @Override
     public <_4Prime> Tuple4<_1, _2, _3, _4> discardR(Applicative<_4Prime, Tuple4<_1, _2, _3, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <_4Prime, App extends Applicative> Applicative<Tuple4<_1, _2, _3, _4Prime>, App> traverse(
+            Function<? super _4, ? extends Applicative<_4Prime, App>> fn,
+            Function<? super Traversable<_4Prime, Tuple4<_1, _2, _3, ?>>, ? extends Applicative<? extends Traversable<_4Prime, Tuple4<_1, _2, _3, ?>>, App>> pure) {
+        return fn.apply(_4).fmap(_4Prime -> fmap(constantly(_4Prime)));
     }
 
     /**

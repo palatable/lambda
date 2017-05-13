@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -25,7 +26,7 @@ import static java.util.Arrays.asList;
  * @param <L> The left parameter type
  * @param <R> The right parameter type
  */
-public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Applicative<R, Either<L, ?>>, Bifunctor<L, R, Either> {
+public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Applicative<R, Either<L, ?>>, Traversable<R, Either<L, ?>>, Bifunctor<L, R, Either> {
 
     private Either() {
     }
@@ -232,6 +233,14 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Ap
     @Override
     public <R2> Either<L, R> discardR(Applicative<R2, Either<L, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <R2, App extends Applicative> Applicative<Either<L, R2>, App> traverse(
+            Function<? super R, ? extends Applicative<R2, App>> fn,
+            Function<? super Traversable<R2, Either<L, ?>>, ? extends Applicative<? extends Traversable<R2, Either<L, ?>>, App>> pure) {
+        return match(l -> pure.apply(left(l)).fmap(x -> (Either<L, R2>) x),
+                     r -> fn.apply(r).fmap(Either::right));
     }
 
     /**

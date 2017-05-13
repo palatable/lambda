@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -15,7 +16,7 @@ import java.util.function.Function;
  * @param <A> the left parameter type, and the type of the stored value
  * @param <B> the right (phantom) parameter type
  */
-public final class Const<A, B> implements Applicative<B, Const<A, ?>>, Bifunctor<A, B, Const> {
+public final class Const<A, B> implements Applicative<B, Const<A, ?>>, Bifunctor<A, B, Const>, Traversable<B, Const<A, ?>> {
 
     private final A a;
 
@@ -76,6 +77,13 @@ public final class Const<A, B> implements Applicative<B, Const<A, ?>>, Bifunctor
     @Override
     public <C> Const<A, B> discardR(Applicative<C, Const<A, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <C, App extends Applicative> Applicative<Const<A, C>, App> traverse(
+            Function<? super B, ? extends Applicative<C, App>> fn,
+            Function<? super Traversable<C, Const<A, ?>>, ? extends Applicative<? extends Traversable<C, Const<A, ?>>, App>> pure) {
+        return pure.apply(coerce()).fmap(x -> (Const<A, C>) x);
     }
 
     /**

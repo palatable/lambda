@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
+import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.junit.Assert.assertEquals;
@@ -26,7 +27,7 @@ public class Tuple3Test {
         tuple3 = new Tuple3<>(1, new Tuple2<>("2", new SingletonHList<>('3')));
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class, TraversableLaws.class})
     public Tuple3 testSubject() {
         return tuple("one", 2, 3d);
     }

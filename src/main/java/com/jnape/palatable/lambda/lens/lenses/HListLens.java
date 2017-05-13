@@ -8,6 +8,9 @@ import com.jnape.palatable.lambda.lens.Lens;
 import static com.jnape.palatable.lambda.adt.hlist.HList.cons;
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 
+/**
+ * Lenses that operate on {@link HList}s.
+ */
 public final class HListLens {
 
     /**

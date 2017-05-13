@@ -4,8 +4,11 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A 3-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -20,7 +23,7 @@ import java.util.function.Function;
  * @see Tuple5
  */
 public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>>
-        implements Applicative<_3, Tuple3<_1, _2, ?>>, Bifunctor<_2, _3, Tuple3<_1, ?, ?>> {
+        implements Applicative<_3, Tuple3<_1, _2, ?>>, Bifunctor<_2, _3, Tuple3<_1, ?, ?>>, Traversable<_3, Tuple3<_1, _2, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -120,6 +123,13 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>>
     @Override
     public <_3Prime> Tuple3<_1, _2, _3> discardR(Applicative<_3Prime, Tuple3<_1, _2, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <_3Prime, App extends Applicative> Applicative<Tuple3<_1, _2, _3Prime>, App> traverse(
+            Function<? super _3, ? extends Applicative<_3Prime, App>> fn,
+            Function<? super Traversable<_3Prime, Tuple3<_1, _2, ?>>, ? extends Applicative<? extends Traversable<_3Prime, Tuple3<_1, _2, ?>>, App>> pure) {
+        return fn.apply(_3).fmap(_3Prime -> fmap(constantly(_3Prime)));
     }
 
     /**

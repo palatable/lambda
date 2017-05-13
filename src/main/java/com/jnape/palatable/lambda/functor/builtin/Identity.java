@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -10,7 +11,7 @@ import java.util.function.Function;
  *
  * @param <A> the value type
  */
-public final class Identity<A> implements Applicative<A, Identity> {
+public final class Identity<A> implements Applicative<A, Identity>, Traversable<A, Identity> {
 
     private final A a;
 
@@ -58,6 +59,13 @@ public final class Identity<A> implements Applicative<A, Identity> {
     @Override
     public <B> Identity<A> discardR(Applicative<B, Identity> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <B, App extends Applicative> Applicative<Identity<B>, App> traverse(
+            Function<? super A, ? extends Applicative<B, App>> fn,
+            Function<? super Traversable<B, Identity>, ? extends Applicative<? extends Traversable<B, Identity>, App>> pure) {
+        return fn.apply(runIdentity()).fmap(Identity::new);
     }
 
     @Override

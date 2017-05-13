@@ -117,7 +117,7 @@ public final class MapLens {
     public static <K, V> Lens.Simple<Map<K, V>, Map<V, K>> inverted() {
         return simpleLens(m -> {
             Map<V, K> inverted = new HashMap<>();
-            m.entrySet().forEach(entry -> inverted.put(entry.getValue(), entry.getKey()));
+            m.forEach((key, value) -> inverted.put(value, key));
             return inverted;
         }, (m, im) -> {
             m.clear();

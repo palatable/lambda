@@ -3,10 +3,13 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A 2-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -20,7 +23,7 @@ import java.util.function.Function;
  * @see Tuple5
  */
 public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>>
-        implements Map.Entry<_1, _2>, Applicative<_2, Tuple2<_1, ?>>, Bifunctor<_1, _2, Tuple2> {
+        implements Map.Entry<_1, _2>, Applicative<_2, Tuple2<_1, ?>>, Bifunctor<_1, _2, Tuple2>, Traversable<_2, Tuple2<_1, ?>> {
 
     private final _1 _1;
     private final _2 _2;
@@ -124,6 +127,13 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>>
     @Override
     public <_2Prime> Tuple2<_1, _2> discardR(Applicative<_2Prime, Tuple2<_1, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <_2Prime, App extends Applicative> Applicative<Tuple2<_1, _2Prime>, App> traverse(
+            Function<? super _2, ? extends Applicative<_2Prime, App>> fn,
+            Function<? super Traversable<_2Prime, Tuple2<_1, ?>>, ? extends Applicative<? extends Traversable<_2Prime, Tuple2<_1, ?>>, App>> pure) {
+        return fn.apply(_2).fmap(_2Prime -> fmap(constantly(_2Prime)));
     }
 
     /**

@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct5;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -19,7 +20,11 @@ import java.util.function.Function;
  * @param <E> a type parameter representing the fifth possible type of this choice
  * @see Choice4
  */
-public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E, Choice5<A, B, C, D, E>>, Applicative<E, Choice5<A, B, C, D, ?>>, Bifunctor<D, E, Choice5<A, B, C, ?, ?>> {
+public abstract class Choice5<A, B, C, D, E> implements
+        CoProduct5<A, B, C, D, E, Choice5<A, B, C, D, E>>,
+        Applicative<E, Choice5<A, B, C, D, ?>>,
+        Bifunctor<D, E, Choice5<A, B, C, ?, ?>>,
+        Traversable<E, Choice5<A, B, C, D, ?>> {
 
     private Choice5() {
     }
@@ -76,6 +81,17 @@ public abstract class Choice5<A, B, C, D, E> implements CoProduct5<A, B, C, D, E
     @Override
     public <F> Choice5<A, B, C, D, E> discardR(Applicative<F, Choice5<A, B, C, D, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <F, App extends Applicative> Applicative<Choice5<A, B, C, D, F>, App> traverse(
+            Function<? super E, ? extends Applicative<F, App>> fn,
+            Function<? super Traversable<F, Choice5<A, B, C, D, ?>>, ? extends Applicative<? extends Traversable<F, Choice5<A, B, C, D, ?>>, App>> pure) {
+        return match(a -> pure.apply(a(a)).fmap(x -> (Choice5<A, B, C, D, F>) x),
+                     b -> pure.apply(b(b)).fmap(x -> (Choice5<A, B, C, D, F>) x),
+                     c -> pure.apply(c(c)).fmap(x -> (Choice5<A, B, C, D, F>) x),
+                     d -> pure.apply(d(d)).fmap(x -> (Choice5<A, B, C, D, F>) x),
+                     e -> fn.apply(e).fmap(Choice5::e));
     }
 
     /**
