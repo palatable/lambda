@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CoProductN#embed`
 - `not`, used for negating predicate functions
 - `empty`, used to test if an Iterable is empty
+- `groupBy`, for folding an Iterable into a Map given a key function
 
 ### Changed
 - `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter
