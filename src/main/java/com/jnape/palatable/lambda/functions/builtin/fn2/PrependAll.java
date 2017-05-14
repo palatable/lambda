@@ -8,6 +8,13 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Tail.tail;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 import static java.util.Collections.emptyList;
 
+/**
+ * Lazily prepend each value with of the <code>Iterable</code> with the supplied separator value. An empty
+ * <code>Iterable</code> is left untouched.
+ *
+ * @param <A> the Iterable parameter type
+ * @see Intersperse
+ */
 public final class PrependAll<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
     private static final PrependAll INSTANCE = new PrependAll();

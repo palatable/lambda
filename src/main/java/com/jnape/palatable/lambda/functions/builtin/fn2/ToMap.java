@@ -6,6 +6,8 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
+
 /**
  * Given a {@link Supplier} of some {@link Map} <code>M</code>, create an instance of <code>M</code> and put
  * all of the entries in the provided <code>Iterable</code> into the instance. Note that instances of <code>M</code>
@@ -24,9 +26,10 @@ public final class ToMap<K, V, M extends Map<K, V>> implements Fn2<Supplier<M>, 
 
     @Override
     public M apply(Supplier<M> mSupplier, Iterable<Map.Entry<K, V>> entries) {
-        M m = mSupplier.get();
-        entries.forEach(kv -> m.put(kv.getKey(), kv.getValue()));
-        return m;
+        return foldLeft((m, kv) -> {
+            m.put(kv.getKey(), kv.getValue());
+            return m;
+        }, mSupplier.get(), entries);
     }
 
     @SuppressWarnings("unchecked")
