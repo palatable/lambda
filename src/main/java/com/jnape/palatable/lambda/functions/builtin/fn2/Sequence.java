@@ -4,17 +4,25 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.traversable.Traversable;
+import com.jnape.palatable.lambda.traversable.TraversableIterable;
+import com.jnape.palatable.lambda.traversable.TraversableOptional;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
- * Given a {@link Traversable} of {@link Applicative}s and a pure {@link Applicative} constructor, traverse the elements
- * from left to right, zipping the applicatives together and collecting the results. If the traversable is empty, simply
+ * Given a {@link Traversable} of {@link Applicative}s and a pure {@link Applicative} constructor, traverse the
+ * elements
+ * from left to right, zipping the applicatives together and collecting the results. If the traversable is empty,
+ * simply
  * wrap it in the applicative by calling <code>pure</code>.
  * <p>
  * Modulo any type-level coercion, this is equivalent to <code>traversable.traverse(id(), pure)</code>.
+ * <p>
+ * Note that specialized overloads exist for certain built-in JDK types that would otherwise be instances
+ * {@link Traversable} if it weren't for the extensibility problem.
  *
  * @param <A>       the Traversable element type
  * @param <App>     the Applicative unification parameter
@@ -55,5 +63,35 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
             TravApp extends Traversable<? extends Applicative<A, App>, Trav>> AppTrav sequence(TravApp traversable,
                                                                                                Function<? super Traversable<A, Trav>, ? extends AppTrav> pure) {
         return Sequence.<A, App, Trav, AppTrav, TravApp>sequence(traversable).apply(pure);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>, IterableApp extends Iterable<? extends Applicative<A, App>>> Fn1<Function<? super Iterable<A>, ? extends AppIterable>, AppIterable> sequence(
+            IterableApp optionalApp) {
+        return pure ->
+                (AppIterable) sequence(TraversableIterable.wrap(optionalApp), x -> pure.apply(((TraversableIterable<A>) x).unwrap())
+                        .fmap(TraversableIterable::wrap))
+                        .fmap(TraversableIterable::unwrap);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>, OptionalApp extends Optional<? extends Applicative<A, App>>> Fn1<Function<? super Optional<A>, ? extends AppOptional>, AppOptional> sequence(
+            OptionalApp optionalApp) {
+        return pure ->
+                (AppOptional) sequence(TraversableOptional.wrap(optionalApp), x -> pure.apply(((TraversableOptional<A>) x).unwrap())
+                        .fmap(TraversableOptional::wrap))
+                        .fmap(TraversableOptional::unwrap);
+    }
+
+    public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>,
+            IterableApp extends Iterable<? extends Applicative<A, App>>> AppIterable sequence(IterableApp iterableApp,
+                                                                                              Function<? super Iterable<A>, ? extends AppIterable> pure) {
+        return Sequence.<A, App, AppIterable, IterableApp>sequence(iterableApp).apply(pure);
+    }
+
+    public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>,
+            OptionalApp extends Optional<? extends Applicative<A, App>>> AppOptional sequence(OptionalApp optionalApp,
+                                                                                              Function<? super Optional<A>, ? extends AppOptional> pure) {
+        return Sequence.<A, App, AppOptional, OptionalApp>sequence(optionalApp).apply(pure);
     }
 }
