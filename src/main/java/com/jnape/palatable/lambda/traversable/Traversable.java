@@ -15,13 +15,12 @@ import java.util.function.Function;
  * <ul>
  * <li>naturality: <code>t.apply(trav.traverse(f, pure).&lt;Object&gt;fmap(id()).coerce())
  * .equals(trav.traverse(t.compose(f), pure2).&lt;Object&gt;fmap(id()).coerce())</code></li>
- * <li>identity: <code>trav.traverse(Identity::new, x -> new Identity&lt;&gt;(x)).equals(new
+ * <li>identity: <code>trav.traverse(Identity::new, x -&gt; new Identity&lt;&gt;(x)).equals(new
  * Identity&lt;&gt;(trav)</code></li>
- * <li>composition: <code>trav.traverse(f.andThen(x -> x.fmap(g)).andThen(Compose::new), x ->
+ * <li>composition: <code>trav.traverse(f.andThen(x -&gt; x.fmap(g)).andThen(Compose::new), x -&gt;
  * new Compose&lt;&gt;(new Identity&lt;&gt;(new Identity&lt;&gt;(x)))).equals(new Compose&lt;Identity, Identity,
- * Traversable&lt;Object, Trav&gt;&gt;(trav.traverse(f, x -> new Identity&lt;&gt;(x)).fmap(t ->
- * t.traverse(g, x -> new Identity&lt;&gt;(x)))))</code></li>
- * <p>
+ * Traversable&lt;Object, Trav&gt;&gt;(trav.traverse(f, x -&gt; new Identity&lt;&gt;(x)).fmap(t -&gt;
+ * t.traverse(g, x -&gt; new Identity&lt;&gt;(x)))))</code></li>
  * </ul>
  * <p>
  * For more information, read about

@@ -144,6 +144,7 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>> {
      * Although the Java type system does not allow enforceability, the functor instance FT should be the same as FB,
      * only differentiating in their parameters.
      *
+     * @param <F>  the common functor type of FT and FB
      * @param <FT> the type of the lifted T
      * @param <FB> the type of the lifted B
      * @return the lens, "fixed" to the functor

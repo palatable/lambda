@@ -15,7 +15,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * <li>identity: <code>v.zip(pureId).equals(v)</code></li>
  * <li>composition: <code>w.zip(v.zip(u.zip(pureCompose))).equals((w.zip(v)).zip(u))</code></li>
  * <li>homomorphism: <code>pureX.zip(pureF).equals(pureFx)</code></li>
- * <li>interchange: <code>pureY.zip(u).equals(u.zip(pure(f -> f.apply(y))))</code></li>
+ * <li>interchange: <code>pureY.zip(u).equals(u.zip(pure(f -&gt; f.apply(y))))</code></li>
  * </ul>
  * As with <code>Functor</code>, <code>Applicative</code> instances that do not satisfy all of the functor laws, as well
  * as the above applicative laws, are not well-behaved and often break down in surprising ways.

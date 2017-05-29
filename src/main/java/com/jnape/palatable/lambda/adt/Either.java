@@ -53,8 +53,8 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Ap
     }
 
     /**
-     * Inverse of recover. If this is a right value, apply the wrapped value to forfeitFn and return it; otherwise,
-     * return the wrapped left value;
+     * Inverse of recover. If this is a right value, apply the wrapped value to <code>forfeitFn</code> and return it;
+     * otherwise, return the wrapped left value.
      *
      * @param forfeitFn a function from R to L
      * @return either the wrapped value (if left) or the result of the right value applied to forfeitFn
