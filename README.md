@@ -132,7 +132,7 @@ And have fun with 3s:
 
 ```Java
 Iterable<Iterable<Integer>> multiplesOf3InGroupsOf3 =
-          take(10, inGroupsOf(3, unfoldr(x -> Optional.of(tuple(x * 3, x + 1)), 1)));
+          take(3, inGroupsOf(3, unfoldr(x -> Optional.of(tuple(x * 3, x + 1)), 1)));
 //-> [[3, 6, 9], [12, 15, 18], [21, 24, 27]]
 ```
 
