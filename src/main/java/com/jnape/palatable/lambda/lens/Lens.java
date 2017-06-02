@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.lens;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.Profunctor;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -133,7 +134,7 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
  * @param <B> the type of the "smaller" update value
  */
 @FunctionalInterface
-public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>> {
+public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>>, Profunctor<S, T, Lens<?, ?, A, B>> {
 
     <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
             Function<? super A, ? extends FB> fn, S s);
@@ -177,6 +178,11 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>> {
     @Override
     default <U> Lens<S, T, A, B> discardR(Applicative<U, Lens<S, ?, A, B>> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
+    default <R, U> Lens<R, U, A, B> diMap(Function<R, S> lFn, Function<T, U> rFn) {
+        return mapS(lFn).mapT(rFn);
     }
 
     /**
