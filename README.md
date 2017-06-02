@@ -10,6 +10,13 @@ Functional patterns for Java 8
  - [Background](#background)
  - [Installation](#installation)
  - [Examples](#examples)
+ - [Semigroups](#semigroups)
+ - [Monoids](#monoids)
+ - [Functors](#functors)
+   - [Bifunctors](#bifunctors)
+   - [Profunctors](#profunctors)
+   - [Applicatives](#applicatives)
+   - [Traversables](#traversables)
  - [ADTs](#adts)
    - [HLists](#hlists)
      - [Tuples](#tuples)
@@ -48,14 +55,14 @@ Add the following dependency to your:
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>1.5.6</version>
+    <version>1.6.0</version>
 </dependency>
 ```
  
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
  
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '1.5.6'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '1.6.0'
 ```
 
 <a name="examples">Examples</a>
@@ -138,10 +145,115 @@ Iterable<Iterable<Integer>> multiplesOf3InGroupsOf3 =
 
 Check out the [tests](https://github.com/palatable/lambda/tree/master/src/test/java/com/jnape/palatable/lambda/functions/builtin) or [javadoc](http://palatable.github.io/lambda/javadoc/) for more examples.
 
+<a name="semigroups">Semigroups</a>
+----
+
+[Semigroups](https://en.wikipedia.org/wiki/Semigroup) are supported via `Semigroup<A>`, a subtype of `Fn2<A,A,A>`, and add left and right folds over an `Iterable<A>`.
+ 
+Lambda ships some default logical semigroups for lambda types and core JDK types. Common examples are:
+
+- `AddAll` for concatenating two `Collection`s
+- `Collapse` for collapsing two `Tuple2`s together 
+- `Merge` for merging two `Either`s using left-biasing semantics
+
+Check out the [semigroup](https://palatable.github.io/lambda/javadoc/com/jnape/palatable/lambda/semigroup/builtin/package-summary.html) package for more examples.
+
+<a name="monoids">Monoids</a>
+----
+
+[Monoids](https://en.wikipedia.org/wiki/Monoid) are supported via `Monoid<A>`, a subtype of `Semigroup<A>` with an `A #identity()` method, and add left and right reduces over an `Iterable<A>`.
+
+Some commonly used lambda monoid implementations include:
+
+- `Present` for merging together two `Optional`s
+- `Join` for joining two `String`s
+- `And` for logical conjunction of two `Boolean`s
+- `Or` for logical disjunction of two `Boolean`s
+
+Additionally, instances of `Monoid<A>` can be trivially synthesized from instances of `Semigroup<A>` via the `Monoid#monoid` static factory method, taking the `Semigroup` and the identity element `A` or a supplier of the identity element `Supplier<A>`. 
+
+Check out the [monoid](https://palatable.github.io/lambda/javadoc/com/jnape/palatable/lambda/monoid/builtin/package-summary.html) package for more examples.
+
+<a name="functors">Functors</a>
+----
+
+Functors are implemented via the `Functor` interface, and are sub-typed by every function type that lambda exports, as well as many of the [ADTs](#adts). 
+
+Examples of functors include:
+  
+- `Fn*`, `Semigroup`, and `Monoid` 
+- `SingletonHList` and `Tuple*`
+- `Choice*`
+- `Either`
+- `Const`, `Identity`, and `Compose`
+- `Lens`
+
+Implementing `Functor` is as simple as providing a definition for the covariant mapping function `#fmap` (ideally satisfying the [two laws](https://hackage.haskell.org/package/base-4.9.1.0/docs/Data-Functor.html)). 
+
+### <a name="bifunctors">Bifunctors</a>
+
+Bifunctors -- functors that support two parameters that can be covariantly mapped over -- are implemented via the `Bifunctor` interface.
+
+Examples of bifunctors include:
+
+- `Tuple*`
+- `Choice*`
+- `Either`
+- `Const`
+
+Implementing `Bifunctor` requires implementing *either* `biMapL` and `biMapR` *or* `biMap`. As with `Functor`, there are a [few laws](https://hackage.haskell.org/package/base-4.9.1.0/docs/Data-Bifunctor.html) that well-behaved instances of `Bifunctor` should adhere to.
+
+### <a name="profunctors">Profunctors</a>
+
+Profunctors -- functors that support one parameter that can be mapped over contravariantly, and a second parameter that can be mapped over covariantly -- are implemented via the `Profunctor` interface.
+ 
+ Examples of profunctors include:
+ 
+ - `Fn*`
+ - `Lens`
+
+Implementing `Profunctor` requires implementing *either* `diMapL` and `diMapR` *or* `diMap`. As with `Functor` and `Bifunctor`, there are [some laws](https://hackage.haskell.org/package/profunctors-5.2/docs/Data-Profunctor.html) that well behaved instances of `Profunctor` should adhere to.
+
+### <a name="applicatives">Applicatives</a>
+
+Applicative functors -- functors that can be applied together with a 2-arity or higher function -- are implemented via the `Applicative` interface.
+ 
+Examples of applicative functors include:
+
+- `Fn*`, `Semigroup`, and `Monoid`
+- `SingletonHList` and `Tuple*`
+- `Choice*`
+- `Either`
+- `Const`, `Identity`, and `Compose`
+- `Lens`
+
+In addition to implementing `fmap` from `Functor`, implementing an applicative functor involves providing two methods: `pure`, a method that lifts a value into the functor; and `zip`, a method that applies a lifted function to a lifted value, returning a new lifted value. As usual, there are [some laws](https://hackage.haskell.org/package/base-4.9.1.0/docs/Control-Applicative.html) that should be adhered to.
+
+For example, imagine we have an `Fn2<String,String,String>` we'll call `join` that simply joins two strings. If we wanted to join the `String`s wrapped inside two `Either<Integer,String>` instances, without `Applicative`, we would at best only be able to `fmap` one while `fmap`ping the other, resulting in an `Either<Integer, Either<Integer,String>>`.
+
+With `Applicative`, however, we can `fmap(join)` the first `Either<Integer String>`, resulting in an `Either<Integer, Fn1<String, String>>`, and then `zip` the second `Either<Integer, String>`, producing another `Either<Integer, String>`. In this way, `Applicative` can be thought of as facilitating `fmap`ping a functor with a multi-arity function. 
+
+### <a name="traversables">Traversables</a>
+
+Traversable functors -- functors that can be "traversed from left to right" -- are implemented via the `Traversable` interface.
+
+Examples of traversable functors include:
+
+- `SingletonHList` and `Tuple*`
+- `Choice*`
+- `Either`
+- `Const` and `Identity`
+- `TraversableIterable` for wrapping `Iterable` in an instance of `Traversable`
+- `TraversableOptional` for wrapping `Optional` in an instance of `Traversable`
+
+In addition to implementing `fmap` from `Functor`, implementing a traversable functor involves providing an implementation of `traverse`.
+
+As always, there are [some laws](https://hackage.haskell.org/package/base-4.9.1.0/docs/Data-Traversable.html) that should be observed.
+
 <a name="adts">ADTs</a>
 ----
 
-In addition to the functions above, lambda also supports a few first-class [algebraic data types](https://www.wikiwand.com/en/Algebraic_data_type).
+Lambda also supports a few first-class [algebraic data types](https://www.wikiwand.com/en/Algebraic_data_type).
 
 ### <a name="hlists">Heterogeneous Lists (HLists)</a>
 
