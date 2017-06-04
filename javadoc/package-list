@@ -1,4 +1,6 @@
 com.jnape.palatable.lambda.adt
+com.jnape.palatable.lambda.adt.choice
+com.jnape.palatable.lambda.adt.coproduct
 com.jnape.palatable.lambda.adt.hlist
 com.jnape.palatable.lambda.adt.hmap
 com.jnape.palatable.lambda.functions
@@ -13,3 +15,16 @@ com.jnape.palatable.lambda.iterators
 com.jnape.palatable.lambda.lens
 com.jnape.palatable.lambda.lens.functions
 com.jnape.palatable.lambda.lens.lenses
+com.jnape.palatable.lambda.monoid
+com.jnape.palatable.lambda.monoid.builtin
+com.jnape.palatable.lambda.semigroup
+com.jnape.palatable.lambda.semigroup.builtin
+com.jnape.palatable.lambda.traversable
+spike
+testsupport
+testsupport.applicatives
+testsupport.concurrent
+testsupport.exceptions
+testsupport.functions
+testsupport.matchers
+testsupport.traits
