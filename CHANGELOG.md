@@ -4,13 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+--
+
+## [1.6.0] - 2017-06-04
 ### Added
-- `Applicative` arrives; all functors gain applicative properties
 - `Either#invert` is pulled up into `CoProduct2` and additionally specialized for `Choice2`
 - `CoProductN#embed`
 - `not`, used for negating predicate functions
 - `empty`, used to test if an Iterable is empty
 - `groupBy`, for folding an Iterable into a Map given a key function
+- `Applicative` arrives; all functors gain applicative properties
+- `Traversable` arrives; `SingletonHList`, `Tuple*`, `Choice*`, `Either`, `Identity`, and `Const` gain traversable properties
+- `TraversableOptional` and `TraversableIterable` for adapting `Optional` and `Iterable`, respectively, to `Traversable`
+- `sequence` for wrapping a traversable in an applicative during traversal 
+- `Compose`, an applicative functor that represents type-level functor composition
 
 ### Changed
 - `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter
@@ -19,6 +27,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `partition` now only requires iterables of `CoProudct2`
 - `CoProductN`s receive a unification parameter, which trickles down to `Either` and `Choice`s
 - `Concat` now represents a monoid for `Iterable`; previous `Concat` semigroup and monoid renamed to more appropriate `AddAll`
+- `Lens` is now an instance of `Profunctor`
 
 ## [1.5.6] - 2017-02-11
 ### Added
@@ -115,7 +124,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.5.6...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.6.0...HEAD
+[1.6.0]: https://github.com/palatable/lambda/compare/lambda-1.5.6...lambda-1.6.0
 [1.5.6]: https://github.com/palatable/lambda/compare/lambda-1.5.5...lambda-1.5.6
 [1.5.5]: https://github.com/palatable/lambda/compare/lambda-1.5.4...lambda-1.5.5
 [1.5.4]: https://github.com/palatable/lambda/compare/lambda-1.5.3...lambda-1.5.4
