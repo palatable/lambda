@@ -20,11 +20,3 @@ com.jnape.palatable.lambda.monoid.builtin
 com.jnape.palatable.lambda.semigroup
 com.jnape.palatable.lambda.semigroup.builtin
 com.jnape.palatable.lambda.traversable
-spike
-testsupport
-testsupport.applicatives
-testsupport.concurrent
-testsupport.exceptions
-testsupport.functions
-testsupport.matchers
-testsupport.traits
