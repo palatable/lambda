@@ -17,7 +17,7 @@ public final class Traversables {
      * @param <A> the Iterable element type
      * @return a Traversable wrapper around as
      */
-    static <A> TraversableIterable<A> traversable(Iterable<? extends A> as) {
+    public static <A> TraversableIterable<A> traversable(Iterable<? extends A> as) {
         return TraversableIterable.wrap(as);
     }
 
@@ -28,7 +28,7 @@ public final class Traversables {
      * @param <A> the Optional type
      * @return a Traversable wrapper around opt
      */
-    static <A> TraversableOptional<A> traversable(Optional<A> opt) {
+    public static <A> TraversableOptional<A> traversable(Optional<A> opt) {
         return TraversableOptional.wrap(opt);
     }
 }

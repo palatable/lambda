@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
---
+---
+
+## [1.6.1] - 2017-06-17
+### Changed
+- Loosening visibility on `Traversables` methods to `public`
 
 ## [1.6.0] - 2017-06-04
 ### Added
@@ -124,7 +128,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.6.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.6.1...HEAD
+[1.6.0]: https://github.com/palatable/lambda/compare/lambda-1.6.0...lambda-1.6.1
 [1.6.0]: https://github.com/palatable/lambda/compare/lambda-1.5.6...lambda-1.6.0
 [1.5.6]: https://github.com/palatable/lambda/compare/lambda-1.5.5...lambda-1.5.6
 [1.5.5]: https://github.com/palatable/lambda/compare/lambda-1.5.4...lambda-1.5.5
