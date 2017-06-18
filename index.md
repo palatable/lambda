@@ -48,21 +48,21 @@ Although the library is currently (very) small, these values should always be th
 ------------
 
 Add the following dependency to your:
- 
+
 `pom.xml` ([Maven](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html)):
- 
+
 ```xml
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
 </dependency>
 ```
- 
+
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
- 
+
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '1.6.0'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '1.6.1'
 ```
 
 <a name="examples">Examples</a>
@@ -149,7 +149,13 @@ Check out the [tests](https://github.com/palatable/lambda/tree/master/src/test/j
 ----
 
 [Semigroups](https://en.wikipedia.org/wiki/Semigroup) are supported via `Semigroup<A>`, a subtype of `Fn2<A,A,A>`, and add left and right folds over an `Iterable<A>`.
- 
+
+```Java
+Semigroup<Integer> add = (augend, addend) -> augend + addend;
+add.apply(1, 2); //-> 3
+add.foldLeft(0, asList(1, 2, 3)); //-> 6
+```
+
 Lambda ships some default logical semigroups for lambda types and core JDK types. Common examples are:
 
 - `AddAll` for concatenating two `Collection`s
@@ -161,7 +167,14 @@ Check out the [semigroup](https://palatable.github.io/lambda/javadoc/com/jnape/p
 <a name="monoids">Monoids</a>
 ----
 
-[Monoids](https://en.wikipedia.org/wiki/Monoid) are supported via `Monoid<A>`, a subtype of `Semigroup<A>` with an `A #identity()` method, and add left and right reduces over an `Iterable<A>`.
+[Monoids](https://en.wikipedia.org/wiki/Monoid) are supported via `Monoid<A>`, a subtype of `Semigroup<A>` with an `A #identity()` method, and add left and right reduces over an `Iterable<A>`, as well as `foldMap`.
+
+```Java
+Monoid<Integer> multiply = monoid((x, y) -> x * y, 1);
+multiple.reduceLeft(emptyList()); //-> 1
+multiply.reduceLeft(asList(1, 2, 3)); //-> 6
+multiply.foldMap(Integer::parseInt, asList("1", "2", "3")); //-> also 6
+```
 
 Some commonly used lambda monoid implementations include:
 
@@ -179,6 +192,29 @@ Check out the [monoid](https://palatable.github.io/lambda/javadoc/com/jnape/pala
 
 Functors are implemented via the `Functor` interface, and are sub-typed by every function type that lambda exports, as well as many of the [ADTs](#adts). 
 
+```Java
+public final class Slot<A> implements Functor<A, Slot> {
+    private final A a;
+
+    public Slot(A a) {
+        this.a = a;
+    }
+
+    public A getA() {
+        return a;
+    }
+
+    @Override
+    public <B> Slot<B> fmap(Function<? super A, ? extends B> fn) {
+        return new Slot<>(fn.apply(a));
+    }
+}
+
+Slot<Integer> intSlot = new Slot<>(1);
+Slot<String> stringSlot = intSlot.fmap(x -> "number: " + x);
+stringSlot.getA(); //-> "number: 1"
+```
+
 Examples of functors include:
   
 - `Fn*`, `Semigroup`, and `Monoid` 
@@ -194,6 +230,37 @@ Implementing `Functor` is as simple as providing a definition for the covariant 
 
 Bifunctors -- functors that support two parameters that can be covariantly mapped over -- are implemented via the `Bifunctor` interface.
 
+```Java
+public final class Pair<A, B> implements Bifunctor<A, B, Pair> {
+    private final A a;
+    private final B b;
+
+    public Pair(A a, B b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    public A getA() {
+        return a;
+    }
+
+    public B getB() {
+        return b;
+    }
+
+    @Override
+    public <C, D> Pair<C, D> biMap(Function<? super A, ? extends C> lFn,
+                                   Function<? super B, ? extends D> rFn) {
+        return new Pair<>(lFn.apply(a), rFn.apply(b));
+    }
+}
+
+Pair<String,Integer> stringIntPair = new Pair<>("str", 1);
+Pair<Integer, Boolean> intBooleanPair = stringIntPair.biMap(String::length, x -> x % 2 == 0);
+intBooleanPair.getA(); //-> 3
+intBooleanPair.getB(); //-> false
+```
+
 Examples of bifunctors include:
 
 - `Tuple*`
@@ -206,18 +273,57 @@ Implementing `Bifunctor` requires implementing *either* `biMapL` and `biMapR` *o
 ### <a name="profunctors">Profunctors</a>
 
 Profunctors -- functors that support one parameter that can be mapped over contravariantly, and a second parameter that can be mapped over covariantly -- are implemented via the `Profunctor` interface.
- 
- Examples of profunctors include:
- 
- - `Fn*`
- - `Lens`
+
+```Java
+Fn1<Integer, Integer> add2 = (x) -> x + 2;
+add2.<String, String>diMap(Integer::parseInt, Object::toString).apply("1"); //-> "3"
+```
+
+Examples of profunctors include:
+
+- `Fn*`
+- `Lens`
 
 Implementing `Profunctor` requires implementing *either* `diMapL` and `diMapR` *or* `diMap`. As with `Functor` and `Bifunctor`, there are [some laws](https://hackage.haskell.org/package/profunctors-5.2/docs/Data-Profunctor.html) that well behaved instances of `Profunctor` should adhere to.
 
 ### <a name="applicatives">Applicatives</a>
 
 Applicative functors -- functors that can be applied together with a 2-arity or higher function -- are implemented via the `Applicative` interface.
- 
+
+```Java
+public final class Slot<A> implements Applicative<A, Slot> {
+    private final A a;
+
+    public Slot(A a) {
+        this.a = a;
+    }
+
+    public A getA() {
+        return a;
+    }
+
+    @Override
+    public <B> Slot<B> fmap(Function<? super A, ? extends B> fn) {
+        return pure(fn.apply(a));
+    }
+
+    @Override
+    public <B> Slot<B> pure(B b) {
+        return new Slot<>(b);
+    }
+
+    @Override
+    public <B> Slot<B> zip(Applicative<Function<? super A, ? extends B>, Slot> appFn) {
+        return pure(appFn.<Slot<Function<? super A, ? extends B>>>coerce().getA().apply(getA()));
+    }
+}
+
+Fn2<Integer, Integer, Integer> add = (x, y) -> x + y;
+Slot<Integer> x = new Slot<>(1);
+Slot<Integer> y = new Slot<>(2);
+Slot<Integer> z = y.zip(x.fmap(add)); //-> Slot{a=3}
+```
+
 Examples of applicative functors include:
 
 - `Fn*`, `Semigroup`, and `Monoid`
@@ -227,15 +333,73 @@ Examples of applicative functors include:
 - `Const`, `Identity`, and `Compose`
 - `Lens`
 
-In addition to implementing `fmap` from `Functor`, implementing an applicative functor involves providing two methods: `pure`, a method that lifts a value into the functor; and `zip`, a method that applies a lifted function to a lifted value, returning a new lifted value. As usual, there are [some laws](https://hackage.haskell.org/package/base-4.9.1.0/docs/Control-Applicative.html) that should be adhered to.
-
-For example, imagine we have an `Fn2<String,String,String>` we'll call `join` that simply joins two strings. If we wanted to join the `String`s wrapped inside two `Either<Integer,String>` instances, without `Applicative`, we would at best only be able to `fmap` one while `fmap`ping the other, resulting in an `Either<Integer, Either<Integer,String>>`.
-
-With `Applicative`, however, we can `fmap(join)` the first `Either<Integer String>`, resulting in an `Either<Integer, Fn1<String, String>>`, and then `zip` the second `Either<Integer, String>`, producing another `Either<Integer, String>`. In this way, `Applicative` can be thought of as facilitating `fmap`ping a functor with a multi-arity function. 
+In addition to implementing `fmap` from `Functor`, implementing an applicative functor involves providing two methods: `pure`, a method that lifts a value into the functor; and `zip`, a method that applies a lifted function to a lifted value, returning a new lifted value. As usual, there are [some laws](https://hackage.haskell.org/package/base-4.9.1.0/docs/Control-Applicative.html) that should be adhered to. 
 
 ### <a name="traversables">Traversables</a>
 
 Traversable functors -- functors that can be "traversed from left to right" -- are implemented via the `Traversable` interface.
+
+```Java
+public abstract class Maybe<A> implements Traversable<A, Maybe> {
+    private Maybe() {
+    }
+
+    @Override
+    public abstract <B, App extends Applicative> Applicative<Maybe<B>, App> traverse(
+            Function<? super A, ? extends Applicative<B, App>> fn,
+            Function<? super Traversable<B, Maybe>, ? extends Applicative<? extends Traversable<B, Maybe>, App>> pure);
+
+    @Override
+    public abstract <B> Maybe<B> fmap(Function<? super A, ? extends B> fn);
+
+    private static final class Just<A> extends Maybe<A> {
+        private final A a;
+
+        private Just(A a) {
+            this.a = a;
+        }
+
+        @Override
+        public <B, App extends Applicative> Applicative<Maybe<B>, App> traverse(
+                Function<? super A, ? extends Applicative<B, App>> fn,
+                Function<? super Traversable<B, Maybe>, ? extends Applicative<? extends Traversable<B, Maybe>, App>> pure) {
+            return fn.apply(a).fmap(Just::new);
+        }
+
+        @Override
+        public <B> Maybe<B> fmap(Function<? super A, ? extends B> fn) {
+            return new Just<>(fn.apply(a));
+        }
+    }
+
+    private static final class Nothing<A> extends Maybe<A> {
+        @Override
+        @SuppressWarnings("unchecked")
+        public <B, App extends Applicative> Applicative<Maybe<B>, App> traverse(
+                Function<? super A, ? extends Applicative<B, App>> fn,
+                Function<? super Traversable<B, Maybe>, ? extends Applicative<? extends Traversable<B, Maybe>, App>> pure) {
+            return pure.apply((Maybe<B>) this).fmap(x -> (Maybe<B>) x);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <B> Maybe<B> fmap(Function<? super A, ? extends B> fn) {
+            return (Maybe<B>) this;
+        }
+    }
+}
+
+Maybe<Integer> just1 = Maybe.just(1);
+Maybe<Integer> nothing = Maybe.nothing();
+
+Either<String, Maybe<Integer>> traversedJust = just1.traverse(x -> right(x + 1), empty -> left("empty"))
+        .fmap(x -> (Maybe<Integer>) x)
+        .coerce(); //-> Right(Just(2))
+
+Either<String, Maybe<Integer>> traversedNothing = nothing.traverse(x -> right(x + 1), empty -> left("empty"))
+        .fmap(x -> (Maybe<Integer>) x)
+        .coerce(); //-> Left("empty")
+```
 
 Examples of traversable functors include:
 
@@ -367,7 +531,7 @@ Integer result = string.<Integer>match(String::length, identity(), Character::ch
 ```
 
 Additionally, because a `CoProduct2<A, B>` guarantees a subset of a `CoProduct3<A, B, C>`, the `diverge` method exists between `CoProduct` types of single magnitude differences to make it easy to use a more convergent `CoProduct` where a more divergent `CoProduct` is expected:
-  
+
 ```Java
 CoProduct2<String, Integer> coProduct2 = Choice2.a("string");
 CoProduct3<String, Integer, Character> coProduct3 = coProduct2.diverge(); // still just the coProduct2 value, adapted to the coProduct3 shape
