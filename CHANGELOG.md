@@ -129,7 +129,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
 [Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.6.1...HEAD
-[1.6.0]: https://github.com/palatable/lambda/compare/lambda-1.6.0...lambda-1.6.1
+[1.6.1]: https://github.com/palatable/lambda/compare/lambda-1.6.0...lambda-1.6.1
 [1.6.0]: https://github.com/palatable/lambda/compare/lambda-1.5.6...lambda-1.6.0
 [1.5.6]: https://github.com/palatable/lambda/compare/lambda-1.5.5...lambda-1.5.6
 [1.5.5]: https://github.com/palatable/lambda/compare/lambda-1.5.4...lambda-1.5.5
