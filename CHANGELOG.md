@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Added
 - `Uncons`, for destructuring an `Iterable` into its head and tail
+- `Compose` semigroup and monoid formed over `CompletableFuture`
 
 ## [1.6.1] - 2017-06-17
 ### Changed
