@@ -7,15 +7,13 @@ import java.util.Objects;
  * that due to its rapidly expanding type signature, specializations exist up to certain depths to minimize typing
  * overhead.
  *
- * @param <Head> The head element type
- * @param <Tail> The encoded recursive tail HList type
  * @see SingletonHList
  * @see Tuple2
  * @see Tuple3
  * @see Tuple4
  * @see Tuple5
  */
-public abstract class HList<Head, Tail extends HList<?, ?>> {
+public abstract class HList {
 
     private HList() {
     }
@@ -27,7 +25,7 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
      * @param <NewHead> the new head type
      * @return the updated HList
      */
-    public abstract <NewHead> HCons<NewHead, ? extends HList<Head, Tail>> cons(NewHead newHead);
+    public abstract <NewHead> HCons<NewHead, ? extends HList> cons(NewHead newHead);
 
     @Override
     public final String toString() {
@@ -63,7 +61,7 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
      * @param <Tail> the tail type
      * @return the newly created HList
      */
-    public static <Head, Tail extends HList<?, ?>> HCons<Head, Tail> cons(Head head, Tail tail) {
+    public static <Head, Tail extends HList> HCons<Head, Tail> cons(Head head, Tail tail) {
         return new HCons<>(head, tail);
     }
 
@@ -156,7 +154,7 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
      * @param <Head> the head element type
      * @param <Tail> the HList tail type
      */
-    public static class HCons<Head, Tail extends HList<?, ?>> extends HList<Head, Tail> {
+    public static class HCons<Head, Tail extends HList> extends HList {
         private final Head head;
         private final Tail tail;
 
@@ -207,7 +205,7 @@ public abstract class HList<Head, Tail extends HList<?, ?>> {
     /**
      * The empty <code>HList</code>.
      */
-    public static final class HNil extends HList<Void, HNil> {
+    public static final class HNil extends HList {
         private static final HNil INSTANCE = new HNil();
 
         private HNil() {

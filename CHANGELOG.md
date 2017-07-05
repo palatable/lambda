@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 - Removing need for various suppressed unchecked warnings in `ChoiceN` types
+- `HList` abstract super type loses both unnecessary parameters 
 
 ## [1.6.1] - 2017-06-17
 ### Changed
