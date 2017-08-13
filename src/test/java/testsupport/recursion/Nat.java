@@ -4,15 +4,15 @@ import com.jnape.palatable.lambda.recursionschemes.Fix;
 
 public final class Nat implements Fix<NatF, NatF<Nat>> {
 
-    private final NatF<Nat> carrier;
+    private final NatF<Nat> unfixed;
 
-    private Nat(NatF<Nat> carrier) {
-        this.carrier = carrier;
+    private Nat(NatF<Nat> unfixed) {
+        this.unfixed = unfixed;
     }
 
     @Override
     public NatF<Nat> unfix() {
-        return carrier;
+        return unfixed;
     }
 
     public static Nat z() {
