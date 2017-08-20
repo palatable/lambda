@@ -34,7 +34,7 @@ public interface BiPredicate<A, B> extends Fn2<A, B, Boolean>, java.util.functio
      */
     @Override
     default BiPredicate<B, A> flip() {
-        return (BiPredicate<B, A>) Fn2.super.flip();
+        return Fn2.super.flip()::apply;
     }
 
     /**

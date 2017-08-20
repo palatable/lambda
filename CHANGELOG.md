@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Fixed
+- ClassCastException `BiPredicate.flip` 
+
 ### Added
 - `Uncons`, for destructuring an `Iterable` into its head and tail
 - `Compose` semigroup and monoid formed over `CompletableFuture`
+- `Monoid` and `Semigroup` both preserve type specificity through `flip` calls 
+
+### Changed
+- Removing need for various suppressed unchecked warnings in `ChoiceN` types
 
 ## [1.6.1] - 2017-06-17
 ### Changed

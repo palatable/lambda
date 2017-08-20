@@ -39,9 +39,8 @@ public abstract class Choice5<A, B, C, D, E> implements
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <F> Choice5<A, B, C, D, F> fmap(Function<? super E, ? extends F> fn) {
-        return (Choice5<A, B, C, D, F>) Applicative.super.fmap(fn);
+        return Applicative.super.<F>fmap(fn).coerce();
     }
 
     @Override

@@ -38,4 +38,12 @@ public interface Semigroup<A> extends Fn2<A, A, A> {
     default A foldRight(A a, Iterable<A> as) {
         return FoldRight.foldRight(toBiFunction(), a, as);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default Semigroup<A> flip() {
+        return Fn2.super.flip()::apply;
+    }
 }

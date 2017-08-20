@@ -65,6 +65,14 @@ public interface Monoid<A> extends Semigroup<A> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    default Monoid<A> flip() {
+        return monoid(Semigroup.super.flip(), identity());
+    }
+
+    /**
      * Promote a {@link Semigroup} to a {@link Monoid} by supplying an identity element.
      *
      * @param semigroup the semigroup

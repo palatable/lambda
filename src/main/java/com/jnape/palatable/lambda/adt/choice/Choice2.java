@@ -36,9 +36,8 @@ public abstract class Choice2<A, B> implements CoProduct2<A, B, Choice2<A, B>>, 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public final <C> Choice2<A, C> fmap(Function<? super B, ? extends C> fn) {
-        return (Choice2<A, C>) Applicative.super.fmap(fn);
+        return Applicative.super.<C>fmap(fn).coerce();
     }
 
     @Override
