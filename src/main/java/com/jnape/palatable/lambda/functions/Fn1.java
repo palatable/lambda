@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.functions;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Profunctor;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -30,7 +31,9 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @param f   the function to invoke with this function's return value
      * @param <C> the return type of the next function to invoke
      * @return a function representing the composition of this function and f
+     * @deprecated in favor of {@link Fn1#andThen(Function)}
      */
+    @Deprecated
     default <C> Fn1<A, C> then(Function<? super B, ? extends C> f) {
         return fmap(f);
     }
@@ -41,34 +44,47 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @param <C> the return type of the next function to invoke
      * @param f   the function to invoke with this function's return value
      * @return a function representing the composition of this function and f
-     * @see Fn1#then(Function)
      */
     @Override
-    @SuppressWarnings("unchecked")
     default <C> Fn1<A, C> fmap(Function<? super B, ? extends C> f) {
-        return (Fn1<A, C>) Applicative.super.fmap(f);
+        return Applicative.super.<C>fmap(f).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C> Fn1<A, C> pure(C c) {
         return __ -> c;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C> Fn1<A, C> zip(Applicative<Function<? super B, ? extends C>, Fn1<A, ?>> appFn) {
         return a -> appFn.<Fn1<A, Function<? super B, ? extends C>>>coerce().apply(a).apply(apply(a));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     default <C> Fn1<A, C> zip(Fn2<A, B, C> appFn) {
         return zip((Fn1<A, Function<? super B, ? extends C>>) (Object) appFn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C> Fn1<A, C> discardL(Applicative<C, Fn1<A, ?>> appB) {
         return Applicative.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C> Fn1<A, B> discardR(Applicative<C, Fn1<A, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();
@@ -128,6 +144,32 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
     }
 
     /**
+     * Right-to-left composition between different arity functions. Preserves highest arity in the return type,
+     * specialized to lambda types (in this case, {@link BiFunction} -&gt; {@link Fn2}).
+     *
+     * @param before the function to pass its return value to this function's input
+     * @param <Y>    the resulting function's first argument type
+     * @param <Z>    the resulting function's second argument type
+     * @return a new function from Y x Z to B
+     */
+    default <Y, Z> Fn2<Y, Z, B> compose(BiFunction<? super Y, ? super Z, ? extends A> before) {
+        return (y, z) -> apply(before.apply(y, z));
+    }
+
+    /**
+     * Left-to-right composition between different arity functions. Preserves highest arity in the return type,
+     * specialized to lambda types (in this case, {@link BiFunction} -&gt; {@link Fn2}).
+     *
+     * @param after the function to invoke on this function's return value
+     * @param <C>   the resulting function's second argument type
+     * @param <D>   the resulting function's return type
+     * @return a new function from A x C to D
+     */
+    default <C, D> Fn2<A, C, D> andThen(BiFunction<? super B, ? super C, ? extends D> after) {
+        return (a, c) -> after.apply(apply(a), c);
+    }
+
+    /**
      * Override of {@link Function#andThen(Function)}, returning an instance of <code>Fn1</code> for compatibility.
      * Left-to-right composition.
      *
@@ -148,8 +190,23 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @param <A>      the input argument type
      * @param <B>      the output type
      * @return the Fn1
+     * @deprecated in favor of {@link Fn1#fn1(Function)}
      */
+    @Deprecated
     static <A, B> Fn1<A, B> adapt(Function<A, B> function) {
+        return function::apply;
+    }
+
+    /**
+     * Static factory method for wrapping a {@link Function} in an {@link Fn1}. Useful for avoid explicit casting when
+     * using method references as {@link Fn1}s.
+     *
+     * @param function the function to adapt
+     * @param <A>      the input argument type
+     * @param <B>      the output type
+     * @return the Fn1
+     */
+    static <A, B> Fn1<A, B> fn1(Function<A, B> function) {
         return function::apply;
     }
 }

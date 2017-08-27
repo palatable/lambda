@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Deprecated
+- `Fn1#then` in favor of `Fn1#andThen` (redundant)
+- `Fn1#adapt` in favor of `Fn1#fn1` (rename)
+- `Fn2#adapt` in favor of `Fn2#fn2` (rename)
+
+### Added
+- `Fn1#andThen` overload to support composition with `Bifunction`
+- `Fn1#compose` overload to support composition with `Bifunction`
 
 ## [1.6.2] - 2017-08-20
 ### Fixed

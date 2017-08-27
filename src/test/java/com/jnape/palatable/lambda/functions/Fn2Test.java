@@ -8,6 +8,7 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class Fn2Test {
 
@@ -30,14 +31,23 @@ public class Fn2Test {
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
+    public void composePreservesTypeSpecificity() {
+        assertTrue(CHECK_LENGTH.compose(Object::toString) instanceof Fn2);
+    }
+
+    @Test
     public void toBiFunction() {
         BiFunction<String, Integer, Boolean> biFunction = CHECK_LENGTH.toBiFunction();
         assertEquals(true, biFunction.apply("abc", 3));
     }
 
     @Test
-    public void adapt() {
-        BiFunction<String, String, String> format = String::format;
-        assertEquals("foo bar", Fn2.adapt(format).apply("foo %s", "bar"));
+    public void fn2() {
+        BiFunction<String, String, String> biFunction = String::format;
+        assertEquals("foo bar", Fn2.fn2(biFunction).apply("foo %s", "bar"));
+
+        Fn1<String, Fn1<String, String>> curriedFn1 = (x) -> (y) -> String.format(x, y);
+        assertEquals("foo bar", Fn2.fn2(curriedFn1).apply("foo %s", "bar"));
     }
 }

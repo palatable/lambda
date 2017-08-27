@@ -10,8 +10,6 @@ import testsupport.traits.FunctorLaws;
 
 import java.util.function.Function;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Traits.class)
@@ -32,16 +30,8 @@ public class Fn1Test {
     }
 
     @Test
-    public void thenIsJustAnAliasForFmap() {
-        Fn1<Integer, Integer> add2 = integer -> integer + 2;
-        Fn1<Integer, String> toString = Object::toString;
-
-        assertThat(add2.then(toString).apply(2), is(toString.apply(add2.apply(2))));
-    }
-
-    @Test
-    public void adapt() {
+    public void fn1() {
         Function<String, Integer> parseInt = Integer::parseInt;
-        assertEquals((Integer) 1, Fn1.adapt(parseInt).apply("1"));
+        assertEquals((Integer) 1, Fn1.fn1(parseInt).apply("1"));
     }
 }

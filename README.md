@@ -81,8 +81,8 @@ Every function in lambda is [curried](https://www.wikiwand.com/en/Currying), so 
 ```Java
 Fn1<Iterable<Integer>, Integer> sumOfEvenIncrementsFn =
           map((Integer x) -> x + 1)
-          .then(filter(x -> x % 2 == 0))
-          .then(reduceLeft((x, y) -> x + y));
+          .andThen(filter(x -> x % 2 == 0))
+          .andThen(reduceLeft((x, y) -> x + y));
 
 Integer sumOfEvenIncrements = sumOfEvenIncrementsFn.apply(asList(1, 2, 3, 4, 5));
 //-> 12
@@ -120,7 +120,7 @@ Let's compose two functions:
 Fn1<Integer, Integer> add = x -> x + 1;
 Fn1<Integer, Integer> subtract = x -> x -1;
 
-Fn1<Integer, Integer> noOp = add.then(subtract);
+Fn1<Integer, Integer> noOp = add.andThen(subtract);
 // same as
 Fn1<Integer, Integer> alsoNoOp = subtract.compose(add);
 ```
