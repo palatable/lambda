@@ -1,6 +1,5 @@
-package spike;
+package com.jnape.palatable.lambda.traversable;
 
-import com.jnape.palatable.lambda.traversable.TraversableOptional;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -8,15 +7,14 @@ import org.junit.runner.RunWith;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.TraversableLaws;
 
-import java.util.Optional;
-
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
+import static java.util.Arrays.asList;
 
 @RunWith(Traits.class)
-public class TraversableOptionalTest {
+public class TraversableIterableTest {
 
     @TestTraits({FunctorLaws.class, TraversableLaws.class})
-    public Subjects<TraversableOptional<Integer>> testSubject() {
-        return subjects(TraversableOptional.empty(), TraversableOptional.wrap(Optional.of(1)));
+    public Subjects<TraversableIterable<Integer>> testSubject() {
+        return subjects(TraversableIterable.empty(), TraversableIterable.wrap(asList(1, 2, 3)));
     }
 }
