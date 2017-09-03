@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Fn1#compose` overload to support composition with `Bifunction`
 - `LiftA2` to lift and apply a `Bifunction` to two `Applicative`s
 - `Flatten` to lazily flatten nested `Iterable<Iterable<A>>`s to `Iterable<A>`
+- `Replicate`, short-hand composition of `take` and `repeat`
 
 ## [1.6.2] - 2017-08-20
 ### Fixed
