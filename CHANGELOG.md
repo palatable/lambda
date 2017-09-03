@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 - `Fn1#andThen` overload to support composition with `Bifunction`
 - `Fn1#compose` overload to support composition with `Bifunction`
+- `LiftA2` to lift and apply a `Bifunction` to two `Applicative`s
 
 ## [1.6.2] - 2017-08-20
 ### Fixed
