@@ -20,7 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Replicate`, short-hand composition of `take` and `repeat`
 - `Distinct` to produce an `Iterable` of distinct values in another `Iterable`
 - `Sort` and `SortBy` for eagerly, monolithically sorting `Iterable`s and producing `List`s  
-- `IterableLens`, general lenses over `Iterable`   
+- `IterableLens`, general lenses over `Iterable`
+- `Xor`, a monoid representing logical exclusive-or
 
 ## [1.6.2] - 2017-08-20
 ### Fixed
