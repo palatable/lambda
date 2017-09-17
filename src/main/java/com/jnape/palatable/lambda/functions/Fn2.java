@@ -104,7 +104,7 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      * @param <C>        the output type
      * @return the Fn2
      */
-    static <A, B, C> Fn2<A, B, C> fn2(BiFunction<A, B, C> biFunction) {
+    static <A, B, C> Fn2<A, B, C> fn2(BiFunction<? super A, ? super B, ? extends C> biFunction) {
         return biFunction::apply;
     }
 

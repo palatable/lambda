@@ -6,6 +6,8 @@ import com.jnape.palatable.lambda.functor.Profunctor;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.functions.Fn2.fn2;
+
 /**
  * A function taking a single argument. This is the core function type that all other function types extend and
  * auto-curry with.
@@ -153,7 +155,19 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @return a new function from Y x Z to B
      */
     default <Y, Z> Fn2<Y, Z, B> compose(BiFunction<? super Y, ? super Z, ? extends A> before) {
-        return (y, z) -> apply(before.apply(y, z));
+        return compose(fn2(before));
+    }
+
+    /**
+     * Right-to-left composition between different arity functions. Preserves highest arity in the return type.
+     *
+     * @param before the function to pass its return value to this function's input
+     * @param <Y>    the resulting function's first argument type
+     * @param <Z>    the resulting function's second argument type
+     * @return a new function from Y x Z to B
+     */
+    default <Y, Z> Fn2<Y, Z, B> compose(Fn2<? super Y, ? super Z, ? extends A> before) {
+        return fn2(before.fmap(this::compose))::apply;
     }
 
     /**
@@ -206,7 +220,7 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @param <B>      the output type
      * @return the Fn1
      */
-    static <A, B> Fn1<A, B> fn1(Function<A, B> function) {
+    static <A, B> Fn1<A, B> fn1(Function<? super A, ? extends B> function) {
         return function::apply;
     }
 }

@@ -9,9 +9,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Fn1#adapt` in favor of `Fn1#fn1` (rename)
 - `Fn2#adapt` in favor of `Fn2#fn2` (rename)
 
+### Changed
+- Loosening variance on `Fn2#fn2` and `Fn1#fn1`
+
 ### Added
 - `Fn1#andThen` overload to support composition with `Bifunction`
-- `Fn1#compose` overload to support composition with `Bifunction`
+- `Fn1#compose` overload to support composition with `Bifunction` and `Fn2`
 - `LiftA2` to lift and apply a `Bifunction` to two `Applicative`s
 - `Flatten` to lazily flatten nested `Iterable<Iterable<A>>`s to `Iterable<A>`
 - `Replicate`, short-hand composition of `take` and `repeat`
