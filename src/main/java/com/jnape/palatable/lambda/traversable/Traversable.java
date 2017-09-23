@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.traversable;
 
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.builtin.Identity;
 
 import java.util.function.Function;
 
@@ -46,5 +47,11 @@ public interface Traversable<A, T extends Traversable> extends Functor<A, T> {
             Function<? super Traversable<B, T>, ? extends Applicative<? extends Traversable<B, T>, App>> pure);
 
     @Override
-    <B> Traversable<B, T> fmap(Function<? super A, ? extends B> fn);
+    @SuppressWarnings({"Convert2MethodRef", "unchecked"})
+    default <B> Traversable<B, T> fmap(Function<? super A, ? extends B> fn) {
+        return traverse(a -> new Identity<>(fn.apply(a)), x -> new Identity<>(x))
+                .fmap(x -> (Traversable<B, T>) x)
+                .<Identity<Traversable<B, T>>>coerce()
+                .runIdentity();
+    }
 }
