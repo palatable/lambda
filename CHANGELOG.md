@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [1.6.3] - 2017-09-27
 ### Fixed
 - `ConcatenatingIterator` bug where deeply nested `xs` skip elements
 
@@ -160,7 +162,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.6.2...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.6.3...HEAD
+[1.6.3]: https://github.com/palatable/lambda/compare/lambda-1.6.2...lambda-1.6.3
 [1.6.2]: https://github.com/palatable/lambda/compare/lambda-1.6.1...lambda-1.6.2
 [1.6.1]: https://github.com/palatable/lambda/compare/lambda-1.6.0...lambda-1.6.1
 [1.6.0]: https://github.com/palatable/lambda/compare/lambda-1.5.6...lambda-1.6.0
