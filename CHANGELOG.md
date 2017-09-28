@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Fixed
+- `ConcatenatingIterator` bug where deeply nested `xs` skip elements
+
 ### Deprecated
 - `Fn1#then` in favor of `Fn1#andThen` (redundant)
 - `Fn1#adapt` in favor of `Fn1#fn1` (rename)

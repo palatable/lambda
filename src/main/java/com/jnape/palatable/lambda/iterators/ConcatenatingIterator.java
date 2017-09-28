@@ -1,39 +1,40 @@
 package com.jnape.palatable.lambda.iterators;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 public class ConcatenatingIterator<A> implements Iterator<A> {
 
-    private final Iterable<A>                  xs;
-    private final Iterable<A>                  ys;
+    private final Supplier<Iterator<A>>        xsSupplier;
+    private final Supplier<Iterator<A>>        ysSupplier;
     private final AtomicReference<Iterator<A>> xsRef;
     private final AtomicReference<Iterator<A>> ysRef;
-    private final Queue<Iterable<A>>           afterXs;
-    private final Queue<Iterable<A>>           afterYs;
+    private       boolean                      iteratedXs;
 
     public ConcatenatingIterator(Iterable<A> xs, Iterable<A> ys) {
-        this.xs = xs;
-        this.ys = ys;
+        xsSupplier = xs::iterator;
+        ysSupplier = ys::iterator;
         xsRef = new AtomicReference<>();
         ysRef = new AtomicReference<>();
-        afterXs = new LinkedList<>();
-        afterYs = new LinkedList<>();
+        iteratedXs = false;
     }
 
     @Override
     public boolean hasNext() {
-        queueNext(xsRef, xs, afterXs);
-
-        if (xsIterator().hasNext())
+        if (hasNext(xsRef, xsSupplier))
             return true;
 
-        queueNext(ysRef, ys, afterYs);
+        iteratedXs = true;
+        return hasNext(ysRef, ysSupplier);
+    }
 
-        return ysIterator().hasNext();
+    private boolean hasNext(AtomicReference<Iterator<A>> ref, Supplier<Iterator<A>> supplier) {
+        Iterator<A> as = ref.updateAndGet(it -> it == null ? supplier.get() : it);
+        while (as instanceof ConcatenatingIterator && ((ConcatenatingIterator<A>) as).iteratedXs)
+            as = ref.updateAndGet(it -> ((ConcatenatingIterator<A>) it).ysRef.get());
+        return as.hasNext();
     }
 
     @Override
@@ -41,40 +42,6 @@ public class ConcatenatingIterator<A> implements Iterator<A> {
         if (!hasNext())
             throw new NoSuchElementException();
 
-        return xsIterator().hasNext() ? xsIterator().next() : ysIterator().next();
+        return !iteratedXs ? xsRef.get().next() : ysRef.get().next();
     }
-
-    private Iterator<A> xsIterator() {
-        return xsRef.get();
-    }
-
-    private Iterator<A> ysIterator() {
-        return ysRef.get();
-    }
-
-    private void queueNext(AtomicReference<Iterator<A>> iteratorRef, Iterable<A> iterable,
-                           Queue<Iterable<A>> queued) {
-        iteratorRef.updateAndGet(iterator -> {
-            if (iterator == null)
-                iterator = iterable.iterator();
-
-            while (iterator instanceof ConcatenatingIterator && iterator.hasNext()) {
-                ConcatenatingIterator<A> concatenatingXsIterator = (ConcatenatingIterator<A>) iterator;
-
-                if (concatenatingXsIterator.xsIterator().hasNext()) {
-                    queued.add(concatenatingXsIterator.ys);
-                    iterator = concatenatingXsIterator.xsIterator();
-                } else {
-                    iterator = concatenatingXsIterator.ysIterator();
-                }
-            }
-
-            while (!iterator.hasNext() && !queued.isEmpty()) {
-                iterator = queued.poll().iterator();
-            }
-
-            return iterator;
-        });
-    }
-
 }

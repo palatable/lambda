@@ -8,13 +8,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Drop.drop;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Last.last;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Iterate.iterate;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Take.take;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight.foldRight;
-import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,9 +27,10 @@ import static testsupport.Mocking.mockIteratorToHaveValues;
 @RunWith(MockitoJUnitRunner.class)
 public class ConcatenatingIteratorTest {
 
-    @Mock private Iterator<Object>              xs;
-    @Mock private Iterator<Object>              ys;
-    private       ConcatenatingIterator<Object> concatenatingIterator;
+    @Mock private Iterator<Integer> xs;
+    @Mock private Iterator<Integer> ys;
+
+    private ConcatenatingIterator<Integer> concatenatingIterator;
 
     @Before
     public void setUp() throws Exception {
@@ -82,28 +84,16 @@ public class ConcatenatingIteratorTest {
     }
 
     @Test
-    public void concatenatingIteratorInXsPosition() {
-        ConcatenatingIterator<Integer> iterator =
-                new ConcatenatingIterator<>(() -> new ConcatenatingIterator<>(asList(1, 2), asList(3, 4)),
-                                            asList(5, 6));
-
-        assertThat(iterator.next(), is(1));
-        assertThat(iterator.next(), is(2));
-        assertThat(iterator.next(), is(3));
-        assertThat(iterator.next(), is(4));
-        assertThat(iterator.next(), is(5));
-        assertThat(iterator.next(), is(6));
-    }
-
-    @Test
-    public void stackSafetyInYsPosition() {
-        Integer stackBlowingNumber = 100000;
+    public void stackSafety() {
+        Integer stackBlowingNumber = 50000;
         Iterable<Iterable<Integer>> xss = map(Collections::singleton, take(stackBlowingNumber, iterate(x -> x + 1, 1)));
-        Iterable<Integer> ints = foldRight((xs, ys) -> () -> new ConcatenatingIterator<>(xs, ys),
-                                           (Iterable<Integer>) Collections.<Integer>emptySet(),
-                                           xss);
+        Iterable<Integer> deeplyNestedConcat = foldRight((xs, ys) -> () -> new ConcatenatingIterator<>(xs, ys),
+                                                         (Iterable<Integer>) Collections.<Integer>emptySet(),
+                                                         xss);
 
-        assertEquals(stackBlowingNumber,
-                     take(1, drop(stackBlowingNumber - 1, ints)).iterator().next());
+        Iterable<Integer> ints = () -> new ConcatenatingIterator<>(deeplyNestedConcat, deeplyNestedConcat);
+
+        assertEquals(Optional.of(stackBlowingNumber), last(ints));
+        assertEquals((long) (stackBlowingNumber * 2), size(ints).longValue());
     }
 }
