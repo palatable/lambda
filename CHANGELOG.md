@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Added
+- `Force`, for forcing iteration of an `Iterable` to perform any side-effects 
 
 ## [1.6.3] - 2017-09-27
 ### Fixed
