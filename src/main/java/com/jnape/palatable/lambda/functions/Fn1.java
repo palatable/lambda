@@ -27,20 +27,6 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
     B apply(A a);
 
     /**
-     * Left-to-right composition, such that <code>g.then(f).apply(x)</code> is equivalent to
-     * <code>f.apply(g.apply(x))</code>.
-     *
-     * @param f   the function to invoke with this function's return value
-     * @param <C> the return type of the next function to invoke
-     * @return a function representing the composition of this function and f
-     * @deprecated in favor of {@link Fn1#andThen(Function)}
-     */
-    @Deprecated
-    default <C> Fn1<A, C> then(Function<? super B, ? extends C> f) {
-        return fmap(f);
-    }
-
-    /**
      * Also left-to-right composition (<a href="http://jnape.com/the-perils-of-implementing-functor-in-java/">sadly</a>).
      *
      * @param <C> the return type of the next function to invoke
@@ -194,21 +180,6 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
     @Override
     default <C> Fn1<A, C> andThen(Function<? super B, ? extends C> after) {
         return a -> after.apply(apply(a));
-    }
-
-    /**
-     * Static factory method for wrapping a {@link Function} in an {@link Fn1}. Useful for avoid explicit casting when
-     * using method references as {@link Fn1}s.
-     *
-     * @param function the function to adapt
-     * @param <A>      the input argument type
-     * @param <B>      the output type
-     * @return the Fn1
-     * @deprecated in favor of {@link Fn1#fn1(Function)}
-     */
-    @Deprecated
-    static <A, B> Fn1<A, B> adapt(Function<A, B> function) {
-        return function::apply;
     }
 
     /**

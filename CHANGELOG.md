@@ -5,7 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 ### Added
-- `Force`, for forcing iteration of an `Iterable` to perform any side-effects 
+- `Force`, for forcing iteration of an `Iterable` to perform any side-effects
+
+### Removed
+- `Fn1#then(Function<? super B, ? extends C>)`, deprecated in previous release 
+- `Fn1#adapt(Function<A, B> function)`, deprecated in previous release  
+- `Fn2#adapt(BiFunction<A, B, C> biFunction)`, deprecated in previous release  
 
 ## [1.6.3] - 2017-09-27
 ### Fixed
