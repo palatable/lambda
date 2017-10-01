@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.Iterator;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Drop.drop;
 
 /**
  * Returns the tail of an <code>Iterable</code>; the is, an <code>Iterable</code> of all the elements except for the
@@ -19,12 +19,7 @@ public final class Tail<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @Override
     public Iterable<A> apply(Iterable<A> as) {
-        return () -> {
-            Iterator<A> iterator = as.iterator();
-            if (iterator.hasNext())
-                iterator.next();
-            return iterator;
-        };
+        return drop(1, as);
     }
 
     @SuppressWarnings("unchecked")
