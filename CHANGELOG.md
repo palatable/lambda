@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Added
 - `Force`, for forcing iteration of an `Iterable` to perform any side-effects
+- `Snoc`, for lazily appending an element to the end of an `Iterable`
 
 ### Removed
 - `Fn1#then(Function<? super B, ? extends C>)`, deprecated in previous release 
