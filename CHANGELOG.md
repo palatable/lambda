@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 - `Force`, for forcing iteration of an `Iterable` to perform any side-effects
 - `Snoc`, for lazily appending an element to the end of an `Iterable`
+- `Coalesce`, for folding an `Iterable<Either<L, R>>` into an `Either<Iterable<L>, Iterable<R>>`
+- `And`, `Or`, and `Xor` all gain `BiPredicate<Boolean, Boolean>` properties
 
 ### Removed
 - `Fn1#then(Function<? super B, ? extends C>)`, deprecated in previous release 

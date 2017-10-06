@@ -18,7 +18,7 @@ public class GroupingIteratorTest {
 
     @Mock private Iterator<Object> as;
 
-    private GroupingIterator groupingIterator;
+    private GroupingIterator<Object> groupingIterator;
 
     @Before
     public void setUp() {

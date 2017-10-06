@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.monoid.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 /**
@@ -9,7 +10,7 @@ import com.jnape.palatable.lambda.monoid.Monoid;
  * @see Or
  * @see Monoid
  */
-public class And implements Monoid<Boolean> {
+public class And implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
 
     private static final And INSTANCE = new And();
 
@@ -24,6 +25,16 @@ public class And implements Monoid<Boolean> {
     @Override
     public Boolean apply(Boolean x, Boolean y) {
         return x && y;
+    }
+
+    @Override
+    public boolean test(Boolean x, Boolean y) {
+        return apply(x, y);
+    }
+
+    @Override
+    public And flip() {
+        return this;
     }
 
     public static And and() {

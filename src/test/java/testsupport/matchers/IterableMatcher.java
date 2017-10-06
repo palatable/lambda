@@ -9,11 +9,11 @@ import java.util.Iterator;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 
-public class IterableMatcher extends BaseMatcher<Iterable> {
+public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
 
-    private final Iterable expected;
+    private final Iterable<E> expected;
 
-    public IterableMatcher(Iterable expected) {
+    private IterableMatcher(Iterable<E> expected) {
         this.expected = expected;
     }
 
@@ -29,9 +29,11 @@ public class IterableMatcher extends BaseMatcher<Iterable> {
 
     @Override
     public void describeMismatch(Object item, Description description) {
-        if (item instanceof Iterable)
-            description.appendText("was <").appendText(stringify((Iterable) item)).appendText(">");
-        else
+        if (item instanceof Iterable) {
+            if (description.toString().endsWith("but: "))
+                description.appendText("was ");
+            description.appendText("<").appendText(stringify((Iterable) item)).appendText(">");
+        } else
             super.describeMismatch(item, description);
     }
 
@@ -69,11 +71,11 @@ public class IterableMatcher extends BaseMatcher<Iterable> {
     }
 
     @SafeVarargs
-    public static <Element> IterableMatcher iterates(Element... elements) {
-        return new IterableMatcher(asList(elements));
+    public static <E> IterableMatcher<E> iterates(E... es) {
+        return new IterableMatcher<>(asList(es));
     }
 
-    public static IterableMatcher isEmpty() {
-        return new IterableMatcher(new ArrayList());
+    public static <E> IterableMatcher<E> isEmpty() {
+        return new IterableMatcher<>(new ArrayList<>());
     }
 }

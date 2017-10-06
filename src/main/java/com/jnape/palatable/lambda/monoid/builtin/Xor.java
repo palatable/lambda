@@ -1,16 +1,19 @@
 package com.jnape.palatable.lambda.monoid.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 /**
- * Logical exclusive-or. Note that this implementation behaves as a cascade of binary exclusive-or operations, as is the
- * only possible monoidal behavior when applied to an unknown number of inputs.
+ * Logical exclusive-or. Equivalent to logical <code>^</code>.
+ * <p>
+ * Note that this implementation behaves as a cascade of binary exclusive-or operations, as is the only possible
+ * monoidal behavior when applied to an unknown number of inputs.
  *
  * @see Or
  * @see And
  */
-public final class Xor implements Monoid<Boolean> {
+public class Xor implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
 
     private static final Xor INSTANCE = new Xor();
 
@@ -24,7 +27,17 @@ public final class Xor implements Monoid<Boolean> {
 
     @Override
     public Boolean apply(Boolean x, Boolean y) {
-        return x ? !y : y;
+        return x ^ y;
+    }
+
+    @Override
+    public boolean test(Boolean x, Boolean y) {
+        return apply(x, y);
+    }
+
+    @Override
+    public Xor flip() {
+        return this;
     }
 
     public static Xor xor() {
