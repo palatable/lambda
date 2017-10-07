@@ -16,9 +16,10 @@ public final class Force<A> implements Fn1<Iterable<A>, Iterable<A>> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("StatementWithEmptyBody")
     public Iterable<A> apply(Iterable<A> as) {
-        as.forEach(__ -> {});
+        for (A ignored : as) {
+        }
         return as;
     }
 
