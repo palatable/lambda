@@ -14,6 +14,9 @@ public final class Xor implements Monoid<Boolean> {
 
     private static final Xor INSTANCE = new Xor();
 
+    private Xor() {
+    }
+
     @Override
     public Boolean identity() {
         return false;
