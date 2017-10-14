@@ -9,11 +9,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Snoc`, for lazily appending an element to the end of an `Iterable`
 - `Coalesce`, for folding an `Iterable<Either<L, R>>` into an `Either<Iterable<L>, Iterable<R>>`
 - `And`, `Or`, and `Xor` all gain `BiPredicate<Boolean, Boolean>` properties
+- `LambdaOptional` and `LambdaIterable`, adapters for `Optional` and `Iterable` that support lambda types
+- `Lambda`, providing static factory methods for `LambdaOptional` and `LambdaIterable`
 
 ### Removed
 - `Fn1#then(Function<? super B, ? extends C>)`, deprecated in previous release 
 - `Fn1#adapt(Function<A, B> function)`, deprecated in previous release  
 - `Fn2#adapt(BiFunction<A, B, C> biFunction)`, deprecated in previous release  
+
+### Deprecated
+- `Traversables` and all methods therein, in favor of new `Lambda` methods
+- `TraversableOptional` in favor of `LambdaOptional`
+- `TraversableIterable` in favor of `LambdaIterable`
 
 ## [1.6.3] - 2017-09-27
 ### Fixed
