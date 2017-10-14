@@ -48,6 +48,16 @@ public final class LambdaIterable<A> implements Applicative<A, LambdaIterable>, 
         return wrap(singleton(b));
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * In this case, calculate the cartesian product of applications of all functions in <code>appFn</code> to all
+     * values wrapped by this {@link LambdaIterable}.
+     *
+     * @param appFn the other applicative instance
+     * @param <B>   the new parameter type
+     * @return the zipped LambdaIterable
+     */
     @Override
     @SuppressWarnings("Convert2MethodRef")
     public <B> LambdaIterable<B> zip(Applicative<Function<? super A, ? extends B>, LambdaIterable> appFn) {
