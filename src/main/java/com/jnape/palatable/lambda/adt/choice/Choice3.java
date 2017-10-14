@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -21,7 +22,7 @@ import java.util.function.Function;
  */
 public abstract class Choice3<A, B, C> implements
         CoProduct3<A, B, C, Choice3<A, B, C>>,
-        Applicative<C, Choice3<A, B, ?>>,
+        Monad<C, Choice3<A, B, ?>>,
         Bifunctor<B, C, Choice3<A, ?, ?>>,
         Traversable<C, Choice3<A, B, ?>> {
 
@@ -40,7 +41,7 @@ public abstract class Choice3<A, B, C> implements
 
     @Override
     public final <D> Choice3<A, B, D> fmap(Function<? super C, ? extends D> fn) {
-        return Applicative.super.<D>fmap(fn).coerce();
+        return Monad.super.<D>fmap(fn).coerce();
     }
 
     @Override
@@ -74,12 +75,17 @@ public abstract class Choice3<A, B, C> implements
 
     @Override
     public <D> Choice3<A, B, D> discardL(Applicative<D, Choice3<A, B, ?>> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <D> Choice3<A, B, C> discardR(Applicative<D, Choice3<A, B, ?>> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <D> Choice3<A, B, D> flatMap(Function<? super C, ? extends Monad<D, Choice3<A, B, ?>>> f) {
+        return match(Choice3::a, Choice3::b, c -> f.apply(c).coerce());
     }
 
     @Override

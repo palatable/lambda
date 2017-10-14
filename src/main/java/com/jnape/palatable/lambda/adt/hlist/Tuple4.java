@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functions.Fn4;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.function.Function;
@@ -24,7 +25,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @see Tuple5
  */
 public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>>
-        implements Applicative<_4, Tuple4<_1, _2, _3, ?>>, Bifunctor<_3, _4, Tuple4<_1, _2, ?, ?>>, Traversable<_4, Tuple4<_1, _2, _3, ?>> {
+        implements Monad<_4, Tuple4<_1, _2, _3, ?>>, Bifunctor<_3, _4, Tuple4<_1, _2, ?, ?>>, Traversable<_4, Tuple4<_1, _2, _3, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -95,7 +96,7 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>>
     @Override
     @SuppressWarnings("unchecked")
     public <_4Prime> Tuple4<_1, _2, _3, _4Prime> fmap(Function<? super _4, ? extends _4Prime> fn) {
-        return (Tuple4<_1, _2, _3, _4Prime>) Applicative.super.fmap(fn);
+        return (Tuple4<_1, _2, _3, _4Prime>) Monad.super.fmap(fn);
     }
 
     @Override
@@ -129,12 +130,18 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>>
 
     @Override
     public <_4Prime> Tuple4<_1, _2, _3, _4Prime> discardL(Applicative<_4Prime, Tuple4<_1, _2, _3, ?>> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <_4Prime> Tuple4<_1, _2, _3, _4> discardR(Applicative<_4Prime, Tuple4<_1, _2, _3, ?>> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <_4Prime> Tuple4<_1, _2, _3, _4Prime> flatMap(
+            Function<? super _4, ? extends Monad<_4Prime, Tuple4<_1, _2, _3, ?>>> f) {
+        return pure(f.apply(_4).<Tuple4<_1, _2, _3, _4Prime>>coerce()._4);
     }
 
     @Override

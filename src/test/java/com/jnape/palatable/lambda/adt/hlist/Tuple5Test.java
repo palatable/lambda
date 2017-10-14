@@ -9,7 +9,10 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
+
+import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.junit.Assert.assertEquals;
@@ -28,7 +31,7 @@ public class Tuple5Test {
         tuple5 = new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new SingletonHList<>(5L)))));
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
     public Tuple5 testSubject() {
         return tuple("one", 2, 3d, 4f, '5');
     }
@@ -77,5 +80,19 @@ public class Tuple5Test {
     @Test
     public void fill() {
         assertEquals(tuple("foo", "foo", "foo", "foo", "foo"), Tuple5.fill("foo"));
+    }
+
+    @Test
+    public void zipPrecedence() {
+        Tuple5<String, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4);
+        Tuple5<String, Integer, Integer, Integer, Function<? super Integer, ? extends Integer>> b = tuple("bar", 2, 3, 4, x -> x + 1);
+        assertEquals(tuple("foo", 1, 2, 3, 5), a.zip(b));
+    }
+
+    @Test
+    public void flatMapPrecedence() {
+        Tuple5<String, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4);
+        Function<Integer, Tuple5<String, Integer, Integer, Integer, Integer>> b = x -> tuple("bar", 2, 3, 4, x + 1);
+        assertEquals(tuple("foo", 1, 2, 3, 5), a.flatMap(b));
     }
 }

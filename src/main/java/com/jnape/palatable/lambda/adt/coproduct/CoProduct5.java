@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A generalization of the coproduct of five types <code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>, and
@@ -153,10 +154,10 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
                         Function<? super CP5, ? extends R> cFn,
                         Function<? super CP5, ? extends R> dFn,
                         Function<? super CP5, ? extends R> eFn) {
-        return match(__ -> aFn.apply((CP5) this),
-                     __ -> bFn.apply((CP5) this),
-                     __ -> cFn.apply((CP5) this),
-                     __ -> dFn.apply((CP5) this),
-                     __ -> eFn.apply((CP5) this));
+        return match(constantly(aFn.apply((CP5) this)),
+                     constantly(bFn.apply((CP5) this)),
+                     constantly(cFn.apply((CP5) this)),
+                     constantly(dFn.apply((CP5) this)),
+                     constantly(eFn.apply((CP5) this)));
     }
 }

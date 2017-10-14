@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A generalization of the coproduct of two types <code>A</code> and <code>B</code>. Coproducts represent the disjoint
@@ -121,6 +122,6 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
     @SuppressWarnings("unchecked")
     default <R> R embed(Function<? super CP2, ? extends R> aFn,
                         Function<? super CP2, ? extends R> bFn) {
-        return match(__ -> aFn.apply((CP2) this), __ -> bFn.apply((CP2) this));
+        return match(constantly(aFn.apply((CP2) this)), constantly(bFn.apply((CP2) this)));
     }
 }

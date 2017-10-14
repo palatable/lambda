@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -11,7 +12,7 @@ import java.util.function.Function;
  *
  * @param <A> the value type
  */
-public final class Identity<A> implements Applicative<A, Identity>, Traversable<A, Identity> {
+public final class Identity<A> implements Monad<A, Identity>, Traversable<A, Identity> {
 
     private final A a;
 
@@ -29,16 +30,19 @@ public final class Identity<A> implements Applicative<A, Identity>, Traversable<
     }
 
     /**
-     * Covariantly map over the value.
-     *
-     * @param fn  the mapping function
-     * @param <B> the new value type
-     * @return an Identity over B (the new value)
+     * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
+    public <B> Identity<B> flatMap(Function<? super A, ? extends Monad<B, Identity>> f) {
+        return f.apply(runIdentity()).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <B> Identity<B> fmap(Function<? super A, ? extends B> fn) {
-        return (Identity<B>) Applicative.super.fmap(fn);
+        return Monad.super.<B>fmap(fn).coerce();
     }
 
     @Override
@@ -53,12 +57,12 @@ public final class Identity<A> implements Applicative<A, Identity>, Traversable<
 
     @Override
     public <B> Identity<B> discardL(Applicative<B, Identity> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <B> Identity<A> discardR(Applicative<B, Identity> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
     }
 
     @Override

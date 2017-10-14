@@ -2,6 +2,7 @@ package testsupport;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.Function;
 
@@ -19,6 +20,11 @@ public final class EqualityAwareFn1<A, B> implements Fn1<A, B> {
     @Override
     public B apply(A a) {
         return fn.apply(a);
+    }
+
+    @Override
+    public <C> EqualityAwareFn1<A, C> flatMap(Function<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
+        return new EqualityAwareFn1<>(a, fn.flatMap(f));
     }
 
     @Override

@@ -41,6 +41,16 @@ public class Compose<F extends Applicative, G extends Applicative, A> implements
     }
 
     @Override
+    public <B> Compose<F, G, B> discardL(Applicative<B, Compose<F, G, ?>> appB) {
+        return Applicative.super.discardL(appB).coerce();
+    }
+
+    @Override
+    public <B> Compose<F, G, A> discardR(Applicative<B, Compose<F, G, ?>> appB) {
+        return Applicative.super.discardR(appB).coerce();
+    }
+
+    @Override
     public boolean equals(Object other) {
         return other instanceof Compose && Objects.equals(fga, ((Compose) other).fga);
     }

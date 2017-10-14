@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.function.Function;
@@ -14,7 +15,6 @@ import java.util.function.Function;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Replicate.replicate;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
@@ -22,9 +22,9 @@ import static testsupport.matchers.IterableMatcher.iterates;
 @RunWith(Traits.class)
 public class LambdaIterableTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class, MonadLaws.class})
     public Subjects<LambdaIterable<Object>> testSubject() {
-        return subjects(LambdaIterable.wrap(emptyList()), LambdaIterable.wrap(singleton(1)), LambdaIterable.wrap(replicate(100, 1)));
+        return subjects(LambdaIterable.empty(), LambdaIterable.wrap(singleton(1)), LambdaIterable.wrap(replicate(100, 1)));
     }
 
     @Test

@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.Optional;
@@ -31,9 +32,9 @@ public class EitherTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
     public Subjects<Either<String, Integer>> testSubjects() {
-        return subjects(right(1));
+        return subjects(left("foo"), right(1));
     }
 
     @Test

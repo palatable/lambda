@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt;
 
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
@@ -26,7 +27,7 @@ import static java.util.Arrays.asList;
  * @param <L> The left parameter type
  * @param <R> The right parameter type
  */
-public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Applicative<R, Either<L, ?>>, Traversable<R, Either<L, ?>>, Bifunctor<L, R, Either> {
+public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Monad<R, Either<L, ?>>, Traversable<R, Either<L, ?>>, Bifunctor<L, R, Either> {
 
     private Either() {
     }
@@ -104,8 +105,9 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Ap
      * @param <R2>    the new right parameter type
      * @return the Either resulting from applying rightFn to this right value, or this left value if left
      */
-    public final <R2> Either<L, R2> flatMap(Function<? super R, ? extends Either<L, R2>> rightFn) {
-        return flatMap(Either::left, rightFn);
+    @Override
+    public <R2> Either<L, R2> flatMap(Function<? super R, ? extends Monad<R2, Either<L, ?>>> rightFn) {
+        return flatMap(Either::left, rightFn.andThen(Applicative::coerce));
     }
 
     /**
@@ -192,9 +194,8 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Ap
     public abstract <V> V match(Function<? super L, ? extends V> leftFn, Function<? super R, ? extends V> rightFn);
 
     @Override
-    @SuppressWarnings("unchecked")
     public final <R2> Either<L, R2> fmap(Function<? super R, ? extends R2> fn) {
-        return (Either<L, R2>) Applicative.super.fmap(fn);
+        return Monad.super.<R2>fmap(fn).coerce();
     }
 
     @Override
@@ -227,12 +228,12 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Ap
 
     @Override
     public <R2> Either<L, R2> discardL(Applicative<R2, Either<L, ?>> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <R2> Either<L, R> discardR(Applicative<R2, Either<L, ?>> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
     }
 
     @Override

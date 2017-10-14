@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Profunctor;
+import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -16,7 +17,7 @@ import static com.jnape.palatable.lambda.functions.Fn2.fn2;
  * @param <B> The result type
  */
 @FunctionalInterface
-public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, Function<A, B> {
+public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, Function<A, B> {
 
     /**
      * Invoke this function with the given argument.
@@ -25,6 +26,11 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @return the result of the function application
      */
     B apply(A a);
+
+    @Override
+    default <C> Fn1<A, C> flatMap(Function<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
+        return a -> f.apply(apply(a)).<Fn1<A, C>>coerce().apply(a);
+    }
 
     /**
      * Also left-to-right composition (<a href="http://jnape.com/the-perils-of-implementing-functor-in-java/">sadly</a>).
@@ -35,7 +41,7 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      */
     @Override
     default <C> Fn1<A, C> fmap(Function<? super B, ? extends C> f) {
-        return Applicative.super.<C>fmap(f).coerce();
+        return Monad.super.<C>fmap(f).coerce();
     }
 
     /**
@@ -67,7 +73,7 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      */
     @Override
     default <C> Fn1<A, C> discardL(Applicative<C, Fn1<A, ?>> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     /**
@@ -75,7 +81,7 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      */
     @Override
     default <C> Fn1<A, B> discardR(Applicative<C, Fn1<A, ?>> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
     }
 
     /**

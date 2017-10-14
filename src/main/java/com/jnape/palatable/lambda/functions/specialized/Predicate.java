@@ -28,7 +28,6 @@ public interface Predicate<A> extends Fn1<A, Boolean>, java.util.function.Predic
      * @return a new predicate of Z (the new argument type)
      */
     @Override
-    @SuppressWarnings("unchecked")
     default <Z> Predicate<Z> compose(Function<? super Z, ? extends A> before) {
         return Fn1.super.compose(before)::apply;
     }

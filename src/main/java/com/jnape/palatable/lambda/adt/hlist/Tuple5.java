@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
@@ -24,7 +25,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @see Tuple4
  */
 public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>>
-        implements Applicative<_5, Tuple5<_1, _2, _3, _4, ?>>, Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>>, Traversable<_5, Tuple5<_1, _2, _3, _4, ?>> {
+        implements Monad<_5, Tuple5<_1, _2, _3, _4, ?>>, Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>>, Traversable<_5, Tuple5<_1, _2, _3, _4, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -91,9 +92,8 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> fmap(Function<? super _5, ? extends _5Prime> fn) {
-        return (Tuple5<_1, _2, _3, _4, _5Prime>) Applicative.super.fmap(fn);
+        return Monad.super.<_5Prime>fmap(fn).coerce();
     }
 
     @Override
@@ -122,17 +122,23 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> zip(
             Applicative<Function<? super _5, ? extends _5Prime>, Tuple5<_1, _2, _3, _4, ?>> appFn) {
-        return biMapR(appFn.<Tuple5<_1, _2, _3, _4, Function<? super _5, ? extends _5Prime>>>coerce()._5());
+        return Monad.super.zip(appFn).coerce();
     }
 
     @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> discardL(Applicative<_5Prime, Tuple5<_1, _2, _3, _4, ?>> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5> discardR(Applicative<_5Prime, Tuple5<_1, _2, _3, _4, ?>> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> flatMap(
+            Function<? super _5, ? extends Monad<_5Prime, Tuple5<_1, _2, _3, _4, ?>>> f) {
+        return pure(f.apply(_5).<Tuple5<_1, _2, _3, _4, _5Prime>>coerce()._5());
     }
 
     @Override

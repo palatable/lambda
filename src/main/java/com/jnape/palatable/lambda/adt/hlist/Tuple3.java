@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.function.Function;
@@ -23,7 +24,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @see Tuple5
  */
 public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>>
-        implements Applicative<_3, Tuple3<_1, _2, ?>>, Bifunctor<_2, _3, Tuple3<_1, ?, ?>>, Traversable<_3, Tuple3<_1, _2, ?>> {
+        implements Monad<_3, Tuple3<_1, _2, ?>>, Bifunctor<_2, _3, Tuple3<_1, ?, ?>>, Traversable<_3, Tuple3<_1, _2, ?>> {
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -83,7 +84,7 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>>
     @Override
     @SuppressWarnings("unchecked")
     public <_3Prime> Tuple3<_1, _2, _3Prime> fmap(Function<? super _3, ? extends _3Prime> fn) {
-        return (Tuple3<_1, _2, _3Prime>) Applicative.super.fmap(fn);
+        return (Tuple3<_1, _2, _3Prime>) Monad.super.fmap(fn);
     }
 
     @Override
@@ -117,12 +118,18 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>>
 
     @Override
     public <_3Prime> Tuple3<_1, _2, _3Prime> discardL(Applicative<_3Prime, Tuple3<_1, _2, ?>> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <_3Prime> Tuple3<_1, _2, _3> discardR(Applicative<_3Prime, Tuple3<_1, _2, ?>> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <_3Prime> Tuple3<_1, _2, _3Prime> flatMap(
+            Function<? super _3, ? extends Monad<_3Prime, Tuple3<_1, _2, ?>>> f) {
+        return pure(f.apply(_3).<Tuple3<_1, _2, _3Prime>>coerce()._3);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.function.Function;
@@ -17,7 +18,7 @@ import java.util.function.Function;
  * @see Tuple4
  * @see Tuple5
  */
-public class SingletonHList<_1> extends HCons<_1, HNil> implements Applicative<_1, SingletonHList>, Traversable<_1, SingletonHList> {
+public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, SingletonHList>, Traversable<_1, SingletonHList> {
 
     SingletonHList(_1 _1) {
         super(_1, nil());
@@ -29,9 +30,8 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Applicative<_
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <_1Prime> SingletonHList<_1Prime> fmap(Function<? super _1, ? extends _1Prime> fn) {
-        return (SingletonHList<_1Prime>) Applicative.super.fmap(fn);
+        return Monad.super.<_1Prime>fmap(fn).coerce();
     }
 
     @Override
@@ -42,19 +42,22 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Applicative<_
     @Override
     public <_1Prime> SingletonHList<_1Prime> zip(
             Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList> appFn) {
-        return new SingletonHList<>(appFn.<SingletonHList<Function<? super _1, ? extends _1Prime>>>coerce()
-                                            .head()
-                                            .apply(head()));
+        return Monad.super.zip(appFn).coerce();
     }
 
     @Override
     public <_1Prime> SingletonHList<_1Prime> discardL(Applicative<_1Prime, SingletonHList> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <_1Prime> SingletonHList<_1> discardR(Applicative<_1Prime, SingletonHList> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <_1Prime> SingletonHList<_1Prime> flatMap(Function<? super _1, ? extends Monad<_1Prime, SingletonHList>> f) {
+        return f.apply(head()).coerce();
     }
 
     @Override

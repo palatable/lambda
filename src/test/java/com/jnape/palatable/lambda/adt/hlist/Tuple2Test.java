@@ -8,10 +8,12 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -31,7 +33,7 @@ public class Tuple2Test {
         tuple2 = new Tuple2<>(1, new SingletonHList<>(2));
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
     public Tuple2 testSubject() {
         return tuple("one", 2);
     }
@@ -97,5 +99,19 @@ public class Tuple2Test {
         }}.entrySet().iterator().next();
 
         assertEquals(tuple("string", 1), Tuple2.fromEntry(stringIntEntry));
+    }
+
+    @Test
+    public void zipPrecedence() {
+        Tuple2<String, Integer> a = tuple("foo", 1);
+        Tuple2<String, Function<? super Integer, ? extends Integer>> b = tuple("bar", x -> x + 1);
+        assertEquals(tuple("foo", 2), a.zip(b));
+    }
+
+    @Test
+    public void flatMapPrecedence() {
+        Tuple2<String, Integer> a = tuple("foo", 1);
+        Function<Integer, Tuple2<String, Integer>> b = x -> tuple("bar", x + 1);
+        assertEquals(tuple("foo", 2), a.flatMap(b));
     }
 }

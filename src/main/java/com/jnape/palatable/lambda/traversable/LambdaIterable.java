@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.traversable;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Flatten.flatten;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.CartesianProduct.cartesianProduct;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
@@ -21,7 +23,7 @@ import static java.util.Collections.singleton;
  *
  * @param <A> the Iterable element type
  */
-public final class LambdaIterable<A> implements Applicative<A, LambdaIterable>, Traversable<A, LambdaIterable> {
+public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traversable<A, LambdaIterable> {
     private final Iterable<A> as;
 
     @SuppressWarnings("unchecked")
@@ -67,12 +69,17 @@ public final class LambdaIterable<A> implements Applicative<A, LambdaIterable>, 
 
     @Override
     public <B> LambdaIterable<B> discardL(Applicative<B, LambdaIterable> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <B> LambdaIterable<A> discardR(Applicative<B, LambdaIterable> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <B> LambdaIterable<B> flatMap(Function<? super A, ? extends Monad<B, LambdaIterable>> f) {
+        return wrap(flatten(map(a -> f.apply(a).<LambdaIterable<B>>coerce().unwrap(), as)));
     }
 
     @Override

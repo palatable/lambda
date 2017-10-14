@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.traversable;
 
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -13,7 +14,7 @@ import java.util.function.Function;
  *
  * @param <A> the Optional parameter type
  */
-public final class LambdaOptional<A> implements Applicative<A, LambdaOptional>, Traversable<A, LambdaOptional> {
+public final class LambdaOptional<A> implements Monad<A, LambdaOptional>, Traversable<A, LambdaOptional> {
     private final Optional<A> delegate;
 
     @SuppressWarnings("unchecked")
@@ -47,12 +48,17 @@ public final class LambdaOptional<A> implements Applicative<A, LambdaOptional>, 
 
     @Override
     public <B> LambdaOptional<B> discardL(Applicative<B, LambdaOptional> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     public <B> LambdaOptional<A> discardR(Applicative<B, LambdaOptional> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public <B> LambdaOptional<B> flatMap(Function<? super A, ? extends Monad<B, LambdaOptional>> f) {
+        return wrap(delegate.flatMap(a -> f.apply(a).<LambdaOptional<B>>coerce().unwrap()));
     }
 
     @Override

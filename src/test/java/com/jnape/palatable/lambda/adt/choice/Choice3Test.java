@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice3.a;
@@ -31,7 +32,7 @@ public class Choice3Test {
         c = Choice3.c(true);
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
     public Subjects<Choice3<String, Integer, Boolean>> testSubjects() {
         return subjects(a("foo"), b(1), c(true));
     }

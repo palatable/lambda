@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.lens;
 
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
@@ -10,6 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.lens.Lens.Simple.adapt;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
@@ -135,7 +137,7 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
  * @param <B> the type of the "smaller" update value
  */
 @FunctionalInterface
-public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>>, Profunctor<S, T, Lens<?, ?, A, B>> {
+public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor<S, T, Lens<?, ?, A, B>> {
 
     <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
             Function<? super A, ? extends FB> fn, S s);
@@ -156,9 +158,8 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>>, Prof
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
-        return (Lens<S, U, A, B>) Applicative.super.fmap(fn);
+        return Monad.super.<U>fmap(fn).coerce();
     }
 
     @Override
@@ -168,17 +169,22 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>>, Prof
 
     @Override
     default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
-        return lens(view(this), (s, b) -> set(appFn.<Lens<S, Function<? super T, ? extends U>, A, B>>coerce(), b, s).apply(set(this, b, s)));
+        return Monad.super.zip(appFn).coerce();
     }
 
     @Override
     default <U> Lens<S, U, A, B> discardL(Applicative<U, Lens<S, ?, A, B>> appB) {
-        return Applicative.super.discardL(appB).coerce();
+        return Monad.super.discardL(appB).coerce();
     }
 
     @Override
     default <U> Lens<S, T, A, B> discardR(Applicative<U, Lens<S, ?, A, B>> appB) {
-        return Applicative.super.discardR(appB).coerce();
+        return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    default <U> Lens<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, Lens<S, ?, A, B>>> f) {
+        return lens(view(this), (s, b) -> set(f.apply(set(this, b, s)).<Lens<S, U, A, B>>coerce(), b, s));
     }
 
     @Override
@@ -302,10 +308,9 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>>, Prof
      * @param <A>    the type of both "smaller" values
      * @return the lens
      */
-    @SuppressWarnings("unchecked")
     static <S, A> Lens.Simple<S, A> simpleLens(Function<? super S, ? extends A> getter,
                                                BiFunction<? super S, ? super A, ? extends S> setter) {
-        return lens(getter, setter)::apply;
+        return adapt(lens(getter, setter));
     }
 
     /**
@@ -323,13 +328,17 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>>, Prof
             return this::apply;
         }
 
-        @SuppressWarnings("unchecked")
         default <Q> Lens.Simple<Q, A> compose(Lens.Simple<Q, S> g) {
-            return Lens.super.compose(g)::apply;
+            return Lens.super.compose(g).coerce();
         }
 
         default <B> Lens.Simple<S, B> andThen(Lens.Simple<A, B> f) {
             return f.compose(this);
+        }
+
+        @SuppressWarnings("unchecked")
+        static <S, A> Simple<S, A> adapt(Lens<S, S, A, A> lens) {
+            return lens::apply;
         }
 
         /**
