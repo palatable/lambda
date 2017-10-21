@@ -12,7 +12,9 @@ import java.util.function.Function;
  * Returns the result of <code>pure</code> if the wrapped {@link Optional} is empty.
  *
  * @param <A> the Optional parameter type
+ * @deprecated in favor of {@link LambdaOptional}
  */
+@Deprecated
 public final class TraversableOptional<A> implements Traversable<A, TraversableOptional> {
     private final Optional<A> delegate;
 

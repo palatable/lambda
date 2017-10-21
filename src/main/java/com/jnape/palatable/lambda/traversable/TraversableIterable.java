@@ -17,7 +17,9 @@ import static java.util.Collections.emptyList;
  * wrapped {@link Iterable} is empty.
  *
  * @param <A> the Iterable element type
+ * @deprecated in favor of {@link LambdaIterable}
  */
+@Deprecated
 public final class TraversableIterable<A> implements Traversable<A, TraversableIterable> {
     private final Iterable<A> as;
 

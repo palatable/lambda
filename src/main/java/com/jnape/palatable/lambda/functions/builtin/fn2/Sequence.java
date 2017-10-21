@@ -3,9 +3,9 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.traversable.LambdaIterable;
+import com.jnape.palatable.lambda.traversable.LambdaOptional;
 import com.jnape.palatable.lambda.traversable.Traversable;
-import com.jnape.palatable.lambda.traversable.TraversableIterable;
-import com.jnape.palatable.lambda.traversable.TraversableOptional;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -69,18 +69,17 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
     public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>, IterableApp extends Iterable<? extends Applicative<A, App>>> Fn1<Function<? super Iterable<A>, ? extends AppIterable>, AppIterable> sequence(
             IterableApp optionalApp) {
         return pure ->
-                (AppIterable) sequence(TraversableIterable.wrap(optionalApp), x -> pure.apply(((TraversableIterable<A>) x).unwrap())
-                        .fmap(TraversableIterable::wrap))
-                        .fmap(TraversableIterable::unwrap);
+                (AppIterable) sequence(LambdaIterable.wrap(optionalApp), x -> pure.apply(((LambdaIterable<A>) x).unwrap())
+                        .fmap(LambdaIterable::wrap))
+                        .fmap(LambdaIterable::unwrap);
     }
 
     @SuppressWarnings("unchecked")
     public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>, OptionalApp extends Optional<? extends Applicative<A, App>>> Fn1<Function<? super Optional<A>, ? extends AppOptional>, AppOptional> sequence(
             OptionalApp optionalApp) {
-        return pure ->
-                (AppOptional) sequence(TraversableOptional.wrap(optionalApp), x -> pure.apply(((TraversableOptional<A>) x).unwrap())
-                        .fmap(TraversableOptional::wrap))
-                        .fmap(TraversableOptional::unwrap);
+        return pure -> (AppOptional) sequence(LambdaOptional.wrap(optionalApp), x -> pure.apply(((LambdaOptional<A>) x).unwrap())
+                .fmap(LambdaOptional::wrap))
+                .fmap(LambdaOptional::unwrap);
     }
 
     public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>,

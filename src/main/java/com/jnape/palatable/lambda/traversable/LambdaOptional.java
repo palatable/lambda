@@ -16,8 +16,9 @@ import java.util.function.Function;
 public final class LambdaOptional<A> implements Applicative<A, LambdaOptional>, Traversable<A, LambdaOptional> {
     private final Optional<A> delegate;
 
-    private LambdaOptional(Optional<A> delegate) {
-        this.delegate = delegate;
+    @SuppressWarnings("unchecked")
+    private LambdaOptional(Optional<? extends A> delegate) {
+        this.delegate = (Optional<A>) delegate;
     }
 
     /**
@@ -80,7 +81,7 @@ public final class LambdaOptional<A> implements Applicative<A, LambdaOptional>, 
      * @param <A>      the Optional parameter type
      * @return the Optional wrapped in a TraversableOptional
      */
-    public static <A> LambdaOptional<A> wrap(Optional<A> optional) {
+    public static <A> LambdaOptional<A> wrap(Optional<? extends A> optional) {
         return new LambdaOptional<>(optional);
     }
 
