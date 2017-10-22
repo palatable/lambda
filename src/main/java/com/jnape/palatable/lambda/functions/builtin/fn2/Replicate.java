@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Take.take;
  */
 public final class Replicate<A> implements Fn2<Integer, A, Iterable<A>> {
 
-    public static final Replicate INSTANCE = new Replicate();
+    private static final Replicate INSTANCE = new Replicate();
 
     private Replicate() {
     }
