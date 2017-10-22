@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
+import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -193,6 +194,11 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>>, Prof
     @Override
     default <R, U> Lens<R, U, A, B> diMap(Function<? super R, ? extends S> lFn, Function<? super T, ? extends U> rFn) {
         return this.<R>mapS(lFn).mapT(rFn);
+    }
+
+    @Override
+    default <R> Lens<R, T, A, B> contraMap(Function<? super R, ? extends S> fn) {
+        return (Lens<R, T, A, B>) Profunctor.super.<R>contraMap(fn);
     }
 
     /**

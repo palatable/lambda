@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `And`, `Or`, and `Xor` all gain `BiPredicate<Boolean, Boolean>` properties
 - `LambdaOptional` and `LambdaIterable`, adapters for `Optional` and `Iterable` that support lambda types
 - `Lambda`, providing static factory methods for `LambdaOptional` and `LambdaIterable`
+- `Contravariant`, an interface representing functors that map contravariantly over their parameters
+- `Profunctor` extends `Contravariant`
 
 ### Removed
 - `Fn1#then(Function<? super B, ? extends C>)`, deprecated in previous release 

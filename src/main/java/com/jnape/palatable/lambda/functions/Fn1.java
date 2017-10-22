@@ -118,6 +118,11 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
         return lFn.andThen(this).andThen(rFn)::apply;
     }
 
+    @Override
+    default <Z> Fn1<Z, B> contraMap(Function<? super Z, ? extends A> fn) {
+        return (Fn1<Z, B>) Profunctor.super.<Z>contraMap(fn);
+    }
+
     /**
      * Override of {@link Function#compose(Function)}, returning an instance of <code>Fn1</code> for compatibility.
      * Right-to-left composition.

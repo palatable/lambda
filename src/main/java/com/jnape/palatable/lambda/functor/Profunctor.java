@@ -8,8 +8,7 @@ import java.util.function.Function;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
- * A dually-parametric functor that maps contravariantly over the left parameter and covariantly over the
- * right.
+ * A dually-parametric functor that maps contravariantly over the left parameter and covariantly over the right.
  * <p>
  * For more information, read about <a href="https://en.wikipedia.org/wiki/Profunctor" target="_top">Profunctors</a>.
  *
@@ -18,11 +17,24 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * @param <PF> The unification parameter
  * @see Functor
  * @see Bifunctor
+ * @see Contravariant
  * @see Fn1
  * @see Lens
  */
 @FunctionalInterface
-public interface Profunctor<A, B, PF extends Profunctor> {
+public interface Profunctor<A, B, PF extends Profunctor> extends Contravariant<A, Profunctor<?, B, PF>> {
+
+    /**
+     * Dually map contravariantly over the left parameter and covariantly over the right parameter. This is isomorphic
+     * to <code>diMapL(lFn).diMapR(rFn)</code>.¬
+     *
+     * @param <Z> the new left parameter type
+     * @param <C> the new right parameter type
+     * @param lFn the left parameter mapping function
+     * @param rFn the right parameter mapping function
+     * @return a profunctor over Z (the new left parameter type) and C (the new right parameter type)
+     */
+    <Z, C> Profunctor<Z, C, PF> diMap(Function<? super Z, ? extends A> lFn, Function<? super B, ? extends C> rFn);
 
     /**
      * Contravariantly map over the left parameter.
@@ -48,14 +60,10 @@ public interface Profunctor<A, B, PF extends Profunctor> {
     }
 
     /**
-     * Dually map contravariantly over the left parameter and covariantly over the right parameter. This is isomorphic
-     * to <code>diMapL(lFn).diMapR(rFn)</code>.
-     *
-     * @param <Z> the new left parameter type
-     * @param <C> the new right parameter type
-     * @param lFn the left parameter mapping function
-     * @param rFn the right parameter mapping function
-     * @return a profunctor over Z (the new left parameter type) and C (the new right parameter type)
+     * @inheritDoc
      */
-    <Z, C> Profunctor<Z, C, PF> diMap(Function<? super Z, ? extends A> lFn, Function<? super B, ? extends C> rFn);
+    @Override
+    default <Z> Profunctor<Z, B, PF> contraMap(Function<? super Z, ? extends A> fn) {
+        return diMapL(fn);
+    }
 }
