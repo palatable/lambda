@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.lens;
 
-import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;

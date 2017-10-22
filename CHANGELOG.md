@@ -168,7 +168,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [1.1] - 2016-06-21
 ### Added
 - `scanLeft`
-- `HList`, heterogenous lists
+- `HList`, heterogeneous lists
 - Added up to `Tuple5`
 - `Either`, specialized coproduct with success/failure semantics
 
