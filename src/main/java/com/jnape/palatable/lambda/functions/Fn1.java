@@ -87,8 +87,8 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @return a new function from Z (the new argument type) to B (the same result)
      */
     @Override
-    default <Z> Fn1<Z, B> diMapL(Function<Z, A> fn) {
-        return (Fn1<Z, B>) Profunctor.super.diMapL(fn);
+    default <Z> Fn1<Z, B> diMapL(Function<? super Z, ? extends A> fn) {
+        return (Fn1<Z, B>) Profunctor.super.<Z>diMapL(fn);
     }
 
     /**
@@ -100,8 +100,8 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @return a new function from A (the same argument type) to C (the new result type)
      */
     @Override
-    default <C> Fn1<A, C> diMapR(Function<B, C> fn) {
-        return (Fn1<A, C>) Profunctor.super.diMapR(fn);
+    default <C> Fn1<A, C> diMapR(Function<? super B, ? extends C> fn) {
+        return (Fn1<A, C>) Profunctor.super.<C>diMapR(fn);
     }
 
     /**
@@ -114,7 +114,7 @@ public interface Fn1<A, B> extends Applicative<B, Fn1<A, ?>>, Profunctor<A, B, F
      * @return a new function from Z (the new argument type) to C (the new result type)
      */
     @Override
-    default <Z, C> Fn1<Z, C> diMap(Function<Z, A> lFn, Function<B, C> rFn) {
+    default <Z, C> Fn1<Z, C> diMap(Function<? super Z, ? extends A> lFn, Function<? super B, ? extends C> rFn) {
         return lFn.andThen(this).andThen(rFn)::apply;
     }
 

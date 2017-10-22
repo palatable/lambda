@@ -17,7 +17,8 @@ public final class InvocationRecordingProfunctor<A, B> implements Profunctor<A, 
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C, D> InvocationRecordingProfunctor<C, D> diMap(Function<C, A> lFn, Function<B, D> rFn) {
+    public <C, D> InvocationRecordingProfunctor<C, D> diMap(Function<? super C, ? extends A> lFn,
+                                                            Function<? super B, ? extends D> rFn) {
         leftFn.set(lFn);
         rightFn.set(rFn);
         return (InvocationRecordingProfunctor<C, D>) this;

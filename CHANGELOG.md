@@ -22,6 +22,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `TraversableOptional` in favor of `LambdaOptional`
 - `TraversableIterable` in favor of `LambdaIterable`
 
+### Changed
+- `Profunctor#diMap/L/R` parameters allow variance
+
 ## [1.6.3] - 2017-09-27
 ### Fixed
 - `ConcatenatingIterator` bug where deeply nested `xs` skip elements

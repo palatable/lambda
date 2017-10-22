@@ -181,8 +181,18 @@ public interface Lens<S, T, A, B> extends Applicative<T, Lens<S, ?, A, B>>, Prof
     }
 
     @Override
-    default <R, U> Lens<R, U, A, B> diMap(Function<R, S> lFn, Function<T, U> rFn) {
-        return mapS(lFn).mapT(rFn);
+    default <R> Lens<R, T, A, B> diMapL(Function<? super R, ? extends S> fn) {
+        return (Lens<R, T, A, B>) Profunctor.super.<R>diMapL(fn);
+    }
+
+    @Override
+    default <U> Lens<S, U, A, B> diMapR(Function<? super T, ? extends U> fn) {
+        return (Lens<S, U, A, B>) Profunctor.super.<U>diMapR(fn);
+    }
+
+    @Override
+    default <R, U> Lens<R, U, A, B> diMap(Function<? super R, ? extends S> lFn, Function<? super T, ? extends U> rFn) {
+        return this.<R>mapS(lFn).mapT(rFn);
     }
 
     /**
