@@ -26,7 +26,7 @@ public interface Profunctor<A, B, PF extends Profunctor> extends Contravariant<A
 
     /**
      * Dually map contravariantly over the left parameter and covariantly over the right parameter. This is isomorphic
-     * to <code>diMapL(lFn).diMapR(rFn)</code>.¬
+     * to <code>diMapL(lFn).diMapR(rFn)</code>.
      *
      * @param <Z> the new left parameter type
      * @param <C> the new right parameter type

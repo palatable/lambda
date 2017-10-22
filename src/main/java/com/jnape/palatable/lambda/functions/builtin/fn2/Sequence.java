@@ -1,10 +1,10 @@
 package com.jnape.palatable.lambda.functions.builtin.fn2;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.traversable.LambdaIterable;
-import com.jnape.palatable.lambda.traversable.LambdaOptional;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Optional;
@@ -77,9 +77,9 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
     @SuppressWarnings("unchecked")
     public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>, OptionalApp extends Optional<? extends Applicative<A, App>>> Fn1<Function<? super Optional<A>, ? extends AppOptional>, AppOptional> sequence(
             OptionalApp optionalApp) {
-        return pure -> (AppOptional) sequence(LambdaOptional.wrap(optionalApp), x -> pure.apply(((LambdaOptional<A>) x).unwrap())
-                .fmap(LambdaOptional::wrap))
-                .fmap(LambdaOptional::unwrap);
+        return pure -> (AppOptional) sequence(Maybe.fromOptional(optionalApp), x -> pure.apply(((Maybe<A>) x).toOptional())
+                .fmap(Maybe::fromOptional))
+                .fmap(Maybe::toOptional);
     }
 
     public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>,

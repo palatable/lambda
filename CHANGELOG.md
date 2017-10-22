@@ -12,8 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Snoc`, for lazily appending an element to the end of an `Iterable`
 - `Coalesce`, for folding an `Iterable<Either<L, R>>` into an `Either<Iterable<L>, Iterable<R>>`
 - `And`, `Or`, and `Xor` all gain `BiPredicate<Boolean, Boolean>` properties
-- `LambdaOptional` and `LambdaIterable`, adapters for `Optional` and `Iterable` that support lambda types
-- `Lambda`, providing static factory methods for `LambdaOptional` and `LambdaIterable`
+- `LambdaIterable`, an adapter `Iterable` that support lambda types
+- `Maybe`, lambda's analog of `java.util.Optional` conforming to all the lambda types
 - `Contravariant`, an interface representing functors that map contravariantly over their parameters
 - `Profunctor` extends `Contravariant`
 
@@ -23,8 +23,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Fn2#adapt(BiFunction<A, B, C> biFunction)`, deprecated in previous release  
 
 ### Deprecated
-- `Traversables` and all methods therein, in favor of new `Lambda` methods
-- `TraversableOptional` in favor of `LambdaOptional`
+- `Traversables` and all methods therein, in favor of either `LambdaIterable` or `Maybe`
+- `TraversableOptional` in favor of `Maybe`
 - `TraversableIterable` in favor of `LambdaIterable`
 
 ### Changed

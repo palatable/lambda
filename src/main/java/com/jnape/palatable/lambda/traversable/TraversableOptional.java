@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.traversable;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.Objects;
@@ -12,7 +13,7 @@ import java.util.function.Function;
  * Returns the result of <code>pure</code> if the wrapped {@link Optional} is empty.
  *
  * @param <A> the Optional parameter type
- * @deprecated in favor of {@link LambdaOptional}
+ * @deprecated in favor of {@link Maybe}
  */
 @Deprecated
 public final class TraversableOptional<A> implements Traversable<A, TraversableOptional> {

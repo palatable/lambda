@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.traversable;
 
+import com.jnape.palatable.lambda.adt.Maybe;
+
 import java.util.Optional;
 
 /**
  * Static factory methods for adapting core JDK types to {@link Traversable}.
  *
- * @deprecated in favor of {@link Lambda} methods
+ * @deprecated in favor of {@link LambdaIterable} and {@link Maybe}.
  */
 @Deprecated
 public final class Traversables {
@@ -19,7 +21,7 @@ public final class Traversables {
      * @param as  the Iterable
      * @param <A> the Iterable element type
      * @return a Traversable wrapper around as
-     * @deprecated in favor of {@link Lambda#lambda(Iterable)}
+     * @deprecated in favor of {@link LambdaIterable#wrap(Iterable)}
      */
     @Deprecated
     public static <A> TraversableIterable<A> traversable(Iterable<? extends A> as) {
@@ -32,7 +34,7 @@ public final class Traversables {
      * @param opt the Optional
      * @param <A> the Optional type
      * @return a Traversable wrapper around opt
-     * @deprecated in favor of {@link Lambda#lambda(Optional)}
+     * @deprecated in favor of {@link Maybe#fromOptional(Optional)}
      */
     @Deprecated
     public static <A> TraversableOptional<A> traversable(Optional<A> opt) {
