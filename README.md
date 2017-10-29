@@ -16,6 +16,7 @@ Functional patterns for Java 8
    - [Bifunctors](#bifunctors)
    - [Profunctors](#profunctors)
    - [Applicatives](#applicatives)
+   - [Monads](#monads)
    - [Traversables](#traversables)
  - [ADTs](#adts)
    - [HLists](#hlists)
@@ -334,6 +335,41 @@ Examples of applicative functors include:
 - `Lens`
 
 In addition to implementing `fmap` from `Functor`, implementing an applicative functor involves providing two methods: `pure`, a method that lifts a value into the functor; and `zip`, a method that applies a lifted function to a lifted value, returning a new lifted value. As usual, there are [some laws](https://hackage.haskell.org/package/base-4.9.1.0/docs/Control-Applicative.html) that should be adhered to. 
+
+### <a name="monads">Monads</a>
+
+Monads are applicative functors that additionally support a chaining operation, `flatMap :: (a -> f b) -> f a -> f b`: a function from the functor's parameter to a new instance of the same functor over a potentially different parameter. Because the function passed to `flatMap` can return a different instance of the same functor, functors can take advantage of multiple constructions that yield different results functorial operations, like short-circuiting, as in the following example using `Either`:
+
+```Java
+class Person {
+    Optional<Occupation> occupation() {
+        return Optional.empty();
+    } 
+}
+
+class Occupation {
+}
+
+public static void main(String[] args) {
+    Fn1<String, Either<String, Integer>> parseId = str -> Either.trying(() -> Integer.parseInt(str), __ -> str + " is not a valid id"); 
+
+    Map<Integer, Person> database = new HashMap<>();
+    Fn1<Integer, Either<String, Person>> lookupById = id -> Either.fromOptional(Optional.ofNullable(database.get(id)),
+                                                                                () -> "No person found for id " + id);
+    Fn1<Person, Either<String, Occupation>> getOccupation = p -> Either.fromOptional(p.occupation(), () -> "Person was unemployed");
+
+    Either<String, Occupation> occupationOrError = 
+        parseId.apply("12") // Either<String, Integer>
+            .flatMap(lookupById) // Either<String, Person>
+            .flatMap(getOccupation); // Either<String, Occupation>
+}
+```
+
+In the previous example, if any of `parseId`, `lookupById`, or `getOccupation` fail, no further `flatMap` computations can succeed, so the result short-circuits to the first `left` value that is returned. This is completely predictable from the type signature of `Monad` and `Either`: `Either<L, R>` is a `Monad<R>`, so the single arity `flatMap` can have nothing to map in the case where there is no `R` value. With experience, it generally becomes quickly clear what the logical behavior of `flatMap` *must* be given the type signatures.  
+
+That's it. Monads are neither [elephants](http://james-iry.blogspot.com/2007/09/monads-are-elephants-part-1.html) nor are they [burritos](https://blog.plover.com/prog/burritos.html); they're simply types that support a) the ability to lift a value into them, and b) a chaining function `flatMap :: (a -> f b) -> f a -> f b` that can potentially return different instances of the same monad. If a type can do those two things (and obeys [the laws](https://wiki.haskell.org/Monad_laws)), it is a monad.
+
+Further, if a type is a monad, it is necessarily an `Applicative`, which makes it necessariliy a `Functor`, so *lambda* enforces this tautology via a hierarchical constraint.    
 
 ### <a name="traversables">Traversables</a>
 
