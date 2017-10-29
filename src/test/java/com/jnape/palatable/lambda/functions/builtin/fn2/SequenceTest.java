@@ -5,7 +5,6 @@ import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import org.junit.Test;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Either.right;
@@ -46,11 +45,5 @@ public class SequenceTest {
         assertThat(sequence(asList(right(1), right(2)), Either::right)
                            .orThrow(l -> new AssertionError("Expected a right value, but was a left value of <" + l + ">")),
                    iterates(1, 2));
-    }
-
-    @Test
-    public void optionalSpecialization() {
-        assertEquals(right(Optional.of(1)),
-                     sequence(Optional.of(right(1)), Either::right));
     }
 }

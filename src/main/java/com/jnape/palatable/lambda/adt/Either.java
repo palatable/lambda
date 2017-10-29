@@ -249,9 +249,21 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * right value.
      *
      * @return an Optional around the right value, or empty if left
+     * @deprecated in favor of {@link Either#toMaybe()}
      */
+    @Deprecated
     public Optional<R> toOptional() {
-        return match(__ -> Optional.empty(), Optional::ofNullable);
+        return toMaybe().toOptional();
+    }
+
+    /**
+     * In the left case, returns a {@link Maybe#nothing()}; otherwise, returns {@link Maybe#maybe} around the right
+     * value.
+     *
+     * @return Maybe the right value
+     */
+    public Maybe<R> toMaybe() {
+        return projectB();
     }
 
     /**
@@ -263,9 +275,25 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * @param <L>      the left parameter type
      * @param <R>      the right parameter type
      * @return a right value of the contained optional value, or a left value of leftFn's result
+     * @deprecated in favor of converting {@link Optional} to {@link Maybe}, then using {@link Either#fromMaybe}
      */
+    @Deprecated
     public static <L, R> Either<L, R> fromOptional(Optional<R> optional, Supplier<L> leftFn) {
-        return optional.<Either<L, R>>map(Either::right)
+        return fromMaybe(Maybe.fromOptional(optional), leftFn);
+    }
+
+    /**
+     * Convert a {@link Maybe}&lt;R&gt; into an <code>Either&lt;L, R&gt;</code>, supplying the left value from
+     * <code>leftFn</code> in the case of {@link Maybe#nothing()}.
+     *
+     * @param maybe  the maybe
+     * @param leftFn the supplier to use for left values
+     * @param <L>    the left parameter type
+     * @param <R>    the right parameter type
+     * @return a right value of the contained maybe value, or a left value of leftFn's result
+     */
+    public static <L, R> Either<L, R> fromMaybe(Maybe<R> maybe, Supplier<L> leftFn) {
+        return maybe.<Either<L, R>>fmap(Either::right)
                 .orElseGet(() -> left(leftFn.get()));
     }
 

@@ -54,7 +54,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
      * @return the value, if present
      * @throws E the throwable, if the value is absent
      */
-    public final <E extends Throwable> A orThrow(Supplier<E> throwableSupplier) throws E {
+    public final <E extends Throwable> A orElseThrow(Supplier<E> throwableSupplier) throws E {
         return orElseGet((CheckedSupplier<E, A>) () -> {
             throw throwableSupplier.get();
         });
@@ -243,9 +243,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
 
         @Override
         public String toString() {
-            return "Just{" +
-                    "a=" + a +
-                    '}';
+            return "Just " + a;
         }
     }
 
@@ -276,7 +274,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
 
         @Override
         public String toString() {
-            return "Nothing{}";
+            return "Nothing";
         }
     }
 }

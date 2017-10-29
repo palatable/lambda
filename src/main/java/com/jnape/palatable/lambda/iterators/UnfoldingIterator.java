@@ -1,23 +1,25 @@
 package com.jnape.palatable.lambda.iterators;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.function.Function;
 
-public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
-    private final Function<B, Optional<Tuple2<A, B>>> function;
-    private       Optional<Tuple2<A, B>>              optionalAcc;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
-    public UnfoldingIterator(Function<B, Optional<Tuple2<A, B>>> function, B b) {
+public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
+    private final Function<? super B, Maybe<Tuple2<A, B>>> function;
+    private       Maybe<Tuple2<A, B>>                      maybeAcc;
+
+    public UnfoldingIterator(Function<? super B, Maybe<Tuple2<A, B>>> function, B b) {
         this.function = function;
-        optionalAcc = function.apply(b);
+        maybeAcc = function.apply(b);
     }
 
     @Override
     public boolean hasNext() {
-        return optionalAcc.isPresent();
+        return maybeAcc.fmap(constantly(true)).orElse(false);
     }
 
     @Override
@@ -26,9 +28,9 @@ public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
         if (!hasNext())
             throw new NoSuchElementException();
 
-        Tuple2<A, B> acc = optionalAcc.get();
+        Tuple2<A, B> acc = maybeAcc.orElseThrow(NoSuchElementException::new);
         A next = acc._1();
-        optionalAcc = function.apply(acc._2());
+        maybeAcc = function.apply(acc._2());
         return next;
     }
 }

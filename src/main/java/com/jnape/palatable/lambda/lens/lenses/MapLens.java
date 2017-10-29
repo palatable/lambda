@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.lens.lenses;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Filter;
 import com.jnape.palatable.lambda.lens.Lens;
 
@@ -7,17 +8,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.maybe;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCollection;
 import static com.jnape.palatable.lambda.lens.Lens.lens;
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
-import static com.jnape.palatable.lambda.lens.lenses.OptionalLens.unLiftA;
+import static com.jnape.palatable.lambda.lens.lenses.MaybeLens.unLiftA;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -41,15 +42,15 @@ public final class MapLens {
     }
 
     /**
-     * A lens that focuses on a value at a key in a map, as an {@link Optional}.
+     * A lens that focuses on a value at a key in a map, as a {@link Maybe}.
      *
      * @param k   the key to focus on
      * @param <K> the key type
      * @param <V> the value type
-     * @return a lens that focuses on the value at key, as an {@link Optional}
+     * @return a lens that focuses on the value at key, as a {@link Maybe}
      */
-    public static <K, V> Lens<Map<K, V>, Map<K, V>, Optional<V>, V> valueAt(K k) {
-        return lens(m -> Optional.ofNullable(m.get(k)), (m, v) -> {
+    public static <K, V> Lens<Map<K, V>, Map<K, V>, Maybe<V>, V> valueAt(K k) {
+        return lens(m -> maybe(m.get(k)), (m, v) -> {
             m.put(k, v);
             return m;
         });

@@ -13,14 +13,15 @@ import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
-import static com.jnape.palatable.lambda.adt.Either.fromOptional;
+import static com.jnape.palatable.lambda.adt.Either.fromMaybe;
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -133,26 +134,25 @@ public class EitherTest {
     }
 
     @Test
-    public void toOptionalMapsEitherToOptional() {
-        assertEquals(Optional.of(1), Either.<String, Integer>right(1).toOptional());
-        assertEquals(Optional.empty(), Either.<String, Integer>right(null).toOptional());
-        assertEquals(Optional.empty(), Either.<String, Integer>left("fail").toOptional());
+    public void toMaybeMapsEitherToOptional() {
+        assertEquals(just(1), Either.<String, Integer>right(1).toMaybe());
+        assertEquals(nothing(), Either.<String, Integer>left("fail").toMaybe());
     }
 
     @Test
-    public void fromOptionalMapsOptionalToEither() {
-        Optional<Integer> present = Optional.of(1);
-        Optional<Integer> absent = Optional.empty();
+    public void fromMaybeMapsMaybeToEither() {
+        Maybe<Integer> just = just(1);
+        Maybe<Integer> nothing = nothing();
 
-        assertThat(fromOptional(present, () -> "fail"), is(right(1)));
-        assertThat(fromOptional(absent, () -> "fail"), is(left("fail")));
+        assertThat(fromMaybe(just, () -> "fail"), is(right(1)));
+        assertThat(fromMaybe(nothing, () -> "fail"), is(left("fail")));
     }
 
     @Test
-    public void fromOptionalDoesNotEvaluateLeftFnForRight() {
-        Optional<Integer> present = Optional.of(1);
+    public void fromMaybeDoesNotEvaluateLeftFnForRight() {
+        Maybe<Integer> just = just(1);
         AtomicInteger atomicInteger = new AtomicInteger(0);
-        fromOptional(present, atomicInteger::incrementAndGet);
+        fromMaybe(just, atomicInteger::incrementAndGet);
 
         assertThat(atomicInteger.get(), is(0));
     }

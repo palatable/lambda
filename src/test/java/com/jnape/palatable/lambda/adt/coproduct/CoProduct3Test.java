@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Optional;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
@@ -82,9 +84,9 @@ public class CoProduct3Test {
 
     @Test
     public void projections() {
-        assertEquals(tuple(Optional.of(1), Optional.empty(), Optional.empty()), a.project());
-        assertEquals(tuple(Optional.empty(), Optional.of("two"), Optional.empty()), b.project());
-        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.of(true)), c.project());
+        assertEquals(tuple(just(1), nothing(), nothing()), a.project());
+        assertEquals(tuple(nothing(), just("two"), nothing()), b.project());
+        assertEquals(tuple(nothing(), nothing(), just(true)), c.project());
 
         assertEquals(tuple(a.projectA(), a.projectB(), a.projectC()), a.project());
         assertEquals(tuple(b.projectA(), b.projectB(), b.projectC()), b.project());
@@ -93,8 +95,8 @@ public class CoProduct3Test {
 
     @Test
     public void embed() {
-        assertEquals(Optional.of(a), a.embed(Optional::of, Optional::of, Optional::of));
-        assertEquals(Optional.of(b), b.embed(Optional::of, Optional::of, Optional::of));
-        assertEquals(Optional.of(c), c.embed(Optional::of, Optional::of, Optional::of));
+        assertEquals(just(a), a.embed(Maybe::just, Maybe::just, Maybe::just));
+        assertEquals(just(b), b.embed(Maybe::just, Maybe::just, Maybe::just));
+        assertEquals(just(c), c.embed(Maybe::just, Maybe::just, Maybe::just));
     }
 }

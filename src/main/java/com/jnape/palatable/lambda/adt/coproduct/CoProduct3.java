@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple3;
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.Optional;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -85,10 +87,10 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      * @return a tuple of the coproduct projection
      * @see CoProduct2#project()
      */
-    default Tuple3<Optional<A>, Optional<B>, Optional<C>> project() {
-        return match(a -> tuple(Optional.of(a), Optional.empty(), Optional.empty()),
-                     b -> tuple(Optional.empty(), Optional.of(b), Optional.empty()),
-                     c -> tuple(Optional.empty(), Optional.empty(), Optional.of(c)));
+    default Tuple3<Maybe<A>, Maybe<B>, Maybe<C>> project() {
+        return match(a -> tuple(just(a), nothing(), nothing()),
+                     b -> tuple(nothing(), just(b), nothing()),
+                     c -> tuple(nothing(), nothing(), just(c)));
     }
 
     /**
@@ -96,7 +98,7 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      *
      * @return an optional value representing the projection of the "a" type index
      */
-    default Optional<A> projectA() {
+    default Maybe<A> projectA() {
         return project()._1();
     }
 
@@ -105,7 +107,7 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      *
      * @return an optional value representing the projection of the "b" type index
      */
-    default Optional<B> projectB() {
+    default Maybe<B> projectB() {
         return project()._2();
     }
 
@@ -114,7 +116,7 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      *
      * @return an optional value representing the projection of the "c" type index
      */
-    default Optional<C> projectC() {
+    default Maybe<C> projectC() {
         return project()._3();
     }
 

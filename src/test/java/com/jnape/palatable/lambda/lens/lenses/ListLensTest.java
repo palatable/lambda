@@ -1,13 +1,15 @@
 package com.jnape.palatable.lambda.lens.lenses;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.lens.Lens;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static java.util.Arrays.asList;
@@ -42,10 +44,10 @@ public class ListLensTest {
 
     @Test
     public void elementAtFocusesOnElementAtIndex() {
-        Lens<List<String>, List<String>, Optional<String>, String> at0 = ListLens.elementAt(0);
+        Lens<List<String>, List<String>, Maybe<String>, String> at0 = ListLens.elementAt(0);
 
-        assertEquals(Optional.of("foo"), view(at0, xs));
-        assertEquals(Optional.empty(), view(at0, emptyList()));
+        assertEquals(just("foo"), view(at0, xs));
+        assertEquals(nothing(), view(at0, emptyList()));
         assertEquals(asList("quux", "bar", "baz"), set(at0, "quux", xs));
         assertEquals(emptyList(), set(at0, "quux", emptyList()));
     }

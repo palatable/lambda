@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple5;
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.Optional;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -84,12 +86,12 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
      * @return a tuple of the coproduct projection
      * @see CoProduct2#project()
      */
-    default Tuple5<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>> project() {
-        return match(a -> tuple(Optional.of(a), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()),
-                     b -> tuple(Optional.empty(), Optional.of(b), Optional.empty(), Optional.empty(), Optional.empty()),
-                     c -> tuple(Optional.empty(), Optional.empty(), Optional.of(c), Optional.empty(), Optional.empty()),
-                     d -> tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(d), Optional.empty()),
-                     e -> tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(e)));
+    default Tuple5<Maybe<A>, Maybe<B>, Maybe<C>, Maybe<D>, Maybe<E>> project() {
+        return match(a -> tuple(just(a), nothing(), nothing(), nothing(), nothing()),
+                     b -> tuple(nothing(), just(b), nothing(), nothing(), nothing()),
+                     c -> tuple(nothing(), nothing(), just(c), nothing(), nothing()),
+                     d -> tuple(nothing(), nothing(), nothing(), just(d), nothing()),
+                     e -> tuple(nothing(), nothing(), nothing(), nothing(), just(e)));
     }
 
     /**
@@ -97,7 +99,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
      *
      * @return an optional value representing the projection of the "a" type index
      */
-    default Optional<A> projectA() {
+    default Maybe<A> projectA() {
         return project()._1();
     }
 
@@ -106,7 +108,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
      *
      * @return an optional value representing the projection of the "b" type index
      */
-    default Optional<B> projectB() {
+    default Maybe<B> projectB() {
         return project()._2();
     }
 
@@ -115,7 +117,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
      *
      * @return an optional value representing the projection of the "c" type index
      */
-    default Optional<C> projectC() {
+    default Maybe<C> projectC() {
         return project()._3();
     }
 
@@ -124,7 +126,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
      *
      * @return an optional value representing the projection of the "d" type index
      */
-    default Optional<D> projectD() {
+    default Maybe<D> projectD() {
         return project()._4();
     }
 
@@ -133,7 +135,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
      *
      * @return an optional value representing the projection of the "e" type index
      */
-    default Optional<E> projectE() {
+    default Maybe<E> projectE() {
         return project()._5();
     }
 

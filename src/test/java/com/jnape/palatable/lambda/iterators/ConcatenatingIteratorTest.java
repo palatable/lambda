@@ -8,8 +8,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Last.last;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Iterate.iterate;
@@ -93,7 +93,7 @@ public class ConcatenatingIteratorTest {
 
         Iterable<Integer> ints = () -> new ConcatenatingIterator<>(deeplyNestedConcat, deeplyNestedConcat);
 
-        assertEquals(Optional.of(stackBlowingNumber), last(ints));
+        assertEquals(just(stackBlowingNumber), last(ints));
         assertEquals((long) (stackBlowingNumber * 2), size(ints).longValue());
     }
 }

@@ -7,8 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.EmptyIterableSupport;
 
-import java.util.Optional;
-
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -35,6 +34,6 @@ public class UnconsTest {
 
     @Test
     public void emptyIterable() {
-        assertEquals(Optional.empty(), uncons(emptyList()));
+        assertEquals(nothing(), uncons(emptyList()));
     }
 }

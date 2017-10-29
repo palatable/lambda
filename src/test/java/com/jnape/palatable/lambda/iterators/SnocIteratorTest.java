@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Last.last;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Iterate.iterate;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Take.take;
@@ -53,6 +53,6 @@ public class SnocIteratorTest {
                                           Collections::emptyIterator,
                                           take(stackBlowingNumber, iterate(x -> x + 1, 1)));
 
-        assertEquals(Optional.of(stackBlowingNumber), last(ints));
+        assertEquals(just(stackBlowingNumber), last(ints));
     }
 }

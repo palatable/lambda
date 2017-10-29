@@ -5,12 +5,12 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 
-import java.util.Optional;
+import java.util.Collections;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Filter.filter;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Flatten.flatten;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
+import static java.util.Collections.emptySet;
 
 /**
  * Given an <code>Iterable&lt;A&gt;</code> <code>as</code> and a disjoint mapping function <code>a -&gt;
@@ -34,12 +34,10 @@ public final class Partition<A, B, C> implements Fn2<Function<? super A, ? exten
     @Override
     public Tuple2<Iterable<B>, Iterable<C>> apply(Function<? super A, ? extends CoProduct2<B, C, ?>> function,
                                                   Iterable<A> as) {
-        Iterable<CoProduct2<B, C, ?>> coproducts = map(function, as);
-
-        Iterable<B> lefts = map(Optional::get, filter(Optional::isPresent, map(CoProduct2::projectA, coproducts)));
-        Iterable<C> rights = map(Optional::get, filter(Optional::isPresent, map(CoProduct2::projectB, coproducts)));
-
-        return tuple(lefts, rights);
+        return Tuple2.<Iterable<CoProduct2<B, C, ?>>>fill(map(function, as))
+                .biMap(Map.<CoProduct2<B, C, ?>, Iterable<B>>map(cp -> cp.match(Collections::singleton, __ -> emptySet())),
+                       Map.<CoProduct2<B, C, ?>, Iterable<C>>map(cp -> cp.match(__ -> emptySet(), Collections::singleton)))
+                .biMap(flatten(), flatten());
     }
 
     @SuppressWarnings("unchecked")

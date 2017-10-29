@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt.hmap;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 
 import java.util.HashMap;
@@ -7,7 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
@@ -36,11 +36,11 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      *
      * @param key the key
      * @param <T> the value type
-     * @return the value at this key wrapped in an {@link Optional}, or {@link Optional#empty}.
+     * @return Maybe the value at this key
      */
     @SuppressWarnings("unchecked")
-    public <T> Optional<T> get(TypeSafeKey<T> key) {
-        return Optional.ofNullable((T) table.get(key));
+    public <T> Maybe<T> get(TypeSafeKey<T> key) {
+        return Maybe.maybe((T) table.get(key));
     }
 
     /**

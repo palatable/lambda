@@ -3,9 +3,9 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 
-import java.util.Optional;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Unfoldr.unfoldr;
 
@@ -25,7 +25,7 @@ public final class Iterate<A> implements Fn2<Function<? super A, ? extends A>, A
 
     @Override
     public Iterable<A> apply(Function<? super A, ? extends A> fn, A seed) {
-        return unfoldr(a -> Optional.of(tuple(a, fn.apply(a))), seed);
+        return unfoldr(a -> just(tuple(a, fn.apply(a))), seed);
     }
 
     @SuppressWarnings("unchecked")

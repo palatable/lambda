@@ -1,17 +1,20 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.Iterator;
-import java.util.Optional;
+
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 
 /**
- * Retrieve the head element of an <code>Iterable</code>, wrapped in an <code>Optional</code>. If the
- * <code>Iterable</code> is empty, the result is <code>Optional.empty()</code>.
+ * Retrieve the head element of an {@link Iterable}, wrapped in an {@link Maybe}. If the {@link Iterable} is empty, the
+ * result is {@link Maybe#nothing()}.
  *
  * @param <A> the Iterable element type
  */
-public final class Head<A> implements Fn1<Iterable<A>, Optional<A>> {
+public final class Head<A> implements Fn1<Iterable<A>, Maybe<A>> {
 
     private static final Head INSTANCE = new Head();
 
@@ -19,11 +22,9 @@ public final class Head<A> implements Fn1<Iterable<A>, Optional<A>> {
     }
 
     @Override
-    public Optional<A> apply(Iterable<A> as) {
+    public Maybe<A> apply(Iterable<A> as) {
         Iterator<A> iterator = as.iterator();
-        return iterator.hasNext()
-                ? Optional.of(iterator.next())
-                : Optional.empty();
+        return iterator.hasNext() ? just(iterator.next()) : nothing();
     }
 
     @SuppressWarnings("unchecked")
@@ -31,7 +32,7 @@ public final class Head<A> implements Fn1<Iterable<A>, Optional<A>> {
         return INSTANCE;
     }
 
-    public static <A> Optional<A> head(Iterable<A> as) {
+    public static <A> Maybe<A> head(Iterable<A> as) {
         return Head.<A>head().apply(as);
     }
 }

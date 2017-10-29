@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Optional;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.junit.Assert.assertEquals;
@@ -149,11 +151,11 @@ public class CoProduct5Test {
 
     @Test
     public void projections() {
-        assertEquals(tuple(Optional.of(1), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()), a.project());
-        assertEquals(tuple(Optional.empty(), Optional.of("two"), Optional.empty(), Optional.empty(), Optional.empty()), b.project());
-        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.of(true), Optional.empty(), Optional.empty()), c.project());
-        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(4D), Optional.empty()), d.project());
-        assertEquals(tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of('z')), e.project());
+        assertEquals(tuple(just(1), nothing(), nothing(), nothing(), nothing()), a.project());
+        assertEquals(tuple(nothing(), just("two"), nothing(), nothing(), nothing()), b.project());
+        assertEquals(tuple(nothing(), nothing(), just(true), nothing(), nothing()), c.project());
+        assertEquals(tuple(nothing(), nothing(), nothing(), just(4D), nothing()), d.project());
+        assertEquals(tuple(nothing(), nothing(), nothing(), nothing(), just('z')), e.project());
 
         assertEquals(tuple(a.projectA(), a.projectB(), a.projectC(), a.projectD(), a.projectE()), a.project());
         assertEquals(tuple(b.projectA(), b.projectB(), b.projectC(), b.projectD(), b.projectE()), b.project());
@@ -164,10 +166,10 @@ public class CoProduct5Test {
 
     @Test
     public void embed() {
-        assertEquals(Optional.of(a), a.embed(Optional::of, Optional::of, Optional::of, Optional::of, Optional::of));
-        assertEquals(Optional.of(b), b.embed(Optional::of, Optional::of, Optional::of, Optional::of, Optional::of));
-        assertEquals(Optional.of(c), c.embed(Optional::of, Optional::of, Optional::of, Optional::of, Optional::of));
-        assertEquals(Optional.of(d), d.embed(Optional::of, Optional::of, Optional::of, Optional::of, Optional::of));
-        assertEquals(Optional.of(e), e.embed(Optional::of, Optional::of, Optional::of, Optional::of, Optional::of));
+        assertEquals(just(a), a.embed(Maybe::just, Maybe::just, Maybe::just, Maybe::just, Maybe::just));
+        assertEquals(just(b), b.embed(Maybe::just, Maybe::just, Maybe::just, Maybe::just, Maybe::just));
+        assertEquals(just(c), c.embed(Maybe::just, Maybe::just, Maybe::just, Maybe::just, Maybe::just));
+        assertEquals(just(d), d.embed(Maybe::just, Maybe::just, Maybe::just, Maybe::just, Maybe::just));
+        assertEquals(just(e), e.embed(Maybe::just, Maybe::just, Maybe::just, Maybe::just, Maybe::just));
     }
 }

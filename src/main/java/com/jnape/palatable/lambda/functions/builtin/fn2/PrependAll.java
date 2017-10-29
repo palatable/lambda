@@ -24,7 +24,7 @@ public final class PrependAll<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
     @Override
     public Iterable<A> apply(A a, Iterable<A> as) {
-        return () -> head(as).map(head -> cons(a, cons(head, prependAll(a, tail(as))))).orElse(emptyList()).iterator();
+        return () -> head(as).fmap(head -> cons(a, cons(head, prependAll(a, tail(as))))).orElse(emptyList()).iterator();
     }
 
     @SuppressWarnings("unchecked")

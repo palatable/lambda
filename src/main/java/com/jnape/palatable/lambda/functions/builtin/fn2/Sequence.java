@@ -14,10 +14,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
  * Given a {@link Traversable} of {@link Applicative}s and a pure {@link Applicative} constructor, traverse the
- * elements
- * from left to right, zipping the applicatives together and collecting the results. If the traversable is empty,
- * simply
- * wrap it in the applicative by calling <code>pure</code>.
+ * elements from left to right, zipping the {@link Applicative}s together and collecting the results. If the
+ * {@link Traversable} is empty, simply wrap it in the {@link Applicative} by calling <code>pure</code>.
  * <p>
  * Modulo any type-level coercion, this is equivalent to <code>traversable.traverse(id(), pure)</code>.
  * <p>
@@ -67,14 +65,18 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
 
     @SuppressWarnings("unchecked")
     public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>, IterableApp extends Iterable<? extends Applicative<A, App>>> Fn1<Function<? super Iterable<A>, ? extends AppIterable>, AppIterable> sequence(
-            IterableApp optionalApp) {
+            IterableApp iterableApp) {
         return pure ->
-                (AppIterable) sequence(LambdaIterable.wrap(optionalApp), x -> pure.apply(((LambdaIterable<A>) x).unwrap())
+                (AppIterable) sequence(LambdaIterable.wrap(iterableApp), x -> pure.apply(((LambdaIterable<A>) x).unwrap())
                         .fmap(LambdaIterable::wrap))
                         .fmap(LambdaIterable::unwrap);
     }
 
+    /**
+     * @deprecated in favor of wrapping the {@link Optional} in {@link Maybe}, then sequencing
+     */
     @SuppressWarnings("unchecked")
+    @Deprecated
     public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>, OptionalApp extends Optional<? extends Applicative<A, App>>> Fn1<Function<? super Optional<A>, ? extends AppOptional>, AppOptional> sequence(
             OptionalApp optionalApp) {
         return pure -> (AppOptional) sequence(Maybe.fromOptional(optionalApp), x -> pure.apply(((Maybe<A>) x).toOptional())
@@ -88,6 +90,10 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
         return Sequence.<A, App, AppIterable, IterableApp>sequence(iterableApp).apply(pure);
     }
 
+    /**
+     * @deprecated in favor of wrapping the {@link Optional} in {@link Maybe}, then sequencing
+     */
+    @Deprecated
     public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>,
             OptionalApp extends Optional<? extends Applicative<A, App>>> AppOptional sequence(OptionalApp optionalApp,
                                                                                               Function<? super Optional<A>, ? extends AppOptional> pure) {

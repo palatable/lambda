@@ -4,8 +4,9 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.adt.hmap.HMap.emptyHMap;
 import static com.jnape.palatable.lambda.adt.hmap.HMap.hMap;
@@ -24,13 +25,13 @@ public class HMapTest {
     @Test
     public void getForPresentKey() {
         TypeSafeKey<String> stringKey = typeSafeKey();
-        assertEquals(Optional.of("string value"),
+        assertEquals(just("string value"),
                      singletonHMap(stringKey, "string value").get(stringKey));
     }
 
     @Test
     public void getForAbsentKey() {
-        assertEquals(Optional.empty(),
+        assertEquals(nothing(),
                      singletonHMap(typeSafeKey(), "string value")
                              .get(typeSafeKey()));
     }
@@ -38,7 +39,7 @@ public class HMapTest {
     @Test
     public void getForPresentKeyWithNullValue() {
         TypeSafeKey<String> stringKey = typeSafeKey();
-        assertEquals(Optional.empty(),
+        assertEquals(nothing(),
                      singletonHMap(stringKey, null).get(stringKey));
     }
 

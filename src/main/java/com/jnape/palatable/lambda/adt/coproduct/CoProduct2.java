@@ -1,13 +1,15 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.Optional;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -74,9 +76,9 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
      *
      * @return a tuple of the coproduct projection
      */
-    default Tuple2<Optional<A>, Optional<B>> project() {
-        return match(a -> tuple(Optional.of(a), Optional.empty()),
-                     b -> tuple(Optional.empty(), Optional.of(b)));
+    default Tuple2<Maybe<A>, Maybe<B>> project() {
+        return match(a -> tuple(just(a), nothing()),
+                     b -> tuple(nothing(), just(b)));
     }
 
     /**
@@ -84,7 +86,7 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
      *
      * @return an optional value representing the projection of the "a" type index
      */
-    default Optional<A> projectA() {
+    default Maybe<A> projectA() {
         return project()._1();
     }
 
@@ -93,7 +95,7 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
      *
      * @return an optional value representing the projection of the "b" type index
      */
-    default Optional<B> projectB() {
+    default Maybe<B> projectB() {
         return project()._2();
     }
 

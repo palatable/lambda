@@ -1,10 +1,11 @@
 package com.jnape.palatable.lambda.lens.lenses;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.lens.Lens;
 import org.junit.Test;
 
-import java.util.Optional;
-
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
@@ -21,10 +22,10 @@ public class IterableLensTest {
 
     @Test
     public void head() {
-        Lens<Iterable<Integer>, Iterable<Integer>, Optional<Integer>, Integer> head = IterableLens.head();
+        Lens<Iterable<Integer>, Iterable<Integer>, Maybe<Integer>, Integer> head = IterableLens.head();
 
-        assertEquals(Optional.of(1), view(head, asList(1, 2, 3)));
-        assertEquals(Optional.empty(), view(head, emptyList()));
+        assertEquals(just(1), view(head, asList(1, 2, 3)));
+        assertEquals(nothing(), view(head, emptyList()));
 
         assertThat(set(head, 1, emptyList()), iterates(1));
         assertThat(set(head, 1, asList(2, 2, 3)), iterates(1, 2, 3));

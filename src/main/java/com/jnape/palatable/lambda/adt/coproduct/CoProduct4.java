@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple4;
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.Optional;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -93,11 +95,11 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
      * @return a tuple of the coproduct projection
      * @see CoProduct2#project()
      */
-    default Tuple4<Optional<A>, Optional<B>, Optional<C>, Optional<D>> project() {
-        return match(a -> tuple(Optional.of(a), Optional.empty(), Optional.empty(), Optional.empty()),
-                     b -> tuple(Optional.empty(), Optional.of(b), Optional.empty(), Optional.empty()),
-                     c -> tuple(Optional.empty(), Optional.empty(), Optional.of(c), Optional.empty()),
-                     d -> tuple(Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(d)));
+    default Tuple4<Maybe<A>, Maybe<B>, Maybe<C>, Maybe<D>> project() {
+        return match(a -> tuple(just(a), nothing(), nothing(), nothing()),
+                     b -> tuple(nothing(), just(b), nothing(), nothing()),
+                     c -> tuple(nothing(), nothing(), just(c), nothing()),
+                     d -> tuple(nothing(), nothing(), nothing(), just(d)));
     }
 
     /**
@@ -105,7 +107,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
      *
      * @return an optional value representing the projection of the "a" type index
      */
-    default Optional<A> projectA() {
+    default Maybe<A> projectA() {
         return project()._1();
     }
 
@@ -114,7 +116,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
      *
      * @return an optional value representing the projection of the "b" type index
      */
-    default Optional<B> projectB() {
+    default Maybe<B> projectB() {
         return project()._2();
     }
 
@@ -123,7 +125,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
      *
      * @return an optional value representing the projection of the "c" type index
      */
-    default Optional<C> projectC() {
+    default Maybe<C> projectC() {
         return project()._3();
     }
 
@@ -132,7 +134,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
      *
      * @return an optional value representing the projection of the "d" type index
      */
-    default Optional<D> projectD() {
+    default Maybe<D> projectD() {
         return project()._4();
     }
 

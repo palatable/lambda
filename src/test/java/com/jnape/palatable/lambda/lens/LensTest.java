@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.lens;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
@@ -14,9 +15,9 @@ import testsupport.traits.MonadLaws;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.lens.Lens.lens;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
@@ -65,14 +66,14 @@ public class LensTest {
     @Test
     public void mapsIndividuallyOverParameters() {
         Lens<String, Boolean, Character, Integer> lens = lens(s -> s.charAt(0), (s, b) -> s.length() == b);
-        Lens<Optional<String>, Optional<Boolean>, Optional<Character>, Optional<Integer>> theGambit = lens
-                .mapS((Optional<String> optS) -> optS.orElse(""))
-                .mapT(Optional::ofNullable)
-                .mapA(Optional::ofNullable)
-                .mapB((Optional<Integer> optI) -> optI.orElse(-1));
+        Lens<Maybe<String>, Maybe<Boolean>, Maybe<Character>, Maybe<Integer>> theGambit = lens
+                .mapS((Maybe<String> maybeS) -> maybeS.orElse(""))
+                .mapT(Maybe::maybe)
+                .mapA(Maybe::maybe)
+                .mapB((Maybe<Integer> maybeI) -> maybeI.orElse(-1));
 
-        Lens.Fixed<Optional<String>, Optional<Boolean>, Optional<Character>, Optional<Integer>, Identity, Identity<Optional<Boolean>>, Identity<Optional<Integer>>> fixed = theGambit.fix();
-        assertEquals(Optional.of(true), fixed.apply(optC -> new Identity<>(optC.map(c -> parseInt(Character.toString(c)))), Optional.of("321")).runIdentity());
+        Lens.Fixed<Maybe<String>, Maybe<Boolean>, Maybe<Character>, Maybe<Integer>, Identity, Identity<Maybe<Boolean>>, Identity<Maybe<Integer>>> fixed = theGambit.fix();
+        assertEquals(just(true), fixed.apply(maybeC -> new Identity<>(maybeC.fmap(c -> parseInt(Character.toString(c)))), just("321")).runIdentity());
     }
 
     @Test

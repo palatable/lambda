@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.lens.lenses;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.lens.Lens;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,9 +9,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static com.jnape.palatable.lambda.lens.lenses.MapLens.keys;
@@ -51,9 +52,9 @@ public class MapLensTest {
 
     @Test
     public void valueAtFocusesOnValueAtKey() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Optional<Integer>, Integer> atFoo = MapLens.valueAt("foo");
+        Lens<Map<String, Integer>, Map<String, Integer>, Maybe<Integer>, Integer> atFoo = MapLens.valueAt("foo");
 
-        assertEquals(Optional.of(1), view(atFoo, m));
+        assertEquals(just(1), view(atFoo, m));
 
         Map<String, Integer> updated = set(atFoo, -1, m);
         assertEquals(new HashMap<String, Integer>() {{

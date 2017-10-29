@@ -101,11 +101,11 @@ public class MaybeTest {
 
     @Test
     public void justOrThrow() {
-        just(1).orThrow(IllegalStateException::new);
+        just(1).orElseThrow(IllegalStateException::new);
     }
 
     @Test(expected = IllegalStateException.class)
     public void nothingOrThrow() {
-        nothing().orThrow(IllegalStateException::new);
+        nothing().orElseThrow(IllegalStateException::new);
     }
 }

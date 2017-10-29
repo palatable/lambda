@@ -8,6 +8,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CoProductN#embed` no longer eagerly invokes functions
 
 ### Added
+- `Monad` arrives. The following `Applicative`s are now also `Monad`:
+  - `Lens`
+  - `Const`
+  - `Tuple*`
+  - `Choice*`
+  - `Identity`
+  - `Either`
+  - `Fn*`
+  - `LambdaIterable`
+  - `Maybe`
+  - `SingletonHList` 
 - `Force`, for forcing iteration of an `Iterable` to perform any side-effects
 - `Snoc`, for lazily appending an element to the end of an `Iterable`
 - `Coalesce`, for folding an `Iterable<Either<L, R>>` into an `Either<Iterable<L>, Iterable<R>>`
@@ -26,9 +37,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Traversables` and all methods therein, in favor of either `LambdaIterable` or `Maybe`
 - `TraversableOptional` in favor of `Maybe`
 - `TraversableIterable` in favor of `LambdaIterable`
+- `Sequence` overloads supporting `Optional` in favor of converting `Optional` to `Maybe` and then sequencing
+- `Either#toOptional` and `Either#fromOptional` in favor of its `Maybe` counterparts
 
 ### Changed
+- ***Breaking Change***: `java.util.Optional` replaced with `Maybe` across the board
 - `Profunctor#diMap/L/R` parameters allow variance
+- `Either#toOptional` no longer allows `null` values in the right side, and is now in sync with CoProduct#projectB
+- `Unfoldr` allows variance on input
 
 ## [1.6.3] - 2017-09-27
 ### Fixed
