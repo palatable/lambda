@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * <ul>
  * <li>left identity: <code>m.pure(a).flatMap(fn).equals(fn.apply(a))</code></li>
  * <li>right identity: <code>m.flatMap(m::pure).equals(m)</code></li>
- * <li>associativity: <code>m.flatMap(f).flatMap(g).equals(m.flatMap(a -> f.apply(a).flatMap(g)))</code></li>
+ * <li>associativity: <code>m.flatMap(f).flatMap(g).equals(m.flatMap(a -&gt; f.apply(a).flatMap(g)))</code></li>
  * </ul>
  * <p>
  * For more information, read about
