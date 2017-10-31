@@ -72,9 +72,6 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
                         .fmap(LambdaIterable::unwrap);
     }
 
-    /**
-     * @deprecated in favor of wrapping the {@link Optional} in {@link Maybe}, then sequencing
-     */
     @SuppressWarnings("unchecked")
     @Deprecated
     public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>, OptionalApp extends Optional<? extends Applicative<A, App>>> Fn1<Function<? super Optional<A>, ? extends AppOptional>, AppOptional> sequence(
@@ -90,9 +87,6 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
         return Sequence.<A, App, AppIterable, IterableApp>sequence(iterableApp).apply(pure);
     }
 
-    /**
-     * @deprecated in favor of wrapping the {@link Optional} in {@link Maybe}, then sequencing
-     */
     @Deprecated
     public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>,
             OptionalApp extends Optional<? extends Applicative<A, App>>> AppOptional sequence(OptionalApp optionalApp,
