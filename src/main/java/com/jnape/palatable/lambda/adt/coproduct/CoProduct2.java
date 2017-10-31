@@ -3,11 +3,13 @@ package com.jnape.palatable.lambda.adt.coproduct;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.Optional;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
@@ -122,6 +124,8 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
     @SuppressWarnings("unchecked")
     default <R> R embed(Function<? super CP2, ? extends R> aFn,
                         Function<? super CP2, ? extends R> bFn) {
-        return match(constantly(aFn.apply((CP2) this)), constantly(bFn.apply((CP2) this)));
+        return this.<Fn1<CP2, R>>match(constantly(fn1(aFn)),
+                                       constantly(fn1(bFn)))
+                .apply((CP2) this);
     }
 }

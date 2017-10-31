@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple4;
+import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.Optional;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
@@ -151,10 +153,11 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
                         Function<? super CP4, ? extends R> bFn,
                         Function<? super CP4, ? extends R> cFn,
                         Function<? super CP4, ? extends R> dFn) {
-        return match(constantly(aFn.apply((CP4) this)),
-                     constantly(bFn.apply((CP4) this)),
-                     constantly(cFn.apply((CP4) this)),
-                     constantly(dFn.apply((CP4) this)));
+        return this.<Fn1<CP4, R>>match(constantly(fn1(aFn)),
+                                       constantly(fn1(bFn)),
+                                       constantly(fn1(cFn)),
+                                       constantly(fn1(dFn)))
+                .apply((CP4) this);
     }
 
 }
