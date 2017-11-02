@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.EmptyIterableSupport;
 import testsupport.traits.FiniteIteration;
 import testsupport.traits.ImmutableIteration;
+import testsupport.traits.InfiniteIterableSupport;
 import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
@@ -19,7 +20,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 @RunWith(Traits.class)
 public class MapTest {
 
-    @TestTraits({Laziness.class, EmptyIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
+    @TestTraits({Laziness.class, EmptyIterableSupport.class, InfiniteIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
     public Fn1<? extends Iterable, ?> createTraitsTestSubject() {
         return map(id());
     }
