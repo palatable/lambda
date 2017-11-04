@@ -19,8 +19,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
   - `LambdaIterable`
   - `Maybe`
   - `SingletonHList` 
-- `Inits`, for iterating all the initial element subsequences of an `Iterable` 
-- `Tails`, for iterating all the tail element subsequences of an `Iterable` 
 - `Force`, for forcing iteration of an `Iterable` to perform any side-effects
 - `Snoc`, for lazily appending an element to the end of an `Iterable`
 - `Coalesce`, for folding an `Iterable<Either<L, R>>` into an `Either<Iterable<L>, Iterable<R>>`
@@ -29,6 +27,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Maybe`, lambda's analog of `java.util.Optional` conforming to all the lambda types
 - `Contravariant`, an interface representing functors that map contravariantly over their parameters
 - `Profunctor` extends `Contravariant`
+- `Tails`, for iterating all the tail element subsequences of an `Iterable`
+- `Inits`, for iterating all the initial element subsequences of an `Iterable`  
+- `Init`, for iterating all but the last element of an `Iterable`
 
 ### Removed
 - `Fn1#then(Function<? super B, ? extends C>)`, deprecated in previous release 
