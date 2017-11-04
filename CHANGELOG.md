@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
   - `Maybe`
   - `SingletonHList` 
 - `Inits`, for iterating all the initial element subsequences of an `Iterable` 
+- `Tails`, for iterating all the tail element subsequences of an `Iterable` 
 - `Force`, for forcing iteration of an `Iterable` to perform any side-effects
 - `Snoc`, for lazily appending an element to the end of an `Iterable`
 - `Coalesce`, for folding an `Iterable<Either<L, R>>` into an `Either<Iterable<L>, Iterable<R>>`
