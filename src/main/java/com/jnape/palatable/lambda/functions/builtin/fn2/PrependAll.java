@@ -2,11 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Head.head;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Tail.tail;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
-import static java.util.Collections.emptyList;
+import com.jnape.palatable.lambda.iterators.PrependingIterator;
 
 /**
  * Lazily prepend each value with of the <code>Iterable</code> with the supplied separator value. An empty
@@ -24,7 +20,7 @@ public final class PrependAll<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
     @Override
     public Iterable<A> apply(A a, Iterable<A> as) {
-        return () -> head(as).fmap(head -> cons(a, cons(head, prependAll(a, tail(as))))).orElse(emptyList()).iterator();
+        return () -> new PrependingIterator<>(a, as.iterator());
     }
 
     @SuppressWarnings("unchecked")

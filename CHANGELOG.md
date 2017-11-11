@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Fixed
 - `CoProductN#embed` no longer eagerly invokes functions
+- `PrependAll` now only creates `O(1)` `Iterable`s instead of `O(3n + 1)` 
 
 ### Added
 - `Monad` arrives. The following `Applicative`s are now also `Monad`:
