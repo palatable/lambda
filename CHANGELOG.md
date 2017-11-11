@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Tails`, for iterating all the tail element subsequences of an `Iterable`
 - `Inits`, for iterating all the initial element subsequences of an `Iterable`  
 - `Init`, for iterating all but the last element of an `Iterable`
+- `CatMaybes`, for unwrapping the present values in an `Iterable<Maybe<A>>` to produce an `Iterable<A>`
 
 ### Removed
 - `Fn1#then(Function<? super B, ? extends C>)`, deprecated in previous release 
