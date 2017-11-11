@@ -327,8 +327,9 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
             return this::apply;
         }
 
-        default <Q> Lens.Simple<Q, A> compose(Lens.Simple<Q, S> g) {
-            return Lens.super.compose(g).coerce();
+        @SuppressWarnings("unchecked")
+        default <R> Lens.Simple<R, A> compose(Lens.Simple<R, S> g) {
+            return Lens.super.compose(g)::apply;
         }
 
         default <B> Lens.Simple<S, B> andThen(Lens.Simple<A, B> f) {
