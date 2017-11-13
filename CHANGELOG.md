@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [2.0.0] - 2017-11-13
+### Changed
+- ***Breaking Change***: `java.util.Optional` replaced with `Maybe` across the board
+- `Profunctor#diMap/L/R` parameters allow variance
+- `Either#toOptional` no longer allows `null` values in the right side, and is now in sync with CoProduct#projectB
+- `Unfoldr` allows variance on input
+
 ### Fixed
 - `CoProductN#embed` no longer eagerly invokes functions
 - `PrependAll` now only creates `O(1)` `Iterable`s instead of `O(3n + 1)` 
@@ -45,13 +53,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Sequence` overloads supporting `Optional` in favor of converting `Optional` to `Maybe` and then sequencing
 - `Either#toOptional` and `Either#fromOptional` in favor of its `Maybe` counterparts
 
-### Changed
-- ***Breaking Change***: `java.util.Optional` replaced with `Maybe` across the board
-- `Profunctor#diMap/L/R` parameters allow variance
-- `Either#toOptional` no longer allows `null` values in the right side, and is now in sync with CoProduct#projectB
-- `Unfoldr` allows variance on input
-
 ## [1.6.3] - 2017-09-27
+### Changed
+- Loosening variance on `Fn2#fn2` and `Fn1#fn1`
+
 ### Fixed
 - `ConcatenatingIterator` bug where deeply nested `xs` skip elements
 
@@ -59,9 +64,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Fn1#then` in favor of `Fn1#andThen` (redundant)
 - `Fn1#adapt` in favor of `Fn1#fn1` (rename)
 - `Fn2#adapt` in favor of `Fn2#fn2` (rename)
-
-### Changed
-- Loosening variance on `Fn2#fn2` and `Fn1#fn1`
 
 ### Added
 - `Fn1#andThen` overload to support composition with `Bifunction`
@@ -75,6 +77,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Xor`, a monoid representing logical exclusive-or
 
 ## [1.6.2] - 2017-08-20
+### Changed
+- Removing need for various suppressed unchecked warnings in `ChoiceN` types
+- `HList` abstract super type loses both unnecessary parameters
+
 ### Fixed
 - ClassCastException `BiPredicate.flip` 
 
@@ -83,15 +89,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Compose` semigroup and monoid formed over `CompletableFuture`
 - `Monoid` and `Semigroup` both preserve type specificity through `flip` calls 
 
-### Changed
-- Removing need for various suppressed unchecked warnings in `ChoiceN` types
-- `HList` abstract super type loses both unnecessary parameters 
-
 ## [1.6.1] - 2017-06-17
 ### Changed
 - Loosening visibility on `Traversables` methods to `public`
 
 ## [1.6.0] - 2017-06-04
+### Changed
+- `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter
+- `Identity` supports value equality
+- `Const` supports value equality
+- `partition` now only requires iterables of `CoProudct2`
+- `CoProductN`s receive a unification parameter, which trickles down to `Either` and `Choice`s
+- `Concat` now represents a monoid for `Iterable`; previous `Concat` semigroup and monoid renamed to more appropriate `AddAll`
+- `Lens` is now an instance of `Profunctor`
+
 ### Added
 - `Either#invert` is pulled up into `CoProduct2` and additionally specialized for `Choice2`
 - `CoProductN#embed`
@@ -104,16 +115,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `sequence` for wrapping a traversable in an applicative during traversal 
 - `Compose`, an applicative functor that represents type-level functor composition
 
-### Changed
-- `Functor`, `Bifunctor`, and `Profunctor` (as well as all instances) get a unification parameter
-- `Identity` supports value equality
-- `Const` supports value equality
-- `partition` now only requires iterables of `CoProudct2`
-- `CoProductN`s receive a unification parameter, which trickles down to `Either` and `Choice`s
-- `Concat` now represents a monoid for `Iterable`; previous `Concat` semigroup and monoid renamed to more appropriate `AddAll`
-- `Lens` is now an instance of `Profunctor`
-
 ## [1.5.6] - 2017-02-11
+### Changed
+- `CoProductN.[a-e]()` static factory methods moved to equivalent `ChoiceN` class. Coproduct interfaces now solely represent methods, no longer have anonymous implementations, and no longer require a `Functor` constraint
+
 ### Added
 - `ChoiceN` types, representing concrete coproduct implementations that are also `Functor` and `BiFunctor`
 - `toMap`, `last`, `cons`, `prependAll`, `intersperse`
@@ -121,17 +126,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `First` and `Last` monoids over `Optional`
 - `And` and `Or` monoids over `Boolean`
 
-### Changed
-- `CoProductN.[a-e]()` static factory methods moved to equivalent `ChoiceN` class. Coproduct interfaces now solely represent methods, no longer have anonymous implementations, and no longer require a `Functor` constraint
-
 ## [1.5.5] - 2016-12-17
+### Changed
+- semigroups and monoids moved under `fn2` package
+
 ### Added
 - `CoProductN#project`, to project disjoint union types into tuples of `Optional` values
 - `CoProductN#converge`, to drop the magnitude of a coproduct down by one type
 - `toCollection` and `size`
-
-### Changed
-- semigroups and monoids moved under `fn2` package
 
 ## [1.5.4] - 2016-11-27
 ### Added
@@ -150,11 +152,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Either` is now a `CoProduct2` 
 
 ## [1.5.2] - 2016-09-24
-### Added
-- Heterogeneous list indexes arrive via `Index`
-
 ### Changed
 - `Lens` static factory method renaming
+
+### Added
+- Heterogeneous list indexes arrive via `Index`
 
 ## [1.5.1] - 2016-08-30
 ### Added
@@ -172,32 +174,32 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - All function input values become `java.util.function` types, and all function output values remain lambda types, for better compatibility
 
 ## [1.3] - 2016-07-31
-### Added
-- `HList` specializations support random access lookup
-
 ### Changed
 - `Profunctor` inheritance hierarchy
 - Renaming `Identity` to `Id`
 - `Monadic/Dyadic/TriadicFunction` is now `Fn1/2/3`
 
+### Added
+- `HList` specializations support random access lookup
+
 ## [1.2] - 2016-06-27
+### Changed
+- `Tuple`s moved under `HList` as specialized subtypes
+
 ### Added
 - `Either#peek`
 - `HMap`, heterogeneous maps
 - `Tuple2` is now also a `Map.Entry`
 
-### Changed
-- `Tuple`s moved under `HList` as specialized subtypes
-
 ## [1.1] - 2016-06-21
+### Changed
+- Better interoperability between lambda and `java.util.function` types
+
 ### Added
 - `scanLeft`
 - `HList`, heterogeneous lists
 - Added up to `Tuple5`
 - `Either`, specialized coproduct with success/failure semantics
-
-### Changed
-- Better interoperability between lambda and `java.util.function` types
 
 ## [1.0] - 2015-12-29
 ### Added
@@ -208,7 +210,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-1.6.3...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-2.0.0...HEAD
+[2.0.0]: https://github.com/palatable/lambda/compare/lambda-1.6.3...lambda-2.0.0
 [1.6.3]: https://github.com/palatable/lambda/compare/lambda-1.6.2...lambda-1.6.3
 [1.6.2]: https://github.com/palatable/lambda/compare/lambda-1.6.1...lambda-1.6.2
 [1.6.1]: https://github.com/palatable/lambda/compare/lambda-1.6.0...lambda-1.6.1
