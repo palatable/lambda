@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class Fn3Test {
@@ -27,5 +28,14 @@ public class Fn3Test {
     @Test
     public void uncurries() {
         assertThat(CHECK_MULTIPLICATION.uncurry().apply(tuple(2, 3), 6), is(true));
+    }
+
+    @Test
+    public void fn3() {
+        Fn1<String, Fn2<String, String, String>> fn1 = a -> (b, c) -> a + b + c;
+        assertEquals("abc", Fn3.fn3(fn1).apply("a", "b", "c"));
+
+        Fn2<String, String, Fn1<String, String>> fn2 = (a, b) -> c -> a + b + c;
+        assertEquals("abc", Fn3.fn3(fn2).apply("a", "b", "c"));
     }
 }

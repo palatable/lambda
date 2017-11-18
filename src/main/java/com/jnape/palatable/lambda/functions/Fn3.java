@@ -61,10 +61,38 @@ public interface Fn3<A, B, C, D> extends Fn2<A, B, Fn1<C, D>> {
      * Returns an <code>Fn2</code> that takes the first two arguments as a <code>Tuple2&lt;A, B&gt;</code> and the third
      * argument.
      *
-     * @return an Fn2 taking a Tuple2 and the third argument
+     * @return an Fn2 taking a Tuple2 `and the third argument
      */
     @Override
     default Fn2<Tuple2<A, B>, C, D> uncurry() {
         return (ab, c) -> apply(ab._1(), ab._2(), c);
+    }
+
+    /**
+     * Static factory method for wrapping a curried {@link Fn1} in an {@link Fn3}.
+     *
+     * @param curriedFn1 the curried fn1 to adapt
+     * @param <A>        the first input argument type
+     * @param <B>        the second input argument type
+     * @param <C>        the third input argument type
+     * @param <D>        the output type
+     * @return the Fn3
+     */
+    static <A, B, C, D> Fn3<A, B, C, D> fn3(Fn1<A, Fn2<B, C, D>> curriedFn1) {
+        return (a, b, c) -> curriedFn1.apply(a).apply(b, c);
+    }
+
+    /**
+     * Static factory method for wrapping a curried {@link Fn2} in an {@link Fn3}.
+     *
+     * @param curriedFn2 the curried fn2 to adapt
+     * @param <A>        the first input argument type
+     * @param <B>        the second input argument type
+     * @param <C>        the third input argument type
+     * @param <D>        the output type
+     * @return the Fn3
+     */
+    static <A, B, C, D> Fn3<A, B, C, D> fn3(Fn2<A, B, Fn1<C, D>> curriedFn2) {
+        return (a, b, c) -> curriedFn2.apply(a, b).apply(c);
     }
 }

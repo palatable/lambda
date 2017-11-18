@@ -82,4 +82,49 @@ public interface Fn4<A, B, C, D, E> extends Fn3<A, B, C, Fn1<D, E>> {
     default Fn3<Tuple2<A, B>, C, D, E> uncurry() {
         return (ab, c, d) -> apply(ab._1(), ab._2(), c, d);
     }
+
+    /**
+     * Static factory method for wrapping a curried {@link Fn1} in an {@link Fn4}.
+     *
+     * @param curriedFn1 the curried fn1 to adapt
+     * @param <A>        the first input argument type
+     * @param <B>        the second input argument type
+     * @param <C>        the third input argument type
+     * @param <D>        the fourth input argument type
+     * @param <E>        the output type
+     * @return the Fn4
+     */
+    static <A, B, C, D, E> Fn4<A, B, C, D, E> fn4(Fn1<A, Fn3<B, C, D, E>> curriedFn1) {
+        return (a, b, c, d) -> curriedFn1.apply(a).apply(b, c, d);
+    }
+
+    /**
+     * Static factory method for wrapping a curried {@link Fn2} in an {@link Fn4}.
+     *
+     * @param curriedFn2 the curried fn2 to adapt
+     * @param <A>        the first input argument type
+     * @param <B>        the second input argument type
+     * @param <C>        the third input argument type
+     * @param <D>        the fourth input argument type
+     * @param <E>        the output type
+     * @return the Fn4
+     */
+    static <A, B, C, D, E> Fn4<A, B, C, D, E> fn4(Fn2<A, B, Fn2<C, D, E>> curriedFn2) {
+        return (a, b, c, d) -> curriedFn2.apply(a, b).apply(c, d);
+    }
+
+    /**
+     * Static factory method for wrapping a curried {@link Fn3} in an {@link Fn4}.
+     *
+     * @param curriedFn3 the curried fn3 to adapt
+     * @param <A>        the first input argument type
+     * @param <B>        the second input argument type
+     * @param <C>        the third input argument type
+     * @param <D>        the fourth input argument type
+     * @param <E>        the output type
+     * @return the Fn4
+     */
+    static <A, B, C, D, E> Fn4<A, B, C, D, E> fn4(Fn3<A, B, C, Fn1<D, E>> curriedFn3) {
+        return (a, b, c, d) -> curriedFn3.apply(a, b, c).apply(d);
+    }
 }
