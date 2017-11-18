@@ -475,21 +475,24 @@ HNil nil = hList.tail().tail();
 
 One of the primary downsides to using `HList`s in Java is how quickly the type signature grows.
 
-To address this, tuples in lambda are specializations of `HList`s up to 5 elements deep, with added support for index-based accessor methods.
+To address this, tuples in lambda are specializations of `HList`s up to 8 elements deep, with added support for index-based accessor methods.
 
 ```Java
 HNil nil = HList.nil();
-SingletonHList<Integer> singleton = nil.cons(5);
-Tuple2<Integer, Integer> tuple2 = singleton.cons(4);
-Tuple3<Integer, Integer, Integer> tuple3 = tuple2.cons(3);
-Tuple4<Integer, Integer, Integer, Integer> tuple4 = tuple3.cons(2);
-Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = tuple4.cons(1);
+SingletonHList<Integer> singleton = nil.cons(8);
+Tuple2<Integer, Integer> tuple2 = singleton.cons(7);
+Tuple3<Integer, Integer, Integer> tuple3 = tuple2.cons(6);
+Tuple4<Integer, Integer, Integer, Integer> tuple4 = tuple3.cons(5);
+Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = tuple4.cons(4);
+Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple6 = tuple5.cons(3);
+Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple7 = tuple6.cons(2);
+Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple8 = tuple7.cons(1);
 
-System.out.println(tuple2._1()); // prints 4
-System.out.println(tuple5._5()); // prints 5
+System.out.println(tuple2._1()); // prints 7
+System.out.println(tuple8._8()); // prints 8
 ```
 
-Additionally, `HList` provides convenience static factory methods for directly constructing lists of up to 5 elements:
+Additionally, `HList` provides convenience static factory methods for directly constructing lists of up to 8 elements:
 
 ```Java
 SingletonHList<Integer> singleton = HList.singletonHList(1);
@@ -497,6 +500,9 @@ Tuple2<Integer, Integer> tuple2 = HList.tuple(1, 2);
 Tuple3<Integer, Integer, Integer> tuple3 = HList.tuple(1, 2, 3);
 Tuple4<Integer, Integer, Integer, Integer> tuple4 = HList.tuple(1, 2, 3, 4);
 Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = HList.tuple(1, 2, 3, 4, 5);
+Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple6 = HList.tuple(1, 2, 3, 4, 5, 6);
+Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple7 = HList.tuple(1, 2, 3, 4, 5, 6, 7);
+Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple8 = HList.tuple(1, 2, 3, 4, 5, 6, 7, 8);
 ```
 
 `Index` can be used for type-safe retrieval and updating of elements at specific indexes:

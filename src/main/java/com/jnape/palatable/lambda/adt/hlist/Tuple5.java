@@ -1,9 +1,9 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
-import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.function.Function;
@@ -42,8 +42,8 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     }
 
     @Override
-    public <_0> HCons<_0, Tuple5<_1, _2, _3, _4, _5>> cons(_0 _0) {
-        return new HCons<>(_0, this);
+    public <_0> Tuple6<_0, _1, _2, _3, _4, _5> cons(_0 _0) {
+        return new Tuple6<>(_0, this);
     }
 
     /**

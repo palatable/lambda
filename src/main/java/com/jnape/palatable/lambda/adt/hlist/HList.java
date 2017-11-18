@@ -12,6 +12,7 @@ import java.util.Objects;
  * @see Tuple3
  * @see Tuple4
  * @see Tuple5
+ * @see Tuple6
  */
 public abstract class HList {
 
@@ -146,6 +147,85 @@ public abstract class HList {
     @SuppressWarnings("JavaDoc")
     public static <_1, _2, _3, _4, _5> Tuple5<_1, _2, _3, _4, _5> tuple(_1 _1, _2 _2, _3 _3, _4 _4, _5 _5) {
         return tuple(_2, _3, _4, _5).cons(_1);
+    }
+
+    /**
+     * Static factory method for creating a 6-element HList.
+     *
+     * @param _1   the head element
+     * @param _2   the second element
+     * @param _3   the third element
+     * @param _4   the fourth element
+     * @param _5   the fifth element
+     * @param _6   the sixth element
+     * @param <_1> the head element type
+     * @param <_2> the second element type
+     * @param <_3> the third element type
+     * @param <_4> the fourth element type
+     * @param <_5> the fifth element type
+     * @param <_6> the sixth element type
+     * @return the 6-element HList
+     * @see Tuple6
+     */
+    @SuppressWarnings("JavaDoc")
+    public static <_1, _2, _3, _4, _5, _6> Tuple6<_1, _2, _3, _4, _5, _6> tuple(_1 _1, _2 _2, _3 _3, _4 _4, _5 _5,
+                                                                                _6 _6) {
+        return tuple(_2, _3, _4, _5, _6).cons(_1);
+    }
+
+    /**
+     * Static factory method for creating a 7-element HList.
+     *
+     * @param _1   the head element
+     * @param _2   the second element
+     * @param _3   the third element
+     * @param _4   the fourth element
+     * @param _5   the fifth element
+     * @param _6   the sixth element
+     * @param _7   the seventh element
+     * @param <_1> the head element type
+     * @param <_2> the second element type
+     * @param <_3> the third element type
+     * @param <_4> the fourth element type
+     * @param <_5> the fifth element type
+     * @param <_6> the sixth element type
+     * @param <_7> the seventh element type
+     * @return the 7-element HList
+     * @see Tuple7
+     */
+    @SuppressWarnings("JavaDoc")
+    public static <_1, _2, _3, _4, _5, _6, _7> Tuple7<_1, _2, _3, _4, _5, _6, _7> tuple(_1 _1, _2 _2, _3 _3, _4 _4,
+                                                                                        _5 _5, _6 _6, _7 _7) {
+        return tuple(_2, _3, _4, _5, _6, _7).cons(_1);
+    }
+
+    /**
+     * Static factory method for creating an 8-element HList.
+     *
+     * @param _1   the head element
+     * @param _2   the second element
+     * @param _3   the third element
+     * @param _4   the fourth element
+     * @param _5   the fifth element
+     * @param _6   the sixth element
+     * @param _7   the seventh element
+     * @param _8   the eighth element
+     * @param <_1> the head element type
+     * @param <_2> the second element type
+     * @param <_3> the third element type
+     * @param <_4> the fourth element type
+     * @param <_5> the fifth element type
+     * @param <_6> the sixth element type
+     * @param <_7> the seventh element type
+     * @param <_8> the eighth element type
+     * @return the 8-element HList
+     * @see Tuple8
+     */
+    @SuppressWarnings("JavaDoc")
+    public static <_1, _2, _3, _4, _5, _6, _7, _8> Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> tuple(_1 _1, _2 _2, _3 _3,
+                                                                                                _4 _4, _5 _5, _6 _6,
+                                                                                                _7 _7, _8 _8) {
+        return tuple(_2, _3, _4, _5, _6, _7, _8).cons(_1);
     }
 
     /**
