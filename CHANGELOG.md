@@ -5,8 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 ### Added
-- `Tuple6` through `Tuple8`
 - `Fn3#fn3` and `Fn4#fn4` static factory methods
+- `Fn5` through `Fn8`
+- `Tuple5#into` 
+- `Tuple6` through `Tuple8`
 
 ## [2.0.0] - 2017-11-13
 ### Changed

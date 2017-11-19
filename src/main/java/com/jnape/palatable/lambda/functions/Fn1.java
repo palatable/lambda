@@ -90,7 +90,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      *
      * @param <Z> the new argument type
      * @param fn  the contravariant argument mapping function
-     * @return a new function from Z (the new argument type) to B (the same result)
+     * @return an {@link Fn1}&lt;Z, B&gt;
      */
     @Override
     default <Z> Fn1<Z, B> diMapL(Function<? super Z, ? extends A> fn) {
@@ -103,7 +103,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      *
      * @param <C> the new result type
      * @param fn  the covariant result mapping function
-     * @return a new function from A (the same argument type) to C (the new result type)
+     * @return an {@link Fn1}&lt;A, C&gt;
      */
     @Override
     default <C> Fn1<A, C> diMapR(Function<? super B, ? extends C> fn) {
@@ -117,7 +117,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      * @param <C> the new result type
      * @param lFn the contravariant argument mapping function
      * @param rFn the covariant result mapping function
-     * @return a new function from Z (the new argument type) to C (the new result type)
+     * @return an {@link Fn1}&lt;Z, C&gt;
      */
     @Override
     default <Z, C> Fn1<Z, C> diMap(Function<? super Z, ? extends A> lFn, Function<? super B, ? extends C> rFn) {
@@ -130,12 +130,12 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
     }
 
     /**
-     * Override of {@link Function#compose(Function)}, returning an instance of <code>Fn1</code> for compatibility.
+     * Override of {@link Function#compose(Function)}, returning an instance of {@link Fn1} for compatibility.
      * Right-to-left composition.
      *
      * @param before the function who's return value is this function's argument
      * @param <Z>    the new argument type
-     * @return a new function from Z (the new argument type) to B (the same result type)
+     * @return an {@link Fn1}&lt;Z, B&gt;
      */
     @Override
     default <Z> Fn1<Z, B> compose(Function<? super Z, ? extends A> before) {
@@ -149,7 +149,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      * @param before the function to pass its return value to this function's input
      * @param <Y>    the resulting function's first argument type
      * @param <Z>    the resulting function's second argument type
-     * @return a new function from Y x Z to B
+     * @return an {@link Fn2}&lt;Y, Z, B&gt;
      */
     default <Y, Z> Fn2<Y, Z, B> compose(BiFunction<? super Y, ? super Z, ? extends A> before) {
         return compose(fn2(before));
@@ -161,7 +161,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      * @param before the function to pass its return value to this function's input
      * @param <Y>    the resulting function's first argument type
      * @param <Z>    the resulting function's second argument type
-     * @return a new function from Y x Z to B
+     * @return an {@link Fn2}&lt;Y, Z, B&gt;
      */
     default <Y, Z> Fn2<Y, Z, B> compose(Fn2<? super Y, ? super Z, ? extends A> before) {
         return fn2(before.fmap(this::compose))::apply;
@@ -174,19 +174,19 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      * @param after the function to invoke on this function's return value
      * @param <C>   the resulting function's second argument type
      * @param <D>   the resulting function's return type
-     * @return a new function from A x C to D
+     * @return an {@link Fn2}&lt;A, C, D&gt;
      */
     default <C, D> Fn2<A, C, D> andThen(BiFunction<? super B, ? super C, ? extends D> after) {
         return (a, c) -> after.apply(apply(a), c);
     }
 
     /**
-     * Override of {@link Function#andThen(Function)}, returning an instance of <code>Fn1</code> for compatibility.
+     * Override of {@link Function#andThen(Function)}, returning an instance of {@link Fn1} for compatibility.
      * Left-to-right composition.
      *
      * @param after the function to invoke on this function's return value
      * @param <C>   the new result type
-     * @return a new function from A (the same argument type) to C (the new result type)
+     * @return an <code>{@link Fn1}&lt;A, C&gt;</code>
      */
     @Override
     default <C> Fn1<A, C> andThen(Function<? super B, ? extends C> after) {
@@ -200,7 +200,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      * @param function the function to adapt
      * @param <A>      the input argument type
      * @param <B>      the output type
-     * @return the Fn1
+     * @return the {@link Fn1}
      */
     static <A, B> Fn1<A, B> fn1(Function<? super A, ? extends B> function) {
         return function::apply;

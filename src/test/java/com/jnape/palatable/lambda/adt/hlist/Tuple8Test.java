@@ -93,6 +93,12 @@ public class Tuple8Test {
     }
 
     @Test
+    public void into() {
+        Tuple8<String, Integer, Double, Boolean, Float, Short, Byte, Long> tuple = tuple("foo", 1, 2.0d, false, 3f, (short) 4, (byte) 5, 6L);
+        assertEquals("foo12.0false3.0456", tuple.into((s, i, d, b, f, sh, by, l) -> s + i + d + b + f + sh + by + l));
+    }
+
+    @Test
     public void zipPrecedence() {
         Tuple8<String, Integer, Integer, Integer, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4, 5, 6, 7);
         Tuple8<String, Integer, Integer, Integer, Integer, Integer, Integer, Function<? super Integer, ? extends Integer>> b = tuple("bar", 2, 3, 4, 5, 6, 7, x -> x + 1);

@@ -338,7 +338,7 @@ In addition to implementing `fmap` from `Functor`, implementing an applicative f
 
 ### <a name="monads">Monads</a>
 
-Monads are applicative functors that additionally support a chaining operation, `flatMap :: (a -> f b) -> f a -> f b`: a function from the functor's parameter to a new instance of the same functor over a potentially different parameter. Because the function passed to `flatMap` can return a different instance of the same functor, functors can take advantage of multiple constructions that yield different results functorial operations, like short-circuiting, as in the following example using `Either`:
+Monads are applicative functors that additionally support a chaining operation, `flatMap :: (a -> f b) -> f a -> f b`: a function from the functor's parameter to a new instance of the same functor over a potentially different parameter. Because the function passed to `flatMap` can return a different instance of the same functor, functors can take advantage of multiple constructions that yield different functorial operations, like short-circuiting, as in the following example using `Either`:
 
 ```Java
 class Person {

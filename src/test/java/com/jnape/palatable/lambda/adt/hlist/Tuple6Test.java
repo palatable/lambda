@@ -82,6 +82,12 @@ public class Tuple6Test {
     }
 
     @Test
+    public void into() {
+        Tuple6<String, Integer, Double, Boolean, Float, Short> tuple = tuple("foo", 1, 2.0d, false, 3f, (short) 4);
+        assertEquals("foo12.0false3.04", tuple.into((s, i, d, b, f, sh) -> s + i + d + b + f + sh));
+    }
+
+    @Test
     public void fill() {
         assertEquals(tuple("foo", "foo", "foo", "foo", "foo", "foo"), Tuple6.fill("foo"));
     }

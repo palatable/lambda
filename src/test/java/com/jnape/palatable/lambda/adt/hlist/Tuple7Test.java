@@ -90,6 +90,12 @@ public class Tuple7Test {
     }
 
     @Test
+    public void into() {
+        Tuple7<String, Integer, Double, Boolean, Float, Short, Byte> tuple = tuple("foo", 1, 2.0d, false, 3f, (short) 4, (byte) 5);
+        assertEquals("foo12.0false3.045", tuple.into((s, i, d, b, f, sh, by) -> s + i + d + b + f + sh + by));
+    }
+
+    @Test
     public void zipPrecedence() {
         Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4, 5, 6);
         Tuple7<String, Integer, Integer, Integer, Integer, Integer, Function<? super Integer, ? extends Integer>> b = tuple("bar", 2, 3, 4, 5, 6, x -> x + 1);
