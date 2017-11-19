@@ -15,6 +15,7 @@ com.jnape.palatable.lambda.iterators
 com.jnape.palatable.lambda.lens
 com.jnape.palatable.lambda.lens.functions
 com.jnape.palatable.lambda.lens.lenses
+com.jnape.palatable.lambda.monad
 com.jnape.palatable.lambda.monoid
 com.jnape.palatable.lambda.monoid.builtin
 com.jnape.palatable.lambda.semigroup
