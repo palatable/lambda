@@ -1,13 +1,11 @@
 package com.jnape.palatable.lambda.functions.builtin.fn2;
 
-import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.traversable.LambdaIterable;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
@@ -72,25 +70,9 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
                         .fmap(LambdaIterable::unwrap);
     }
 
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>, OptionalApp extends Optional<? extends Applicative<A, App>>> Fn1<Function<? super Optional<A>, ? extends AppOptional>, AppOptional> sequence(
-            OptionalApp optionalApp) {
-        return pure -> (AppOptional) sequence(Maybe.fromOptional(optionalApp), x -> pure.apply(((Maybe<A>) x).toOptional())
-                .fmap(Maybe::fromOptional))
-                .fmap(Maybe::toOptional);
-    }
-
     public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>,
             IterableApp extends Iterable<? extends Applicative<A, App>>> AppIterable sequence(IterableApp iterableApp,
                                                                                               Function<? super Iterable<A>, ? extends AppIterable> pure) {
         return Sequence.<A, App, AppIterable, IterableApp>sequence(iterableApp).apply(pure);
-    }
-
-    @Deprecated
-    public static <A, App extends Applicative, AppOptional extends Applicative<Optional<A>, App>,
-            OptionalApp extends Optional<? extends Applicative<A, App>>> AppOptional sequence(OptionalApp optionalApp,
-                                                                                              Function<? super Optional<A>, ? extends AppOptional> pure) {
-        return Sequence.<A, App, AppOptional, OptionalApp>sequence(optionalApp).apply(pure);
     }
 }

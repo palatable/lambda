@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Tuple5#into` 
 - `Tuple6` through `Tuple8`
 
+### Removed
+- `Either#toOptional`, deprecated in previous release
+- `Either#fromOptional`, deprecated in previous release
+- `sequence` overloads supporting `Optional`, deprecated in previous release
+- `OptionalLens`, deprecated in previous release
+- `TraversableIterable`, deprecated in previous release
+- `Traversables`, deprecated in previous release
+
 ## [2.0.0] - 2017-11-13
 ### Changed
 - ***Breaking Change***: `java.util.Optional` replaced with `Maybe` across the board

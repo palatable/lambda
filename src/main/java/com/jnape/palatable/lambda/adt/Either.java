@@ -9,7 +9,6 @@ import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -245,18 +244,6 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
     }
 
     /**
-     * In the left case, returns an {@link Optional#empty}; otherwise, returns {@link Optional#ofNullable} around the
-     * right value.
-     *
-     * @return an Optional around the right value, or empty if left
-     * @deprecated in favor of {@link Either#toMaybe()}
-     */
-    @Deprecated
-    public Optional<R> toOptional() {
-        return toMaybe().toOptional();
-    }
-
-    /**
      * In the left case, returns a {@link Maybe#nothing()}; otherwise, returns {@link Maybe#maybe} around the right
      * value.
      *
@@ -264,22 +251,6 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      */
     public Maybe<R> toMaybe() {
         return projectB();
-    }
-
-    /**
-     * Convert an {@link Optional}&lt;R&gt; into an <code>Either&lt;L, R&gt;</code>, supplying the left value from
-     * <code>leftFn</code> in the case of {@link Optional#empty()}.
-     *
-     * @param optional the optional
-     * @param leftFn   the supplier to use for left values
-     * @param <L>      the left parameter type
-     * @param <R>      the right parameter type
-     * @return a right value of the contained optional value, or a left value of leftFn's result
-     * @deprecated in favor of converting {@link Optional} to {@link Maybe}, then using {@link Either#fromMaybe}
-     */
-    @Deprecated
-    public static <L, R> Either<L, R> fromOptional(Optional<R> optional, Supplier<L> leftFn) {
-        return fromMaybe(Maybe.fromOptional(optional), leftFn);
     }
 
     /**
