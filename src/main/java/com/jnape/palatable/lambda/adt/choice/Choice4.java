@@ -4,7 +4,6 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct4;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -12,12 +11,12 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Canonical ADT representation of {@link CoProduct4} that is also a {@link Functor} and {@link Bifunctor}.
+ * Canonical ADT representation of {@link CoProduct4}.
  *
- * @param <A> a type parameter representing the first possible type of this choice
- * @param <B> a type parameter representing the second possible type of this choice
- * @param <C> a type parameter representing the third possible type of this choice
- * @param <D> a type parameter representing the fourth possible type of this choice
+ * @param <A> the first possible type
+ * @param <B> the second possible type
+ * @param <C> the third possible type
+ * @param <D> the fourth possible type
  * @see Choice3
  * @see Choice5
  */
@@ -106,11 +105,11 @@ public abstract class Choice4<A, B, C, D> implements
      * Static factory method for wrapping a value of type <code>A</code> in a {@link Choice4}.
      *
      * @param a   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @return the wrapped value as a Choice4&lt;A, B, C, D&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @return the wrapped value as a {@link Choice4}&lt;A, B, C, D&gt;
      */
     public static <A, B, C, D> Choice4<A, B, C, D> a(A a) {
         return new _A<>(a);
@@ -120,11 +119,11 @@ public abstract class Choice4<A, B, C, D> implements
      * Static factory method for wrapping a value of type <code>B</code> in a {@link Choice4}.
      *
      * @param b   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @return the wrapped value as a Choice4&lt;A, B, C, D&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @return the wrapped value as a {@link Choice4}&lt;A, B, C, D&gt;
      */
     public static <A, B, C, D> Choice4<A, B, C, D> b(B b) {
         return new _B<>(b);
@@ -134,11 +133,11 @@ public abstract class Choice4<A, B, C, D> implements
      * Static factory method for wrapping a value of type <code>C</code> in a {@link Choice4}.
      *
      * @param c   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @return the wrapped value as a Choice4&lt;A, B, C, D&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @return the wrapped value as a {@link Choice4}&lt;A, B, C, D&gt;
      */
     public static <A, B, C, D> Choice4<A, B, C, D> c(C c) {
         return new _C<>(c);
@@ -148,11 +147,11 @@ public abstract class Choice4<A, B, C, D> implements
      * Static factory method for wrapping a value of type <code>D</code> in a {@link Choice4}.
      *
      * @param d   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @return the wrapped value as a Choice4&lt;A, B, C, D&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @return the wrapped value as a {@link Choice4}&lt;A, B, C, D&gt;
      */
     public static <A, B, C, D> Choice4<A, B, C, D> d(D d) {
         return new _D<>(d);

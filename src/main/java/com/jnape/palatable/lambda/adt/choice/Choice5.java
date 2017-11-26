@@ -4,7 +4,6 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct4;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct5;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -12,14 +11,15 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Canonical ADT representation of {@link CoProduct5} that is also a {@link Functor} and {@link Bifunctor}.
+ * Canonical ADT representation of {@link CoProduct5}.
  *
- * @param <A> a type parameter representing the first possible type of this choice
- * @param <B> a type parameter representing the second possible type of this choice
- * @param <C> a type parameter representing the third possible type of this choice
- * @param <D> a type parameter representing the fourth possible type of this choice
- * @param <E> a type parameter representing the fifth possible type of this choice
+ * @param <A> the first possible type
+ * @param <B> the second possible type
+ * @param <C> the third possible type
+ * @param <D> the fourth possible type
+ * @param <E> the fifth possible type
  * @see Choice4
+ * @see Choice6
  */
 public abstract class Choice5<A, B, C, D, E> implements
         CoProduct5<A, B, C, D, E, Choice5<A, B, C, D, E>>,
@@ -28,6 +28,11 @@ public abstract class Choice5<A, B, C, D, E> implements
         Traversable<E, Choice5<A, B, C, D, ?>> {
 
     private Choice5() {
+    }
+
+    @Override
+    public <F> Choice6<A, B, C, D, E, F> diverge() {
+        return match(Choice6::a, Choice6::b, Choice6::c, Choice6::d, Choice6::e);
     }
 
     @Override
@@ -103,12 +108,12 @@ public abstract class Choice5<A, B, C, D, E> implements
      * Static factory method for wrapping a value of type <code>A</code> in a {@link Choice5}.
      *
      * @param a   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @param <E> a type parameter representing the fifth possible type of this choice
-     * @return the wrapped value as a Choice5&lt;A, B, C, D, E&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @return the wrapped value as a {@link Choice5}&lt;A, B, C, D, E&gt;
      */
     public static <A, B, C, D, E> Choice5<A, B, C, D, E> a(A a) {
         return new _A<>(a);
@@ -118,12 +123,12 @@ public abstract class Choice5<A, B, C, D, E> implements
      * Static factory method for wrapping a value of type <code>B</code> in a {@link Choice5}.
      *
      * @param b   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @param <E> a type parameter representing the fifth possible type of this choice
-     * @return the wrapped value as a Choice5&lt;A, B, C, D, E&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @return the wrapped value as a {@link Choice5}&lt;A, B, C, D, E&gt;
      */
     public static <A, B, C, D, E> Choice5<A, B, C, D, E> b(B b) {
         return new _B<>(b);
@@ -133,12 +138,12 @@ public abstract class Choice5<A, B, C, D, E> implements
      * Static factory method for wrapping a value of type <code>C</code> in a {@link Choice5}.
      *
      * @param c   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @param <E> a type parameter representing the fifth possible type of this choice
-     * @return the wrapped value as a Choice5&lt;A, B, C, D, E&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @return the wrapped value as a {@link Choice5}&lt;A, B, C, D, E&gt;
      */
     public static <A, B, C, D, E> Choice5<A, B, C, D, E> c(C c) {
         return new _C<>(c);
@@ -148,12 +153,12 @@ public abstract class Choice5<A, B, C, D, E> implements
      * Static factory method for wrapping a value of type <code>D</code> in a {@link Choice5}.
      *
      * @param d   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @param <E> a type parameter representing the fifth possible type of this choice
-     * @return the wrapped value as a Choice5&lt;A, B, C, D, E&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @return the wrapped value as a {@link Choice5}&lt;A, B, C, D, E&gt;
      */
     public static <A, B, C, D, E> Choice5<A, B, C, D, E> d(D d) {
         return new _D<>(d);
@@ -163,12 +168,12 @@ public abstract class Choice5<A, B, C, D, E> implements
      * Static factory method for wrapping a value of type <code>E</code> in a {@link Choice5}.
      *
      * @param e   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @param <C> a type parameter representing the third possible type of this choice
-     * @param <D> a type parameter representing the fourth possible type of this choice
-     * @param <E> a type parameter representing the fifth possible type of this choice
-     * @return the wrapped value as a Choice5&lt;A, B, C, D, E&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @return the wrapped value as a {@link Choice5}&lt;A, B, C, D, E&gt;
      */
     public static <A, B, C, D, E> Choice5<A, B, C, D, E> e(E e) {
         return new _E<>(e);

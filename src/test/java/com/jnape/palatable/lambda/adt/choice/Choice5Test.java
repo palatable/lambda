@@ -51,4 +51,13 @@ public class Choice5Test {
         assertEquals(Choice4.d(4d), d.converge(e -> Choice4.b(e.toString())));
         assertEquals(Choice4.b("z"), e.converge(e -> Choice4.b(e.toString())));
     }
+
+    @Test
+    public void divergeStaysInChoice() {
+        assertEquals(Choice6.a(1), a.diverge());
+        assertEquals(Choice6.b("two"), b.diverge());
+        assertEquals(Choice6.c(true), c.diverge());
+        assertEquals(Choice6.d(4D), d.diverge());
+        assertEquals(Choice6.e('z'), e.diverge());
+    }
 }

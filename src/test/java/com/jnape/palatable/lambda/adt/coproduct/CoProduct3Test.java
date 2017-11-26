@@ -1,6 +1,8 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.adt.choice.Choice2;
+import com.jnape.palatable.lambda.adt.choice.Choice3;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,27 +61,11 @@ public class CoProduct3Test {
 
     @Test
     public void converge() {
-        Function<Boolean, CoProduct2<Integer, String, ?>> convergenceFn = x -> x ? new CoProduct2<Integer, String, CoProduct2<Integer, String, ?>>() {
-            @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn) {
-                return aFn.apply(-1);
-            }
-        } : new CoProduct2<Integer, String, CoProduct2<Integer, String, ?>>() {
-            @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn) {
-                return bFn.apply("false");
-            }
-        };
+        Function<Boolean, CoProduct2<Integer, String, ?>> convergenceFn = x -> x ? Choice2.a(-1) : Choice2.b("false");
         assertEquals(1, a.converge(convergenceFn).match(id(), id()));
         assertEquals("two", b.converge(convergenceFn).match(id(), id()));
         assertEquals(-1, c.converge(convergenceFn).match(id(), id()));
-        assertEquals("false", new CoProduct3<Integer, String, Boolean, CoProduct3<Integer, String, Boolean, ?>>() {
-            @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn) {
-                return cFn.apply(false);
-            }
-        }.converge(convergenceFn).match(id(), id()));
+        assertEquals("false", Choice3.<Integer, String, Boolean>c(false).converge(convergenceFn).match(id(), id()));
     }
 
     @Test

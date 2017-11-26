@@ -13,12 +13,12 @@ import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
- * A generalization of the coproduct of four types <code>A</code>, <code>B</code>, <code>C</code>, and <code>D</code>.
+ * A generalization of the coproduct of four types.
  *
- * @param <A> a type parameter representing the first possible type of this coproduct
- * @param <B> a type parameter representing the second possible type of this coproduct
- * @param <C> a type parameter representing the third possible type of this coproduct
- * @param <D> a type parameter representing the fourth possible type of this coproduct
+ * @param <A> the first possible type
+ * @param <B> the second possible type
+ * @param <C> the third possible type
+ * @param <D> the fourth possible type
  * @see CoProduct2
  */
 @FunctionalInterface
@@ -63,7 +63,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
      * possible type.
      *
      * @param convergenceFn function from last possible type to earlier type
-     * @return a coproduct of the initial types without the terminal type
+     * @return a {@link CoProduct3}&lt;A, B, C&gt;
      * @see CoProduct3#converge
      */
     default CoProduct3<A, B, C, ? extends CoProduct3<A, B, C, ?>> converge(

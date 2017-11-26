@@ -15,14 +15,13 @@ import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
- * A generalization of the coproduct of two types <code>A</code> and <code>B</code>. Coproducts represent the disjoint
- * union of two or more distinct types, and provides an interface for specifying morphisms from those types to a common
- * result type.
+ * A generalization of the coproduct of two types. Coproducts represent the disjoint union of two or more distinct
+ * types, and provides an interface for specifying morphisms from those types to a common result type.
  * <p>
  * Learn more about <a href="https://en.wikipedia.org/wiki/Coproduct">Coproducts</a>.
  *
- * @param <A> a type parameter representing the first possible type of this coproduct
- * @param <B> a type parameter representing the second possible type of this coproduct
+ * @param <A> the first possible type
+ * @param <B> the second possible type
  * @see Choice2
  * @see Either
  */
@@ -58,7 +57,7 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
      * single magnitude difference.
      *
      * @param <C> the additional possible type of this coproduct
-     * @return a coproduct of the initial types plus the new type
+     * @return a {@link CoProduct3}&lt;A, B, C&gt;
      */
     default <C> CoProduct3<A, B, C, ? extends CoProduct3<A, B, C, ?>> diverge() {
         return new CoProduct3<A, B, C, CoProduct3<A, B, C, ?>>() {

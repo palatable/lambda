@@ -579,7 +579,7 @@ CoProduct2<String, Integer, ?> coProduct2 = Choice2.a("string");
 CoProduct3<String, Integer, Character, ?> coProduct3 = coProduct2.diverge(); // still just the coProduct2 value, adapted to the coProduct3 shape
 ```
 
-There are `CoProduct` and `Choice` specializations for type unions of up to 5 different types: `CoProduct2` through `CoProduct5`, and `Choice2` through `Choice5`, respectively.
+There are `CoProduct` and `Choice` specializations for type unions of up to 8 different types: `CoProduct2` through `CoProduct8`, and `Choice2` through `Choice8`, respectively.
 
 ### <a name="either">Either</a>
 

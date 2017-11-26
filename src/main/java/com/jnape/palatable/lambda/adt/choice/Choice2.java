@@ -4,7 +4,6 @@ import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -12,12 +11,11 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Canonical ADT representation of {@link CoProduct2} that is also a {@link Functor} and {@link Bifunctor}. Unlike
- * {@link Either}, there is no concept of "success" or "failure", so the domain of reasonable function semantics is
- * more limited.
+ * Canonical ADT representation of {@link CoProduct2}. Unlike {@link Either}, there is no concept of "success" or
+ * "failure", so the domain of reasonable function semantics is more limited.
  *
- * @param <A> a type parameter representing the first possible type of this choice
- * @param <B> a type parameter representing the second possible type of this choice
+ * @param <A> the first possible type
+ * @param <B> the second possible type
  * @see Either
  * @see Choice3
  */
@@ -97,9 +95,9 @@ public abstract class Choice2<A, B> implements CoProduct2<A, B, Choice2<A, B>>, 
      * Static factory method for wrapping a value of type <code>A</code> in a {@link Choice2}.
      *
      * @param a   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @return the wrapped value as a Choice2&lt;A, B&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @return the wrapped value as a {@link Choice2}&lt;A, B&gt;
      */
     public static <A, B> Choice2<A, B> a(A a) {
         return new _A<>(a);
@@ -109,9 +107,9 @@ public abstract class Choice2<A, B> implements CoProduct2<A, B, Choice2<A, B>>, 
      * Static factory method for wrapping a value of type <code>B</code> in a {@link Choice2}.
      *
      * @param b   the value
-     * @param <A> a type parameter representing the first possible type of this choice
-     * @param <B> a type parameter representing the second possible type of this choice
-     * @return the wrapped value as a Choice2&lt;A, B&gt;
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @return the wrapped value as a {@link Choice2}&lt;A, B&gt;
      */
     public static <A, B> Choice2<A, B> b(B b) {
         return new _B<>(b);

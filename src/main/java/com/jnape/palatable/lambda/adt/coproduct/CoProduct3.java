@@ -13,11 +13,11 @@ import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
- * A generalization of the coproduct of three types <code>A</code>, <code>B</code>, and <code>C</code>.
+ * A generalization of the coproduct of three types.
  *
- * @param <A> a type parameter representing the first possible type of this coproduct
- * @param <B> a type parameter representing the second possible type of this coproduct
- * @param <C> a type parameter representing the third possible type of this coproduct
+ * @param <A> the first possible type
+ * @param <B> the second possible type
+ * @param <C> the third possible type
  * @see CoProduct2
  */
 @FunctionalInterface
@@ -30,7 +30,7 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      * @param bFn morphism <code>B -&gt; R</code>
      * @param cFn morphism <code>C -&gt; R</code>
      * @param <R> result type
-     * @return the result of applying the appropriate morphism from whichever type is represented by this coproduct to R
+     * @return the result of applying the appropriate morphism to this coproduct's unwrapped value
      * @see CoProduct2#match(Function, Function)
      */
     <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
@@ -40,7 +40,7 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      * Diverge this coproduct by introducing another possible type that it could represent.
      *
      * @param <D> the additional possible type of this coproduct
-     * @return a Coproduct4&lt;A, B, C, D&gt;
+     * @return a {@link CoProduct4}&lt;A, B, C, D&gt;
      * @see CoProduct2#diverge()
      */
     default <D> CoProduct4<A, B, C, D, ? extends CoProduct4<A, B, C, D, ?>> diverge() {
@@ -64,7 +64,7 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      * </ul>
      *
      * @param convergenceFn function from last possible type to earlier type
-     * @return a coproduct of the initial types without the terminal type
+     * @return a {@link CoProduct2}&lt;A, B&gt;
      */
     default CoProduct2<A, B, ? extends CoProduct2<A, B, ?>> converge(
             Function<? super C, ? extends CoProduct2<A, B, ?>> convergenceFn) {
