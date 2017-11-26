@@ -19,7 +19,8 @@ Functional patterns for Java 8
    - [Monads](#monads)
    - [Traversables](#traversables)
  - [ADTs](#adts)
-   - [HLists](#hlists)
+   - [Maybe](#maybe)
+   - [HList](#hlist)
      - [Tuples](#tuples)
    - [HMaps](#hmaps)
    - [CoProducts](#coproducts)
@@ -454,6 +455,56 @@ As always, there are [some laws](https://hackage.haskell.org/package/base-4.9.1.
 ----
 
 Lambda also supports a few first-class [algebraic data types](https://www.wikiwand.com/en/Algebraic_data_type).
+
+### <a name="maybe">Maybe</a>
+
+`Maybe` is the _lambda_ analog to `java.util.Optional`. It behaves in much of the same way as `j.u.Optional`, except that it quite intentionally does not support the inherently unsafe `j.u.Optional#get`.
+
+```Java
+Maybe<Integer> maybeInt = Maybe.just(1); // Just 1
+Maybe<String> maybeString = Maybe.nothing(); // Nothing
+```
+
+Also, because it's a _lambda_ type, it takes advantage of the full functor hierarchy, as well as some helpful conversion functions:
+
+```Java
+Maybe<String> just = Maybe.maybe("string"); // Just "string"
+Maybe<String> nothing = Maybe.maybe(null); // Nothing
+
+Maybe<Integer> maybeX = Maybe.just(1);
+Maybe<Integer> maybeY = Maybe.just(2);
+
+maybeY.zip(maybeX.fmap(x -> y -> x + y)); // Just 3
+maybeY.zip(nothing()); // Nothing
+Maybe.<Integer>nothing().zip(maybeX.fmap(x -> y -> x + y)); // Nothing
+
+Either<String, Integer> right = maybeX.toEither(() -> "was empty"); // Right 1
+Either<String, Integer> left = Maybe.<Integer>nothing().toEither(() -> "was empty"); // Left "was empty"
+
+Maybe.fromEither(right); // Just 1
+Maybe.fromEither(left); // Nothing
+```
+
+Finally, for compatibility purposes, `Maybe` and `j.u.Optional` can be trivially converted back and forth:
+
+```Java
+Maybe<Integer> just1 = Maybe.just(1); // Just 1
+Optional<Integer> present1 = just1.toOptional(); // Optional.of(1)
+
+Optional<String> empty = Optional.empty(); // Optional.empty()
+Maybe<String> nothing = Maybe.fromOptional(empty); // Nothing
+```
+
+***Note***: One compatibility difference between `j.u.Optional` and `Maybe` is how `map`/`fmap` behave regarding functions that return `null`: `j.u.Optional` re-wraps `null` results from `map` operations in another `j.u.Optional`, whereas `Maybe` considers this to be an error, and throws an exception. The reason `Maybe` throws in this case is because `fmap` is not an operation to be called speculatively, and so any function that returns `null` in the context of an `fmap` operation is considered to be erroneous. Instead of calling `fmap` with a function that might return `null`, the function result should be wrapped in a `Maybe` and `flatMap` should be used, as illustrated in the following example: 
+
+```Java
+Function<Integer, Object> nullResultFn = __ -> null;
+
+Optional.of(1).map(nullResultFn); // Optional.empty()
+Maybe.just(1).fmap(nullResultFn); // throws NullPointerException
+
+Maybe.just(1).flatMap(nullResultFn.andThen(Maybe::maybe)); // Nothing
+```  
 
 ### <a name="hlists">Heterogeneous Lists (HLists)</a>
 
