@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Fn5` through `Fn8`
 - `Tuple5#into` 
 - `Tuple6` through `Tuple8`
+- `CoProduct6` through `CoProduct8` and `Choice6` through `Choice8`
+- `CoProduct5#diverge` and `Choice5#diverge`
+- `Into3` through `Into8`, for applying a `Tuple*` to an `Fn*`
 
 ### Removed
 - `Either#toOptional`, deprecated in previous release
