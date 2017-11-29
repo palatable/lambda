@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class DroppingIterator<A> extends ImmutableIterator<A> {
-    private final Integer     n;
-    private final Iterator<A> asIterator;
-    private       boolean     dropped;
+    private Integer     n;
+    private Iterator<A> asIterator;
+    private boolean     dropped;
 
     public DroppingIterator(Integer n, Iterator<A> asIterator) {
         this.n = n;
@@ -16,7 +16,11 @@ public class DroppingIterator<A> extends ImmutableIterator<A> {
 
     @Override
     public boolean hasNext() {
-        dropIfNecessary();
+        if (!dropped) {
+            deforest();
+            drop();
+            dropped = true;
+        }
         return asIterator.hasNext();
     }
 
@@ -28,13 +32,16 @@ public class DroppingIterator<A> extends ImmutableIterator<A> {
         return asIterator.next();
     }
 
-    private void dropIfNecessary() {
-        if (!dropped) {
-            int i = 0;
-            while (i++ < n && asIterator.hasNext())
-                asIterator.next();
-            dropped = true;
+    private void deforest() {
+        while (asIterator instanceof DroppingIterator) {
+            n += ((DroppingIterator) this.asIterator).n;
+            asIterator = ((DroppingIterator<A>) this.asIterator).asIterator;
         }
     }
 
+    private void drop() {
+        int i = 0;
+        while (i++ < n && asIterator.hasNext())
+            asIterator.next();
+    }
 }
