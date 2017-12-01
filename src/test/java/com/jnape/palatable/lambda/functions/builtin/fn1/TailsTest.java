@@ -11,10 +11,15 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.InfiniteIterableSupport;
 import testsupport.traits.Laziness;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Last.last;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Tails.tails;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Take.take;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
@@ -40,5 +45,10 @@ public class TailsTest {
                                                           asList(4, 5),
                                                           singletonList(5),
                                                           emptyList()));
+    }
+
+    @Test
+    public void largeNumberOfElements() {
+        assertEquals(just(emptyList()), last(tails(take(100000, repeat(1)))));
     }
 }

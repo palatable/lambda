@@ -2,15 +2,13 @@ package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.Collections;
-
 import static com.jnape.palatable.lambda.adt.Maybe.just;
-import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Empty.empty;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Tail.tail;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Drop.drop;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Snoc.snoc;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Unfoldr.unfoldr;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.ZipWith.zipWith;
+import static java.util.Collections.emptyList;
 
 /**
  * Given an <code>{@link Iterable}&lt;A&gt;</code>, produce an
@@ -31,10 +29,7 @@ public final class Tails<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>>> {
 
     @Override
     public Iterable<Iterable<A>> apply(Iterable<A> as) {
-        return snoc(Collections::emptyIterator,
-                    unfoldr(next -> empty(next)
-                            ? nothing()
-                            : just(tuple(next, tail(next))), as));
+        return snoc(emptyList(), zipWith((a, __) -> a, unfoldr(k -> just(tuple(drop(k, as), k + 1)), 0), as));
     }
 
     @SuppressWarnings("unchecked")
