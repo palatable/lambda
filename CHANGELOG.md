@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CoProduct6` through `CoProduct8` and `Choice6` through `Choice8`
 - `CoProduct5#diverge` and `Choice5#diverge`
 - `Into3` through `Into8`, for applying a `Tuple*` to an `Fn*`
+- `Times`, for successively accumulating a result by iterating a function over a value some number of times
 
 ### Removed
 - `Either#toOptional`, deprecated in previous release
