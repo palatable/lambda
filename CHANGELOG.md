@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CoProduct5#diverge` and `Choice5#diverge`
 - `Into3` through `Into8`, for applying a `Tuple*` to an `Fn*`
 - `Times`, for successively accumulating a result by iterating a function over a value some number of times
+- `Slide`, for "sliding" a window of some number of elements across an `Iterable` 
 
 ### Removed
 - `Either#toOptional`, deprecated in previous release
