@@ -90,6 +90,17 @@ public class EitherTest {
     }
 
     @Test
+    public void filterSupportsFunctionFromRToL() {
+        Either<String, Integer> left = left("foo");
+        Either<String, Integer> right = right(1);
+
+        assertThat(left.filter(x -> true, Object::toString), is(left));
+        assertThat(left.filter(x -> false, Object::toString), is(left));
+        assertThat(right.filter(x -> true, Object::toString), is(right));
+        assertThat(right.filter(x -> false, Object::toString), is(left("1")));
+    }
+
+    @Test
     public void monadicFlatMapLiftsRightAndFlattensBackToEither() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);

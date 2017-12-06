@@ -79,8 +79,8 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
     }
 
     /**
-     * If this is a right value, apply pred to it. If the result is true, return the same value; otherwise, return the
-     * result of leftSupplier wrapped as a left value.
+     * If this is a right value, apply <code>pred</code> to it. If the result is <code>true</code>, return the same
+     * value; otherwise, return the result of <code>leftSupplier</code> wrapped as a left value.
      * <p>
      * If this is a left value, return it.
      *
@@ -90,7 +90,20 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * a left
      */
     public final Either<L, R> filter(Function<? super R, Boolean> pred, Supplier<L> leftSupplier) {
-        return flatMap(r -> pred.apply(r) ? right(r) : left(leftSupplier.get()));
+        return filter(pred, __ -> leftSupplier.get());
+    }
+
+    /**
+     * If this is a right value, apply <code>pred</code> to it. If the result is <code>true</code>, return the same
+     * value; otherwise, return the results of applying the right value to <code>leftFn</code> wrapped as a left value.
+     *
+     * @param pred   the predicate to apply to a right value
+     * @param leftFn the function from the right value to a left value if pred fails
+     * @return this is a left value or a right value that pred matches; otherwise, the result of leftFn applied to the
+     * right value, wrapped in a left
+     */
+    public final Either<L, R> filter(Function<? super R, Boolean> pred, Function<? super R, ? extends L> leftFn) {
+        return flatMap(r -> pred.apply(r) ? right(r) : left(leftFn.apply(r)));
     }
 
     /**
