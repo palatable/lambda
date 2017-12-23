@@ -15,6 +15,9 @@ public final class MaybeLens {
 
     /**
      * Given a lens and a default <code>S</code>, lift <code>S</code> into {@link Maybe}.
+     * <p>
+     * Note that this lens is NOT lawful, since "putting back what you got changes nothing" fails for any value
+     * <code>B</code> where <code>S</code> is {@link Maybe#nothing()}.
      *
      * @param lens     the lens
      * @param defaultS the S to use if {@link Maybe#nothing()} is given
@@ -58,6 +61,9 @@ public final class MaybeLens {
 
     /**
      * Given a lens and a default <code>B</code>, lift <code>B</code> into {@link Maybe}.
+     * <p>
+     * Note that this lens is NOT lawful, since "putting back what you got changes nothing" fails for any value
+     * <code>B</code> where <code>S</code> is {@link Maybe#nothing()}.
      *
      * @param lens     the lens
      * @param defaultB the B to use if {@link Maybe#nothing()} is given
@@ -88,6 +94,9 @@ public final class MaybeLens {
     /**
      * Given a lens with <code>T</code> lifted into {@link Maybe} and a default <code>T</code>, flatten <code>T</code>
      * back down.
+     * <p>
+     * Note that while this lens is not *necessarily* unlawful, it probably is, since the only case where "you get back
+     * what you put in" would not be violated is if <code>T</code> could never be {@link Maybe#nothing()}.
      *
      * @param lens     the lens
      * @param defaultT the T to use if lens produces {@link Maybe#nothing()}
@@ -103,8 +112,10 @@ public final class MaybeLens {
 
     /**
      * Given a lens with <code>A</code> lifted into {@link Maybe} and a default <code>A</code>, flatten <code>A</code>
-     * back
-     * down.
+     * back down.
+     * <p>
+     * Note that while this lens is not *necessarily* unlawful, it probably is, since the only case where "putting back
+     * what you got changes nothing" would not be violated is if <code>A</code> could never be {@link Maybe#nothing()}.
      *
      * @param lens     the lens
      * @param defaultA the A to use if lens produces {@link Maybe#nothing()}

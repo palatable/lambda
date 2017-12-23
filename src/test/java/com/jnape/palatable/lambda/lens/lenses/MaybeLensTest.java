@@ -14,25 +14,24 @@ import static com.jnape.palatable.lambda.lens.lenses.MaybeLens.liftA;
 import static com.jnape.palatable.lambda.lens.lenses.MaybeLens.liftB;
 import static com.jnape.palatable.lambda.lens.lenses.MaybeLens.liftS;
 import static com.jnape.palatable.lambda.lens.lenses.MaybeLens.liftT;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static testsupport.assertion.LensAssert.assertLensLawfulness;
 
 public class MaybeLensTest {
 
     private Lens<String, Boolean, Character, Integer> lens;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         lens = lens(s -> s.charAt(0), (s, b) -> s.length() == b);
     }
 
     @Test
     public void asMaybeWrapsValuesInMaybe() {
-        Lens.Simple<String, Maybe<String>> asMaybe = MaybeLens.asMaybe();
-
-        assertEquals(just("foo"), view(asMaybe, "foo"));
-        assertEquals(nothing(), view(asMaybe, null));
-        assertEquals("bar", set(asMaybe, just("bar"), "foo"));
-        assertEquals("foo", set(asMaybe, nothing(), "foo"));
+        assertLensLawfulness(MaybeLens.asMaybe(),
+                             asList(null, "foo"),
+                             asList(nothing(), just("hi")));
     }
 
     @Test

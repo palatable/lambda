@@ -1,142 +1,138 @@
 package com.jnape.palatable.lambda.lens.lenses;
 
-import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.lens.Lens;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static com.jnape.palatable.lambda.lens.lenses.MapLens.keys;
 import static com.jnape.palatable.lambda.lens.lenses.MapLens.mappingValues;
+import static com.jnape.palatable.lambda.lens.lenses.MapLens.valueAt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
 import static java.util.Collections.unmodifiableMap;
+import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static testsupport.assertion.LensAssert.assertLensLawfulness;
 
 public class MapLensTest {
 
-    private Map<String, Integer> m;
-
-    @Before
-    public void setUp() {
-        m = new HashMap<String, Integer>() {{
-            put("foo", 1);
-            put("bar", 2);
-            put("baz", 3);
-        }};
-    }
-
     @Test
     public void asCopyFocusesOnMapThroughCopy() {
-        Lens.Simple<Map<String, Integer>, Map<String, Integer>> asCopy = MapLens.asCopy();
-
-        assertEquals(m, view(asCopy, m));
-        assertNotSame(m, view(asCopy, m));
-
-        Map<String, Integer> update = new HashMap<String, Integer>() {{
-            put("quux", 0);
-        }};
-        assertSame(update, set(asCopy, update, m));
+        assertLensLawfulness(MapLens.asCopy(),
+                             asList(emptyMap(), singletonMap("foo", 1), new HashMap<String, Integer>() {{
+                                 put("foo", 1);
+                                 put("bar", 2);
+                                 put("baz", 3);
+                             }}),
+                             asList(emptyMap(), singletonMap("foo", 1), new HashMap<String, Integer>() {{
+                                 put("foo", 1);
+                                 put("bar", 2);
+                                 put("baz", 3);
+                             }}));
     }
 
     @Test
     public void valueAtFocusesOnValueAtKey() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Maybe<Integer>, Integer> atFoo = MapLens.valueAt("foo");
-
-        assertEquals(just(1), view(atFoo, m));
-
-        Map<String, Integer> updated = set(atFoo, -1, m);
-        assertEquals(new HashMap<String, Integer>() {{
-            put("foo", -1);
-            put("bar", 2);
-            put("baz", 3);
-        }}, updated);
-        assertSame(m, updated);
+        assertLensLawfulness(valueAt("foo"),
+                             asList(emptyMap(), singletonMap("foo", 1), new HashMap<String, Integer>() {{
+                                 put("foo", 1);
+                                 put("bar", 2);
+                                 put("baz", 3);
+                             }}),
+                             asList(nothing(), just(1)));
     }
 
     @Test
     public void valueAtWithDefaultValueFocusedOnValueAtKey() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Integer, Integer> atFoo = MapLens.valueAt("foo", -1);
+        Lens.Simple<Map<String, Integer>, Integer> atFoo = valueAt("foo", -1);
 
-        assertEquals((Integer) 1, view(atFoo, m));
+        assertEquals((Integer) 1, view(atFoo, new HashMap<String, Integer>() {{
+            put("foo", 1);
+            put("bar", 2);
+            put("baz", 3);
+        }}));
         assertEquals((Integer) (-1), view(atFoo, emptyMap()));
 
-        Map<String, Integer> updated = set(atFoo, 11, m);
+        Map<String, Integer> updated = set(atFoo, 11, new HashMap<String, Integer>() {{
+            put("foo", 1);
+            put("bar", 2);
+            put("baz", 3);
+        }});
         assertEquals(new HashMap<String, Integer>() {{
             put("foo", 11);
             put("bar", 2);
             put("baz", 3);
         }}, updated);
-        assertSame(m, updated);
+        assertNotSame(new HashMap<String, Integer>() {{
+            put("foo", 1);
+            put("bar", 2);
+            put("baz", 3);
+        }}, updated);
     }
 
     @Test
     public void keysFocusesOnKeys() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Set<String>, Set<String>> keys = keys();
-
-        assertEquals(m.keySet(), view(keys, m));
-
-        Map<String, Integer> updated = set(keys, new HashSet<>(asList("bar", "baz", "quux")), m);
-        assertEquals(new HashMap<String, Integer>() {{
-            put("bar", 2);
-            put("baz", 3);
-            put("quux", null);
-        }}, updated);
-        assertSame(m, updated);
+        assertLensLawfulness(keys(),
+                             asList(emptyMap(), singletonMap("foo", 1), new HashMap<String, Integer>() {{
+                                 put("foo", 1);
+                                 put("bar", 2);
+                                 put("baz", 3);
+                             }}),
+                             asList(emptySet(), singleton("foo"), new HashSet<>(asList("foo", "bar", "baz", "quux")), new HashSet<>(asList("foo", "baz", "quux"))));
     }
 
     @Test
     public void valuesFocusesOnValues() {
-        Lens<Map<String, Integer>, Map<String, Integer>, Collection<Integer>, Collection<Integer>> values = MapLens.values();
+        Lens.Simple<Map<String, Integer>, Collection<Integer>> values = MapLens.values();
 
-        assertEquals(m.values(), view(values, m));
+        assertThat(view(values, new HashMap<String, Integer>() {{
+            put("foo", 1);
+            put("bar", 2);
+            put("baz", 3);
+        }}), hasItems(2, 1, 3));
 
-        Map<String, Integer> updated = set(values, asList(1, 2), m);
+        Map<String, Integer> updated = set(values, asList(1, 2), new HashMap<String, Integer>() {{
+            put("foo", 1);
+            put("bar", 2);
+            put("baz", 3);
+        }});
         assertEquals(new HashMap<String, Integer>() {{
             put("foo", 1);
             put("bar", 2);
         }}, updated);
-        assertSame(m, updated);
+        assertNotSame(new HashMap<String, Integer>() {{
+            put("foo", 1);
+            put("bar", 2);
+            put("baz", 3);
+        }}, updated);
     }
 
     @Test
     public void invertedFocusesOnMapWithKeysAndValuesSwitched() {
-        Lens.Simple<Map<String, Integer>, Map<Integer, String>> inverted = MapLens.inverted();
-
-        assertEquals(new HashMap<Integer, String>() {{
-            put(1, "foo");
-            put(2, "bar");
-            put(3, "baz");
-        }}, view(inverted, m));
-
-        Map<String, Integer> updated = set(inverted, new HashMap<Integer, String>() {{
-            put(2, "bar");
-            put(3, "baz");
-        }}, m);
-        assertEquals(new HashMap<String, Integer>() {{
-            put("bar", 2);
-            put("baz", 3);
-        }}, updated);
-        assertSame(m, updated);
-
-        Map<String, Integer> withDuplicateValues = new HashMap<String, Integer>() {{
-            put("foo", 1);
-            put("bar", 1);
-        }};
-        assertEquals(new HashMap<Integer, String>() {{
-            put(1, "foo");
-        }}, view(inverted, withDuplicateValues));
+        assertLensLawfulness(MapLens.inverted(),
+                             asList(emptyMap(), singletonMap("foo", 1), new HashMap<String, Integer>() {{
+                                 put("foo", 1);
+                                 put("bar", 2);
+                                 put("baz", 3);
+                             }}),
+                             asList(emptyMap(), singletonMap(1, "foo"), new HashMap<Integer, String>() {{
+                                 put(1, "foo");
+                                 put(2, "bar");
+                                 put(3, "baz");
+                             }}));
     }
 
     @Test

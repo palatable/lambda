@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Changed
+- ***Breaking Change***: `CollectionLens#asSet` is now lawful and preserves new incoming values in the update set 
+- ***Breaking Change***: `IterableLens#head` is now a `Lens.Simple<Iterable<A>, Maybe<A>>` and is lawful
+- ***Breaking Change***: `ListLens#elementAt` is now a `Lens.Simple<List<X>, Maybe<X>>` supporting defensive copies
+- ***Breaking Change***: `MapLens#valueAt` is now a `Lens.Simple<Map<K,V>, Maybe<V>>` supporting defensive copies
+- `MapLens#keys` now uses defensive copies and does not alter the focused on map
+- `MapLens#values` now uses defensive copies and does not alter the focused on map
+- `MapLens#inverted` now uses defensive copies and does not alter the focused on map
+- `HListLens#head` is now covariant in the tail of both `S` and `T`
+
 ### Added
 - `Fn3#fn3` and `Fn4#fn4` static factory methods
 - `Fn5` through `Fn8`
@@ -15,6 +25,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Times`, for successively accumulating a result by iterating a function over a value some number of times
 - `Slide`, for "sliding" a window of some number of elements across an `Iterable`
 - `Either#filter` overload supporting a function from `R` to `L` in the failing predicate case 
+- `CollectionLens#asSet(Function)`, a proper analog of `CollectionLens#asSet()` that uses defensive copies
+- `CollectionLens#asStream(Function)`, a proper analog of `CollectionLens#asStream()` that uses defensive copies
+- Explicitly calling attention to all unlawful lenses in their documentation
 
 ### Removed
 - `Either#toOptional`, deprecated in previous release
@@ -23,6 +36,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `OptionalLens`, deprecated in previous release
 - `TraversableIterable`, deprecated in previous release
 - `Traversables`, deprecated in previous release
+
+### Deprecated
+- `CollectionLens#asSet()` in favor of `CollectionLens#asSet(Function)`
+- `CollectionLens#asStream()` in favor of `CollectionLens#asStream(Function)`
 
 ## [2.0.0] - 2017-11-13
 ### Changed

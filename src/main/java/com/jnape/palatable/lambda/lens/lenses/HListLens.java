@@ -32,7 +32,7 @@ public final class HListLens {
      * @param <Tail> the tail HList type
      * @return a lens that focuses on the head of an HList
      */
-    public static <Head, Tail extends HList> Lens.Simple<HCons<Head, Tail>, Head> head() {
+    public static <Head, Tail extends HList> Lens.Simple<HCons<Head, ? extends Tail>, Head> head() {
         return simpleLens(HCons::head, (hCons, newHead) -> cons(newHead, hCons.tail()));
     }
 

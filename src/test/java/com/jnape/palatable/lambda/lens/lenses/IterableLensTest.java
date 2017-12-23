@@ -22,16 +22,18 @@ public class IterableLensTest {
 
     @Test
     public void head() {
-        Lens<Iterable<Integer>, Iterable<Integer>, Maybe<Integer>, Integer> head = IterableLens.head();
+        Lens.Simple<Iterable<Integer>, Maybe<Integer>> head = IterableLens.head();
 
         assertEquals(just(1), view(head, asList(1, 2, 3)));
         assertEquals(nothing(), view(head, emptyList()));
 
-        assertThat(set(head, 1, emptyList()), iterates(1));
-        assertThat(set(head, 1, asList(2, 2, 3)), iterates(1, 2, 3));
+        assertThat(set(head, just(1), emptyList()), iterates(1));
+        assertThat(set(head, nothing(), emptyList()), isEmpty());
+        assertThat(set(head, just(1), asList(2, 2, 3)), iterates(1, 2, 3));
+        assertThat(set(head, nothing(), asList(2, 2, 3)), iterates(2, 3));
 
-        assertThat(over(head, x -> x.orElse(0) + 1, emptyList()), iterates(1));
-        assertThat(over(head, x -> x.orElse(0) + 1, asList(1, 2, 3)), iterates(2, 2, 3));
+        assertThat(over(head, maybeX -> maybeX.fmap(x -> x + 1), emptyList()), isEmpty());
+        assertThat(over(head, maybeX -> maybeX.fmap(x -> x + 1), asList(1, 2, 3)), iterates(2, 2, 3));
     }
 
     @Test
