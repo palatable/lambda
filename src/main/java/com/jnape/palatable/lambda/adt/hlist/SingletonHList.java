@@ -66,4 +66,15 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, Sin
             Function<? super Traversable<_1Prime, SingletonHList>, ? extends Applicative<? extends Traversable<_1Prime, SingletonHList>, App>> pure) {
         return fn.apply(head()).fmap(SingletonHList::new);
     }
+
+    /**
+     * Apply {@link SingletonHList#head} to <code>fn</code> and return the result.
+     *
+     * @param fn  the function to apply
+     * @param <R> the return type of the function
+     * @return the result of applying the head to the function
+     */
+    public <R> R into(Function<? super _1, ? extends R> fn) {
+        return fn.apply(head());
+    }
 }

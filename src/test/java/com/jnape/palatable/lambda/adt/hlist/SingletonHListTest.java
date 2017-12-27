@@ -43,4 +43,9 @@ public class SingletonHListTest {
     public void cons() {
         assertEquals(new Tuple2<>("0", singletonHList), singletonHList.cons("0"));
     }
+
+    @Test
+    public void intoAppliesHeadToFn() {
+        assertEquals("FOO", singletonHList("foo").into(String::toUpperCase));
+    }
 }
