@@ -4,15 +4,21 @@ import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.SingletonHList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.adt.hlist.Tuple3;
+import com.jnape.palatable.lambda.adt.hlist.Tuple4;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functions.Fn3;
+import com.jnape.palatable.lambda.functions.Fn4;
 import com.jnape.palatable.lambda.functions.specialized.Predicate;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into1.into1;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into3.into3;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into4.into4;
 
 public abstract class Case {
 
@@ -48,33 +54,77 @@ public abstract class Case {
         }
     }
 
-    public static <A, B, R> Total<Tuple2<A, B>, R> of(Fn2<? super A, ? super B, ? extends R> fn) {
-        return new Total<>(into(fn.toBiFunction()));
-    }
-
-    public static <A, R> Total<SingletonHList<A>, R> of(CatchAll aPredicate,
-                                                        Fn1<A, R> fn) {
+    public static <A, R> Total<SingletonHList<A>, R> of(Function<? super A, ? extends R> fn) {
         return new Total<>(into1(fn));
     }
 
-    //todo: overload that explicitly takes Fn<Fields, R> ?
+    public static <A, B, R> Total<Tuple2<A, B>, R> of(BiFunction<? super A, ? super B, ? extends R> fn) {
+        return new Total<>(into(fn));
+    }
 
-    public static <A, R> Partial<SingletonHList<A>, R> of(Predicate<A> pred,
-                                                          Fn1<A, R> fn) {
+    public static <A, B, C, R> Total<Tuple3<A, B, C>, R> of(Fn3<? super A, ? super B, ? super C, ? extends R> fn) {
+        return new Total<>(into3(fn));
+    }
 
-        return new Partial<>(pred.contraMap(HCons::head), into1(fn));
+    public static <A, B, C, D, R> Total<Tuple4<A, B, C, D>, R> of(
+            Fn4<? super A, ? super B, ? super C, ? super D, ? extends R> fn) {
+        return new Total<>(into4(fn));
+    }
+
+
+    public static <A, R> Total<SingletonHList<A>, R> of(CatchAll __, Function<? super A, ? extends R> fn) {
+        return of(fn);
     }
 
     public static <A, B, R> Total<Tuple2<A, B>, R> of(CatchAll __,
                                                       CatchAll ___,
-                                                      Fn2<? super A, ? super B, ? extends R> fn) {
-        return new Total<>(into(fn.toBiFunction()));
+                                                      BiFunction<? super A, ? super B, ? extends R> fn) {
+        return of(fn);
+    }
+
+    public static <A, B, C, R> Total<Tuple3<A, B, C>, R> of(CatchAll __,
+                                                            CatchAll ___,
+                                                            CatchAll ____,
+                                                            Fn3<? super A, ? super B, ? super C, ? extends R> fn) {
+        return Case.<A, B, C, R>of(fn);
+    }
+
+    public static <A, B, C, D, R> Total<Tuple4<A, B, C, D>, R> of(CatchAll __,
+                                                                  CatchAll ___,
+                                                                  CatchAll ____,
+                                                                  CatchAll _____,
+                                                                  Fn4<? super A, ? super B, ? super C, ? super D, ? extends R> fn) {
+        return Case.<A, B, C, D, R>of(fn);
+    }
+
+
+    public static <A, R> Partial<SingletonHList<A>, R> of(Predicate<A> pred,
+                                                          Fn1<A, R> fn) {
+        return new Partial<>(pred.contraMap(HCons::head), into1(fn));
     }
 
     public static <A, B, R> Partial<Tuple2<A, B>, R> of(Predicate<? super A> aPredicate,
                                                         Predicate<? super B> bPredicate,
-                                                        Fn2<? super A, ? super B, ? extends R> fn) {
-        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()),
-                             into(fn.toBiFunction()));
+                                                        BiFunction<? super A, ? super B, ? extends R> fn) {
+        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()), into(fn));
     }
+
+
+    public static <A, B, C, R> Partial<Tuple3<A, B, C>, R> of(Predicate<? super A> aPredicate,
+                                                              Predicate<? super B> bPredicate,
+                                                              Predicate<? super C> cPredicate,
+                                                              Fn3<? super A, ? super B, ? super C, ? extends R> fn) {
+        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()) && cPredicate.test(t._3()),
+                             into3(fn));
+    }
+
+    public static <A, B, C, D, R> Partial<Tuple4<A, B, C, D>, R> of(Predicate<? super A> aPredicate,
+                                                                    Predicate<? super B> bPredicate,
+                                                                    Predicate<? super C> cPredicate,
+                                                                    Predicate<? super D> dPredicate,
+                                                                    Fn4<? super A, ? super B, ? super C, ? super D, ? extends R> fn) {
+        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()) && cPredicate.test(t._3()) && dPredicate.test(t._4()),
+                             into4(fn));
+    }
+
 }

@@ -18,6 +18,7 @@ public final class Into3<A, B, C, D> implements Fn2<Fn3<? super A, ? super B, ? 
 
     private static final Into3 INSTANCE = new Into3();
 
+
     @Override
     public D apply(Fn3<? super A, ? super B, ? super C, ? extends D> fn, Tuple3<A, B, C> tuple) {
         return tuple.into(fn);

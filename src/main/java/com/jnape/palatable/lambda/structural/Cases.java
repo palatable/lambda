@@ -1,16 +1,46 @@
 package com.jnape.palatable.lambda.structural;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
+import static com.jnape.palatable.lambda.structural.Case.of;
+import static com.jnape.palatable.lambda.structural.CatchAll.__;
 import static com.jnape.palatable.lambda.structural.Match.partial;
 import static com.jnape.palatable.lambda.structural.Match.total;
+import static com.jnape.palatable.lambda.structural.Struct.struct;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
 public class Cases {
 
     private Cases() {
+    }
+
+    public static void main(String[] args) {
+
+        class Foo implements Struct._2<String, Integer> {
+            String getFoo() {
+                return "hi";
+            }
+
+            Integer getBar() {
+                return 1;
+            }
+
+            @Override
+            public Tuple2<String, Integer> unapply() {
+                return tuple(getFoo(), getBar());
+            }
+        }
+
+        Foo foo = new Foo();
+
+        Maybe<String> match = struct(foo::getFoo, foo::getBar).match(cases(of(__, eq(1), (foo11, bar1) -> foo11),
+                                                                           of(__, eq(1), (foo11, bar1) -> foo11)));
     }
 
     public static <Fields extends HCons, R> Match.Total<Fields, R> cases(Case.Partial<Fields, R> partialCase,
