@@ -14,12 +14,13 @@ import com.jnape.palatable.lambda.functions.Fn3;
  * @param <C> the third argument type
  * @param <D> the result type
  */
-public final class Into3<A, B, C, D> implements Fn2<Fn3<A, B, C, D>, Tuple3<A, B, C>, D> {
+public final class Into3<A, B, C, D> implements Fn2<Fn3<? super A, ? super B, ? super C, ? extends D>, Tuple3<A, B, C>, D> {
 
     private static final Into3 INSTANCE = new Into3();
 
+
     @Override
-    public D apply(Fn3<A, B, C, D> fn, Tuple3<A, B, C> tuple) {
+    public D apply(Fn3<? super A, ? super B, ? super C, ? extends D> fn, Tuple3<A, B, C> tuple) {
         return tuple.into(fn);
     }
 
@@ -28,11 +29,11 @@ public final class Into3<A, B, C, D> implements Fn2<Fn3<A, B, C, D>, Tuple3<A, B
         return INSTANCE;
     }
 
-    public static <A, B, C, D> Fn1<Tuple3<A, B, C>, D> into3(Fn3<A, B, C, D> fn) {
+    public static <A, B, C, D> Fn1<Tuple3<A, B, C>, D> into3(Fn3<? super A, ? super B, ? super C, ? extends D> fn) {
         return Into3.<A, B, C, D>into3().apply(fn);
     }
 
-    public static <A, B, C, D> D into3(Fn3<A, B, C, D> fn, Tuple3<A, B, C> tuple) {
-        return into3(fn).apply(tuple);
+    public static <A, B, C, D> D into3(Fn3<? super A, ? super B, ? super C, ? extends D> fn, Tuple3<A, B, C> tuple) {
+        return Into3.<A, B, C, D>into3(fn).apply(tuple);
     }
 }
