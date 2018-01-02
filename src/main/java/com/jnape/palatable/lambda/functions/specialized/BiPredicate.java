@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.functions.specialized;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn2;
 
+import java.util.function.Function;
+
 /**
  * A specialized {@link Fn2} that returns a Boolean when fully applied,
  * or a {@link Predicate} when partially applied.
@@ -43,6 +45,22 @@ public interface BiPredicate<A, B> extends Fn2<A, B, Boolean>, java.util.functio
     @Override
     default Predicate<Tuple2<A, B>> uncurry() {
         return Fn2.super.uncurry()::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <Z> BiPredicate<Z, B> diMapL(Function<? super Z, ? extends A> fn) {
+        return Fn2.super.diMapL(fn)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <Z> Fn2<Z, B, Boolean> contraMap(Function<? super Z, ? extends A> fn) {
+        return Fn2.super.contraMap(fn)::apply;
     }
 
     /**

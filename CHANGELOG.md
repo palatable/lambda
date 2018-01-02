@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `MapLens#values` now uses defensive copies and does not alter the focused on map
 - `MapLens#inverted` now uses defensive copies and does not alter the focused on map
 - `HListLens#head` is now covariant in the tail of both `S` and `T`
+- `Predicate#contraMap` is now covariant in its return type
+- `BiPredicate#contraMap` and `BiPredicate#diMapL` are now both covariant in their return types
 
 ### Added
 - `Fn3#fn3` and `Fn4#fn4` static factory methods
