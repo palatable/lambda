@@ -39,8 +39,8 @@ public class Cases {
 
         Foo foo = new Foo();
 
-        Maybe<String> match = struct(foo::getFoo, foo::getBar).match(cases(of(__, eq(1), (foo11, bar1) -> foo11),
-                                                                           of(__, eq(1), (foo11, bar1) -> foo11)));
+//        Maybe<String> match = struct(foo::getFoo, foo::getBar).match(cases(of(__, eq(1), (foo11, bar1) -> foo11),
+//                                                                           of(__, eq(1), (foo11, bar1) -> foo11)));
     }
 
     public static <Fields extends HCons, R> Match.Total<Fields, R> cases(Case.Partial<Fields, R> partialCase,

@@ -15,6 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into1.into1;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into3.into3;
@@ -103,12 +104,26 @@ public abstract class Case {
         return new Partial<>(pred.contraMap(HCons::head), into1(fn));
     }
 
-    public static <A, B, R> Partial<Tuple2<A, B>, R> of(Predicate<? super A> aPredicate,
-                                                        Predicate<? super B> bPredicate,
-                                                        BiFunction<? super A, ? super B, ? extends R> fn) {
-        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()), into(fn));
+//    public static <A, B, R> Partial<Tuple2<A, B>, R> of(Predicate<? super A> aPredicate,
+//                                                        Predicate<? super B> bPredicate,
+//                                                        BiFunction<? super A, ? super B, ? extends R> fn) {
+//        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()), into(fn));
+//    }
+
+    public static <A, APrime, B, BPrime, R> Partial<Tuple2<A, B>, R>of(Predicate<? super A> x,
+                                                                       Predicate<? super B> y,
+                                                                       BiFunction<? super A, ? super B, ? extends R> z) {
+        throw new UnsupportedOperationException();
     }
 
+    public static <A, APrime, B, BPrime, R> Partial<Tuple2<A, B>, R> of(
+            DestructuringPredicate<? super A, ? extends APrime> aPredicate,
+            DestructuringPredicate<? super B, ? extends BPrime> bPredicate,
+            BiFunction<? super APrime, ? super BPrime, ? extends R> fn) {
+        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()),
+                             into((a, b) -> fn.apply(aPredicate.destructure(a).orElse(null),
+                                                     bPredicate.destructure(b).orElse(null))));
+    }
 
     public static <A, B, C, R> Partial<Tuple3<A, B, C>, R> of(Predicate<? super A> aPredicate,
                                                               Predicate<? super B> bPredicate,
@@ -116,6 +131,36 @@ public abstract class Case {
                                                               Fn3<? super A, ? super B, ? super C, ? extends R> fn) {
         return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()) && cPredicate.test(t._3()),
                              into3(fn));
+    }
+
+    @FunctionalInterface
+    public static interface DestructuringPredicate<A, B> extends Predicate<A> {
+        Maybe<B> destructure(A a);
+
+        @Override
+        default Boolean apply(A a) {
+            return destructure(a).fmap(constantly(true)).orElse(false);
+        }
+    }
+
+    public static <A, APrime, B, C, R> Partial<Tuple3<A, B, C>, R> of(
+            DestructuringPredicate<? super A, ? extends APrime> aPredicate,
+            Predicate<? super B> bPredicate,
+            Predicate<? super C> cPredicate,
+            Fn3<? super APrime, ? super B, ? super C, ? extends R> fn) {
+        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()) && cPredicate.test(t._3()),
+                             into3((ap, b, c) -> fn.apply(aPredicate.destructure(ap).orElseGet(null), b, c)));
+    }
+
+    public static <A, APrime, B, BPrime, C, R> Partial<Tuple3<A, B, C>, R> of(
+            DestructuringPredicate<? super A, ? extends APrime> aPredicate,
+            DestructuringPredicate<? super B, ? extends BPrime> bPredicate,
+            Predicate<? super C> cPredicate,
+            Fn3<? super APrime, ? super BPrime, ? super C, ? extends R> fn) {
+        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()) && cPredicate.test(t._3()),
+                             into3((a, b, c) -> fn.apply(aPredicate.destructure(a).orElseGet(null),
+                                                         bPredicate.destructure(b).orElseGet(null),
+                                                         c)));
     }
 
     public static <A, B, C, D, R> Partial<Tuple4<A, B, C, D>, R> of(Predicate<? super A> aPredicate,
