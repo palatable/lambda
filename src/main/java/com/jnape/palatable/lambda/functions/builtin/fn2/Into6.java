@@ -18,12 +18,13 @@ import com.jnape.palatable.lambda.functions.Fn6;
  * @param <F> the sixth argument type
  * @param <G> the result type
  */
-public final class Into6<A, B, C, D, E, F, G> implements Fn2<Fn6<A, B, C, D, E, F, G>, Tuple6<A, B, C, D, E, F>, G> {
+public final class Into6<A, B, C, D, E, F, G> implements Fn2<Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends G>, Tuple6<A, B, C, D, E, F>, G> {
 
     private static final Into6 INSTANCE = new Into6();
 
     @Override
-    public G apply(Fn6<A, B, C, D, E, F, G> fn, Tuple6<A, B, C, D, E, F> tuple) {
+    public G apply(Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends G> fn,
+                   Tuple6<A, B, C, D, E, F> tuple) {
         return tuple.into(fn);
     }
 
@@ -32,11 +33,14 @@ public final class Into6<A, B, C, D, E, F, G> implements Fn2<Fn6<A, B, C, D, E, 
         return INSTANCE;
     }
 
-    public static <A, B, C, D, E, F, G> Fn1<Tuple6<A, B, C, D, E, F>, G> into6(Fn6<A, B, C, D, E, F, G> fn) {
+    public static <A, B, C, D, E, F, G> Fn1<Tuple6<A, B, C, D, E, F>, G> into6(
+            Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends G> fn) {
         return Into6.<A, B, C, D, E, F, G>into6().apply(fn);
     }
 
-    public static <A, B, C, D, E, F, G> G into6(Fn6<A, B, C, D, E, F, G> fn, Tuple6<A, B, C, D, E, F> tuple) {
-        return into6(fn).apply(tuple);
+    public static <A, B, C, D, E, F, G> G into6(
+            Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends G> fn,
+            Tuple6<A, B, C, D, E, F> tuple) {
+        return Into6.<A, B, C, D, E, F, G>into6(fn).apply(tuple);
     }
 }

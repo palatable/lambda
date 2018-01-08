@@ -16,12 +16,13 @@ import com.jnape.palatable.lambda.functions.Fn5;
  * @param <E> the fifth argument type
  * @param <F> the result type
  */
-public final class Into5<A, B, C, D, E, F> implements Fn2<Fn5<A, B, C, D, E, F>, Tuple5<A, B, C, D, E>, F> {
+public final class Into5<A, B, C, D, E, F> implements Fn2<Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F>, Tuple5<A, B, C, D, E>, F> {
 
     private static final Into5 INSTANCE = new Into5();
 
     @Override
-    public F apply(Fn5<A, B, C, D, E, F> fn, Tuple5<A, B, C, D, E> tuple) {
+    public F apply(Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F> fn,
+                   Tuple5<A, B, C, D, E> tuple) {
         return tuple.into(fn);
     }
 
@@ -30,11 +31,13 @@ public final class Into5<A, B, C, D, E, F> implements Fn2<Fn5<A, B, C, D, E, F>,
         return INSTANCE;
     }
 
-    public static <A, B, C, D, E, F> Fn1<Tuple5<A, B, C, D, E>, F> into5(Fn5<A, B, C, D, E, F> fn) {
+    public static <A, B, C, D, E, F> Fn1<Tuple5<A, B, C, D, E>, F> into5(
+            Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F> fn) {
         return Into5.<A, B, C, D, E, F>into5().apply(fn);
     }
 
-    public static <A, B, C, D, E, F> F into5(Fn5<A, B, C, D, E, F> fn, Tuple5<A, B, C, D, E> tuple) {
-        return into5(fn).apply(tuple);
+    public static <A, B, C, D, E, F> F into5(Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F> fn,
+                                             Tuple5<A, B, C, D, E> tuple) {
+        return Into5.<A, B, C, D, E, F>into5(fn).apply(tuple);
     }
 }

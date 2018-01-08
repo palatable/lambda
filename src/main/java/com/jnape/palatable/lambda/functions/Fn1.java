@@ -3,11 +3,13 @@ package com.jnape.palatable.lambda.functions;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.Fn2.fn2;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A function taking a single argument. This is the core function type that all other function types extend and

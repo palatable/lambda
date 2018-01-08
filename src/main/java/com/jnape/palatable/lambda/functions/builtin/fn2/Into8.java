@@ -20,12 +20,14 @@ import com.jnape.palatable.lambda.functions.Fn8;
  * @param <H> the eighth argument type
  * @param <I> the result type
  */
-public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<A, B, C, D, E, F, G, H, I>, Tuple8<A, B, C, D, E, F, G, H>, I> {
+public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I>, Tuple8<A, B, C, D, E, F, G, H>, I> {
 
     private static final Into8 INSTANCE = new Into8();
 
     @Override
-    public I apply(Fn8<A, B, C, D, E, F, G, H, I> fn, Tuple8<A, B, C, D, E, F, G, H> tuple) {
+    public I apply(
+            Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I> fn,
+            Tuple8<A, B, C, D, E, F, G, H> tuple) {
         return tuple.into(fn);
     }
 
@@ -35,12 +37,13 @@ public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<A, B, C, 
     }
 
     public static <A, B, C, D, E, F, G, H, I> Fn1<Tuple8<A, B, C, D, E, F, G, H>, I> into8(
-            Fn8<A, B, C, D, E, F, G, H, I> fn) {
+            Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I> fn) {
         return Into8.<A, B, C, D, E, F, G, H, I>into8().apply(fn);
     }
 
-    public static <A, B, C, D, E, F, G, H, I> I into8(Fn8<A, B, C, D, E, F, G, H, I> fn,
-                                                      Tuple8<A, B, C, D, E, F, G, H> tuple) {
-        return into8(fn).apply(tuple);
+    public static <A, B, C, D, E, F, G, H, I> I into8(
+            Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I> fn,
+            Tuple8<A, B, C, D, E, F, G, H> tuple) {
+        return Into8.<A, B, C, D, E, F, G, H, I>into8(fn).apply(tuple);
     }
 }
