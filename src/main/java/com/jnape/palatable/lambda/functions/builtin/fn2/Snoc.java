@@ -17,6 +17,9 @@ public final class Snoc<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
     private static final Snoc INSTANCE = new Snoc();
 
+    private Snoc() {
+    }
+
     @Override
     public Iterable<A> apply(A a, Iterable<A> as) {
         return () -> new SnocIterator<>(a, as);
