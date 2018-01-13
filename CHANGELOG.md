@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CollectionLens#asSet(Function)`, a proper analog of `CollectionLens#asSet()` that uses defensive copies
 - `CollectionLens#asStream(Function)`, a proper analog of `CollectionLens#asStream()` that uses defensive copies
 - Explicitly calling attention to all unlawful lenses in their documentation
+- `Peek`, for "peeking" at the value contained inside any given `Functor` with a given side-effect
 
 ### Removed
 - `Either#toOptional`, deprecated in previous release

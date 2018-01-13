@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt;
 
+import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
@@ -145,10 +146,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
      * @return the same Maybe instance
      */
     public final Maybe<A> peek(Consumer<A> consumer) {
-        return fmap(a -> {
-            consumer.accept(a);
-            return a;
-        });
+        return Peek.peek(consumer, this);
     }
 
     /**
