@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.adt;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
+import com.jnape.palatable.lambda.functions.builtin.fn2.Peek2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
@@ -183,13 +184,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * @return the Either, unaltered
      */
     public Either<L, R> peek(Consumer<L> leftConsumer, Consumer<R> rightConsumer) {
-        return flatMap(l -> {
-            leftConsumer.accept(l);
-            return this;
-        }, r -> {
-            rightConsumer.accept(r);
-            return this;
-        });
+        return Peek2.peek2(leftConsumer, rightConsumer, this);
     }
 
     /**
