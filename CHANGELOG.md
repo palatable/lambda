@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CollectionLens#asStream(Function)`, a proper analog of `CollectionLens#asStream()` that uses defensive copies
 - Explicitly calling attention to all unlawful lenses in their documentation
 - `Peek` and `Peek2`, for "peeking" at the value contained inside any given `Functor` or `Bifunctor` with given side-effects
+- `Trampoline` and `RecursiveResult` for modeling primitive tail-recursive functions that can be trampolined 
 
 ### Removed
 - `Either#toOptional`, deprecated in previous release
