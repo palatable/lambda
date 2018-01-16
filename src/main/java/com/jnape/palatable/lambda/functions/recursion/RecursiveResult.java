@@ -1,4 +1,4 @@
-package spike;
+package com.jnape.palatable.lambda.functions.recursion;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functor.Applicative;

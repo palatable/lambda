@@ -1,11 +1,11 @@
-package spike;
+package com.jnape.palatable.lambda.functions.recursion;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Unfoldr;
-import spike.RecursiveResult.Recurse;
-import spike.RecursiveResult.Terminate;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult.Recurse;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult.Terminate;
 
 import java.util.function.Function;
 
