@@ -63,7 +63,7 @@ public interface Monad<A, M extends Monad> extends Applicative<A, M> {
      */
     @Override
     default <B> Monad<B, M> discardL(Applicative<B, M> appB) {
-        return (Monad<B, M>) Applicative.super.discardL(appB);
+        return Applicative.super.discardL(appB).coerce();
     }
 
     /**
@@ -71,6 +71,6 @@ public interface Monad<A, M extends Monad> extends Applicative<A, M> {
      */
     @Override
     default <B> Monad<A, M> discardR(Applicative<B, M> appB) {
-        return (Monad<A, M>) Applicative.super.discardR(appB);
+        return Applicative.super.discardR(appB).coerce();
     }
 }

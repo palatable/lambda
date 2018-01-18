@@ -262,7 +262,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
         public <B, App extends Applicative> Applicative<Maybe<B>, App> traverse(
                 Function<? super A, ? extends Applicative<B, App>> fn,
                 Function<? super Traversable<B, Maybe>, ? extends Applicative<? extends Traversable<B, Maybe>, App>> pure) {
-            return (Applicative<Maybe<B>, App>) pure.apply(nothing());
+            return pure.apply(nothing()).fmap(x -> (Maybe<B>) x);
         }
 
         @Override
