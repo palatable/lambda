@@ -9,7 +9,6 @@ import com.jnape.palatable.lambda.monad.Monad;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.lens.Lens.Simple.adapt;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
@@ -214,7 +213,7 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
      * @return the new lens
      */
     default <R> Lens<R, T, A, B> mapS(Function<? super R, ? extends S> fn) {
-        return compose(lens(fn, (r, t) -> t));
+        return lens(view(this).compose(fn), (r, b) -> set(this, b, fn.apply(r)));
     }
 
     /**
@@ -247,7 +246,7 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
      * @return the new lens
      */
     default <Z> Lens<S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
-        return andThen(lens(id(), (a, z) -> fn.apply(z)));
+        return lens(view(this), (s, z) -> set(this, fn.apply(z), s));
     }
 
     /**
