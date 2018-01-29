@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Added
+- `BoundedBifunctor`, a `Bifunctor` super type that offers upper bounds for both parameters
+- `Try`, a `Monad` representing an expression-like analog of `try/catch/finally`
+- `CheckedRunnable`, the `Runnable` counterpart to `CheckedSupplier` that can throw checked exceptions
+- `Unit`, the lambda analog to `Void`, except actually inhabited by a singleton instance 
+
+### Changed
+- `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
+- `Peek2` now accepts the more general `BoundedBifunctor`
+
+### Deprecated
+- `Either#trying` in favor of `Try#trying` 
 
 ## [2.1.1] - 2018-01-16
 ### Changed

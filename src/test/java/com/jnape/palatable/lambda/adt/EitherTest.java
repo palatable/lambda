@@ -169,24 +169,6 @@ public class EitherTest {
     }
 
     @Test
-    public void monadicTryingLiftsCheckedSupplier() {
-        assertEquals(right(1), Either.trying(() -> 1));
-
-        Exception checkedException = new Exception("expected");
-        assertEquals(left(checkedException), Either.trying(() -> {
-            throw checkedException;
-        }));
-    }
-
-    @Test
-    public void dyadicTryingLiftsCheckedSupplierMappingAnyThrownExceptions() {
-        assertEquals(right(1), Either.trying(() -> 1, Throwable::getMessage));
-        assertEquals(left("expected"), Either.trying(() -> {
-            throw new Exception("expected");
-        }, Throwable::getMessage));
-    }
-
-    @Test
     public void monadicPeekLiftsIOToTheRight() {
         Either<String, Integer> left = left("foo");
         Either<String, Integer> right = right(1);

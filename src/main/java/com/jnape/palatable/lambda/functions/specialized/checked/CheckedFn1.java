@@ -5,11 +5,13 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.throwChecked;
 
 /**
- * Specialized {@link Fn1} that can throw checked exceptions.
+ * Specialized {@link Fn1} that can throw any {@link Throwable}.
  *
+ * @param <T> The {@link Throwable} type
  * @param <A> The input type
  * @param <B> The output type
  * @see CheckedSupplier
+ * @see CheckedRunnable
  * @see Fn1
  */
 @FunctionalInterface
@@ -24,12 +26,5 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
         }
     }
 
-    /**
-     * A version of {@link Fn1} that can throw checked exceptions.
-     *
-     * @param a the argument
-     * @return the result of the function application
-     * @throws T any Throwable thrown by the function application
-     */
     B checkedApply(A a) throws T;
 }

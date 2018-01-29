@@ -5,17 +5,18 @@ import java.util.function.Supplier;
 import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.throwChecked;
 
 /**
- * Specialized {@link Supplier} that can throw checked exceptions.
+ * Specialized {@link Supplier} that can throw any {@link Throwable}.
  *
- * @param <E> The exception type
- * @param <T> The return type
+ * @param <T> The {@link Throwable} type
+ * @param <A> The return type
  * @see CheckedFn1
+ * @see CheckedRunnable
  */
 @FunctionalInterface
-public interface CheckedSupplier<E extends Throwable, T> extends Supplier<T> {
+public interface CheckedSupplier<T extends Throwable, A> extends Supplier<A> {
 
     @Override
-    default T get() {
+    default A get() {
         try {
             return checkedGet();
         } catch (Throwable t) {
@@ -27,7 +28,7 @@ public interface CheckedSupplier<E extends Throwable, T> extends Supplier<T> {
      * A version of {@link Supplier#get()} that can throw checked exceptions.
      *
      * @return the supplied result
-     * @throws E any exception that can be thrown by this method
+     * @throws T any exception that can be thrown by this method
      */
-    T checkedGet() throws E;
+    A checkedGet() throws T;
 }
