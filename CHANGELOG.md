@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CheckedRunnable`, the `Runnable` counterpart to `CheckedSupplier` that can throw checked exceptions
 - `Unit`, the lambda analog to `Void`, except actually inhabited by a singleton instance 
 - `Kleisli`, the abstract representation of a `Kleisli` arrow (`Monad#flatMap`) as an `Fn1` 
+- `These`, a `CoProduct3` of `A`, `B`, or `Tuple2<A,B>` 
 
 ### Changed
 - `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
