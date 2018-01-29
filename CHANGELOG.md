@@ -9,10 +9,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Try`, a `Monad` representing an expression-like analog of `try/catch/finally`
 - `CheckedRunnable`, the `Runnable` counterpart to `CheckedSupplier` that can throw checked exceptions
 - `Unit`, the lambda analog to `Void`, except actually inhabited by a singleton instance 
+- `Kleisli`, the abstract representation of a `Kleisli` arrow (`Monad#flatMap`) as an `Fn1` 
 
 ### Changed
 - `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
 - `Peek2` now accepts the more general `BoundedBifunctor`
+- `Identity`, `Compose`, and `Const` functors all have better `toString` implementations
 
 ### Deprecated
 - `Either#trying` in favor of `Try#trying` 

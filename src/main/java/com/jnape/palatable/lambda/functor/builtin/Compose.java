@@ -59,4 +59,11 @@ public class Compose<F extends Applicative, G extends Applicative, A> implements
     public int hashCode() {
         return Objects.hash(fga);
     }
+
+    @Override
+    public String toString() {
+        return "Compose{" +
+                "fga=" + fga +
+                '}';
+    }
 }

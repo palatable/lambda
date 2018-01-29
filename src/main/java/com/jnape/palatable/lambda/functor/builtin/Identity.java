@@ -81,4 +81,11 @@ public final class Identity<A> implements Monad<A, Identity>, Traversable<A, Ide
     public int hashCode() {
         return Objects.hash(a);
     }
+
+    @Override
+    public String toString() {
+        return "Identity{" +
+                "a=" + a +
+                '}';
+    }
 }

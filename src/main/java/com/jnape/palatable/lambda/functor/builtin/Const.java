@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
-import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -32,16 +32,6 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
      */
     public A runConst() {
         return a;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return other instanceof Const && Objects.equals(a, ((Const) other).a);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(a);
     }
 
     /**
@@ -130,5 +120,22 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
     public <C, D> Const<C, D> biMap(Function<? super A, ? extends C> lFn,
                                     Function<? super B, ? extends D> rFn) {
         return new Const<>(lFn.apply(a));
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Const && Objects.equals(a, ((Const) other).a);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(a);
+    }
+
+    @Override
+    public String toString() {
+        return "Const{" +
+                "a=" + a +
+                '}';
     }
 }
