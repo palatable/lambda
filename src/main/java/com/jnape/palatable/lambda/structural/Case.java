@@ -17,11 +17,12 @@ import com.jnape.palatable.lambda.functions.Fn5;
 import com.jnape.palatable.lambda.functions.Fn6;
 import com.jnape.palatable.lambda.functions.Fn7;
 import com.jnape.palatable.lambda.functions.Fn8;
-import com.jnape.palatable.lambda.structural.Matchers.Any;
+import com.jnape.palatable.lambda.structural.Matcher.Any;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.Spike.liftA;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into1.into1;
@@ -122,56 +123,56 @@ public abstract class Case {
     }
 
     @SuppressWarnings({"RedundantTypeArguments", "unused"})
-    public static <A, B, C, D, R> Total<Tuple4<A, B, C, D>, R> of(Any __,
-                                                                  Any ___,
-                                                                  Any ____,
-                                                                  Any _____,
+    public static <A, B, C, D, R> Total<Tuple4<A, B, C, D>, R> of(Any<A> __,
+                                                                  Any<B> ___,
+                                                                  Any<C> ____,
+                                                                  Any<D> _____,
                                                                   Fn4<? super A, ? super B, ? super C, ? super D, ? extends R> fn) {
         return Case.<A, B, C, D, R>of(fn);
     }
 
     @SuppressWarnings({"RedundantTypeArguments", "unused"})
-    public static <A, B, C, D, E, R> Total<Tuple5<A, B, C, D, E>, R> of(Any __,
-                                                                        Any ___,
-                                                                        Any ____,
-                                                                        Any _____,
-                                                                        Any ______,
+    public static <A, B, C, D, E, R> Total<Tuple5<A, B, C, D, E>, R> of(Any<A> __,
+                                                                        Any<B> ___,
+                                                                        Any<C> ____,
+                                                                        Any<D> _____,
+                                                                        Any<E> ______,
                                                                         Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends R> fn) {
         return Case.<A, B, C, D, E, R>of(fn);
     }
 
     @SuppressWarnings({"RedundantTypeArguments", "unused"})
-    public static <A, B, C, D, E, F, R> Total<Tuple6<A, B, C, D, E, F>, R> of(Any __,
-                                                                              Any ___,
-                                                                              Any ____,
-                                                                              Any _____,
-                                                                              Any ______,
-                                                                              Any _______,
+    public static <A, B, C, D, E, F, R> Total<Tuple6<A, B, C, D, E, F>, R> of(Any<A> __,
+                                                                              Any<B> ___,
+                                                                              Any<C> ____,
+                                                                              Any<D> _____,
+                                                                              Any<E> ______,
+                                                                              Any<F> _______,
                                                                               Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends R> fn) {
         return Case.<A, B, C, D, E, F, R>of(fn);
     }
 
     @SuppressWarnings({"RedundantTypeArguments", "unused"})
-    public static <A, B, C, D, E, F, G, R> Total<Tuple7<A, B, C, D, E, F, G>, R> of(Any __,
-                                                                                    Any ___,
-                                                                                    Any ____,
-                                                                                    Any _____,
-                                                                                    Any ______,
-                                                                                    Any _______,
-                                                                                    Any ________,
+    public static <A, B, C, D, E, F, G, R> Total<Tuple7<A, B, C, D, E, F, G>, R> of(Any<A> __,
+                                                                                    Any<B> ___,
+                                                                                    Any<C> ____,
+                                                                                    Any<D> _____,
+                                                                                    Any<E> ______,
+                                                                                    Any<F> _______,
+                                                                                    Any<G> ________,
                                                                                     Fn7<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? extends R> fn) {
         return Case.<A, B, C, D, E, F, G, R>of(fn);
     }
 
     @SuppressWarnings({"RedundantTypeArguments", "unused"})
-    public static <A, B, C, D, E, F, G, H, R> Total<Tuple8<A, B, C, D, E, F, G, H>, R> of(Any __,
-                                                                                          Any ___,
-                                                                                          Any ____,
-                                                                                          Any _____,
-                                                                                          Any ______,
-                                                                                          Any _______,
-                                                                                          Any ________,
-                                                                                          Any _________,
+    public static <A, B, C, D, E, F, G, H, R> Total<Tuple8<A, B, C, D, E, F, G, H>, R> of(Any<A> __,
+                                                                                          Any<B> ___,
+                                                                                          Any<C> ____,
+                                                                                          Any<D> _____,
+                                                                                          Any<E> ______,
+                                                                                          Any<F> _______,
+                                                                                          Any<G> ________,
+                                                                                          Any<H> _________,
                                                                                           Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends R> fn) {
         return Case.<A, B, C, D, E, F, G, H, R>of(fn);
     }
@@ -179,14 +180,14 @@ public abstract class Case {
 
     public static <A, APrime, R> Partial<SingletonHList<A>, R> of(Matcher<? super A, ? extends APrime> aMatcher,
                                                                   Function<? super APrime, ? extends R> body) {
-        return new Partial<>(into1(a -> aMatcher.apply(a).fmap(body)));
+        return new Partial<>(into1(a -> aMatcher.match(a).fmap(body)));
     }
 
     public static <A, APrime, B, BPrime, R> Partial<Tuple2<A, B>, R> of(
             Matcher<? super A, ? extends APrime> aMatcher,
             Matcher<? super B, ? extends BPrime> bMatcher,
             BiFunction<? super APrime, ? super BPrime, ? extends R> body) {
-        return new Partial<>(into((a, b) -> aMatcher.apply(a).flatMap(aPrime -> bMatcher.apply(b).fmap(bPrime -> body.apply(aPrime, bPrime)))));
+        return new Partial<>(into((a, b) -> aMatcher.match(a).flatMap(aPrime -> bMatcher.match(b).fmap(bPrime -> body.apply(aPrime, bPrime)))));
     }
 
     public static <A, APrime, B, BPrime, C, CPrime, R> Partial<Tuple3<A, B, C>, R> of(
@@ -194,9 +195,9 @@ public abstract class Case {
             Matcher<? super B, ? extends BPrime> bMatcher,
             Matcher<? super C, ? extends CPrime> cMatcher,
             Fn3<? super APrime, ? super BPrime, ? super CPrime, ? extends R> body) {
-        return new Partial<>(into3((a, b, c) -> aMatcher.apply(a)
-                .flatMap(aPrime -> bMatcher.apply(b)
-                        .flatMap(bPrime -> cMatcher.apply(c)
+        return new Partial<>(into3((a, b, c) -> aMatcher.match(a)
+                .flatMap(aPrime -> bMatcher.match(b)
+                        .flatMap(bPrime -> cMatcher.match(c)
                                 .fmap(cPrime -> body.apply(aPrime, bPrime, cPrime))))));
     }
 
@@ -206,10 +207,10 @@ public abstract class Case {
             Matcher<? super C, ? extends CPrime> cMatcher,
             Matcher<? super D, ? extends DPrime> dMatcher,
             Fn4<? super APrime, ? super BPrime, ? super CPrime, ? super DPrime, ? extends R> body) {
-        return new Partial<>(into4((a, b, c, d) -> aMatcher.apply(a)
-                .flatMap(aPrime -> bMatcher.apply(b)
-                        .flatMap(bPrime -> cMatcher.apply(c)
-                                .flatMap(cPrime -> dMatcher.apply(d)
+        return new Partial<>(into4((a, b, c, d) -> aMatcher.match(a)
+                .flatMap(aPrime -> bMatcher.match(b)
+                        .flatMap(bPrime -> cMatcher.match(c)
+                                .flatMap(cPrime -> dMatcher.match(d)
                                         .fmap(dPrime -> body.apply(aPrime, bPrime, cPrime, dPrime)))))));
     }
 
@@ -221,11 +222,11 @@ public abstract class Case {
             Matcher<? super D, ? extends DPrime> dMatcher,
             Matcher<? super E, ? extends EPrime> eMatcher,
             Fn5<? super APrime, ? super BPrime, ? super CPrime, ? super DPrime, ? super EPrime, ? extends R> body) {
-        return new Partial<>(into5((a, b, c, d, e) -> aMatcher.apply(a)
-                .flatMap(aPrime -> bMatcher.apply(b)
-                        .flatMap(bPrime -> cMatcher.apply(c)
-                                .flatMap(cPrime -> dMatcher.apply(d)
-                                        .flatMap(dPrime -> eMatcher.apply(e)
+        return new Partial<>(into5((a, b, c, d, e) -> aMatcher.match(a)
+                .flatMap(aPrime -> bMatcher.match(b)
+                        .flatMap(bPrime -> cMatcher.match(c)
+                                .flatMap(cPrime -> dMatcher.match(d)
+                                        .flatMap(dPrime -> eMatcher.match(e)
                                                 .fmap(ePrime -> body.apply(aPrime, bPrime, cPrime, dPrime, ePrime))))))));
     }
 
@@ -237,15 +238,8 @@ public abstract class Case {
             Matcher<? super D, ? extends DPrime> dMatcher,
             Matcher<? super E, ? extends EPrime> eMatcher,
             Matcher<? super F, ? extends FPrime> fMatcher,
-            Fn6<? super APrime, ? super BPrime, ? super CPrime, ? super DPrime, ? super EPrime, ? super FPrime, ? extends R> body) {
-        //todo: for-comprehensions, lest any consumers needing to flatMap 6 levels deep instead choose death's sweet embrace
-        return new Partial<>(into6((a, b, c, d, e, f) -> aMatcher.apply(a)
-                .flatMap(aPrime -> bMatcher.apply(b)
-                        .flatMap(bPrime -> cMatcher.apply(c)
-                                .flatMap(cPrime -> dMatcher.apply(d)
-                                        .flatMap(dPrime -> eMatcher.apply(e)
-                                                .flatMap(ePrime -> fMatcher.apply(f)
-                                                        .fmap(fPrime -> body.apply(aPrime, bPrime, cPrime, dPrime, ePrime, fPrime)))))))));
+            Fn6<? super APrime, ? super BPrime, ? super CPrime, ? super DPrime, ? super EPrime, ? super FPrime, R> body) {
+        return new Partial<>(into6((a, b, c, d, e, f) -> liftA(aMatcher.match(a), bMatcher.match(b), cMatcher.match(c), dMatcher.match(d), eMatcher.match(e), fMatcher.match(f), body).coerce()));
     }
 
     public static <A, APrime, B, BPrime, C, CPrime, D, DPrime, E, EPrime, F, FPrime, G, GPrime, R> Partial<Tuple7<A, B, C, D, E, F, G>, R> of(
@@ -257,13 +251,13 @@ public abstract class Case {
             Matcher<? super F, ? extends FPrime> fMatcher,
             Matcher<? super G, ? extends GPrime> gMatcher,
             Fn7<? super APrime, ? super BPrime, ? super CPrime, ? super DPrime, ? super EPrime, ? super FPrime, ? super GPrime, ? extends R> body) {
-        return new Partial<>(into7((a, b, c, d, e, f, g) -> aMatcher.apply(a)
-                .flatMap(aPrime -> bMatcher.apply(b)
-                        .flatMap(bPrime -> cMatcher.apply(c)
-                                .flatMap(cPrime -> dMatcher.apply(d)
-                                        .flatMap(dPrime -> eMatcher.apply(e)
-                                                .flatMap(ePrime -> fMatcher.apply(f)
-                                                        .flatMap(fPrime -> gMatcher.apply(g)
+        return new Partial<>(into7((a, b, c, d, e, f, g) -> aMatcher.match(a)
+                .flatMap(aPrime -> bMatcher.match(b)
+                        .flatMap(bPrime -> cMatcher.match(c)
+                                .flatMap(cPrime -> dMatcher.match(d)
+                                        .flatMap(dPrime -> eMatcher.match(e)
+                                                .flatMap(ePrime -> fMatcher.match(f)
+                                                        .flatMap(fPrime -> gMatcher.match(g)
                                                                 .fmap(gPrime -> body.apply(aPrime, bPrime, cPrime, dPrime, ePrime, fPrime, gPrime))))))))));
     }
 
@@ -277,14 +271,14 @@ public abstract class Case {
             Matcher<? super G, ? extends GPrime> gMatcher,
             Matcher<? super H, ? extends HPrime> hMatcher,
             Fn8<? super APrime, ? super BPrime, ? super CPrime, ? super DPrime, ? super EPrime, ? super FPrime, ? super GPrime, ? super HPrime, ? extends R> body) {
-        return new Partial<>(into8((a, b, c, d, e, f, g, h) -> aMatcher.apply(a)
-                .flatMap(aPrime -> bMatcher.apply(b)
-                        .flatMap(bPrime -> cMatcher.apply(c)
-                                .flatMap(cPrime -> dMatcher.apply(d)
-                                        .flatMap(dPrime -> eMatcher.apply(e)
-                                                .flatMap(ePrime -> fMatcher.apply(f)
-                                                        .flatMap(fPrime -> gMatcher.apply(g)
-                                                                .flatMap(gPrime -> hMatcher.apply(h)
+        return new Partial<>(into8((a, b, c, d, e, f, g, h) -> aMatcher.match(a)
+                .flatMap(aPrime -> bMatcher.match(b)
+                        .flatMap(bPrime -> cMatcher.match(c)
+                                .flatMap(cPrime -> dMatcher.match(d)
+                                        .flatMap(dPrime -> eMatcher.match(e)
+                                                .flatMap(ePrime -> fMatcher.match(f)
+                                                        .flatMap(fPrime -> gMatcher.match(g)
+                                                                .flatMap(gPrime -> hMatcher.match(h)
                                                                         .fmap(hPrime -> body.apply(aPrime, bPrime, cPrime, dPrime, ePrime, fPrime, gPrime, hPrime)))))))))));
     }
 

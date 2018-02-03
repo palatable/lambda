@@ -15,7 +15,6 @@ import com.jnape.palatable.lambda.structural.Struct;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn2.fn2;
@@ -24,8 +23,9 @@ import static com.jnape.palatable.lambda.structural.Case.of;
 import static com.jnape.palatable.lambda.structural.Cases.cases;
 import static com.jnape.palatable.lambda.structural.Matcher.$;
 import static com.jnape.palatable.lambda.structural.Matchers.$just;
-import static com.jnape.palatable.lambda.structural.Matchers.Any.$__;
+import static com.jnape.palatable.lambda.structural.Matchers.$right;
 import static com.jnape.palatable.lambda.structural.Struct.struct;
+import static java.lang.Integer.parseInt;
 
 public class Spike {
 
@@ -107,10 +107,6 @@ public class Spike {
 
 
     public static void main(String[] args) {
-
-        Either<Object, Integer> foo1 = liftA(right(1), right(2), right(3), right(4), (a, b, c, d) -> a + b + c + d);
-        System.out.println(foo1);
-
         class Foo implements Struct._4<String, Maybe<Integer>, String, Maybe<Integer>> {
 
             @Override
@@ -129,12 +125,18 @@ public class Spike {
 
         Foo foo = new Foo();
 
+        String match1 = struct(() -> Either.<String, Integer>right(2), () -> "foo")
+                .match(cases(of($right(1), $(), (x, y) -> x + y),
+                             of($(), $(), (x, y) -> x + y)));
+
+        System.out.println(match1);
+
         Integer match = struct(foo::getBar, foo::getBaz).match(cases(
-                of($(eq("123")), $just(), (bar, baz) -> Integer.parseInt(bar) + baz),
-                of($(eq("foo")), $__(), (bar, baz) -> baz.orElse(-2)),
+                of($(eq("123")), $just(), (bar1, baz1) -> parseInt(bar1) + baz1),
+                of($(eq("foo")), $(), (bar, baz) -> 1),
                 of($(eq("foo")), $(just(1)), (bar, baz) -> baz.orElse(-2)),
-                of($(eq("foo")), $just(1), (bar, baz) -> baz),
-                of($__(), $__(), (bar, baz) -> -1)));
+                of($(eq("foo")), $just(1), (bar, baz) -> -2),
+                of($(), $(), (a, b) -> -1)));
 
         System.out.println("match = " + match);
     }
