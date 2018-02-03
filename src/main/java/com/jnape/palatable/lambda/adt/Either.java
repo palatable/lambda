@@ -292,7 +292,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
     @SuppressWarnings("unchecked")
     public static <E extends Exception, L, R> Either<L, R> trying(CheckedSupplier<E, ? extends R> supplier,
                                                                   Function<? super E, ? extends L> leftFn) {
-        return Try.trying(supplier).toEither(leftFn).biMap(id(), id());
+        return Try.<E, R>trying(supplier::get).toEither(leftFn);
     }
 
     /**

@@ -125,7 +125,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param <L> the {@link Either} left parameter type
      * @return {@link Either} the success value or the mapped left value
      */
-    public final <L> Either<L, A> toEither(Function<? super T, L> fn) {
+    public final <L> Either<L, A> toEither(Function<? super T, ? extends L> fn) {
         return match(fn.andThen(Either::left), Either::right);
     }
 
