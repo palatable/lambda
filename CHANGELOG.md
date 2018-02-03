@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
 - `Peek2` now accepts the more general `BoundedBifunctor`
 - `Identity`, `Compose`, and `Const` functors all have better `toString` implementations
+- `Into3-8` now supports functions with parameter variance
 
 ### Deprecated
 - `Either#trying` in favor of `Try#trying` 

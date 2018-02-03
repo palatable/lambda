@@ -15,12 +15,12 @@ import com.jnape.palatable.lambda.functions.Fn4;
  * @param <D> the fourth argument type
  * @param <E> the result type
  */
-public final class Into4<A, B, C, D, E> implements Fn2<Fn4<A, B, C, D, E>, Tuple4<A, B, C, D>, E> {
+public final class Into4<A, B, C, D, E> implements Fn2<Fn4<? super A, ? super B, ? super C, ? super D, ? extends E>, Tuple4<A, B, C, D>, E> {
 
     private static final Into4 INSTANCE = new Into4();
 
     @Override
-    public E apply(Fn4<A, B, C, D, E> fn, Tuple4<A, B, C, D> tuple) {
+    public E apply(Fn4<? super A, ? super B, ? super C, ? super D, ? extends E> fn, Tuple4<A, B, C, D> tuple) {
         return tuple.into(fn);
     }
 
@@ -29,11 +29,13 @@ public final class Into4<A, B, C, D, E> implements Fn2<Fn4<A, B, C, D, E>, Tuple
         return INSTANCE;
     }
 
-    public static <A, B, C, D, E> Fn1<Tuple4<A, B, C, D>, E> into4(Fn4<A, B, C, D, E> fn) {
+    public static <A, B, C, D, E> Fn1<Tuple4<A, B, C, D>, E> into4(
+            Fn4<? super A, ? super B, ? super C, ? super D, ? extends E> fn) {
         return Into4.<A, B, C, D, E>into4().apply(fn);
     }
 
-    public static <A, B, C, D, E> E into4(Fn4<A, B, C, D, E> fn, Tuple4<A, B, C, D> tuple) {
-        return into4(fn).apply(tuple);
+    public static <A, B, C, D, E> E into4(Fn4<? super A, ? super B, ? super C, ? super D, ? extends E> fn,
+                                          Tuple4<A, B, C, D> tuple) {
+        return Into4.<A, B, C, D, E>into4(fn).apply(tuple);
     }
 }
