@@ -23,11 +23,16 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * @param <A>       the Traversable element type
  * @param <App>     the Applicative unification parameter
  * @param <Trav>    the Traversable unification parameter
+ * @param <AppA>    the Applicative instance wrapped in the input Traversable
+ * @param <TravA>   the Traversable instance wrapped in the output Applicative
  * @param <AppTrav> the concrete parametrized output Applicative type
  * @param <TravApp> the concrete parametrized input Traversable type
  */
-public final class Sequence<A, App extends Applicative, Trav extends Traversable, AppTrav extends Applicative<? extends Traversable<A, Trav>, App>,
-        TravApp extends Traversable<? extends Applicative<A, App>, Trav>> implements Fn2<TravApp, Function<? super Traversable<A, Trav>, ? extends AppTrav>, AppTrav> {
+public final class Sequence<A, App extends Applicative, Trav extends Traversable,
+        AppA extends Applicative<A, App>,
+        TravA extends Traversable<A, Trav>,
+        AppTrav extends Applicative<TravA, App>,
+        TravApp extends Traversable<AppA, Trav>> implements Fn2<TravApp, Function<TravA, ? extends AppTrav>, AppTrav> {
 
     private static final Sequence INSTANCE = new Sequence();
 
@@ -36,43 +41,47 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
 
     @Override
     @SuppressWarnings("unchecked")
-    public AppTrav apply(TravApp traversable, Function<? super Traversable<A, Trav>, ? extends AppTrav> pure) {
-        return (AppTrav) traversable.traverse(id(), pure);
+    public AppTrav apply(TravApp traversable, Function<TravA, ? extends AppTrav> pure) {
+        return (AppTrav) traversable.traverse(id(), trav -> pure.apply((TravA) trav));
     }
 
     @SuppressWarnings("unchecked")
     public static <A, App extends Applicative, Trav extends Traversable,
-            AppTrav extends Applicative<? extends Traversable<A, Trav>, App>,
-            TravApp extends Traversable<? extends Applicative<A, App>, Trav>> Sequence<A, App, Trav, AppTrav, TravApp> sequence() {
+            AppA extends Applicative<A, App>,
+            TravA extends Traversable<A, Trav>,
+            AppTrav extends Applicative<TravA, App>,
+            TravApp extends Traversable<AppA, Trav>> Sequence<A, App, Trav, AppA, TravA, AppTrav, TravApp> sequence() {
         return INSTANCE;
     }
 
     public static <A, App extends Applicative, Trav extends Traversable,
-            AppTrav extends Applicative<? extends Traversable<A, Trav>, App>,
-            TravApp extends Traversable<? extends Applicative<A, App>, Trav>> Fn1<Function<? super Traversable<A, Trav>, ? extends AppTrav>, AppTrav> sequence(
+            AppA extends Applicative<A, App>,
+            TravA extends Traversable<A, Trav>,
+            AppTrav extends Applicative<TravA, App>,
+            TravApp extends Traversable<AppA, Trav>> Fn1<Function<TravA, ? extends AppTrav>, AppTrav> sequence(
             TravApp traversable) {
-        return Sequence.<A, App, Trav, AppTrav, TravApp>sequence().apply(traversable);
+        return Sequence.<A, App, Trav, AppA, TravA, AppTrav, TravApp>sequence().apply(traversable);
     }
 
     public static <A, App extends Applicative, Trav extends Traversable,
-            AppTrav extends Applicative<? extends Traversable<A, Trav>, App>,
-            TravApp extends Traversable<? extends Applicative<A, App>, Trav>> AppTrav sequence(TravApp traversable,
-                                                                                               Function<? super Traversable<A, Trav>, ? extends AppTrav> pure) {
-        return Sequence.<A, App, Trav, AppTrav, TravApp>sequence(traversable).apply(pure);
+            TravA extends Traversable<A, Trav>,
+            AppA extends Applicative<A, App>,
+            AppTrav extends Applicative<TravA, App>,
+            TravApp extends Traversable<AppA, Trav>> AppTrav sequence(TravApp traversable,
+                                                                      Function<TravA, ? extends AppTrav> pure) {
+        return Sequence.<A, App, Trav, AppA, TravA, AppTrav, TravApp>sequence(traversable).apply(pure);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>, IterableApp extends Iterable<? extends Applicative<A, App>>> Fn1<Function<? super Iterable<A>, ? extends AppIterable>, AppIterable> sequence(
-            IterableApp iterableApp) {
-        return pure ->
-                (AppIterable) sequence(LambdaIterable.wrap(iterableApp), x -> pure.apply(((LambdaIterable<A>) x).unwrap())
-                        .fmap(LambdaIterable::wrap))
-                        .fmap(LambdaIterable::unwrap);
+    @SuppressWarnings({"unchecked", "RedundantTypeArguments"})
+    public static <A, App extends Applicative, AppA extends Applicative<A, App>, AppIterable extends Applicative<Iterable<A>, App>, IterableApp extends Iterable<AppA>>
+    Fn1<Function<Iterable<A>, ? extends AppIterable>, AppIterable> sequence(IterableApp iterableApp) {
+        return pure -> (AppIterable) Sequence.<A, App, LambdaIterable, LambdaIterable<A>, AppA, Applicative<LambdaIterable<A>, App>, LambdaIterable<AppA>>sequence(
+                LambdaIterable.wrap(iterableApp), x -> pure.apply(x.unwrap()).fmap(LambdaIterable::wrap))
+                .fmap(LambdaIterable::unwrap);
     }
 
-    public static <A, App extends Applicative, AppIterable extends Applicative<Iterable<A>, App>,
-            IterableApp extends Iterable<? extends Applicative<A, App>>> AppIterable sequence(IterableApp iterableApp,
-                                                                                              Function<? super Iterable<A>, ? extends AppIterable> pure) {
-        return Sequence.<A, App, AppIterable, IterableApp>sequence(iterableApp).apply(pure);
+    public static <A, App extends Applicative, AppA extends Applicative<A, App>, AppIterable extends Applicative<Iterable<A>, App>, IterableApp extends Iterable<AppA>>
+    AppIterable sequence(IterableApp iterableApp, Function<Iterable<A>, ? extends AppIterable> pure) {
+        return Sequence.<A, App, AppA, AppIterable, IterableApp>sequence(iterableApp).apply(pure);
     }
 }

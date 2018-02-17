@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Changed
+- ***Breaking Change***: `Sequence` now has two more type parameters to aid in inference
+- `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
+- `Peek2` now accepts the more general `BoundedBifunctor`
+- `Identity`, `Compose`, and `Const` functors all have better `toString` implementations
+- `Into3-8` now supports functions with parameter variance
+- `HListLens#tail` is now covariant in `Tail` parameter
+
 ### Added
 - `BoundedBifunctor`, a `Bifunctor` super type that offers upper bounds for both parameters
 - `Try`, a `Monad` representing an expression-like analog of `try/catch/finally`
@@ -11,13 +19,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Unit`, the lambda analog to `Void`, except actually inhabited by a singleton instance 
 - `Kleisli`, the abstract representation of a `Kleisli` arrow (`Monad#flatMap`) as an `Fn1` 
 - `These`, a `CoProduct3` of `A`, `B`, or `Tuple2<A,B>` 
-
-### Changed
-- `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
-- `Peek2` now accepts the more general `BoundedBifunctor`
-- `Identity`, `Compose`, and `Const` functors all have better `toString` implementations
-- `Into3-8` now supports functions with parameter variance
-- `HListLens#tail` is now covariant in `Tail` parameter
 
 ### Deprecated
 - `Either#trying` in favor of `Try#trying` 
