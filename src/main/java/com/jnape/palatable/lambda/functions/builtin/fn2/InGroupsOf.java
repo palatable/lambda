@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iterators.GroupingIterator;
+import com.jnape.palatable.lambda.iteration.GroupingIterator;
 
 /**
  * Lazily group the <code>Iterable</code> by returning an <code>Iterable</code> of smaller <code>Iterable</code>s of

@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iterators.CyclicIterator;
+import com.jnape.palatable.lambda.iteration.CyclicIterator;
 
 import static java.util.Arrays.asList;
 

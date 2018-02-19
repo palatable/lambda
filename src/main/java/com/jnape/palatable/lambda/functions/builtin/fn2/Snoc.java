@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iterators.SnocIterator;
+import com.jnape.palatable.lambda.iteration.SnocIterator;
 
 /**
  * Opposite of {@link Cons}: lazily append an element to the end of the given {@link Iterable}.

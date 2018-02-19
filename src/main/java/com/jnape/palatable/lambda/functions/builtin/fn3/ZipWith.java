@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn3;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
-import com.jnape.palatable.lambda.iterators.ZippingIterator;
+import com.jnape.palatable.lambda.iteration.ZippingIterator;
 
 import java.util.function.BiFunction;
 

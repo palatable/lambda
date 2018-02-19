@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iterators.CombinatorialIterator;
+import com.jnape.palatable.lambda.iteration.CombinatorialIterator;
 
 /**
  * Lazily compute the cartesian product of an <code>Iterable&lt;A&gt;</code> and <code>Iterable&lt;B&gt;</code>,

@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iterators.PrependingIterator;
+import com.jnape.palatable.lambda.iteration.PrependingIterator;
 
 /**
  * Lazily prepend each value with of the <code>Iterable</code> with the supplied separator value. An empty

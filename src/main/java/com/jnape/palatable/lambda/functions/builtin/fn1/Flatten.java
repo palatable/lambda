@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iterators.FlatteningIterator;
+import com.jnape.palatable.lambda.iteration.FlatteningIterator;
 
 /**
  * Given a nested {@link Iterable} of {@link Iterable}s, return a lazily flattening {@link Iterable}

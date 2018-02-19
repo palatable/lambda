@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.monoid.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iterators.ConcatenatingIterator;
+import com.jnape.palatable.lambda.iteration.ConcatenatingIterator;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 import java.util.Collections;

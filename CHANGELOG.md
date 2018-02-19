@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Identity`, `Compose`, and `Const` functors all have better `toString` implementations
 - `Into3-8` now supports functions with parameter variance
 - `HListLens#tail` is now covariant in `Tail` parameter
+- More functions now automatically deforest nested calls
 
 ### Added
 - `BoundedBifunctor`, a `Bifunctor` super type that offers upper bounds for both parameters

@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iterators.InitIterator;
+import com.jnape.palatable.lambda.iteration.InitIterator;
 
 /**
  * Given an <code>{@link Iterable}&lt;A&gt;</code>, produce an

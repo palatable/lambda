@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iterators.MappingIterator;
+import com.jnape.palatable.lambda.iteration.MappingIterator;
 
 import java.util.function.Function;
 
