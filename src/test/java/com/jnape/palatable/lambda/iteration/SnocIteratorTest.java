@@ -3,14 +3,8 @@ package com.jnape.palatable.lambda.iteration;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-
-import static com.jnape.palatable.lambda.adt.Maybe.just;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Last.last;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Iterate.iterate;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Take.take;
-import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -21,7 +15,7 @@ public class SnocIteratorTest {
 
     @Before
     public void setUp() {
-        iterator = new SnocIterator<>(3, asList(1, 2));
+        iterator = new SnocIterator<>(asList(1, 2).iterator(), singletonList(3).iterator());
     }
 
     @Test
@@ -44,15 +38,5 @@ public class SnocIteratorTest {
         iterator.next();
         iterator.next();
         assertFalse(iterator.hasNext());
-    }
-
-    @Test
-    public void stackSafety() {
-        int stackBlowingNumber = 100000;
-        Iterable<Integer> ints = foldLeft((xs, x) -> () -> new SnocIterator<>(x, xs),
-                                          Collections::emptyIterator,
-                                          take(stackBlowingNumber, iterate(x -> x + 1, 1)));
-
-        assertEquals(just(stackBlowingNumber), last(ints));
     }
 }

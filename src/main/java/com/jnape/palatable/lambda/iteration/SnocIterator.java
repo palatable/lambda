@@ -1,30 +1,21 @@
 package com.jnape.palatable.lambda.iteration;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Supplier;
-
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 
 public final class SnocIterator<A> implements Iterator<A> {
 
-    private final Supplier<Iterator<A>> initsSupplier;
-    private final A                     last;
-    private       Iterator<A>           inits;
-    private       Iterator<A>           lasts;
+    private final Iterator<A> as;
+    private final Iterator<A> snocs;
 
-    public SnocIterator(A last, Iterable<A> inits) {
-        this.last = last;
-        initsSupplier = inits::iterator;
+    public SnocIterator(Iterator<A> as, Iterator<A> snocs) {
+        this.as = as;
+        this.snocs = snocs;
     }
 
     @Override
     public boolean hasNext() {
-        if (inits == null)
-            queueAndDeforest();
-
-        return inits.hasNext() || lasts.hasNext();
+        return as.hasNext() || snocs.hasNext();
     }
 
     @Override
@@ -32,17 +23,6 @@ public final class SnocIterator<A> implements Iterator<A> {
         if (!hasNext())
             throw new NoSuchElementException();
 
-        return inits.hasNext() ? inits.next() : lasts.next();
-    }
-
-    private void queueAndDeforest() {
-        Iterable<A> lastConses = Collections::emptyIterator;
-        inits = this;
-        while (inits instanceof SnocIterator) {
-            SnocIterator<A> it = (SnocIterator<A>) inits;
-            lastConses = cons(it.last, lastConses);
-            inits = it.initsSupplier.get();
-        }
-        lasts = lastConses.iterator();
+        return as.hasNext() ? as.next() : snocs.next();
     }
 }

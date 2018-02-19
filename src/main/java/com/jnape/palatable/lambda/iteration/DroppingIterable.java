@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.iteration;
 
 import java.util.Iterator;
 
-public class DroppingIterable<A> implements Iterable<A> {
+public final class DroppingIterable<A> implements Iterable<A> {
     private final int         n;
     private final Iterable<A> as;
 
