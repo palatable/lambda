@@ -1,10 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-
-import java.util.HashMap;
-
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Filter.filter;
+import com.jnape.palatable.lambda.iteration.DistinctIterable;
 
 /**
  * Return an {@link Iterable} of the distinct values from the given input {@link Iterable}.
@@ -19,8 +16,7 @@ public final class Distinct<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @Override
     public Iterable<A> apply(Iterable<A> as) {
-        HashMap<A, Boolean> known = new HashMap<>();
-        return filter(a -> known.putIfAbsent(a, true) == null, as);
+        return new DistinctIterable<>(as);
     }
 
     @SuppressWarnings("unchecked")
