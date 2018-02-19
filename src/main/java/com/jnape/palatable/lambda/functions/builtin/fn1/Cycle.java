@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iteration.CyclicIterator;
+import com.jnape.palatable.lambda.iteration.CyclicIterable;
 
 import static java.util.Arrays.asList;
 
@@ -20,7 +20,7 @@ public final class Cycle<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @Override
     public Iterable<A> apply(Iterable<A> as) {
-        return () -> new CyclicIterator<>(as.iterator());
+        return new CyclicIterable<>(as);
     }
 
     @SuppressWarnings("unchecked")

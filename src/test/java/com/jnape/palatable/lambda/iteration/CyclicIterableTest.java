@@ -7,10 +7,10 @@ import org.junit.runner.RunWith;
 import testsupport.traits.Deforesting;
 
 @RunWith(Traits.class)
-public class SnocIterableTest {
+public class CyclicIterableTest {
 
     @TestTraits({Deforesting.class})
-    public Fn1<Iterable<Object>, Iterable<Object>> testSubject() {
-        return xs -> new SnocIterable<>(1, xs);
+    public Fn1<Iterable<?>, Iterable<?>> testSubject() {
+        return CyclicIterable::new;
     }
 }
