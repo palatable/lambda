@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.MappingIterator;
+import com.jnape.palatable.lambda.iteration.MappingIterable;
 
 import java.util.function.Function;
 
@@ -22,7 +22,7 @@ public final class Map<A, B> implements Fn2<Function<? super A, ? extends B>, It
 
     @Override
     public Iterable<B> apply(Function<? super A, ? extends B> fn, Iterable<A> as) {
-        return () -> new MappingIterator<>(fn, as.iterator());
+        return new MappingIterable<>(fn, as);
     }
 
     @SuppressWarnings("unchecked")
