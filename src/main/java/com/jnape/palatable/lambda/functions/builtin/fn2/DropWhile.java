@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.PredicatedDroppingIterator;
+import com.jnape.palatable.lambda.iteration.PredicatedDroppingIterable;
 
 import java.util.function.Function;
 
@@ -25,7 +25,7 @@ public final class DropWhile<A> implements Fn2<Function<? super A, Boolean>, Ite
 
     @Override
     public Iterable<A> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
-        return () -> new PredicatedDroppingIterator<>(predicate, as.iterator());
+        return new PredicatedDroppingIterable<>(predicate, as);
     }
 
     @SuppressWarnings("unchecked")

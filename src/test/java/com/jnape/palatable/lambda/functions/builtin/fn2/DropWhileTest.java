@@ -23,7 +23,7 @@ public class DropWhileTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, FiniteIteration.class, EmptyIterableSupport.class})
     public Fn1<Iterable<Object>, Iterable<Object>> createTestSubject() {
-        return dropWhile(constantly(true));
+        return dropWhile(constantly(false));
     }
 
     @Test
