@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.FilteringIterator;
+import com.jnape.palatable.lambda.iteration.FilteringIterable;
 
 import java.util.function.Function;
 
@@ -23,7 +23,7 @@ public final class Filter<A> implements Fn2<Function<? super A, Boolean>, Iterab
 
     @Override
     public Iterable<A> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
-        return () -> new FilteringIterator<>(predicate, as.iterator());
+        return new FilteringIterable<>(predicate, as);
     }
 
     @SuppressWarnings("unchecked")
