@@ -49,6 +49,6 @@ public class TailsTest {
 
     @Test
     public void largeNumberOfElements() {
-        assertEquals(just(emptyList()), last(tails(take(100000, repeat(1)))));
+        assertEquals(just(emptyList()), last(tails(take(10_000, repeat(1)))));
     }
 }

@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iteration.ReversingIterator;
+import com.jnape.palatable.lambda.iteration.ReversingIterable;
 
 /**
  * Given an <code>Iterable</code>, return a reversed representation of that <code>Iterable</code>. Note that reversing
@@ -18,7 +18,7 @@ public final class Reverse<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @Override
     public Iterable<A> apply(Iterable<A> as) {
-        return () -> new ReversingIterator<>(as.iterator());
+        return new ReversingIterable<>(as);
     }
 
     @SuppressWarnings("unchecked")

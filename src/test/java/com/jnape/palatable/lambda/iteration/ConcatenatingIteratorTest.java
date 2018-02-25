@@ -85,7 +85,7 @@ public class ConcatenatingIteratorTest {
 
     @Test
     public void stackSafety() {
-        Integer stackBlowingNumber = 50000;
+        Integer stackBlowingNumber = 10_000;
         Iterable<Iterable<Integer>> xss = map(Collections::singleton, take(stackBlowingNumber, iterate(x -> x + 1, 1)));
         Iterable<Integer> deeplyNestedConcat = foldRight((xs, ys) -> () -> new ConcatenatingIterator<>(xs, ys),
                                                          (Iterable<Integer>) Collections.<Integer>emptySet(),

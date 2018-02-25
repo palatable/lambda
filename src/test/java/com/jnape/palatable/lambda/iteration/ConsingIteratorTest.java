@@ -50,7 +50,7 @@ public class ConsingIteratorTest {
 
     @Test
     public void stackSafety() {
-        Integer stackBlowingNumber = 1000000;
+        Integer stackBlowingNumber = 10_000;
         Iterable<Integer> ints = foldRight((x, acc) -> () -> new ConsingIterator<>(x, acc),
                                            (Iterable<Integer>) Collections.<Integer>emptyList(),
                                            take(stackBlowingNumber, iterate(x -> x + 1, 1)));
