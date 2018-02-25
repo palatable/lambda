@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `MagnetizeBy` and `Magnetize`, for grouping elements by pairwise predicate tests
 - `Both`, for dually applying two functions and producing a `Tuple2` of their results
 - `Lens#both`, for dually focusing with two lenses at once
+- `IfThenElse`, an expression form for `if` statements
 
 ### Deprecated
 - `Either#trying` in favor of `Try#trying` 
