@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.PredicatedTakingIterator;
+import com.jnape.palatable.lambda.iteration.PredicatedTakingIterable;
 
 import java.util.function.Function;
 
@@ -24,7 +24,7 @@ public final class TakeWhile<A> implements Fn2<Function<? super A, Boolean>, Ite
 
     @Override
     public Iterable<A> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
-        return () -> new PredicatedTakingIterator<>(predicate, as.iterator());
+        return new PredicatedTakingIterable<>(predicate, as);
     }
 
     @SuppressWarnings("unchecked")
