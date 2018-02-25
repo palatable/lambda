@@ -154,7 +154,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>>
     }
 
     /**
-     * Given a value of type <code>A</code>, produced an instance of this tuple with each slot set to that value.
+     * Given a value of type <code>A</code>, produce an instance of this tuple with each slot set to that value.
      *
      * @param a   the value to fill the tuple with
      * @param <A> the value type
