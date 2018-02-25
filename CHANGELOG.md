@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Kleisli`, the abstract representation of a `Kleisli` arrow (`Monad#flatMap`) as an `Fn1` 
 - `These`, a `CoProduct3` of `A`, `B`, or `Tuple2<A,B>`
 - `Span`, for splitting an `Iterable` into contiguous elements matching a predicate
+- `MagnetizeBy` and `Magnetize`, for grouping elements by pairwise predicate tests
 
 ### Deprecated
 - `Either#trying` in favor of `Try#trying` 
