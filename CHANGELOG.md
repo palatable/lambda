@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `These`, a `CoProduct3` of `A`, `B`, or `Tuple2<A,B>`
 - `Span`, for splitting an `Iterable` into contiguous elements matching a predicate
 - `MagnetizeBy` and `Magnetize`, for grouping elements by pairwise predicate tests
+- `Both`, for dually applying two functions and producing a `Tuple2` of their results
 
 ### Deprecated
 - `Either#trying` in favor of `Try#trying` 
