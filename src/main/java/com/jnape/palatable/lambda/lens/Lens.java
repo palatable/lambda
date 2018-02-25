@@ -1,6 +1,9 @@
 package com.jnape.palatable.lambda.lens;
 
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
@@ -312,6 +315,23 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
     }
 
     /**
+     * Dually focus on two lenses at the same time. Requires <code>S</code> and <code>T</code> to be invariant between
+     * lenses.
+     *
+     * @param f   the first lens
+     * @param g   the second lens
+     * @param <S> both larger values
+     * @param <A> f's smaller viewing value
+     * @param <B> g's smaller viewing value
+     * @param <C> f's smaller setting value
+     * @param <D> g's smaller setting value
+     * @return the dual-focus lens
+     */
+    static <S, A, B, C, D> Lens<S, S, Tuple2<A, B>, Tuple2<C, D>> both(Lens<S, S, A, C> f, Lens<S, S, B, D> g) {
+        return lens(Both.both(view(f), view(g)), (s, cd) -> cd.biMap(set(f), set(g)).into(Fn1::compose).apply(s));
+    }
+
+    /**
      * A convenience type with a simplified type signature for common lenses with both unified "larger" values and
      * unified "smaller" values.
      *
@@ -335,9 +355,30 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
             return f.compose(this);
         }
 
+        /**
+         * Adapt a {@link Lens} with the right variance to a {@link Lens.Simple}.
+         *
+         * @param lens the lens
+         * @param <S>  S/T
+         * @param <A>  A/B
+         * @return the simple lens
+         */
         @SuppressWarnings("unchecked")
         static <S, A> Simple<S, A> adapt(Lens<S, S, A, A> lens) {
             return lens::apply;
+        }
+
+        /**
+         * Specialization of {@link Lens#both(Lens, Lens)} for simple lenses.
+         *
+         * @param f   the first lens
+         * @param g   the second lens
+         * @param <S> both lens larger values
+         * @param <A> both lens smaller values
+         * @return the dual-focus simple lens
+         */
+        static <S, A> Lens.Simple<S, Tuple2<A, A>> both(Lens<S, S, A, A> f, Lens<S, S, A, A> g) {
+            return adapt(Lens.both(f, g));
         }
 
         /**

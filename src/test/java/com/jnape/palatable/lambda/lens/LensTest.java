@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.lens;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
@@ -18,7 +19,10 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.lens.Lens.both;
 import static com.jnape.palatable.lambda.lens.Lens.lens;
+import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static java.lang.Integer.parseInt;
@@ -88,5 +92,15 @@ public class LensTest {
         Map<String, List<String>> map = singletonMap("foo", asList("one", "two", "three"));
         assertEquals("one", view(EARLIER_LENS.andThen(LENS), map));
         assertEquals(singletonMap("foo", singleton(1)), set(EARLIER_LENS.andThen(LENS), 1, map));
+    }
+
+    @Test
+    public void bothSplitsFocusBetweenLenses() {
+        Lens<String, String, Character, Character> firstChar = simpleLens(s -> s.charAt(0), (s, c) -> c + s.substring(1));
+        Lens<String, String, Integer, Integer> length = simpleLens(String::length, (s, k) -> s.substring(0, k));
+        Lens<String, String, Tuple2<Character, Integer>, Tuple2<Character, Integer>> both = both(firstChar, length);
+
+        assertEquals(tuple('a', 3), view(both, "abc"));
+        assertEquals("zb", set(both, tuple('z', 2), "abc"));
     }
 }
