@@ -21,6 +21,10 @@ public interface Matcher<A, B> {
         return Any.INSTANCE;
     }
 
+    static <A> Any<A> __() {
+        return $();
+    }
+
     static <A> Matcher<A, A> $(A a) {
         return $(eq(a));
     }
