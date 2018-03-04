@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.monoid.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iteration.ConcatenatingIterator;
+import com.jnape.palatable.lambda.iteration.ConcatenatingIterable;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 import java.util.Collections;
@@ -25,7 +25,7 @@ public final class Concat<A> implements Monoid<Iterable<A>> {
 
     @Override
     public Iterable<A> apply(Iterable<A> xs, Iterable<A> ys) {
-        return () -> new ConcatenatingIterator<>(xs, ys);
+        return new ConcatenatingIterable<>(xs, ys);
     }
 
     @SuppressWarnings("unchecked")
