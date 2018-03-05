@@ -171,10 +171,10 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
     }
 
     @Override
-    public <_6Prime, App extends Applicative> Applicative<Tuple6<_1, _2, _3, _4, _5, _6Prime>, App> traverse(
-            Function<? super _6, ? extends Applicative<_6Prime, App>> fn,
-            Function<? super Traversable<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>, ? extends Applicative<? extends Traversable<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>, App>> pure) {
-        return fn.apply(_6).fmap(_6Prime -> fmap(constantly(_6Prime)));
+    @SuppressWarnings("unchecked")
+    public <_6Prime, App extends Applicative, TravB extends Traversable<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>, AppB extends Applicative<_6Prime, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super _6, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return fn.apply(_6).fmap(_6Prime -> fmap(constantly(_6Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 
     /**

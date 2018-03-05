@@ -135,10 +135,10 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>>
     }
 
     @Override
-    public <_2Prime, App extends Applicative> Applicative<Tuple2<_1, _2Prime>, App> traverse(
-            Function<? super _2, ? extends Applicative<_2Prime, App>> fn,
-            Function<? super Traversable<_2Prime, Tuple2<_1, ?>>, ? extends Applicative<? extends Traversable<_2Prime, Tuple2<_1, ?>>, App>> pure) {
-        return fn.apply(_2).fmap(_2Prime -> fmap(constantly(_2Prime)));
+    @SuppressWarnings("unchecked")
+    public <_2Prime, App extends Applicative, TravB extends Traversable<_2Prime, Tuple2<_1, ?>>, AppB extends Applicative<_2Prime, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super _2, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return fn.apply(_2).fmap(_2Prime -> fmap(constantly(_2Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 
     /**

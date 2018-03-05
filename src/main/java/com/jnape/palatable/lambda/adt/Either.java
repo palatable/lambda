@@ -224,31 +224,31 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
     }
 
     @Override
-    public <R2> Either<L, R2> pure(R2 r2) {
+    public final <R2> Either<L, R2> pure(R2 r2) {
         return right(r2);
     }
 
     @Override
-    public <R2> Either<L, R2> zip(Applicative<Function<? super R, ? extends R2>, Either<L, ?>> appFn) {
+    public final <R2> Either<L, R2> zip(Applicative<Function<? super R, ? extends R2>, Either<L, ?>> appFn) {
         return appFn.<Either<L, Function<? super R, ? extends R2>>>coerce().flatMap(this::biMapR);
     }
 
     @Override
-    public <R2> Either<L, R2> discardL(Applicative<R2, Either<L, ?>> appB) {
+    public final <R2> Either<L, R2> discardL(Applicative<R2, Either<L, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
     @Override
-    public <R2> Either<L, R> discardR(Applicative<R2, Either<L, ?>> appB) {
+    public final <R2> Either<L, R> discardR(Applicative<R2, Either<L, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
     @Override
-    public <R2, App extends Applicative> Applicative<Either<L, R2>, App> traverse(
-            Function<? super R, ? extends Applicative<R2, App>> fn,
-            Function<? super Traversable<R2, Either<L, ?>>, ? extends Applicative<? extends Traversable<R2, Either<L, ?>>, App>> pure) {
-        return match(l -> pure.apply(left(l)).fmap(x -> (Either<L, R2>) x),
-                     r -> fn.apply(r).fmap(Either::right));
+    @SuppressWarnings("unchecked")
+    public final <R2, App extends Applicative, TravB extends Traversable<R2, Either<L, ?>>, AppB extends Applicative<R2, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super R, ? extends AppB> fn,
+            Function<? super TravB, ? extends AppTrav> pure) {
+        return (AppTrav) match(l -> pure.apply((TravB) left(l)), r -> fn.apply(r).fmap(Either::right));
     }
 
     /**
@@ -257,7 +257,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      *
      * @return Maybe the right value
      */
-    public Maybe<R> toMaybe() {
+    public final Maybe<R> toMaybe() {
         return projectB();
     }
 

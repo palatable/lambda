@@ -92,13 +92,13 @@ public abstract class Choice4<A, B, C, D> implements
     }
 
     @Override
-    public <E, App extends Applicative> Applicative<Choice4<A, B, C, E>, App> traverse(
-            Function<? super D, ? extends Applicative<E, App>> fn,
-            Function<? super Traversable<E, Choice4<A, B, C, ?>>, ? extends Applicative<? extends Traversable<E, Choice4<A, B, C, ?>>, App>> pure) {
-        return match(a -> pure.apply(a(a)).fmap(x -> (Choice4<A, B, C, E>) x),
-                     b -> pure.apply(b(b)).fmap(x -> (Choice4<A, B, C, E>) x),
-                     c -> pure.apply(c(c)).fmap(x -> (Choice4<A, B, C, E>) x),
-                     d -> fn.apply(d).fmap(Choice4::d));
+    @SuppressWarnings("unchecked")
+    public <E, App extends Applicative, TravB extends Traversable<E, Choice4<A, B, C, ?>>, AppB extends Applicative<E, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super D, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return match(a -> pure.apply((TravB) Choice4.<A, B, C, E>a(a)).coerce(),
+                     b -> pure.apply((TravB) Choice4.<A, B, C, E>b(b)).coerce(),
+                     c -> pure.apply((TravB) Choice4.<A, B, C, E>c(c)),
+                     d -> fn.apply(d).fmap(Choice4::d).<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**

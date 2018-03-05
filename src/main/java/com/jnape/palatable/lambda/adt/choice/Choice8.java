@@ -97,17 +97,17 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
     }
 
     @Override
-    public <I, App extends Applicative> Applicative<Choice8<A, B, C, D, E, F, G, I>, App> traverse(
-            Function<? super H, ? extends Applicative<I, App>> fn,
-            Function<? super Traversable<I, Choice8<A, B, C, D, E, F, G, ?>>, ? extends Applicative<? extends Traversable<I, Choice8<A, B, C, D, E, F, G, ?>>, App>> pure) {
-        return match(a -> pure.apply(a(a)).fmap(x -> (Choice8<A, B, C, D, E, F, G, I>) x),
-                     b -> pure.apply(b(b)).fmap(x -> (Choice8<A, B, C, D, E, F, G, I>) x),
-                     c -> pure.apply(c(c)).fmap(x -> (Choice8<A, B, C, D, E, F, G, I>) x),
-                     d -> pure.apply(d(d)).fmap(x -> (Choice8<A, B, C, D, E, F, G, I>) x),
-                     e -> pure.apply(e(e)).fmap(x -> (Choice8<A, B, C, D, E, F, G, I>) x),
-                     f -> pure.apply(f(f)).fmap(x -> (Choice8<A, B, C, D, E, F, G, I>) x),
-                     g -> pure.apply(g(g)).fmap(x -> (Choice8<A, B, C, D, E, F, G, I>) x),
-                     h -> fn.apply(h).fmap(Choice8::h));
+    @SuppressWarnings("unchecked")
+    public <I, App extends Applicative, TravB extends Traversable<I, Choice8<A, B, C, D, E, F, G, ?>>, AppB extends Applicative<I, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super H, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return match(a -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>a(a)).coerce(),
+                     b -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>b(b)).coerce(),
+                     c -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>c(c)),
+                     d -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>d(d)),
+                     e -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>e(e)),
+                     f -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>f(f)),
+                     g -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>g(g)),
+                     h -> fn.apply(h).fmap(Choice8::h).<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**

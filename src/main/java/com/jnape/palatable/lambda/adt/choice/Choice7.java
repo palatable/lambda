@@ -101,16 +101,16 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
     }
 
     @Override
-    public <H, App extends Applicative> Applicative<Choice7<A, B, C, D, E, F, H>, App> traverse(
-            Function<? super G, ? extends Applicative<H, App>> fn,
-            Function<? super Traversable<H, Choice7<A, B, C, D, E, F, ?>>, ? extends Applicative<? extends Traversable<H, Choice7<A, B, C, D, E, F, ?>>, App>> pure) {
-        return match(a -> pure.apply(a(a)).fmap(x -> (Choice7<A, B, C, D, E, F, H>) x),
-                     b -> pure.apply(b(b)).fmap(x -> (Choice7<A, B, C, D, E, F, H>) x),
-                     c -> pure.apply(c(c)).fmap(x -> (Choice7<A, B, C, D, E, F, H>) x),
-                     d -> pure.apply(d(d)).fmap(x -> (Choice7<A, B, C, D, E, F, H>) x),
-                     e -> pure.apply(e(e)).fmap(x -> (Choice7<A, B, C, D, E, F, H>) x),
-                     f -> pure.apply(f(f)).fmap(x -> (Choice7<A, B, C, D, E, F, H>) x),
-                     g -> fn.apply(g).fmap(Choice7::g));
+    @SuppressWarnings("unchecked")
+    public <H, App extends Applicative, TravB extends Traversable<H, Choice7<A, B, C, D, E, F, ?>>, AppB extends Applicative<H, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super G, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return match(a -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>a(a)).coerce(),
+                     b -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>b(b)).coerce(),
+                     c -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>c(c)),
+                     d -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>d(d)),
+                     e -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>e(e)),
+                     f -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>f(f)),
+                     g -> fn.apply(g).fmap(Choice7::g).<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**

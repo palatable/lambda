@@ -36,22 +36,21 @@ public interface Traversable<A, T extends Traversable> extends Functor<A, T> {
      * Apply <code>fn</code> to each element of this traversable from left to right, and collapse the results into
      * a single resulting applicative, potentially with the assistance of the applicative's pure function.
      *
-     * @param fn    the function to apply
-     * @param pure  the applicative pure function
-     * @param <B>   the resulting element type
-     * @param <App> the result applicative type
+     * @param fn        the function to apply
+     * @param pure      the applicative pure function
+     * @param <B>       the resulting element type
+     * @param <App>     the result applicative type
+     * @param <TravB>   this Traversable instance over B
+     * @param <AppB>    the result applicative instance over B
+     * @param <AppTrav> the full inferred resulting type from the traversal
      * @return the traversed Traversable, wrapped inside an applicative
      */
-    <B, App extends Applicative> Applicative<? extends Traversable<B, T>, App> traverse(
-            Function<? super A, ? extends Applicative<B, App>> fn,
-            Function<? super Traversable<B, T>, ? extends Applicative<? extends Traversable<B, T>, App>> pure);
+    <B, App extends Applicative, TravB extends Traversable<B, T>, AppB extends Applicative<B, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure);
 
     @Override
-    @SuppressWarnings({"Convert2MethodRef", "unchecked"})
     default <B> Traversable<B, T> fmap(Function<? super A, ? extends B> fn) {
-        return traverse(a -> new Identity<>(fn.apply(a)), x -> new Identity<>(x))
-                .fmap(x -> (Traversable<B, T>) x)
-                .<Identity<Traversable<B, T>>>coerce()
-                .runIdentity();
+        return traverse(a -> new Identity<B>(fn.apply(a)), Identity::new).runIdentity();
     }
 }

@@ -84,11 +84,11 @@ public abstract class Choice2<A, B> implements CoProduct2<A, B, Choice2<A, B>>, 
     }
 
     @Override
-    public <C, App extends Applicative> Applicative<Choice2<A, C>, App> traverse(
-            Function<? super B, ? extends Applicative<C, App>> fn,
-            Function<? super Traversable<C, Choice2<A, ?>>, ? extends Applicative<? extends Traversable<C, Choice2<A, ?>>, App>> pure) {
-        return match(a -> pure.apply(a(a)).fmap(x -> (Choice2<A, C>) x),
-                     b -> fn.apply(b).fmap(Choice2::b));
+    @SuppressWarnings("unchecked")
+    public <C, App extends Applicative, TravB extends Traversable<C, Choice2<A, ?>>, AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super B, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return match(a -> pure.apply((TravB) a(a)),
+                     b -> fn.apply(b).fmap(Choice2::b).<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**

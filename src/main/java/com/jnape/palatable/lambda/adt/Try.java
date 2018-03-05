@@ -161,12 +161,10 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
 
     @Override
     @SuppressWarnings("unchecked")
-    public <B, App extends Applicative> Applicative<Try<T, B>, App> traverse(
-            Function<? super A, ? extends Applicative<B, App>> fn,
-            Function<? super Traversable<B, Try<T, ?>>, ? extends Applicative<? extends Traversable<B, Try<T, ?>>, App>> pure) {
-        return match(t -> pure.apply(failure(t)),
-                     a -> fn.apply(a).fmap(Try::success))
-                .fmap(x -> (Try<T, B>) x);
+    public <B, App extends Applicative, TravB extends Traversable<B, Try<T, ?>>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return match(t -> pure.apply((TravB) failure(t)),
+                     a -> fn.apply(a).fmap(Try::success).<TravB>fmap(Applicative::coerce).coerce());
     }
 
     @Override

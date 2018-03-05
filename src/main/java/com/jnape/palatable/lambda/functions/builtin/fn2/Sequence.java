@@ -40,9 +40,8 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public AppTrav apply(TravApp traversable, Function<TravA, ? extends AppTrav> pure) {
-        return (AppTrav) traversable.traverse(id(), trav -> pure.apply((TravA) trav));
+        return traversable.traverse(id(), pure);
     }
 
     @SuppressWarnings("unchecked")

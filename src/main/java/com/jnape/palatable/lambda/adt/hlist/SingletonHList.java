@@ -61,10 +61,10 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, Sin
     }
 
     @Override
-    public <_1Prime, App extends Applicative> Applicative<SingletonHList<_1Prime>, App> traverse(
-            Function<? super _1, ? extends Applicative<_1Prime, App>> fn,
-            Function<? super Traversable<_1Prime, SingletonHList>, ? extends Applicative<? extends Traversable<_1Prime, SingletonHList>, App>> pure) {
-        return fn.apply(head()).fmap(SingletonHList::new);
+    @SuppressWarnings("unchecked")
+    public <B, App extends Applicative, TravB extends Traversable<B, SingletonHList>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super _1, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return fn.apply(head()).fmap(SingletonHList::new).<TravB>fmap(Applicative::coerce).coerce();
     }
 
     /**

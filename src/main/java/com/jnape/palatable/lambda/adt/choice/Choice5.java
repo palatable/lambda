@@ -94,14 +94,14 @@ public abstract class Choice5<A, B, C, D, E> implements
     }
 
     @Override
-    public <F, App extends Applicative> Applicative<Choice5<A, B, C, D, F>, App> traverse(
-            Function<? super E, ? extends Applicative<F, App>> fn,
-            Function<? super Traversable<F, Choice5<A, B, C, D, ?>>, ? extends Applicative<? extends Traversable<F, Choice5<A, B, C, D, ?>>, App>> pure) {
-        return match(a -> pure.apply(a(a)).fmap(x -> (Choice5<A, B, C, D, F>) x),
-                     b -> pure.apply(b(b)).fmap(x -> (Choice5<A, B, C, D, F>) x),
-                     c -> pure.apply(c(c)).fmap(x -> (Choice5<A, B, C, D, F>) x),
-                     d -> pure.apply(d(d)).fmap(x -> (Choice5<A, B, C, D, F>) x),
-                     e -> fn.apply(e).fmap(Choice5::e));
+    @SuppressWarnings("unchecked")
+    public <F, App extends Applicative, TravB extends Traversable<F, Choice5<A, B, C, D, ?>>, AppB extends Applicative<F, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super E, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return match(a -> pure.apply((TravB) Choice5.<A, B, C, D, F>a(a)).coerce(),
+                     b -> pure.apply((TravB) Choice5.<A, B, C, D, F>b(b)).coerce(),
+                     c -> pure.apply((TravB) Choice5.<A, B, C, D, F>c(c)),
+                     d -> pure.apply((TravB) Choice5.<A, B, C, D, F>d(d)),
+                     e -> fn.apply(e).fmap(Choice5::e).<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**

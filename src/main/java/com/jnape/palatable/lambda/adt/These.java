@@ -53,16 +53,13 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
         return match(a -> both(a, c), b -> b(c), into((a, b) -> both(a, c)));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public <C, App extends Applicative> Applicative<These<A, C>, App> traverse(
-            Function<? super B, ? extends Applicative<C, App>> fn,
-            Function<? super Traversable<C, These<A, ?>>, ? extends Applicative<? extends Traversable<C, These<A, ?>>, App>> pure) {
-        return match(a -> pure.apply(a(a)).fmap(x -> (These<A, C>) x),
-                     b -> fn.apply(b).fmap(this::pure),
-                     into((a, b) -> fn.apply(b).fmap(c -> both(a, c))));
+    @SuppressWarnings("unchecked")
+    public <C, App extends Applicative, TravB extends Traversable<C, These<A, ?>>, AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super B, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return match(a -> pure.apply((TravB) a(a)),
+                     b -> fn.apply(b).fmap(this::pure).<TravB>fmap(Applicative::coerce).coerce(),
+                     into((a, b) -> fn.apply(b).fmap(c -> both(a, c)).<TravB>fmap(Applicative::coerce).coerce()));
     }
 
     /**

@@ -60,7 +60,7 @@ public class TraversableLaws<Trav extends Traversable> implements Trait<Traversa
         Function<Object, Applicative<Object, Identity>> g = x -> new Identity<>(x);
 
         return trav.traverse(f.andThen(x -> x.fmap(g)).andThen(Compose::new), x -> new Compose<>(new Identity<>(new Identity<>(x))))
-                .equals(new Compose<Identity, Identity, Traversable<Object, Trav>>(trav.traverse(f, x -> new Identity<>(x)).fmap(t -> t.traverse(g, x -> new Identity<>(x)))))
+                       .equals(new Compose<>(trav.traverse(f, x -> new Identity<>(x)).fmap(t -> t.traverse(g, x -> new Identity<>(x)))))
                 ? nothing()
                 : just("compose (trav.traverse(f.andThen(x -> x.fmap(g)).andThen(Compose::new), x -> new Compose<>(new Identity<>(new Identity<>(x))))\n" +
                                "                .equals(new Compose<Identity, Identity, Traversable<Object, Trav>>(trav.traverse(f, x -> new Identity<>(x)).fmap(t -> t.traverse(g, x -> new Identity<>(x))))))");

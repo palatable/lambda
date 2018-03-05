@@ -66,10 +66,10 @@ public final class Identity<A> implements Monad<A, Identity>, Traversable<A, Ide
     }
 
     @Override
-    public <B, App extends Applicative> Applicative<Identity<B>, App> traverse(
-            Function<? super A, ? extends Applicative<B, App>> fn,
-            Function<? super Traversable<B, Identity>, ? extends Applicative<? extends Traversable<B, Identity>, App>> pure) {
-        return fn.apply(runIdentity()).fmap(Identity::new);
+    @SuppressWarnings("unchecked")
+    public <B, App extends Applicative, TravB extends Traversable<B, Identity>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return (AppTrav) fn.apply(runIdentity()).fmap(Identity::new);
     }
 
     @Override

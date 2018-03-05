@@ -145,10 +145,10 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>>
     }
 
     @Override
-    public <_4Prime, App extends Applicative> Applicative<Tuple4<_1, _2, _3, _4Prime>, App> traverse(
-            Function<? super _4, ? extends Applicative<_4Prime, App>> fn,
-            Function<? super Traversable<_4Prime, Tuple4<_1, _2, _3, ?>>, ? extends Applicative<? extends Traversable<_4Prime, Tuple4<_1, _2, _3, ?>>, App>> pure) {
-        return fn.apply(_4).fmap(_4Prime -> fmap(constantly(_4Prime)));
+    @SuppressWarnings("unchecked")
+    public <_4Prime, App extends Applicative, TravB extends Traversable<_4Prime, Tuple4<_1, _2, _3, ?>>, AppB extends Applicative<_4Prime, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super _4, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return fn.apply(_4).fmap(_4Prime -> fmap(constantly(_4Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 
     /**

@@ -75,10 +75,9 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
     }
 
     @Override
-    public <C, App extends Applicative> Applicative<Const<A, C>, App> traverse(
-            Function<? super B, ? extends Applicative<C, App>> fn,
-            Function<? super Traversable<C, Const<A, ?>>, ? extends Applicative<? extends Traversable<C, Const<A, ?>>, App>> pure) {
-        return pure.apply(coerce()).fmap(x -> (Const<A, C>) x);
+    public <C, App extends Applicative, TravB extends Traversable<C, Const<A, ?>>, AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super B, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return pure.apply(coerce());
     }
 
     /**

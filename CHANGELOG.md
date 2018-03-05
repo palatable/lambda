@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Changed
 - ***Breaking Change***: `Sequence` now has two more type parameters to aid in inference
+- ***Breaking Change***: `Traversable#traverse` now has three more type parameters to aid in inference
 - `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
 - `Peek2` now accepts the more general `BoundedBifunctor`
 - `Identity`, `Compose`, and `Const` functors all have better `toString` implementations

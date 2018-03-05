@@ -134,11 +134,6 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
     @Override
     public abstract <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f);
 
-    @Override
-    public abstract <B, App extends Applicative> Applicative<Maybe<B>, App> traverse(
-            Function<? super A, ? extends Applicative<B, App>> fn,
-            Function<? super Traversable<B, Maybe>, ? extends Applicative<? extends Traversable<B, Maybe>, App>> pure);
-
     /**
      * If this value is present, accept it by <code>consumer</code>; otherwise, do nothing.
      *
@@ -223,10 +218,11 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
         }
 
         @Override
-        public <B, App extends Applicative> Applicative<Maybe<B>, App> traverse(
-                Function<? super A, ? extends Applicative<B, App>> fn,
-                Function<? super Traversable<B, Maybe>, ? extends Applicative<? extends Traversable<B, Maybe>, App>> pure) {
-            return fn.apply(a).fmap(Just::new);
+        @SuppressWarnings("unchecked")
+        public <B, App extends Applicative, TravB extends Traversable<B, Maybe>,
+                AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+                Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+            return fn.apply(a).fmap(Just::new).<TravB>fmap(Applicative::coerce).coerce();
         }
 
         @Override
@@ -259,10 +255,9 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
 
         @Override
         @SuppressWarnings("unchecked")
-        public <B, App extends Applicative> Applicative<Maybe<B>, App> traverse(
-                Function<? super A, ? extends Applicative<B, App>> fn,
-                Function<? super Traversable<B, Maybe>, ? extends Applicative<? extends Traversable<B, Maybe>, App>> pure) {
-            return pure.apply(nothing()).fmap(x -> (Maybe<B>) x);
+        public <B, App extends Applicative, TravB extends Traversable<B, Maybe>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+                Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+            return pure.apply((TravB) nothing());
         }
 
         @Override

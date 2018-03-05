@@ -83,11 +83,12 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traver
     }
 
     @Override
-    public <B, App extends Applicative> Applicative<LambdaIterable<B>, App> traverse(
-            Function<? super A, ? extends Applicative<B, App>> fn,
-            Function<? super Traversable<B, LambdaIterable>, ? extends Applicative<? extends Traversable<B, LambdaIterable>, App>> pure) {
-        return foldRight((a, appTrav) -> appTrav.zip(fn.apply(a).fmap(b -> bs -> LambdaIterable.<B>wrap(cons(b, bs.unwrap())))),
-                         pure.apply(LambdaIterable.empty()).fmap(ti -> (LambdaIterable<B>) ti),
+    @SuppressWarnings("unchecked")
+    public <B, App extends Applicative, TravB extends Traversable<B, LambdaIterable>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super A, ? extends AppB> fn,
+            Function<? super TravB, ? extends AppTrav> pure) {
+        return foldRight((a, appTrav) -> (AppTrav) appTrav.<TravB>zip(fn.apply(a).fmap(b -> bs -> (TravB) wrap(cons(b, ((LambdaIterable<B>) bs).unwrap())))),
+                         (AppTrav) pure.apply((TravB) LambdaIterable.<B>empty()),
                          as);
     }
 

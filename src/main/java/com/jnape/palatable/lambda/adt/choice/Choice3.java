@@ -88,12 +88,12 @@ public abstract class Choice3<A, B, C> implements
     }
 
     @Override
-    public <D, App extends Applicative> Applicative<Choice3<A, B, D>, App> traverse(
-            Function<? super C, ? extends Applicative<D, App>> fn,
-            Function<? super Traversable<D, Choice3<A, B, ?>>, ? extends Applicative<? extends Traversable<D, Choice3<A, B, ?>>, App>> pure) {
-        return match(a -> pure.apply(a(a)).fmap(x -> (Choice3<A, B, D>) x),
-                     b -> pure.apply(b(b)).fmap(x -> (Choice3<A, B, D>) x),
-                     c -> fn.apply(c).fmap(Choice3::c));
+    @SuppressWarnings("unchecked")
+    public <D, App extends Applicative, TravB extends Traversable<D, Choice3<A, B, ?>>, AppB extends Applicative<D, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super C, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+        return match(a -> pure.apply((TravB) Choice3.<A, B, D>a(a)).coerce(),
+                     b -> pure.apply((TravB) Choice3.<A, B, D>b(b)).coerce(),
+                     c -> fn.apply(c).fmap(Choice3::c).<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**
