@@ -20,10 +20,10 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Unfoldr.unfoldr;
  * Given a binary predicate and an <code>{@link Iterable}&lt;A&gt;</code>, return an <code>{@link Iterable}&lt;{@link
  * Iterable}&lt;A&gt;&gt;</code> of the contiguous groups of elements that match the predicate pairwise.
  * <p>
- * Example: <code>magnetizeBy((x, y) -> x <= y, asList(1, 2, 3, 2, 2, 3, 2, 1)); // [[1, 2, 3], [2, 2, 3], [2],
+ * Example: <code>magnetizeBy((x, y) -&gt; x &lt;= y, asList(1, 2, 3, 2, 2, 3, 2, 1)); // [[1, 2, 3], [2, 2, 3], [2],
  * [1]]</code>
  *
- * @param <A>
+ * @param <A> the {@link Iterable} element type
  */
 public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A, Boolean>, Iterable<A>, Iterable<Iterable<A>>> {
 
