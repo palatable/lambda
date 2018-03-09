@@ -3,7 +3,9 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
@@ -18,8 +20,10 @@ import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Try.failure;
 import static com.jnape.palatable.lambda.adt.Try.success;
+import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -27,6 +31,8 @@ import static testsupport.matchers.LeftMatcher.isLeftThat;
 
 @RunWith(Traits.class)
 public class TryTest {
+
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
     public Subjects<Try<Throwable, Integer>> testSubject() {
@@ -109,6 +115,15 @@ public class TryTest {
     }
 
     @Test
+    public void orThrow() throws Throwable {
+        assertEquals((Integer) 1, trying(() -> 1).orThrow());
+
+        Throwable expected = new Exception("expected");
+        thrown.expect(equalTo(expected));
+        trying(() -> {throw expected;}).orThrow();
+    }
+
+    @Test
     public void toMaybe() {
         assertEquals(just("foo"), Try.success("foo").toMaybe());
         assertEquals(nothing(), Try.failure(new IllegalStateException()).toMaybe());
@@ -131,8 +146,8 @@ public class TryTest {
     @Test
     public void tryingCatchesAnyThrowableThrownDuringEvaluation() {
         IllegalStateException expected = new IllegalStateException();
-        assertEquals(failure(expected), Try.trying(() -> {throw expected;}));
+        assertEquals(failure(expected), trying(() -> {throw expected;}));
 
-        assertEquals(success("foo"), Try.trying(() -> "foo"));
+        assertEquals(success("foo"), trying(() -> "foo"));
     }
 }

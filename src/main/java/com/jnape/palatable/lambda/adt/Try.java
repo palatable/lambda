@@ -98,6 +98,14 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
     }
 
     /**
+     * If this is a success value, return it. Otherwise, rethrow the captured failure.
+     *
+     * @return possibly the success value
+     * @throws T the possible failure
+     */
+    public abstract A orThrow() throws T;
+
+    /**
      * If this is a success, wrap the value in a {@link Maybe#just} and return it. Otherwise, return {@link
      * Maybe#nothing()}.
      *
@@ -246,6 +254,11 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
         }
 
         @Override
+        public A orThrow() throws T {
+            throw t;
+        }
+
+        @Override
         public <R> R match(Function<? super T, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
             return aFn.apply(t);
         }
@@ -273,6 +286,11 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
 
         private Success(A a) {
             this.a = a;
+        }
+
+        @Override
+        public A orThrow() throws T {
+            return a;
         }
 
         @Override
