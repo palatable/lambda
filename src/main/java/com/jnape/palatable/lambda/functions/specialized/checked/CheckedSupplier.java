@@ -31,4 +31,26 @@ public interface CheckedSupplier<T extends Throwable, A> extends Supplier<A> {
      * @throws T any exception that can be thrown by this method
      */
     A checkedGet() throws T;
+
+    /**
+     * Convert this {@link CheckedSupplier} to a {@link CheckedRunnable}.
+     *
+     * @return the checked runnable
+     */
+    default CheckedRunnable<T> toRunnable() {
+        return this::get;
+    }
+
+    /**
+     * Convenience static factory method for constructing a {@link CheckedSupplier} without an explicit cast or type
+     * attribution at the call site.
+     *
+     * @param supplier the checked supplier
+     * @param <T>      the inferred Throwable type
+     * @param <A>      the supplier return type
+     * @return the checked supplier
+     */
+    static <T extends Throwable, A> CheckedSupplier<T, A> checked(CheckedSupplier<T, A> supplier) {
+        return supplier::get;
+    }
 }
