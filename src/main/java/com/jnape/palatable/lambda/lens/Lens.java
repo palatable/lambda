@@ -374,10 +374,11 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
          * @param f   the first lens
          * @param g   the second lens
          * @param <S> both lens larger values
-         * @param <A> both lens smaller values
+         * @param <A> lens f smaller values
+         * @param <B> lens g smaller values
          * @return the dual-focus simple lens
          */
-        static <S, A> Lens.Simple<S, Tuple2<A, A>> both(Lens<S, S, A, A> f, Lens<S, S, A, A> g) {
+        static <S, A, B> Lens.Simple<S, Tuple2<A, B>> both(Lens<S, S, A, A> f, Lens<S, S, B, B> g) {
             return adapt(Lens.both(f, g));
         }
 
