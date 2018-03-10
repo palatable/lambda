@@ -13,7 +13,7 @@ public final class FlatteningIterator<A> extends ImmutableIterator<A> {
 
     @Override
     public boolean hasNext() {
-        while (xss.hasNext() && (xs == null || !xs.hasNext()))
+        while ((xs == null || !xs.hasNext()) && xss.hasNext())
             xs = xss.next().iterator();
 
         return xs != null && xs.hasNext();
