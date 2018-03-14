@@ -14,8 +14,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
  * The optional type, representing a potentially absent value. This is lambda's analog of {@link Optional}, supporting
@@ -153,7 +151,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
      * @return "Just" the right value, or nothing
      */
     public static <A> Maybe<A> fromEither(Either<?, A> either) {
-        return either.match(constantly(nothing()), Maybe::just);
+        return either.toMaybe();
     }
 
     /**
@@ -164,7 +162,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
      * @return the equivalent Maybe instance
      */
     public static <A> Maybe<A> fromOptional(Optional<? extends A> optional) {
-        return optional.<A>map(id()).map(Maybe::just).orElse(Maybe.nothing());
+        return optional.map(Maybe::<A>just).orElse(Maybe.nothing());
     }
 
     /**

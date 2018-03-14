@@ -29,9 +29,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `IfThenElse`, an expression form for `if` statements
 - `CheckedRunnable` and `CheckedSupplier` conversion and convenience methods
 
-### Deprecated
-- `Either#trying` in favor of `Try#trying` 
-
 ## [2.1.1] - 2018-01-16
 ### Changed
 - ***Breaking Change***: Moved `Trampoline` and `RecursiveResult` to better package

@@ -286,10 +286,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * @param <L>      the left parameter type
      * @param <R>      the right parameter type
      * @return the supplier result as a right value, or leftFn's mapping result as a left value
-     * @deprecated in favor of {@link Try#trying(CheckedSupplier)}
      */
-    @Deprecated
-    @SuppressWarnings("unchecked")
     public static <E extends Exception, L, R> Either<L, R> trying(CheckedSupplier<E, ? extends R> supplier,
                                                                   Function<? super E, ? extends L> leftFn) {
         return Try.<E, R>trying(supplier::get).toEither(leftFn);
@@ -303,9 +300,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * @param <E>      the left parameter type (the most contravariant exception that supplier might throw)
      * @param <R>      the right parameter type
      * @return the supplier result as a right value, or a left value of the thrown exception
-     * @deprecated in favor of {@link Try#trying(CheckedSupplier)}
      */
-    @Deprecated
     public static <E extends Exception, R> Either<E, R> trying(CheckedSupplier<E, R> supplier) {
         return trying(supplier, id());
     }
