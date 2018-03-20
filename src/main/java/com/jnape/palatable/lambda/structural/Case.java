@@ -6,7 +6,6 @@ import com.jnape.palatable.lambda.adt.hlist.SingletonHList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple3;
 import com.jnape.palatable.lambda.adt.hlist.Tuple4;
-<<<<<<< HEAD
 import com.jnape.palatable.lambda.adt.hlist.Tuple5;
 import com.jnape.palatable.lambda.adt.hlist.Tuple6;
 import com.jnape.palatable.lambda.adt.hlist.Tuple7;
@@ -19,12 +18,6 @@ import com.jnape.palatable.lambda.functions.Fn6;
 import com.jnape.palatable.lambda.functions.Fn7;
 import com.jnape.palatable.lambda.functions.Fn8;
 import com.jnape.palatable.lambda.structural.Matcher.Any;
-=======
-import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.Fn3;
-import com.jnape.palatable.lambda.functions.Fn4;
-import com.jnape.palatable.lambda.functions.specialized.Predicate;
->>>>>>> snapshot
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -35,44 +28,14 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into1.into1;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into3.into3;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into4.into4;
-<<<<<<< HEAD
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into5.into5;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into6.into6;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into7.into7;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into8.into8;
-=======
->>>>>>> snapshot
 
 public abstract class Case {
 
     private Case() {
-    }
-
-    public static final class Partial<Fields extends HCons, R> extends Case implements Fn1<Fields, Maybe<R>> {
-
-        private final Function<Fields, Maybe<R>> fn;
-
-        private Partial(Function<Fields, Maybe<R>> fn) {
-            this.fn = fn;
-        }
-
-        @Override
-        public Maybe<R> apply(Fields fields) {
-            return just(fields).flatMap(fn);
-        }
-    }
-
-    public static final class Total<Fields extends HCons, R> extends Case implements Fn1<Fields, R> {
-        private final Function<Fields, R> fn;
-
-        private Total(Function<Fields, R> fn) {
-            this.fn = fn;
-        }
-
-        @Override
-        public R apply(Fields fields) {
-            return fn.apply(fields);
-        }
     }
 
     public static <A, R> Total<SingletonHList<A>, R> of(Function<? super A, ? extends R> fn) {
@@ -81,16 +44,6 @@ public abstract class Case {
 
     public static <A, B, R> Total<Tuple2<A, B>, R> of(BiFunction<? super A, ? super B, ? extends R> fn) {
         return new Total<>(into(fn));
-<<<<<<< HEAD
-    }
-
-    public static <A, B, C, R> Total<Tuple3<A, B, C>, R> of(Fn3<? super A, ? super B, ? super C, ? extends R> fn) {
-        return new Total<>(into3(fn));
-    }
-
-    public static <A, B, C, D, R> Total<Tuple4<A, B, C, D>, R> of(
-            Fn4<? super A, ? super B, ? super C, ? super D, ? extends R> fn) {
-        return new Total<>(into4(fn));
     }
 
     public static <A, B, C, D, E, R> Total<Tuple5<A, B, C, D, E>, R> of(
@@ -188,7 +141,6 @@ public abstract class Case {
         return Case.<A, B, C, D, E, F, G, H, R>of(fn);
     }
 
-
     public static <A, APrime, R> Partial<SingletonHList<A>, R> of(Matcher<? super A, ? extends APrime> aMatcher,
                                                                   Function<? super APrime, ? extends R> body) {
         return new Partial<>(into1(a -> aMatcher.match(a).fmap(body)));
@@ -225,7 +177,6 @@ public abstract class Case {
                                         .fmap(dPrime -> body.apply(aPrime, bPrime, cPrime, dPrime)))))));
     }
 
-
     public static <A, APrime, B, BPrime, C, CPrime, D, DPrime, E, EPrime, R> Partial<Tuple5<A, B, C, D, E>, R> of(
             Matcher<? super A, ? extends APrime> aMatcher,
             Matcher<? super B, ? extends BPrime> bMatcher,
@@ -240,7 +191,6 @@ public abstract class Case {
                                         .flatMap(dPrime -> eMatcher.match(e)
                                                 .fmap(ePrime -> body.apply(aPrime, bPrime, cPrime, dPrime, ePrime))))))));
     }
-
 
     public static <A, APrime, B, BPrime, C, CPrime, D, DPrime, E, EPrime, F, FPrime, R> Partial<Tuple6<A, B, C, D, E, F>, R> of(
             Matcher<? super A, ? extends APrime> aMatcher,
@@ -291,7 +241,7 @@ public abstract class Case {
                                                         .flatMap(fPrime -> gMatcher.match(g)
                                                                 .flatMap(gPrime -> hMatcher.match(h)
                                                                         .fmap(hPrime -> body.apply(aPrime, bPrime, cPrime, dPrime, ePrime, fPrime, gPrime, hPrime)))))))))));
-=======
+
     }
 
     public static <A, B, C, R> Total<Tuple3<A, B, C>, R> of(Fn3<? super A, ? super B, ? super C, ? extends R> fn) {
@@ -303,61 +253,31 @@ public abstract class Case {
         return new Total<>(into4(fn));
     }
 
+    public static final class Partial<Fields extends HCons, R> extends Case implements Fn1<Fields, Maybe<R>> {
 
-    public static <A, R> Total<SingletonHList<A>, R> of(CatchAll __, Function<? super A, ? extends R> fn) {
-        return of(fn);
+        private final Function<Fields, Maybe<R>> fn;
+
+        private Partial(Function<Fields, Maybe<R>> fn) {
+            this.fn = fn;
+        }
+
+        @Override
+        public Maybe<R> apply(Fields fields) {
+            return just(fields).flatMap(fn);
+        }
     }
 
-    public static <A, B, R> Total<Tuple2<A, B>, R> of(CatchAll __,
-                                                      CatchAll ___,
-                                                      BiFunction<? super A, ? super B, ? extends R> fn) {
-        return of(fn);
-    }
+    public static final class Total<Fields extends HCons, R> extends Case implements Fn1<Fields, R> {
+        private final Function<Fields, R> fn;
 
-    public static <A, B, C, R> Total<Tuple3<A, B, C>, R> of(CatchAll __,
-                                                            CatchAll ___,
-                                                            CatchAll ____,
-                                                            Fn3<? super A, ? super B, ? super C, ? extends R> fn) {
-        return Case.<A, B, C, R>of(fn);
-    }
+        private Total(Function<Fields, R> fn) {
+            this.fn = fn;
+        }
 
-    public static <A, B, C, D, R> Total<Tuple4<A, B, C, D>, R> of(CatchAll __,
-                                                                  CatchAll ___,
-                                                                  CatchAll ____,
-                                                                  CatchAll _____,
-                                                                  Fn4<? super A, ? super B, ? super C, ? super D, ? extends R> fn) {
-        return Case.<A, B, C, D, R>of(fn);
-    }
-
-
-    public static <A, R> Partial<SingletonHList<A>, R> of(Predicate<A> pred,
-                                                          Fn1<A, R> fn) {
-        return new Partial<>(pred.contraMap(HCons::head), into1(fn));
-    }
-
-    public static <A, B, R> Partial<Tuple2<A, B>, R> of(Predicate<? super A> aPredicate,
-                                                        Predicate<? super B> bPredicate,
-                                                        BiFunction<? super A, ? super B, ? extends R> fn) {
-        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()), into(fn));
-    }
-
-
-    public static <A, B, C, R> Partial<Tuple3<A, B, C>, R> of(Predicate<? super A> aPredicate,
-                                                              Predicate<? super B> bPredicate,
-                                                              Predicate<? super C> cPredicate,
-                                                              Fn3<? super A, ? super B, ? super C, ? extends R> fn) {
-        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()) && cPredicate.test(t._3()),
-                             into3(fn));
-    }
-
-    public static <A, B, C, D, R> Partial<Tuple4<A, B, C, D>, R> of(Predicate<? super A> aPredicate,
-                                                                    Predicate<? super B> bPredicate,
-                                                                    Predicate<? super C> cPredicate,
-                                                                    Predicate<? super D> dPredicate,
-                                                                    Fn4<? super A, ? super B, ? super C, ? super D, ? extends R> fn) {
-        return new Partial<>(t -> aPredicate.test(t._1()) && bPredicate.test(t._2()) && cPredicate.test(t._3()) && dPredicate.test(t._4()),
-                             into4(fn));
->>>>>>> snapshot
+        @Override
+        public R apply(Fields fields) {
+            return fn.apply(fields);
+        }
     }
 
 }

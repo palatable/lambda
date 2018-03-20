@@ -22,6 +22,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.structural.Case.of;
 import static com.jnape.palatable.lambda.structural.Cases.cases;
 import static com.jnape.palatable.lambda.structural.Matcher.$;
+import static com.jnape.palatable.lambda.structural.Matcher.__;
 import static com.jnape.palatable.lambda.structural.Matchers.$just;
 import static com.jnape.palatable.lambda.structural.Matchers.$right;
 import static com.jnape.palatable.lambda.structural.Struct.struct;
@@ -126,7 +127,7 @@ public class Spike {
         Foo foo = new Foo();
 
         String match1 = struct(() -> Either.<String, Integer>right(2), () -> "foo")
-                .match(cases(of($right(1), $(), (x, y) -> x + y),
+                .match(cases(of($right(1), __(), (x, y) -> x + y),
                              of($(), $(), (x, y) -> x + y)));
 
         System.out.println(match1);
