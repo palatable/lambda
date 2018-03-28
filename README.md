@@ -366,11 +366,11 @@ public static void main(String[] args) {
 }
 ```
 
-In the previous example, if any of `parseId`, `lookupById`, or `getOccupation` fail, no further `flatMap` computations can succeed, so the result short-circuits to the first `left` value that is returned. This is completely predictable from the type signature of `Monad` and `Either`: `Either<L, R>` is a `Monad<R>`, so the single arity `flatMap` can have nothing to map in the case where there is no `R` value. With experience, it generally becomes quickly clear what the logical behavior of `flatMap` *must* be given the type signatures.  
+In the previous example, if any of `parseId`, `lookupById`, or `getOccupation` fail, no further `flatMap` computations can succeed, so the result short-circuits to the first `left` value that is returned. This is completely predictable from the type signature of `Monad` and `Either`: `Either<L, R>` is a `Monad<R>`, so the single arity `flatMap` can have nothing to map in the case where there is no `R` value. With experience, it generally becomes quickly clear what the logical behavior of `flatMap` *must* be given the type signatures.
 
 That's it. Monads are neither [elephants](http://james-iry.blogspot.com/2007/09/monads-are-elephants-part-1.html) nor are they [burritos](https://blog.plover.com/prog/burritos.html); they're simply types that support a) the ability to lift a value into them, and b) a chaining function `flatMap :: (a -> f b) -> f a -> f b` that can potentially return different instances of the same monad. If a type can do those two things (and obeys [the laws](https://wiki.haskell.org/Monad_laws)), it is a monad.
 
-Further, if a type is a monad, it is necessarily an `Applicative`, which makes it necessariliy a `Functor`, so *lambda* enforces this tautology via a hierarchical constraint.    
+Further, if a type is a monad, it is necessarily an `Applicative`, which makes it necessarily a `Functor`, so *lambda* enforces this tautology via a hierarchical constraint.
 
 ### <a name="traversables">Traversables</a>
 
@@ -504,7 +504,7 @@ Optional.of(1).map(nullResultFn); // Optional.empty()
 Maybe.just(1).fmap(nullResultFn); // throws NullPointerException
 
 Maybe.just(1).flatMap(nullResultFn.andThen(Maybe::maybe)); // Nothing
-```  
+```
 
 ### <a name="hlists">Heterogeneous Lists (HLists)</a>
 
@@ -601,7 +601,7 @@ HMap hmap = HMap.hMap(stringKey, "string value",
 Optional<String> stringValue = hmap.get(stringKey); // Optional["string value"]
 Optional<Integer> intValue = hmap.get(intKey); // Optional[1]
 Optional<Integer> anotherIntValue = hmap.get(anotherIntKey); // Optional.empty
-```    
+```
 
 ### <a name="coproducts">CoProducts</a>
 
