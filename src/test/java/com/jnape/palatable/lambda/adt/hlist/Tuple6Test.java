@@ -96,7 +96,7 @@ public class Tuple6Test {
     public void zipPrecedence() {
         Tuple6<String, Integer, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4, 5);
         Tuple6<String, Integer, Integer, Integer, Integer, Function<? super Integer, ? extends Integer>> b = tuple("bar", 2, 3, 4, 5, x -> x + 1);
-        assertEquals(tuple("foo", 1, 2, 3, 4, 6), a.zip(b));
+        assertEquals(tuple("bar", 2, 3, 4, 5, 6), a.zip(b));
     }
 
     @Test

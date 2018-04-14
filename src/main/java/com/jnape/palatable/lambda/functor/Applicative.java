@@ -61,7 +61,7 @@ public interface Applicative<A, App extends Applicative> extends Functor<A, App>
      * @return appB
      */
     default <B> Applicative<B, App> discardL(Applicative<B, App> appB) {
-        return appB.zip(zip(pure(constantly(id()))));
+        return appB.zip(fmap(constantly(id())));
     }
 
     /**

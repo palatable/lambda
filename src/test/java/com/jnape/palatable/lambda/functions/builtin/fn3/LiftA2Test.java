@@ -16,7 +16,7 @@ public class LiftA2Test {
     public void liftsAndAppliesDyadicFunctionToTwoApplicatives() {
         BiFunction<Integer, Integer, Integer> add = (x, y) -> x + y;
         assertEquals(right(3), liftA2(add, right(1), right(2)).coerce());
-        assertEquals(tuple(2, 5), liftA2(add, tuple(1, 2), tuple(2, 3)).coerce());
+        assertEquals(tuple(1, 5), liftA2(add, tuple(1, 2), tuple(2, 3)).coerce());
         assertEquals(new Identity<>(3), liftA2(add, new Identity<>(1), new Identity<>(2)));
     }
 }

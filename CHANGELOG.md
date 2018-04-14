@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - ***Breaking Change***: `Sequence` now has two more type parameters to aid in inference
 - ***Breaking Change***: `Traversable#traverse` now has three more type parameters to aid in inference
+- ***Breaking Change***: `Monad#zip` now forces `m a -> b` before `m a` in default `Applicative#zip` implementation; this is only breaking for types that are sensitive to computation order (the resulting values are the same)
 - `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
 - `Peek2` now accepts the more general `BoundedBifunctor`
 - `Identity`, `Compose`, and `Const` functors all have better `toString` implementations

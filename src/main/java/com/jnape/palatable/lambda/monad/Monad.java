@@ -4,8 +4,6 @@ import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
-
 /**
  * Monads are {@link Applicative} functors that support a flattening operation to unwrap <code>M&lt;M&lt;A&gt;&gt;
  * -&gt; M&lt;A&gt;</code>. This flattening operation, coupled with {@link Applicative#zip(Applicative)}, gives rise to
@@ -55,7 +53,7 @@ public interface Monad<A, M extends Monad> extends Applicative<A, M> {
      */
     @Override
     default <B> Monad<B, M> zip(Applicative<Function<? super A, ? extends B>, M> appFn) {
-        return fmap(a -> appFn.<Monad<Function<? super A, ? extends B>, M>>coerce().<B>fmap(f -> f.apply(a))).flatMap(id());
+        return appFn.<Monad<Function<? super A, ? extends B>, M>>coerce().flatMap(ab -> fmap(ab::apply));
     }
 
     /**

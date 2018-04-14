@@ -99,7 +99,7 @@ public class Tuple7Test {
     public void zipPrecedence() {
         Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4, 5, 6);
         Tuple7<String, Integer, Integer, Integer, Integer, Integer, Function<? super Integer, ? extends Integer>> b = tuple("bar", 2, 3, 4, 5, 6, x -> x + 1);
-        assertEquals(tuple("foo", 1, 2, 3, 4, 5, 7), a.zip(b));
+        assertEquals(tuple("bar", 2, 3, 4, 5, 6, 7), a.zip(b));
     }
 
     @Test

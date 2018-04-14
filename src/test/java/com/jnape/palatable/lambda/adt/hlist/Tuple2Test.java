@@ -105,7 +105,7 @@ public class Tuple2Test {
     public void zipPrecedence() {
         Tuple2<String, Integer> a = tuple("foo", 1);
         Tuple2<String, Function<? super Integer, ? extends Integer>> b = tuple("bar", x -> x + 1);
-        assertEquals(tuple("foo", 2), a.zip(b));
+        assertEquals(tuple("bar", 2), a.zip(b));
     }
 
     @Test
