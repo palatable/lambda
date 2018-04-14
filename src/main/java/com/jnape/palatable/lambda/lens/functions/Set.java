@@ -4,7 +4,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
-import com.jnape.palatable.lambda.lens.Lens;
+import com.jnape.palatable.lambda.lens.LensLike;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
@@ -23,7 +23,7 @@ import static com.jnape.palatable.lambda.lens.functions.Over.over;
  * @see Over
  * @see View
  */
-public final class Set<S, T, A, B> implements Fn3<Lens<S, T, A, B>, B, S, T> {
+public final class Set<S, T, A, B> implements Fn3<LensLike<S, T, A, B, ?>, B, S, T> {
 
     private static final Set INSTANCE = new Set();
 
@@ -31,7 +31,7 @@ public final class Set<S, T, A, B> implements Fn3<Lens<S, T, A, B>, B, S, T> {
     }
 
     @Override
-    public T apply(Lens<S, T, A, B> lens, B b, S s) {
+    public T apply(LensLike<S, T, A, B, ?> lens, B b, S s) {
         return over(lens, constantly(b), s);
     }
 
@@ -40,15 +40,15 @@ public final class Set<S, T, A, B> implements Fn3<Lens<S, T, A, B>, B, S, T> {
         return INSTANCE;
     }
 
-    public static <S, T, A, B> Fn2<B, S, T> set(Lens<S, T, A, B> lens) {
+    public static <S, T, A, B> Fn2<B, S, T> set(LensLike<S, T, A, B, ?> lens) {
         return Set.<S, T, A, B>set().apply(lens);
     }
 
-    public static <S, T, A, B> Fn1<S, T> set(Lens<S, T, A, B> lens, B b) {
+    public static <S, T, A, B> Fn1<S, T> set(LensLike<S, T, A, B, ?> lens, B b) {
         return set(lens).apply(b);
     }
 
-    public static <S, T, A, B> T set(Lens<S, T, A, B> lens, B b, S s) {
+    public static <S, T, A, B> T set(LensLike<S, T, A, B, ?> lens, B b, S s) {
         return set(lens, b).apply(s);
     }
 }

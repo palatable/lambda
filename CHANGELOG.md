@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `HListLens#tail` is now covariant in `Tail` parameter
 - More functions now automatically deforest nested calls (`concat` `cons`, `cycle`, `distinct`, `drop`, `dropwhile`, `filter`, `map`, `reverse`, `snoc`, `take`, `takewhile`, `tail`)
 - `Flatten` calls `Iterator#hasNext` less aggressively, allowing for better laziness
+- `Lens` subtypes `LensLike`
+- `View`/`Set`/`Over` now only require `LensLike`
 
 ### Added
 - `BoundedBifunctor`, a `Bifunctor` super type that offers upper bounds for both parameters
@@ -28,6 +30,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Lens#both`, for dually focusing with two lenses at once
 - `IfThenElse`, an expression form for `if` statements
 - `CheckedRunnable` and `CheckedSupplier` conversion and convenience methods
+- `LensLike`, common capabilities that make a type usable as if it were a `Lens`
+- `Iso`, isomorphisms between two types (invertible functions that are also lenses)
+- `Exchange`, a `Profunctor` that can extract the morphisms from an `Iso`
+- `HMapLens`, lenses focusing on `HMap`
+- `MapLens#mappingValues(Iso)`, a lawful lens that maps the values of a `j.u.Map`
+
+### Deprecated
+- `MapLens#mappingValues(Function)` is now deprecated in favor of the overload that takes an <code>Iso</code>
 
 ## [2.1.1] - 2018-01-16
 ### Changed

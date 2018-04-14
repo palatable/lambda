@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.lens.functions;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.builtin.Const;
-import com.jnape.palatable.lambda.lens.Lens;
+import com.jnape.palatable.lambda.lens.LensLike;
 
 /**
  * Given a lens and a "larger" value <code>S</code>, retrieve a "smaller" value <code>A</code> by lifting the lens into
@@ -18,7 +18,7 @@ import com.jnape.palatable.lambda.lens.Lens;
  * @see Set
  * @see Over
  */
-public final class View<S, T, A, B> implements Fn2<Lens<S, T, A, B>, S, A> {
+public final class View<S, T, A, B> implements Fn2<LensLike<S, T, A, B, ?>, S, A> {
 
     private static final View INSTANCE = new View();
 
@@ -26,8 +26,8 @@ public final class View<S, T, A, B> implements Fn2<Lens<S, T, A, B>, S, A> {
     }
 
     @Override
-    public A apply(Lens<S, T, A, B> lens, S s) {
-        return lens.<Const<A, ?>, Const<A, T>, Const<A, B>>fix().apply(Const::new, s).runConst();
+    public A apply(LensLike<S, T, A, B, ?> lens, S s) {
+        return lens.<Const<A, ?>, Const<A, T>, Const<A, B>>apply(Const::new, s).runConst();
     }
 
     @SuppressWarnings("unchecked")
@@ -35,11 +35,11 @@ public final class View<S, T, A, B> implements Fn2<Lens<S, T, A, B>, S, A> {
         return INSTANCE;
     }
 
-    public static <S, T, A, B> Fn1<S, A> view(Lens<S, T, A, B> lens) {
+    public static <S, T, A, B> Fn1<S, A> view(LensLike<S, T, A, B, ?> lens) {
         return View.<S, T, A, B>view().apply(lens);
     }
 
-    public static <S, T, A, B> A view(Lens<S, T, A, B> lens, S s) {
+    public static <S, T, A, B> A view(LensLike<S, T, A, B, ?> lens, S s) {
         return view(lens).apply(s);
     }
 }

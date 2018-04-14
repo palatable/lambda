@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.lens.Iso.iso;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static com.jnape.palatable.lambda.lens.lenses.MapLens.keys;
@@ -136,25 +137,21 @@ public class MapLensTest {
     }
 
     @Test
-    public void mappingValuesRetainsMapStructureWithMappedValues() {
-        Map<String, String> m = unmodifiableMap(new HashMap<String, String>() {{
-            put("foo", "1");
-            put("bar", "2");
-            put("baz", "3");
-        }});
-        Lens.Simple<Map<String, String>, Map<String, Integer>> mappingValues = mappingValues(Integer::parseInt);
-
-        assertEquals(new HashMap<String, Integer>() {{
-            put("foo", 1);
-            put("bar", 2);
-            put("baz", 3);
-        }}, view(mappingValues, m));
-
-        Map<String, String> updated = set(mappingValues, unmodifiableMap(new HashMap<String, Integer>() {{
-            put("foo", 2);
-            put("bar", 1);
-            put("baz", 3);
-        }}), m);
-        assertEquals(singletonMap("baz", "3"), updated);
+    public void mappingValuesWithIsoRetainsMapStructureWithMappedValues() {
+        assertLensLawfulness(mappingValues(iso(Integer::parseInt, Object::toString)),
+                             asList(emptyMap(),
+                                    singletonMap("foo", "1"),
+                                    unmodifiableMap(new HashMap<String, String>() {{
+                                        put("foo", "1");
+                                        put("bar", "2");
+                                        put("baz", "3");
+                                    }})),
+                             asList(emptyMap(),
+                                    singletonMap("foo", 1),
+                                    unmodifiableMap(new HashMap<String, Integer>() {{
+                                        put("foo", 1);
+                                        put("bar", 2);
+                                        put("baz", 3);
+                                    }})));
     }
 }

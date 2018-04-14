@@ -4,7 +4,7 @@ import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Map;
-import com.jnape.palatable.lambda.lens.Lens;
+import com.jnape.palatable.lambda.lens.LensLike;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 
 import java.util.Objects;
@@ -23,7 +23,7 @@ import static java.util.Arrays.asList;
 
 public final class LensAssert {
 
-    public static <S, A> void assertLensLawfulness(Lens<S, S, A, A> lens, Iterable<S> ss, Iterable<A> bs) {
+    public static <S, A> void assertLensLawfulness(LensLike<S, S, A, A, ?> lens, Iterable<S> ss, Iterable<A> bs) {
         Iterable<Tuple2<S, A>> cases = cartesianProduct(ss, bs);
         Present.<String>present((x, y) -> join("\n\n", x, y))
                 .reduceLeft(asList(falsify("You get back what you put in", (s, b) -> view(lens, set(lens, b, s)), (s, b) -> b, cases),
@@ -37,7 +37,7 @@ public final class LensAssert {
         return Map.<Tuple2<S, A>, Maybe<String>>map(into((s, b) -> {
             X x = l.apply(s, b);
             X y = r.apply(s, b);
-            return Objects.equals(x, y)  ? nothing() : just(format("S <%s>, B <%s> (%s != %s)", s, b, x, y));
+            return Objects.equals(x, y) ? nothing() : just(format("S <%s>, B <%s> (%s != %s)", s, b, x, y));
         }))
                 .fmap(catMaybes())
                 .fmap(reduceLeft((x, y) -> x + "\n\t - " + y))

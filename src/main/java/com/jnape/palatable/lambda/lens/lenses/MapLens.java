@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.lens.lenses;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Filter;
+import com.jnape.palatable.lambda.lens.Iso;
 import com.jnape.palatable.lambda.lens.Lens;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCollection;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToMap.toMap;
+import static com.jnape.palatable.lambda.lens.Lens.Simple.adapt;
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static com.jnape.palatable.lambda.lens.lenses.MaybeLens.unLiftA;
@@ -77,7 +79,7 @@ public final class MapLens {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Lens.Simple<Map<K, V>, V> valueAt(K k, V defaultValue) {
-        return unLiftB(unLiftA(valueAt(k), defaultValue))::apply;
+        return adapt(unLiftB(unLiftA(valueAt(k), defaultValue)));
     }
 
     /**
@@ -156,11 +158,12 @@ public final class MapLens {
      * @param <V>  the unfocused map value type
      * @param <V2> the focused map value types
      * @return a lens that focuses on a map while mapping its values
+     * @deprecated in favor of the lawful (and far more rational) {@link MapLens#mappingValues(Iso)}
      */
+    @Deprecated
     public static <K, V, V2> Lens.Simple<Map<K, V>, Map<K, V2>> mappingValues(Function<? super V, ? extends V2> fn) {
         return simpleLens(m -> toMap(HashMap::new, map(t -> t.biMapR(fn), map(Tuple2::fromEntry, m.entrySet()))),
                           (s, b) -> {
-                              //todo: remove this madness upon arrival of either invertible functions or Iso<V,V2>
                               Set<K> retainKeys = Filter.<Map.Entry<K, V>>filter(kv -> eq(fn.apply(kv.getValue()), b.get(kv.getKey())))
                                       .andThen(map(Map.Entry::getKey))
                                       .andThen(toCollection(HashSet::new))
@@ -169,5 +172,19 @@ public final class MapLens {
                               copy.keySet().retainAll(retainKeys);
                               return copy;
                           });
+    }
+
+    /**
+     * A lens that focuses on a map while mapping its values with the mapping {@link Iso}.
+     *
+     * @param iso  the mapping {@link Iso}
+     * @param <K>  the key type
+     * @param <V>  the unfocused map value type
+     * @param <V2> the focused map value types
+     * @return a lens that focuses on a map while mapping its values
+     */
+    public static <K, V, V2> Lens.Simple<Map<K, V>, Map<K, V2>> mappingValues(Iso<V, V, V2, V2> iso) {
+        return simpleLens(m -> toMap(HashMap::new, map(t -> t.biMapR(view(iso)), map(Tuple2::fromEntry, m.entrySet()))),
+                          (s, b) -> view(mappingValues(iso.mirror()), b));
     }
 }

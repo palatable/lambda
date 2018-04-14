@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.lens.Lens;
+import com.jnape.palatable.lambda.lens.LensLike;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.Objects;
@@ -25,7 +26,8 @@ public final class EqualityAwareLens<S, T, A, B> implements Lens<S, T, A, B> {
     }
 
     @Override
-    public <U> EqualityAwareLens<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, Lens<S, ?, A, B>>> f) {
+    public <U> EqualityAwareLens<S, U, A, B> flatMap(
+            Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, Lens>>> f) {
         return new EqualityAwareLens<>(s, lens.flatMap(f));
     }
 
@@ -41,7 +43,7 @@ public final class EqualityAwareLens<S, T, A, B> implements Lens<S, T, A, B> {
 
     @Override
     public <U> EqualityAwareLens<S, U, A, B> zip(
-            Applicative<Function<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
+            Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Lens>> appFn) {
         return new EqualityAwareLens<>(s, lens.zip(appFn));
     }
 

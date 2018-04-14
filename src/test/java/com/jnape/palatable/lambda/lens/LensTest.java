@@ -2,7 +2,6 @@ package com.jnape.palatable.lambda.lens;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -57,17 +56,6 @@ public class LensTest {
     }
 
     @Test
-    public void fix() {
-        Fn1<String, Const<Integer, Integer>> fn = s -> new Const<>(s.length());
-        List<String> s = singletonList("foo");
-
-        Integer fixedLensResult = LENS.<Const<Integer, ?>, Const<Integer, Set<Integer>>, Const<Integer, Integer>>fix().apply(fn, s).runConst();
-        Integer unfixedLensResult = LENS.<Const<Integer, ?>, Const<Integer, Set<Integer>>, Const<Integer, Integer>>apply(fn, s).runConst();
-
-        assertEquals(unfixedLensResult, fixedLensResult);
-    }
-
-    @Test
     public void mapsIndividuallyOverParameters() {
         Lens<String, Boolean, Character, Integer> lens = lens(s -> s.charAt(0), (s, b) -> s.length() == b);
         Lens<Maybe<String>, Maybe<Boolean>, Maybe<Character>, Maybe<Integer>> theGambit = lens
@@ -76,8 +64,11 @@ public class LensTest {
                 .mapA(Maybe::maybe)
                 .mapB((Maybe<Integer> maybeI) -> maybeI.orElse(-1));
 
-        Lens.Fixed<Maybe<String>, Maybe<Boolean>, Maybe<Character>, Maybe<Integer>, Identity, Identity<Maybe<Boolean>>, Identity<Maybe<Integer>>> fixed = theGambit.fix();
-        assertEquals(just(true), fixed.apply(maybeC -> new Identity<>(maybeC.fmap(c -> parseInt(Character.toString(c)))), just("321")).runIdentity());
+        assertEquals(just(true),
+                     theGambit.<Identity, Identity<Maybe<Boolean>>, Identity<Maybe<Integer>>>apply(
+                             maybeC -> new Identity<>(maybeC.fmap(c -> parseInt(Character.toString(c)))),
+                             just("321")).runIdentity()
+        );
     }
 
     @Test

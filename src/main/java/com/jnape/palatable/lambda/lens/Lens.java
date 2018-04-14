@@ -2,11 +2,9 @@ package com.jnape.palatable.lambda.lens;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
-import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.BiFunction;
@@ -138,29 +136,11 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
  * @param <B> the type of the "smaller" update value
  */
 @FunctionalInterface
-public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor<S, T, Lens<?, ?, A, B>> {
-
-    <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
-            Function<? super A, ? extends FB> fn, S s);
-
-    /**
-     * Fix this lens against some functor, producing a non-polymorphic runnable lens as an {@link Fn2}.
-     * <p>
-     * Although the Java type system does not allow enforceability, the functor instance FT should be the same as FB,
-     * only differentiating in their parameters.
-     *
-     * @param <F>  the common functor type of FT and FB
-     * @param <FT> the type of the lifted T
-     * @param <FB> the type of the lifted B
-     * @return the lens, "fixed" to the functor
-     */
-    default <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> Fixed<S, T, A, B, F, FT, FB> fix() {
-        return this::apply;
-    }
+public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
 
     @Override
     default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
-        return Monad.super.<U>fmap(fn).coerce();
+        return LensLike.super.<U>fmap(fn).coerce();
     }
 
     @Override
@@ -169,85 +149,62 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
     }
 
     @Override
-    default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+    default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Lens>> appFn) {
+        return LensLike.super.zip(appFn).coerce();
     }
 
     @Override
-    default <U> Lens<S, U, A, B> discardL(Applicative<U, Lens<S, ?, A, B>> appB) {
-        return Monad.super.discardL(appB).coerce();
+    default <U> Lens<S, U, A, B> discardL(Applicative<U, LensLike<S, ?, A, B, Lens>> appB) {
+        return LensLike.super.discardL(appB).coerce();
     }
 
     @Override
-    default <U> Lens<S, T, A, B> discardR(Applicative<U, Lens<S, ?, A, B>> appB) {
-        return Monad.super.discardR(appB).coerce();
+    default <U> Lens<S, T, A, B> discardR(Applicative<U, LensLike<S, ?, A, B, Lens>> appB) {
+        return LensLike.super.discardR(appB).coerce();
     }
 
     @Override
-    default <U> Lens<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, Lens<S, ?, A, B>>> f) {
+    default <U> Lens<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, Lens>>> f) {
         return lens(view(this), (s, b) -> set(f.apply(set(this, b, s)).<Lens<S, U, A, B>>coerce(), b, s));
     }
 
     @Override
     default <R> Lens<R, T, A, B> diMapL(Function<? super R, ? extends S> fn) {
-        return (Lens<R, T, A, B>) Profunctor.super.<R>diMapL(fn);
+        return LensLike.super.<R>diMapL(fn).coerce();
     }
 
     @Override
     default <U> Lens<S, U, A, B> diMapR(Function<? super T, ? extends U> fn) {
-        return (Lens<S, U, A, B>) Profunctor.super.<U>diMapR(fn);
+        return LensLike.super.<U>diMapR(fn).coerce();
     }
 
     @Override
-    default <R, U> Lens<R, U, A, B> diMap(Function<? super R, ? extends S> lFn, Function<? super T, ? extends U> rFn) {
-        return this.<R>mapS(lFn).mapT(rFn);
+    default <R, U> Lens<R, U, A, B> diMap(Function<? super R, ? extends S> lFn,
+                                          Function<? super T, ? extends U> rFn) {
+        return LensLike.super.<R, U>diMap(lFn, rFn).coerce();
     }
 
     @Override
     default <R> Lens<R, T, A, B> contraMap(Function<? super R, ? extends S> fn) {
-        return (Lens<R, T, A, B>) Profunctor.super.<R>contraMap(fn);
+        return LensLike.super.<R>contraMap(fn).coerce();
     }
 
-    /**
-     * Contravariantly map <code>S</code> to <code>R</code>, yielding a new lens.
-     *
-     * @param fn  the mapping function
-     * @param <R> the type of the new "larger" value for reading
-     * @return the new lens
-     */
+    @Override
     default <R> Lens<R, T, A, B> mapS(Function<? super R, ? extends S> fn) {
         return lens(view(this).compose(fn), (r, b) -> set(this, b, fn.apply(r)));
     }
 
-    /**
-     * Covariantly map <code>T</code> to <code>U</code>, yielding a new lens.
-     *
-     * @param fn  the mapping function
-     * @param <U> the type of the new "larger" value for putting
-     * @return the new lens
-     */
+    @Override
     default <U> Lens<S, U, A, B> mapT(Function<? super T, ? extends U> fn) {
         return fmap(fn);
     }
 
-    /**
-     * Covariantly map <code>A</code> to <code>C</code>, yielding a new lens.
-     *
-     * @param fn  the mapping function
-     * @param <C> the type of the new "smaller" value that is read
-     * @return the new lens
-     */
+    @Override
     default <C> Lens<S, T, C, B> mapA(Function<? super A, ? extends C> fn) {
         return andThen(lens(fn, (a, b) -> b));
     }
 
-    /**
-     * Contravariantly map <code>B</code> to <code>Z</code>, yielding a new lens.
-     *
-     * @param fn  the mapping function
-     * @param <Z> the type of the new "smaller" update value
-     * @return the new lens
-     */
+    @Override
     default <Z> Lens<S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
         return lens(view(this), (s, z) -> set(this, fn.apply(z), s));
     }
@@ -339,18 +296,26 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
      * @param <A> the type of both "smaller" values
      */
     @FunctionalInterface
-    interface Simple<S, A> extends Lens<S, S, A, A> {
+    interface Simple<S, A> extends Lens<S, S, A, A>, LensLike.Simple<S, A, Lens> {
 
-        @Override
-        default <F extends Functor, FS extends Functor<S, F>, FA extends Functor<A, F>> Fixed<S, A, F, FS, FA> fix() {
-            return this::apply;
-        }
-
-        @SuppressWarnings("unchecked")
+        /**
+         * Compose two simple lenses from right to left.
+         *
+         * @param g   the other simple lens
+         * @param <R> the other simple lens' larger type
+         * @return the composed simple lens
+         */
         default <R> Lens.Simple<R, A> compose(Lens.Simple<R, S> g) {
-            return Lens.super.compose(g)::apply;
+            return Lens.Simple.adapt(Lens.super.compose(g));
         }
 
+        /**
+         * Compose two simple lenses from left to right.
+         *
+         * @param f   the other simple lens
+         * @param <B> the other simple lens' smaller type
+         * @return the composed simple lens
+         */
         default <B> Lens.Simple<S, B> andThen(Lens.Simple<A, B> f) {
             return f.compose(this);
         }
@@ -364,7 +329,7 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
          * @return the simple lens
          */
         @SuppressWarnings("unchecked")
-        static <S, A> Simple<S, A> adapt(Lens<S, S, A, A> lens) {
+        static <S, A> Lens.Simple<S, A> adapt(Lens<S, S, A, A> lens) {
             return lens::apply;
         }
 
@@ -379,37 +344,7 @@ public interface Lens<S, T, A, B> extends Monad<T, Lens<S, ?, A, B>>, Profunctor
          * @return the dual-focus simple lens
          */
         static <S, A, B> Lens.Simple<S, Tuple2<A, B>> both(Lens<S, S, A, A> f, Lens<S, S, B, B> g) {
-            return adapt(Lens.both(f, g));
+            return Lens.Simple.adapt(Lens.both(f, g));
         }
-
-        /**
-         * A convenience type with a simplified type signature for fixed simple lenses.
-         *
-         * @param <S>  the type of both "larger" values
-         * @param <A>  the type of both "smaller" values
-         * @param <FS> the type of the lifted s
-         * @param <FA> the type of the lifted A
-         */
-        @FunctionalInterface
-        interface Fixed<S, A, F extends Functor, FS extends Functor<S, F>, FA extends Functor<A, F>>
-                extends Lens.Fixed<S, S, A, A, F, FS, FA> {
-        }
-    }
-
-    /**
-     * A lens that has been fixed to a functor. Because the lens is no longer polymorphic, it can additionally be safely
-     * represented as an Fn2.
-     *
-     * @param <S>  the type of the "larger" value for reading
-     * @param <T>  the type of the "larger" value for putting
-     * @param <A>  the type of the "smaller" value that is read
-     * @param <B>  the type of the "smaller" update value
-     * @param <F>  the functor unification type between FT and FB
-     * @param <FT> the type of the lifted T
-     * @param <FB> the type of the lifted B
-     */
-    @FunctionalInterface
-    interface Fixed<S, T, A, B, F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>>
-            extends Fn2<Function<? super A, ? extends FB>, S, FT> {
     }
 }
