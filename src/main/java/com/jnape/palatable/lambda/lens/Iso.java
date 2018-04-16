@@ -247,12 +247,17 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
 
         @Override
         default Iso.Simple<A, S> mirror() {
-            return Iso.Simple.adapt(Iso.super.mirror());
+            return adapt(Iso.super.mirror());
         }
 
         @Override
         default Lens.Simple<S, A> toLens() {
             return Lens.Simple.adapt(Iso.super.toLens());
+        }
+
+        @Override
+        default <U> Iso.Simple<S, A> discardR(Applicative<U, LensLike<S, ?, A, A, Iso>> appB) {
+            return adapt(Iso.super.discardR(appB));
         }
 
         /**
@@ -263,7 +268,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
          * @return the composed simple iso
          */
         default <R> Iso.Simple<R, A> compose(Iso.Simple<R, S> g) {
-            return g.andThen(this);
+            return Iso.Simple.adapt(Iso.super.compose(g));
         }
 
         /**
@@ -274,7 +279,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
          * @return the composed simple iso
          */
         default <B> Iso.Simple<S, B> andThen(Iso.Simple<A, B> f) {
-            return Iso.Simple.adapt(f.compose(this));
+            return adapt(f.compose(this));
         }
 
         /**
