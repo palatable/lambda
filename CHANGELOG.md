@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Exchange`, a `Profunctor` that can extract the morphisms from an `Iso`
 - `HMapLens`, lenses focusing on `HMap`
 - `MapLens#mappingValues(Iso)`, a lawful lens that maps the values of a `j.u.Map`
+- `Under`, the inverse of `Over` for `Iso`
 
 ### Deprecated
 - `MapLens#mappingValues(Function)` is now deprecated in favor of the overload that takes an <code>Iso</code>
