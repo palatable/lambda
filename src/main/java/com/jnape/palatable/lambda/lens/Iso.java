@@ -72,7 +72,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
             @Override
             public <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
                     Function<? super A, ? extends FB> fn, S s) {
-                return Iso.this.apply(fn1(fn), s);
+                return Iso.this.apply(fn, s);
             }
         };
     }
@@ -92,11 +92,11 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
      *
      * @return the destructured iso
      */
-    default Tuple2<? extends Function<? super S, ? extends A>, ? extends Function<? super B, ? extends T>> unIso() {
+    default Tuple2<Fn1<? super S, ? extends A>, Fn1<? super B, ? extends T>> unIso() {
         return Tuple2.fill(this.<Exchange<A, B, ?, ?>, Identity, Identity<B>, Identity<T>,
                 Exchange<A, B, A, Identity<B>>,
                 Exchange<A, B, S, Identity<T>>>apply(new Exchange<>(id(), Identity::new)).diMapR(Identity::runIdentity))
-                .biMap(Exchange::sa, Exchange::bt);
+                .biMap(e -> fn1(e.sa()), e -> fn1(e.bt()));
     }
 
     @Override
