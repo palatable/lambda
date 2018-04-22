@@ -15,13 +15,13 @@ public final class HMapLens {
     }
 
     /**
-     * A lens that focuses on a value at a {@link TypeSafeKey}&lt;A&gt; in an {@link HMap}, as a {@link Maybe}.
+     * A lens that focuses on a value at a {@link TypeSafeKey.Simple}&lt;A&gt; in an {@link HMap}, as a {@link Maybe}.
      *
      * @param key the key
      * @param <A> the value type at the key
      * @return the lens
      */
-    public static <A> Lens.Simple<HMap, Maybe<A>> valueAt(TypeSafeKey<A> key) {
+    public static <A> Lens.Simple<HMap, Maybe<A>> valueAt(TypeSafeKey<?, A> key) {
         return simpleLens(m -> m.get(key), (m, maybeA) -> maybeA.fmap(a -> m.put(key, a)).orElseGet(() -> m.remove(key)));
     }
 }

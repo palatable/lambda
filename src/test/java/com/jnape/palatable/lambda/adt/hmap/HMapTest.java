@@ -24,7 +24,7 @@ public class HMapTest {
 
     @Test
     public void getForPresentKey() {
-        TypeSafeKey<String> stringKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
         assertEquals(just("string value"),
                      singletonHMap(stringKey, "string value").get(stringKey));
     }
@@ -38,14 +38,14 @@ public class HMapTest {
 
     @Test
     public void getForPresentKeyWithNullValue() {
-        TypeSafeKey<String> stringKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
         assertEquals(nothing(),
                      singletonHMap(stringKey, null).get(stringKey));
     }
 
     @Test
     public void put() {
-        TypeSafeKey<String> stringKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
         assertEquals(singletonHMap(stringKey, "string value"),
                      emptyHMap().put(stringKey, "string value"));
 
@@ -57,9 +57,9 @@ public class HMapTest {
 
     @Test
     public void putAll() {
-        TypeSafeKey<String> stringKey1 = typeSafeKey();
-        TypeSafeKey<String> stringKey2 = typeSafeKey();
-        TypeSafeKey<Integer> intKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey1 = typeSafeKey();
+        TypeSafeKey<String, String> stringKey2 = typeSafeKey();
+        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
 
         HMap left = hMap(stringKey1, "string value",
                          intKey, 1);
@@ -78,8 +78,8 @@ public class HMapTest {
 
     @Test
     public void remove() {
-        TypeSafeKey<String> stringKey1 = typeSafeKey();
-        TypeSafeKey<String> stringKey2 = typeSafeKey();
+        TypeSafeKey<String, String> stringKey1 = typeSafeKey();
+        TypeSafeKey<String, String> stringKey2 = typeSafeKey();
         assertEquals(emptyHMap(),
                      emptyHMap()
                              .put(stringKey1, "string value")
@@ -94,8 +94,8 @@ public class HMapTest {
 
     @Test
     public void removeAll() {
-        TypeSafeKey<String> stringKey1 = typeSafeKey();
-        TypeSafeKey<String> stringKey2 = typeSafeKey();
+        TypeSafeKey<String, String> stringKey1 = typeSafeKey();
+        TypeSafeKey<String, String> stringKey2 = typeSafeKey();
 
         HMap hMap1 = hMap(stringKey1, "foo",
                           stringKey2, "bar");
@@ -107,9 +107,9 @@ public class HMapTest {
 
     @Test
     public void containsKey() {
-        TypeSafeKey<String> stringKey1 = typeSafeKey();
-        TypeSafeKey<String> stringKey2 = typeSafeKey();
-        TypeSafeKey<Integer> intKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey1 = typeSafeKey();
+        TypeSafeKey<String, String> stringKey2 = typeSafeKey();
+        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
 
         HMap hMap = singletonHMap(stringKey1, "string");
 
@@ -120,7 +120,7 @@ public class HMapTest {
 
     @Test
     public void demandForPresentKey() {
-        TypeSafeKey<String> stringKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
         assertEquals("string value",
                      singletonHMap(stringKey, "string value").demand(stringKey));
     }
@@ -132,8 +132,8 @@ public class HMapTest {
 
     @Test
     public void toMap() {
-        TypeSafeKey<String> stringKey = typeSafeKey();
-        TypeSafeKey<Integer> intKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
+        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
 
         assertEquals(new HashMap<TypeSafeKey, Object>() {{
             put(stringKey, "string");
@@ -144,7 +144,7 @@ public class HMapTest {
 
     @Test
     public void iteratesKVPairsAsTuples() {
-        TypeSafeKey<String> stringKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
 
         assertThat(singletonHMap(stringKey, "string value"),
                    iterates(tuple(stringKey, "string value")));
@@ -152,7 +152,7 @@ public class HMapTest {
 
     @Test
     public void keys() {
-        TypeSafeKey<String> stringKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
 
         assertThat(singletonHMap(stringKey, "string value").keys(),
                    iterates(stringKey));
@@ -166,9 +166,9 @@ public class HMapTest {
 
     @Test
     public void convenienceStaticFactoryMethods() {
-        TypeSafeKey<String> stringKey = typeSafeKey();
-        TypeSafeKey<Integer> intKey = typeSafeKey();
-        TypeSafeKey<Float> floatKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
+        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
+        TypeSafeKey<Float, Float> floatKey = typeSafeKey();
         assertEquals(emptyHMap().put(stringKey, "string value"),
                      singletonHMap(stringKey, "string value"));
         assertEquals(emptyHMap().put(stringKey, "string value").put(intKey, 1),
@@ -183,22 +183,22 @@ public class HMapTest {
     @Test
     @SuppressWarnings("EqualsWithItself")
     public void equality() {
-        assertTrue(emptyHMap().equals(emptyHMap()));
+        assertEquals(emptyHMap(), emptyHMap());
 
-        TypeSafeKey<String> stringKey = typeSafeKey();
-        assertTrue(emptyHMap().put(stringKey, "one").equals(emptyHMap().put(stringKey, "one")));
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
+        assertEquals(emptyHMap().put(stringKey, "one"), emptyHMap().put(stringKey, "one"));
 
-        assertFalse(emptyHMap().equals(emptyHMap().put(stringKey, "string key")));
-        assertFalse(emptyHMap().put(stringKey, "string key").equals(emptyHMap()));
-        assertFalse(emptyHMap().put(typeSafeKey(), "one").equals(emptyHMap().put(typeSafeKey(), "one")));
-        assertFalse(emptyHMap().put(typeSafeKey(), "one").equals(emptyHMap().put(typeSafeKey(), 1)));
-        assertFalse(emptyHMap().put(typeSafeKey(), 1).equals(emptyHMap().put(typeSafeKey(), "one")));
+        assertNotEquals(emptyHMap(), emptyHMap().put(stringKey, "string key"));
+        assertNotEquals(emptyHMap().put(stringKey, "string key"), emptyHMap());
+        assertNotEquals(emptyHMap().put(typeSafeKey(), "one"), emptyHMap().put(typeSafeKey(), "one"));
+        assertNotEquals(emptyHMap().put(typeSafeKey(), "one"), emptyHMap().put(typeSafeKey(), 1));
+        assertNotEquals(emptyHMap().put(typeSafeKey(), 1), emptyHMap().put(typeSafeKey(), "one"));
     }
 
     @Test
     public void hashCodeUsesDecentDistribution() {
         assertEquals(emptyHMap().hashCode(), emptyHMap().hashCode());
-        TypeSafeKey<String> stringKey = typeSafeKey();
+        TypeSafeKey<String, String> stringKey = typeSafeKey();
         assertEquals(singletonHMap(stringKey, "string value").hashCode(),
                      singletonHMap(stringKey, "string value").hashCode());
 

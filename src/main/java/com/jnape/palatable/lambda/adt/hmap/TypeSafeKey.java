@@ -1,25 +1,104 @@
 package com.jnape.palatable.lambda.adt.hmap;
 
+import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.Profunctor;
+import com.jnape.palatable.lambda.lens.Iso;
+import com.jnape.palatable.lambda.lens.LensLike;
+
 /**
- * An interface representing a parametrized key for use in HMaps. The parameter specifies the type of the value stored
- * at this binding inside the HMap.
+ * An interface representing a parametrized key for use in {@link HMap}s. The parameter specifies the type of the value
+ * stored at this binding inside the {@link HMap}.
  * <p>
- * This is intentionally an interface so user-defined implementations are possible; however, it's important to note that
- * all hopes of type-safety hinge on equality being implemented such that no two TypeSafeKeys with differing parameters
- * may be considered equal. Reference equality is used here as the default, as that is sufficient.
+ * This is intentionally an interface so user-defined implementations are possible; however, it's important to note
+ * that all hopes of type-safety hinge on equality being implemented such that no two {@link TypeSafeKey}s with
+ * differing value-type parameters may be considered equal. Reference equality is used here as the default, as that is
+ * sufficient.
  *
- * @param <T> The type of the value that this key maps to inside an HMap
+ * @param <A> The type of the value that this key maps to inside an {@link HMap}
  */
-public interface TypeSafeKey<T> {
+public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
+
+    @Override
+    default <U> TypeSafeKey<A, B> discardR(Applicative<U, LensLike<A, ?, B, B, Iso>> appB) {
+        Iso.Simple<A, B> discarded = Iso.Simple.super.discardR(appB);
+        return new TypeSafeKey<A, B>() {
+            @Override
+            public <P extends Profunctor, F extends Functor, FB extends Functor<B, F>, FT extends Functor<A, F>, PAFB extends Profunctor<B, FB, P>, PSFT extends Profunctor<A, FT, P>> PSFT apply(
+                    PAFB pafb) {
+                return discarded.<P, F, FB, FT, PAFB, PSFT>apply(pafb);
+            }
+
+            @Override
+            public int hashCode() {
+                return TypeSafeKey.this.hashCode();
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return TypeSafeKey.this.equals(obj);
+            }
+        };
+    }
 
     /**
-     * Static factory method for creating a unique type-safe key
+     * Left-to-right composition of this {@link TypeSafeKey} with some other {@link Iso}. Because the first parameter
+     * fundamentally represents an already stored value type, this is the only composition that is possible for
+     * {@link TypeSafeKey}, which is why only this (and not {@link Iso#compose(Iso)}) is overridden.
+     * <p>
+     * Particularly of note is the fact that values stored at this key are still stored as their original manifest
+     * type, and are not duplicated - which is to say, putting a value at a key, yielding a new key via composition,
+     * and putting a new value at the new key still only results in a single entry in the {@link HMap}. Additionally,
+     * all previous keys involved in the new key's composition are still able to resolve the value in their native type.
      *
-     * @param <T> the type of value stored at this key
+     * @param f   the other simple iso
+     * @param <C> the new value type
+     * @return the new {@link TypeSafeKey}
+     */
+    @Override
+    default <C> TypeSafeKey<A, C> andThen(Iso.Simple<B, C> f) {
+        Iso.Simple<A, C> composed = Iso.Simple.super.andThen(f);
+        return new TypeSafeKey<A, C>() {
+            @Override
+            public <P extends Profunctor, F extends Functor, FB extends Functor<C, F>, FT extends Functor<A, F>, PAFB extends Profunctor<C, FB, P>, PSFT extends Profunctor<A, FT, P>> PSFT apply(
+                    PAFB pafb) {
+                return composed.<P, F, FB, FT, PAFB, PSFT>apply(pafb);
+            }
+
+            @Override
+            public int hashCode() {
+                return TypeSafeKey.this.hashCode();
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return TypeSafeKey.this.equals(obj);
+            }
+        };
+    }
+
+    /**
+     * Static factory method for creating a simple type-safe key
+     *
+     * @param <A> the type of value stored at this key
      * @return a unique type-safe key
      */
-    static <T> TypeSafeKey<T> typeSafeKey() {
-        return new TypeSafeKey<T>() {
+    static <A> Simple<A> typeSafeKey() {
+        return new TypeSafeKey.Simple<A>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <P extends Profunctor, F extends Functor, FB extends Functor<A, F>, FT extends Functor<A, F>, PAFB extends Profunctor<A, FB, P>, PSFT extends Profunctor<A, FT, P>> PSFT apply(
+                    PAFB pafb) {
+                return (PSFT) pafb;
+            }
         };
+    }
+
+    /**
+     * A simplified {@link TypeSafeKey} that can only view a value of type <code>A</code> as an <code>A</code>.
+     *
+     * @param <A> The type of the value that this key maps to inside an {@link HMap}
+     */
+    interface Simple<A> extends TypeSafeKey<A, A> {
     }
 }

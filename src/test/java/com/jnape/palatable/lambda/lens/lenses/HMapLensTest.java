@@ -16,7 +16,7 @@ public class HMapLensTest {
 
     @Test
     public void valueAt() {
-        TypeSafeKey<String> key = typeSafeKey();
+        TypeSafeKey.Simple<String> key = typeSafeKey();
         assertLensLawfulness(HMapLens.valueAt(key),
                              asList(emptyHMap(),
                                     singletonHMap(key, "foo"),

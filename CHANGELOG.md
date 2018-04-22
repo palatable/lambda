@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ***Breaking Change***: `Sequence` now has two more type parameters to aid in inference
 - ***Breaking Change***: `Traversable#traverse` now has three more type parameters to aid in inference
 - ***Breaking Change***: `Monad#zip` now forces `m a -> b` before `m a` in default `Applicative#zip` implementation; this is only breaking for types that are sensitive to computation order (the resulting values are the same)
+- ***Breaking Change***: `TypeSafeKey` is now dually parametric (single parameter analog is preserved in `TypeSafeKey.Simple`)
 - `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
 - `Peek2` now accepts the more general `BoundedBifunctor`
 - `Identity`, `Compose`, and `Const` functors all have better `toString` implementations
@@ -17,6 +18,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Flatten` calls `Iterator#hasNext` less aggressively, allowing for better laziness
 - `Lens` subtypes `LensLike`
 - `View`/`Set`/`Over` now only require `LensLike`
+- `HMap#keys` now returns a `Set`
+- `HMap#values` now returns a `Collection`
 
 ### Added
 - `BoundedBifunctor`, a `Bifunctor` super type that offers upper bounds for both parameters
@@ -37,6 +40,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `HMapLens`, lenses focusing on `HMap`
 - `MapLens#mappingValues(Iso)`, a lawful lens that maps the values of a `j.u.Map`
 - `Under`, the inverse of `Over` for `Iso`
+- `TypeSafeKey` is an `Iso` and supports mapping
+- `TypeSafeKey.Simple`, the single parameter version of `TypeSafeKey`
 
 ### Deprecated
 - `MapLens#mappingValues(Function)` is now deprecated in favor of the overload that takes an <code>Iso</code>

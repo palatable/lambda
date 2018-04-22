@@ -3,14 +3,21 @@ package com.jnape.palatable.lambda.adt.hmap;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
+import static com.jnape.palatable.lambda.adt.Maybe.maybe;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
+import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
@@ -35,12 +42,12 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * Retrieve the value at this key.
      *
      * @param key the key
-     * @param <T> the value type
+     * @param <B> the value type
      * @return Maybe the value at this key
      */
     @SuppressWarnings("unchecked")
-    public <T> Maybe<T> get(TypeSafeKey<T> key) {
-        return Maybe.maybe((T) table.get(key));
+    public <A, B> Maybe<B> get(TypeSafeKey<A, B> key) {
+        return maybe((A) table.get(key)).fmap(view(key));
     }
 
     /**
@@ -51,7 +58,7 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * @return the value at this key
      * @throws NoSuchElementException if the key is unmapped
      */
-    public <V> V demand(TypeSafeKey<V> key) throws NoSuchElementException {
+    public <V> V demand(TypeSafeKey<?, V> key) throws NoSuchElementException {
         return get(key).orElseThrow(() -> new NoSuchElementException("Demanded value for key " + key + ", but couldn't find one."));
     }
 
@@ -63,8 +70,8 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * @param <V>   the value type
      * @return the updated HMap
      */
-    public <V> HMap put(TypeSafeKey<V> key, V value) {
-        return alter(t -> t.put(key, value));
+    public <V> HMap put(TypeSafeKey<?, V> key, V value) {
+        return alter(t -> t.put(key, view(key.mirror(), value)));
     }
 
     /**
@@ -109,20 +116,23 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
 
     /**
      * Retrieve all the mapped keys.
+     * <p>
+     * Note that unlike with {@link Map#keySet()}, the resulting key set is not "live"; in fact
+     * that is, alterations to the resulting key set have no effect on the backing {@link HMap}.
      *
-     * @return an Iterable of all the mapped keys
+     * @return a {@link Set} of all the mapped keys
      */
-    public Iterable<TypeSafeKey> keys() {
-        return map(Tuple2::_1, this);
+    public Set<TypeSafeKey> keys() {
+        return new HashSet<>(table.keySet());
     }
 
     /**
      * Retrieve all the mapped values.
      *
-     * @return an Iterable of all the mapped values
+     * @return a {@link List} of all the mapped values
      */
-    public Iterable<Object> values() {
-        return map(Tuple2::_2, this);
+    public Collection<Object> values() {
+        return new ArrayList<>(table.values());
     }
 
     /**
@@ -184,7 +194,7 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * @param <V>   the only mapped value type
      * @return a singleton HMap
      */
-    public static <V> HMap singletonHMap(TypeSafeKey<V> key, V value) {
+    public static <V> HMap singletonHMap(TypeSafeKey<?, V> key, V value) {
         return new HMap(singletonMap(key, value));
     }
 
@@ -199,8 +209,8 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * @param <V2>   value2's type
      * @return an HMap with the given associations
      */
-    public static <V1, V2> HMap hMap(TypeSafeKey<V1> key1, V1 value1,
-                                     TypeSafeKey<V2> key2, V2 value2) {
+    public static <V1, V2> HMap hMap(TypeSafeKey<?, V1> key1, V1 value1,
+                                     TypeSafeKey<?, V2> key2, V2 value2) {
         return singletonHMap(key1, value1).put(key2, value2);
     }
 
@@ -218,9 +228,9 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * @param <V3>   value3's type
      * @return an HMap with the given associations
      */
-    public static <V1, V2, V3> HMap hMap(TypeSafeKey<V1> key1, V1 value1,
-                                         TypeSafeKey<V2> key2, V2 value2,
-                                         TypeSafeKey<V3> key3, V3 value3) {
+    public static <V1, V2, V3> HMap hMap(TypeSafeKey<?, V1> key1, V1 value1,
+                                         TypeSafeKey<?, V2> key2, V2 value2,
+                                         TypeSafeKey<?, V3> key3, V3 value3) {
         return hMap(key1, value1, key2, value2).put(key3, value3);
     }
 }
