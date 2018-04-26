@@ -7,15 +7,17 @@ import com.jnape.palatable.lambda.lens.Iso;
 import com.jnape.palatable.lambda.lens.LensLike;
 
 /**
- * An interface representing a parametrized key for use in {@link HMap}s. The parameter specifies the type of the value
- * stored at this binding inside the {@link HMap}.
+ * An interface representing a parametrized key for use in {@link HMap}s. Additionally, every {@link TypeSafeKey} is an
+ * {@link Iso} from the type the value is stored as to the type it's viewed and set as (on the way in / on the way out).
+ * This allows multiple keys to map to the same value, but to view the value as different types.
  * <p>
  * This is intentionally an interface so user-defined implementations are possible; however, it's important to note
  * that all hopes of type-safety hinge on equality being implemented such that no two {@link TypeSafeKey}s with
  * differing value-type parameters may be considered equal. Reference equality is used here as the default, as that is
  * sufficient.
  *
- * @param <A> The type of the value that this key maps to inside an {@link HMap}
+ * @param <A> The raw type of the value that this key maps to inside an {@link HMap}
+ * @param <B> The mapped type of the value that this key maps to inside an {@link HMap}
  */
 public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
 
