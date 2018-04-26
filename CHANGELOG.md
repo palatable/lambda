@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Under`, the inverse of `Over` for `Iso`
 - `TypeSafeKey` is an `Iso` and supports mapping
 - `TypeSafeKey.Simple`, the single parameter version of `TypeSafeKey`
+- `Either#trying` overloads that accept `CheckedRunnable`
 
 ### Deprecated
 - `MapLens#mappingValues(Function)` is now deprecated in favor of the overload that takes an <code>Iso</code>

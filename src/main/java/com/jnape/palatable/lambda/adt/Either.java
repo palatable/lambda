@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
+import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
@@ -21,9 +22,9 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
 import static java.util.Arrays.asList;
 
 /**
- * The binary tagged union. General semantics tend to connote "success" values via the right value and "failure" values
- * via the left values. <code>Either</code>s are both <code>Functor</code>s over their right value and
- * <code>Bifunctor</code>s over both values.
+ * The binary tagged union, implemented as a specialized {@link CoProduct2}. General semantics tend to connote "success"
+ * values via the right value and "failure" values via the left values. {@link Either}s are both {@link Monad}s and
+ * {@link Traversable}s over their right value and are {@link Bifunctor}s over both values.
  *
  * @param <L> The left parameter type
  * @param <R> The right parameter type
@@ -303,6 +304,33 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      */
     public static <E extends Exception, R> Either<E, R> trying(CheckedSupplier<E, R> supplier) {
         return trying(supplier, id());
+    }
+
+    /**
+     * Attempt to execute the {@link CheckedRunnable}, returning {@link Unit} in a right value. If the runnable throws
+     * an exception, apply <code>leftFn</code> to it, wrap it in a left value, and return it.
+     *
+     * @param runnable the runnable
+     * @param leftFn   a function mapping E to L
+     * @param <E>      the most contravariant exception that the runnable might throw
+     * @param <L>      the left parameter type
+     * @return {@link Unit} as a right value, or leftFn's mapping result as a left value
+     */
+    public static <E extends Exception, L> Either<L, Unit> trying(CheckedRunnable<E> runnable,
+                                                                  Function<? super E, ? extends L> leftFn) {
+        return Try.trying(runnable).toEither(leftFn);
+    }
+
+    /**
+     * Attempt to execute the {@link CheckedRunnable}, returning {@link Unit} in a right value. If the runnable throws
+     * exception, wrap it in a left value and return it.
+     *
+     * @param runnable the runnable
+     * @param <E>      the left parameter type (the most contravariant exception that runnable might throw)
+     * @return {@link Unit} as a right value, or a left value of the thrown exception
+     */
+    public static <E extends Exception> Either<E, Unit> trying(CheckedRunnable<E> runnable) {
+        return trying(runnable, id());
     }
 
     /**

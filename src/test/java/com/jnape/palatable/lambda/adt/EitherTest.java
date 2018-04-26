@@ -22,6 +22,7 @@ import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -184,6 +185,21 @@ public class EitherTest {
         assertEquals(left("expected"), Either.trying(() -> {
             throw new Exception("expected");
         }, Throwable::getMessage));
+    }
+
+    @Test
+    public void dyadicTryingWithRunnable() {
+        assertEquals(right(UNIT), Either.trying(() -> {}, Throwable::getMessage));
+        assertEquals(left("expected"), Either.trying(() -> {
+            throw new IllegalStateException("expected");
+        }, Throwable::getMessage));
+    }
+
+    @Test
+    public void monadTryingWithRunnable() {
+        assertEquals(right(UNIT), Either.trying(() -> {}));
+        IllegalStateException expected = new IllegalStateException("expected");
+        assertEquals(left(expected), Either.trying(() -> {throw expected;}));
     }
 
     @Test
