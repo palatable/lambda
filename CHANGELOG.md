@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `View`/`Set`/`Over` now only require `LensLike`
 - `HMap#keys` now returns a `Set`
 - `HMap#values` now returns a `Collection`
+- `Unfoldr` is now lazier, deferring all computations until `hasNext/next` calls
 
 ### Added
 - `BoundedBifunctor`, a `Bifunctor` super type that offers upper bounds for both parameters

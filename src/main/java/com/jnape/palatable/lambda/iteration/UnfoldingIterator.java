@@ -10,15 +10,19 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 
 public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
     private final Function<? super B, Maybe<Tuple2<A, B>>> function;
+    private       B                                        seed;
     private       Maybe<Tuple2<A, B>>                      maybeAcc;
 
-    public UnfoldingIterator(Function<? super B, Maybe<Tuple2<A, B>>> function, B b) {
+    public UnfoldingIterator(Function<? super B, Maybe<Tuple2<A, B>>> function, B seed) {
         this.function = function;
-        maybeAcc = function.apply(b);
+        this.seed = seed;
     }
 
     @Override
     public boolean hasNext() {
+        if (maybeAcc == null)
+            maybeAcc = function.apply(seed);
+
         return maybeAcc.fmap(constantly(true)).orElse(false);
     }
 
@@ -30,7 +34,8 @@ public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
 
         Tuple2<A, B> acc = maybeAcc.orElseThrow(NoSuchElementException::new);
         A next = acc._1();
-        maybeAcc = function.apply(acc._2());
+        seed = acc._2();
+        maybeAcc = null;
         return next;
     }
 }
