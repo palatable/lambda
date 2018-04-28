@@ -289,6 +289,20 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
     }
 
     /**
+     * Dually focus on two simple lenses at the same time.
+     *
+     * @param f   the first lens
+     * @param g   the second lens
+     * @param <S> both larger values
+     * @param <A> both smaller viewing values
+     * @param <B> both smaller setting values
+     * @return the dual-focus simple lens
+     */
+    static <S, A, B> Lens.Simple<S, Tuple2<A, B>> both(Lens.Simple<S, A> f, Lens.Simple<S, B> g) {
+        return adapt(both((Lens<S, S, A, A>) f, g));
+    }
+
+    /**
      * A convenience type with a simplified type signature for common lenses with both unified "larger" values and
      * unified "smaller" values.
      *

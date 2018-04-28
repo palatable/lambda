@@ -94,4 +94,13 @@ public class LensTest {
         assertEquals(tuple('a', 3), view(both, "abc"));
         assertEquals("zb", set(both, tuple('z', 2), "abc"));
     }
+
+    @Test
+    public void bothForSimpleLenses() {
+        Lens.Simple<String, Integer> stringToInt = simpleLens(Integer::parseInt, (s, i) -> s + i.toString());
+        Lens.Simple<String, Character> stringToChar = simpleLens(s -> s.charAt(0), (s, c) -> s + c.toString());
+
+        assertEquals(tuple(3, '3'), view(both(stringToInt, stringToChar), "3"));
+        assertEquals("133", set(both(stringToInt, stringToChar), tuple(3, '3'), "1"));
+    }
 }
