@@ -27,6 +27,8 @@ import static com.jnape.palatable.lambda.monoid.builtin.First.first;
  */
 public final class Present<A> implements MonoidFactory<Semigroup<A>, Maybe<A>> {
 
+    private static final Present INSTANCE = new Present<>();
+
     private Present() {
     }
 
@@ -36,8 +38,9 @@ public final class Present<A> implements MonoidFactory<Semigroup<A>, Maybe<A>> {
                       nothing());
     }
 
+    @SuppressWarnings("unchecked")
     public static <A> Present<A> present() {
-        return new Present<>();
+        return INSTANCE;
     }
 
     public static <A> Monoid<Maybe<A>> present(Semigroup<A> semigroup) {
