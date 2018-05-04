@@ -42,6 +42,7 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * Retrieve the value at this key.
      *
      * @param key the key
+     * @param <A> the value type
      * @param <B> the value type
      * @return Maybe the value at this key
      */
