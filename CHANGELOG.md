@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+_No changes_
+
+## [3.0.0] - 2018-05-04
 ### Changed
 - ***Breaking Change***: `Sequence` now has two more type parameters to aid in inference
 - ***Breaking Change***: `Traversable#traverse` now has three more type parameters to aid in inference
@@ -300,7 +303,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-2.1.1...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.0.0...HEAD
+[3.0.0]: https://github.com/palatable/lambda/compare/lambda-2.1.1...lambda-3.0.0
 [2.1.1]: https://github.com/palatable/lambda/compare/lambda-2.1.0...lambda-2.1.1
 [2.1.0]: https://github.com/palatable/lambda/compare/lambda-2.0.0...lambda-2.1.0
 [2.0.0]: https://github.com/palatable/lambda/compare/lambda-1.6.3...lambda-2.0.0
