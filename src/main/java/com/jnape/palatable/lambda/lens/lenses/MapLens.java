@@ -176,6 +176,9 @@ public final class MapLens {
 
     /**
      * A lens that focuses on a map while mapping its values with the mapping {@link Iso}.
+     * <p>
+     * Note that for this lens to be lawful, <code>iso</code> must be bijective: that is, every <code>V</code> must
+     * uniquely and invertibly map to exactly one <code>V2</code>.
      *
      * @param iso  the mapping {@link Iso}
      * @param <K>  the key type
