@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  * @param <V> the value element type
  * @param <M> the resulting map type
  */
-public final class ToMap<K, V, M extends Map<K, V>> implements Fn2<Supplier<M>, Iterable<Map.Entry<K, V>>, M> {
+public final class ToMap<K, V, M extends Map<K, V>> implements Fn2<Supplier<M>, Iterable<? extends Map.Entry<K, V>>, M> {
 
     private static final ToMap INSTANCE = new ToMap<>();
 
@@ -25,7 +25,7 @@ public final class ToMap<K, V, M extends Map<K, V>> implements Fn2<Supplier<M>, 
     }
 
     @Override
-    public M apply(Supplier<M> mSupplier, Iterable<Map.Entry<K, V>> entries) {
+    public M apply(Supplier<M> mSupplier, Iterable<? extends Map.Entry<K, V>> entries) {
         return foldLeft((m, kv) -> {
             m.put(kv.getKey(), kv.getValue());
             return m;
@@ -37,11 +37,12 @@ public final class ToMap<K, V, M extends Map<K, V>> implements Fn2<Supplier<M>, 
         return INSTANCE;
     }
 
-    public static <K, V, M extends Map<K, V>> Fn1<Iterable<Map.Entry<K, V>>, M> toMap(Supplier<M> mSupplier) {
+    public static <K, V, M extends Map<K, V>> Fn1<Iterable<? extends Map.Entry<K, V>>, M> toMap(Supplier<M> mSupplier) {
         return ToMap.<K, V, M>toMap().apply(mSupplier);
     }
 
-    public static <K, V, M extends Map<K, V>> M toMap(Supplier<M> mSupplier, Iterable<Map.Entry<K, V>> entries) {
+    public static <K, V, M extends Map<K, V>> M toMap(Supplier<M> mSupplier,
+                                                      Iterable<? extends Map.Entry<K, V>> entries) {
         return toMap(mSupplier).apply(entries);
     }
 }

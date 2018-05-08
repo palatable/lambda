@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
-_No changes_
+### Changed
+- `ToMap` accepts an `Iterable` covariant in `Map.Entry`
 
 ## [3.0.0] - 2018-05-04
 ### Changed
