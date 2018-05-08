@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - `ToMap` accepts an `Iterable` covariant in `Map.Entry`
 
+### Added
+- `Upcast` for safely casting up a type hierarchy
+
 ## [3.0.0] - 2018-05-04
 ### Changed
 - ***Breaking Change***: `Sequence` now has two more type parameters to aid in inference
