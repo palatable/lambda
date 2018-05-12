@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 - `Upcast` for safely casting up a type hierarchy
+- `SetLens`, lenses operating on `Set`s
 
 ## [3.0.0] - 2018-05-04
 ### Changed
