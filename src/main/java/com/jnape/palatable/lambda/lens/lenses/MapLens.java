@@ -128,6 +128,9 @@ public final class MapLens {
     /**
      * A lens that focuses on the inverse of a map (keys and values swapped). In the case of multiple equal values
      * becoming keys, the last one wins.
+     * <p>
+     * Note that this lens is very likely to NOT be lawful, since "you get back what you put in" will fail for any keys
+     * that map to the same value.
      *
      * @param <K> the key type
      * @param <V> the value type
@@ -149,9 +152,11 @@ public final class MapLens {
     /**
      * A lens that focuses on a map while mapping its values with the mapping function.
      * <p>
-     * Note that this lens is NOT lawful, since "you get back what you put in" fails for all values <code>B</code> that
-     * do not map from the current values in <code>S</code> (new mappings cannot be preserved as the inversion of
-     * <code>fn</code> is not known).
+     * Note that this lens is very likely to NOT be lawful, since "you get back what you put in" will fail for all
+     * values <code>B</code> that do not map from the current values in <code>S</code> (new mappings cannot be
+     * preserved as the inversion of <code>fn</code> is not known). Furthermore, if <code>fn</code> is injective
+     * (multiple <code>V</code>s map to the same <code>V2</code>), this lens will also not be lawful for similar reasons
+     * as stated above.
      *
      * @param fn   the mapping function
      * @param <K>  the key type
@@ -183,7 +188,7 @@ public final class MapLens {
      * @param iso  the mapping {@link Iso}
      * @param <K>  the key type
      * @param <V>  the unfocused map value type
-     * @param <V2> the focused map value types
+     * @param <V2> the focused map value type
      * @return a lens that focuses on a map while mapping its values
      */
     public static <K, V, V2> Lens.Simple<Map<K, V>, Map<K, V2>> mappingValues(Iso<V, V, V2, V2> iso) {
