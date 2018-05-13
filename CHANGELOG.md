@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Changed
 - `ToMap` accepts an `Iterable` covariant in `Map.Entry`
+- `RecursiveResult#invert` is also a `RecursiveResult`
 
 ### Added
 - `Upcast` for safely casting up a type hierarchy

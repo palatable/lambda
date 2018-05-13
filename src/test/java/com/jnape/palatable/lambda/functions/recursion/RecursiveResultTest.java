@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.functions.recursion;
 
-import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -10,9 +9,9 @@ import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
-import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 
 @RunWith(Traits.class)
 public class RecursiveResultTest {

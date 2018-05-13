@@ -24,6 +24,11 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
     }
 
     @Override
+    public RecursiveResult<B, A> invert() {
+        return match(RecursiveResult::terminate, RecursiveResult::recurse);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <C> RecursiveResult<C, B> biMapL(Function<? super A, ? extends C> fn) {
         return (RecursiveResult<C, B>) Bifunctor.super.biMapL(fn);
