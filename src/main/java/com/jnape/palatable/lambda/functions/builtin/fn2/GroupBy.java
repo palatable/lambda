@@ -12,8 +12,8 @@ import java.util.function.Function;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 
 /**
- * Given an <code>Iterable&lt;V&gt;</code> <code>vs</code> and a key function <code>V -&gt; K</code> <code>f</code>, fold
- * <code>vs</code> into a <code>Map&lt;K, List&lt;V&gt;&gt;</code> by applying <code>f</code> to each element of
+ * Given an <code>Iterable&lt;V&gt;</code> <code>vs</code> and a key function <code>V -&gt; K</code> <code>f</code>,
+ * fold <code>vs</code> into a <code>Map&lt;K, List&lt;V&gt;&gt;</code> by applying <code>f</code> to each element of
  * <code>vs</code>, retaining values that map to the same key in a list, in the order they were iterated in.
  *
  * @param <K> the Map key type
@@ -32,7 +32,7 @@ public class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>, Iter
         return foldLeft((m, v) -> {
             m.computeIfAbsent(keyFn.apply(v), __ -> new ArrayList<>()).add(v);
             return m;
-        }, new HashMap<K, List<V>>(), vs);
+        }, new HashMap<>(), vs);
     }
 
     @SuppressWarnings("unchecked")

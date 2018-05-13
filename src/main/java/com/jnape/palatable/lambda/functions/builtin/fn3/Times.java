@@ -15,7 +15,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  * <code>n</code> times, returning the result.
  * <p>
  * Example:
- * <p>
+ *
  * <code>times(3, x -&gt; x + 1, 0); // 3</code>
  *
  * @param <A> the input and output type

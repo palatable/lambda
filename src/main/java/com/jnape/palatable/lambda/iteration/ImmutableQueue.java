@@ -112,7 +112,7 @@ abstract class ImmutableQueue<A> implements Iterable<A> {
             if (!outTail.isEmpty())
                 return new NonEmpty<>(outTail, inbound);
 
-            ImmutableStack<A> newOutbound = foldLeft(ImmutableStack::push, ImmutableStack.<A>empty(), inbound);
+            ImmutableStack<A> newOutbound = foldLeft(ImmutableStack::push, ImmutableStack.empty(), inbound);
             return newOutbound.isEmpty() ? empty() : new NonEmpty<>(newOutbound, ImmutableStack.empty());
         }
     }

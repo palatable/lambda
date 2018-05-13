@@ -14,7 +14,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
  * Iterable} by one element at a time, returning an <code>{@link Iterable}&lt;{@link Iterable}&lt;A&gt;&gt;</code>.
  * <p>
  * Example:
- * <p>
+ *
  * <code>slide(2, asList(1, 2, 3, 4, 5)); // [[1, 2], [2, 3], [3, 4], [4, 5]]</code>
  *
  * @param <A> the Iterable element type
