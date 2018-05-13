@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [3.0.1] - 2018-05-13
 ### Changed
 - `ToMap` accepts an `Iterable` covariant in `Map.Entry`
 - `RecursiveResult#invert` is also a `RecursiveResult`
@@ -312,7 +314,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.0.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.0.1...HEAD
+[3.0.1]: https://github.com/palatable/lambda/compare/lambda-3.0.0...lambda-3.0.1
 [3.0.0]: https://github.com/palatable/lambda/compare/lambda-2.1.1...lambda-3.0.0
 [2.1.1]: https://github.com/palatable/lambda/compare/lambda-2.1.0...lambda-2.1.1
 [2.1.0]: https://github.com/palatable/lambda/compare/lambda-2.0.0...lambda-2.1.0
