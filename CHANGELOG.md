@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - `ToMap` accepts an `Iterable` covariant in `Map.Entry`
 - `RecursiveResult#invert` is also a `RecursiveResult`
+- `First`/`And`/`Or` monoids all utilize short-circuiting
+- `Monoid#foldLeft/foldRight` delegate to `Monoid#reduceLeft/reduceRight`, respectively 
 
 ### Added
 - `Upcast` for safely casting up a type hierarchy

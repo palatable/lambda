@@ -8,7 +8,9 @@ import com.jnape.palatable.lambda.semigroup.Semigroup;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Snoc.snoc;
 
 /**
  * A {@link Monoid} is the pairing of a {@link Semigroup} with an identity element.
@@ -62,6 +64,22 @@ public interface Monoid<A> extends Semigroup<A> {
      */
     default <B> A foldMap(Function<? super B, ? extends A> fn, Iterable<B> bs) {
         return reduceLeft(map(fn, bs));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default A foldLeft(A a, Iterable<A> as) {
+        return reduceLeft(cons(a, as));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default A foldRight(A a, Iterable<A> as) {
+        return reduceRight(snoc(a, as));
     }
 
     /**

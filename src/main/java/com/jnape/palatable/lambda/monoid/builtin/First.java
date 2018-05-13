@@ -5,6 +5,8 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.CatMaybes.catMaybes;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Head.head;
 
 /**
  * A {@link Monoid} instance formed by <code>{@link Maybe}&lt;A&gt;</code>. The application to two {@link Maybe} values
@@ -31,6 +33,11 @@ public final class First<A> implements Monoid<Maybe<A>> {
     @Override
     public Maybe<A> apply(Maybe<A> x, Maybe<A> y) {
         return x.fmap(Maybe::just).orElse(y);
+    }
+
+    @Override
+    public Maybe<A> reduceLeft(Iterable<Maybe<A>> maybes) {
+        return head(catMaybes(maybes));
     }
 
     @SuppressWarnings("unchecked")

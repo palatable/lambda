@@ -4,6 +4,9 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Find.find;
+
 /**
  * A {@link Monoid} instance formed by <code>Boolean</code>. Equivalent to logical <code>||</code>.
  *
@@ -30,6 +33,11 @@ public class Or implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
     @Override
     public boolean test(Boolean x, Boolean y) {
         return apply(x, y);
+    }
+
+    @Override
+    public Boolean reduceLeft(Iterable<Boolean> bools) {
+        return find(id(), bools).orElse(false);
     }
 
     @Override
