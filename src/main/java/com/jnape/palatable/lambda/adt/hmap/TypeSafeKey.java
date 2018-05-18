@@ -87,12 +87,6 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
      */
     static <A> Simple<A> typeSafeKey() {
         return new TypeSafeKey.Simple<A>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public <P extends Profunctor, F extends Functor, FB extends Functor<A, F>, FT extends Functor<A, F>, PAFB extends Profunctor<A, FB, P>, PSFT extends Profunctor<A, FT, P>> PSFT apply(
-                    PAFB pafb) {
-                return (PSFT) pafb;
-            }
         };
     }
 
@@ -102,5 +96,12 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
      * @param <A> The type of the value that this key maps to inside an {@link HMap}
      */
     interface Simple<A> extends TypeSafeKey<A, A> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        default <P extends Profunctor, F extends Functor, FB extends Functor<A, F>, FT extends Functor<A, F>, PAFB extends Profunctor<A, FB, P>, PSFT extends Profunctor<A, FT, P>> PSFT apply(
+                PAFB pafb) {
+            return (PSFT) pafb;
+        }
     }
 }
