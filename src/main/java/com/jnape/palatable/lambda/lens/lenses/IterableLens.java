@@ -3,12 +3,16 @@ package com.jnape.palatable.lambda.lens.lenses;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Head;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Tail;
+import com.jnape.palatable.lambda.lens.Iso;
 import com.jnape.palatable.lambda.lens.Lens;
 
 import static com.jnape.palatable.lambda.functions.Fn2.fn2;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
+import static com.jnape.palatable.lambda.lens.Iso.simpleIso;
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
+import static com.jnape.palatable.lambda.lens.functions.View.view;
 
 /**
  * Lenses that operate on {@link Iterable}s.
@@ -42,5 +46,17 @@ public final class IterableLens {
      */
     public static <A> Lens.Simple<Iterable<A>, Iterable<A>> tail() {
         return simpleLens(Tail::tail, fn2(Head.<A>head().andThen(o -> o.fmap(cons()).orElse(id()))).toBiFunction());
+    }
+
+    /**
+     * An iso focusing on the mapped values of an {@link Iterable}.
+     *
+     * @param abIso the iso from A to B
+     * @param <A>   the unmapped {@link Iterable} element type
+     * @param <B>   the mapped {@link Iterable} element type
+     * @return an iso that maps {@link Iterable}&lt;A&gt; to {@link Iterable}&lt;B&gt;
+     */
+    public static <A, B> Iso.Simple<Iterable<A>, Iterable<B>> mapping(Iso<A, A, B, B> abIso) {
+        return simpleIso(map(view(abIso)), map(view(abIso.mirror())));
     }
 }

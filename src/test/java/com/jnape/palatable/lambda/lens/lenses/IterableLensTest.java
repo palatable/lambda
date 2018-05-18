@@ -1,12 +1,14 @@
 package com.jnape.palatable.lambda.lens.lenses;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.lens.Iso;
 import com.jnape.palatable.lambda.lens.Lens;
 import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
+import static com.jnape.palatable.lambda.lens.Iso.simpleIso;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
@@ -50,5 +52,20 @@ public class IterableLensTest {
 
         assertThat(over(tail, map(x -> x + 1), emptyList()), isEmpty());
         assertThat(over(tail, map(x -> x + 1), asList(1, 2, 3)), iterates(1, 3, 4));
+    }
+
+    @Test
+    public void mapping() {
+        Iso.Simple<Iterable<String>, Iterable<Integer>> iso = IterableLens.mapping(simpleIso(Integer::parseInt, Object::toString));
+
+        assertThat(view(iso, emptyList()), isEmpty());
+        assertThat(view(iso, singletonList("1")), iterates(1));
+        assertThat(view(iso, asList("1", "2", "3")), iterates(1, 2, 3));
+
+        assertThat(set(iso, emptyList(), emptyList()), isEmpty());
+        assertThat(set(iso, singletonList(1), emptyList()), iterates("1"));
+        assertThat(set(iso, singletonList(2), singletonList("1")), iterates("2"));
+        assertThat(set(iso, asList(1, 2, 3), singletonList("1")), iterates("1", "2", "3"));
+        assertThat(set(iso, emptyList(), singletonList("1")), isEmpty());
     }
 }
