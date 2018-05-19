@@ -196,7 +196,7 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * @return a singleton HMap
      */
     public static <V> HMap singletonHMap(TypeSafeKey<?, V> key, V value) {
-        return new HMap(singletonMap(key, value));
+        return emptyHMap().put(key, value);
     }
 
     /**
