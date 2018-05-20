@@ -6,6 +6,8 @@ import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.lens.Iso;
 import com.jnape.palatable.lambda.lens.LensLike;
 
+import java.util.Objects;
+
 /**
  * An interface representing a parametrized key for use in {@link HMap}s. Additionally, every {@link TypeSafeKey} is an
  * {@link Iso} from the type the value is stored as to the type it's viewed and set as (on the way in / on the way out).
@@ -87,6 +89,10 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
      */
     static <A> Simple<A> typeSafeKey() {
         return new TypeSafeKey.Simple<A>() {
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof Simple ? this == obj : Objects.equals(obj, this);
+            }
         };
     }
 

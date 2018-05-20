@@ -9,6 +9,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.lens.Iso.simpleIso;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static testsupport.assertion.LensAssert.assertLensLawfulness;
 
 
@@ -44,5 +45,30 @@ public class TypeSafeKeyTest {
         HMap map = emptyHMap().put(stringKey, "123");
 
         assertEquals(just("123"), map.get(discardedKey));
+    }
+
+    @Test
+    public void defaultEquality() {
+        TypeSafeKey.Simple<Object> keyA = typeSafeKey();
+        TypeSafeKey<Object, Object> mappedKeyA = keyA.andThen(simpleIso(id(), id()));
+
+        assertEquals(keyA, keyA);
+        assertEquals(keyA, mappedKeyA);
+        assertEquals(mappedKeyA, keyA);
+        assertEquals(keyA.hashCode(), mappedKeyA.hashCode());
+
+        TypeSafeKey.Simple<Object> keyB = typeSafeKey();
+        assertNotEquals(keyA, keyB);
+        assertNotEquals(keyB, keyA);
+        assertNotEquals(keyB, mappedKeyA);
+        assertNotEquals(mappedKeyA, keyB);
+
+        TypeSafeKey<Object, Object> differentMappedKeyA = keyA.andThen(simpleIso(id(), id()));
+        assertEquals(keyA, differentMappedKeyA);
+        assertEquals(differentMappedKeyA, keyA);
+        assertEquals(mappedKeyA, differentMappedKeyA);
+        assertEquals(differentMappedKeyA, mappedKeyA);
+        assertEquals(keyA.hashCode(), differentMappedKeyA.hashCode());
+        assertEquals(mappedKeyA.hashCode(), differentMappedKeyA.hashCode());
     }
 }

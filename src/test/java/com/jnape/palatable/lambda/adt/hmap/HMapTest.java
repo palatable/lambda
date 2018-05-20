@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.adt.hmap;
 
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
@@ -12,6 +13,8 @@ import static com.jnape.palatable.lambda.adt.hmap.HMap.emptyHMap;
 import static com.jnape.palatable.lambda.adt.hmap.HMap.hMap;
 import static com.jnape.palatable.lambda.adt.hmap.HMap.singletonHMap;
 import static com.jnape.palatable.lambda.adt.hmap.TypeSafeKey.typeSafeKey;
+import static com.jnape.palatable.lambda.lens.Iso.simpleIso;
+import static java.math.BigInteger.ONE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -34,6 +37,28 @@ public class HMapTest {
         assertEquals(nothing(),
                      singletonHMap(typeSafeKey(), "string value")
                              .get(typeSafeKey()));
+    }
+
+    @Test
+    public void storesTypeSafeKeyBaseValue() {
+        TypeSafeKey.Simple<String> stringKey = typeSafeKey();
+        TypeSafeKey<String, Long> longKey = stringKey.andThen(simpleIso(Long::parseLong, String::valueOf));
+        TypeSafeKey<String, BigInteger> bigIntegerKey = longKey.andThen(simpleIso(BigInteger::valueOf, BigInteger::longValue));
+
+        HMap hMap = singletonHMap(stringKey, "1");
+        assertEquals(just("1"), hMap.get(stringKey));
+        assertEquals(just(1L), hMap.get(longKey));
+        assertEquals(just(ONE), hMap.get(bigIntegerKey));
+
+        assertNotEquals(typeSafeKey(), typeSafeKey());
+
+        assertEquals(emptyHMap().put(longKey, 1L).get(longKey), emptyHMap().put(stringKey, "1").get(longKey));
+        assertEquals(emptyHMap().put(stringKey, "1").get(stringKey), emptyHMap().put(longKey, 1L).get(stringKey));
+        assertEquals(emptyHMap().put(stringKey, "1").get(stringKey), emptyHMap().put(bigIntegerKey, ONE).get(stringKey));
+
+        assertEquals(singletonHMap(stringKey, "1"), singletonHMap(longKey, 1L));
+        assertEquals(singletonHMap(stringKey, "1"), singletonHMap(bigIntegerKey, ONE));
+        assertEquals(singletonHMap(longKey, 1L), singletonHMap(bigIntegerKey, ONE));
     }
 
     @Test

@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - `TypeSafeKey.Simple` now has a default `#apply` implementation
 
+### Fixed
+- mapped `TypeSafeKey` instances can be used for initial put in an `HMap`, and the base key can be used to retrieve them
+
 ## [3.0.1] - 2018-05-13
 ### Changed
 - `ToMap` accepts an `Iterable` covariant in `Map.Entry`
