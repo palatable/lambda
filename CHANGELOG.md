@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `TypeSafeKey.Simple` now has a default `#apply` implementation
 - `Tuple2-8` now implement `Product2-8`
 - `Into2-8` now accepts a product of the same cardinality, instead of requiring a tuple
+- `CoProduct2-8#project` now return generalized products
 
 ### Fixed
 - mapped `TypeSafeKey` instances can be used for initial put in an `HMap`, and the base key can be used to retrieve them

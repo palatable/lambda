@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.Maybe;
-import com.jnape.palatable.lambda.adt.hlist.Tuple3;
+import com.jnape.palatable.lambda.adt.product.Product3;
 import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.function.Function;
@@ -82,19 +82,19 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
     }
 
     /**
-     * Project this coproduct onto a tuple.
+     * Project this coproduct onto a product.
      *
-     * @return a tuple of the coproduct projection
+     * @return a product of the coproduct projection
      * @see CoProduct2#project()
      */
-    default Tuple3<Maybe<A>, Maybe<B>, Maybe<C>> project() {
+    default Product3<Maybe<A>, Maybe<B>, Maybe<C>> project() {
         return match(a -> tuple(just(a), nothing(), nothing()),
                      b -> tuple(nothing(), just(b), nothing()),
                      c -> tuple(nothing(), nothing(), just(c)));
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the first slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the first slot value.
      *
      * @return an optional value representing the projection of the "a" type index
      */
@@ -103,7 +103,7 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the second slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the second slot value.
      *
      * @return an optional value representing the projection of the "b" type index
      */
@@ -112,7 +112,7 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the third slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the third slot value.
      *
      * @return an optional value representing the projection of the "c" type index
      */

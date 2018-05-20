@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.adt.coproduct;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
-import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.function.Function;
@@ -70,18 +70,18 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
     }
 
     /**
-     * Project this coproduct onto a tuple, such that the slot in the tuple that corresponds to this coproduct's value
-     * is present, while the other slots are absent.
+     * Project this coproduct onto a product, such that the index in the product that corresponds to this coproduct's
+     * value is present, while the other indices are absent.
      *
-     * @return a tuple of the coproduct projection
+     * @return a product of the coproduct projection
      */
-    default Tuple2<Maybe<A>, Maybe<B>> project() {
+    default Product2<Maybe<A>, Maybe<B>> project() {
         return match(a -> tuple(just(a), nothing()),
                      b -> tuple(nothing(), just(b)));
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the first slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the first slot value.
      *
      * @return an optional value representing the projection of the "a" type index
      */
@@ -90,7 +90,7 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the second slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the second slot value.
      *
      * @return an optional value representing the projection of the "b" type index
      */

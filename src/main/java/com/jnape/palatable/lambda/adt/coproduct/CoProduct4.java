@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.Maybe;
-import com.jnape.palatable.lambda.adt.hlist.Tuple4;
+import com.jnape.palatable.lambda.adt.product.Product4;
 import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.function.Function;
@@ -90,12 +90,12 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
     }
 
     /**
-     * Project this coproduct onto a tuple.
+     * Project this coproduct onto a product.
      *
-     * @return a tuple of the coproduct projection
+     * @return a product of the coproduct projection
      * @see CoProduct2#project()
      */
-    default Tuple4<Maybe<A>, Maybe<B>, Maybe<C>, Maybe<D>> project() {
+    default Product4<Maybe<A>, Maybe<B>, Maybe<C>, Maybe<D>> project() {
         return match(a -> tuple(just(a), nothing(), nothing(), nothing()),
                      b -> tuple(nothing(), just(b), nothing(), nothing()),
                      c -> tuple(nothing(), nothing(), just(c), nothing()),
@@ -103,7 +103,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the first slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the first slot value.
      *
      * @return an optional value representing the projection of the "a" type index
      */
@@ -112,7 +112,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the second slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the second slot value.
      *
      * @return an optional value representing the projection of the "b" type index
      */
@@ -121,7 +121,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the third slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the third slot value.
      *
      * @return an optional value representing the projection of the "c" type index
      */
@@ -130,7 +130,7 @@ public interface CoProduct4<A, B, C, D, CP4 extends CoProduct4<A, B, C, D, ?>> {
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the fourth slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the fourth slot value.
      *
      * @return an optional value representing the projection of the "d" type index
      */

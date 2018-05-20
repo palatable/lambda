@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.Maybe;
-import com.jnape.palatable.lambda.adt.hlist.Tuple5;
+import com.jnape.palatable.lambda.adt.product.Product5;
 import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.function.Function;
@@ -98,12 +98,12 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
     }
 
     /**
-     * Project this coproduct onto a tuple.
+     * Project this coproduct onto a product.
      *
-     * @return a tuple of the coproduct projection
+     * @return a product of the coproduct projection
      * @see CoProduct2#project()
      */
-    default Tuple5<Maybe<A>, Maybe<B>, Maybe<C>, Maybe<D>, Maybe<E>> project() {
+    default Product5<Maybe<A>, Maybe<B>, Maybe<C>, Maybe<D>, Maybe<E>> project() {
         return match(a -> tuple(just(a), nothing(), nothing(), nothing(), nothing()),
                      b -> tuple(nothing(), just(b), nothing(), nothing(), nothing()),
                      c -> tuple(nothing(), nothing(), just(c), nothing(), nothing()),
@@ -112,7 +112,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the first slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the first slot value.
      *
      * @return an optional value representing the projection of the "a" type index
      */
@@ -121,7 +121,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the second slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the second slot value.
      *
      * @return an optional value representing the projection of the "b" type index
      */
@@ -130,7 +130,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the third slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the third slot value.
      *
      * @return an optional value representing the projection of the "c" type index
      */
@@ -139,7 +139,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the fourth slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the fourth slot value.
      *
      * @return an optional value representing the projection of the "d" type index
      */
@@ -148,7 +148,7 @@ public interface CoProduct5<A, B, C, D, E, CP5 extends CoProduct5<A, B, C, D, E,
     }
 
     /**
-     * Convenience method for projecting this coproduct onto a tuple and then extracting the fifth slot value.
+     * Convenience method for projecting this coproduct onto a product and then extracting the fifth slot value.
      *
      * @return an optional value representing the projection of the "e" type index
      */
