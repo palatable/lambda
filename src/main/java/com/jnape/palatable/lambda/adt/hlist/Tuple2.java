@@ -1,13 +1,13 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
+import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -17,14 +17,19 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  *
  * @param <_1> The first slot element type
  * @param <_2> The second slot element type
+ * @see Product2
  * @see HList
  * @see SingletonHList
  * @see Tuple3
  * @see Tuple4
  * @see Tuple5
  */
-public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>>
-        implements Map.Entry<_1, _2>, Monad<_2, Tuple2<_1, ?>>, Bifunctor<_1, _2, Tuple2>, Traversable<_2, Tuple2<_1, ?>> {
+public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
+        Product2<_1, _2>,
+        Map.Entry<_1, _2>,
+        Monad<_2, Tuple2<_1, ?>>,
+        Bifunctor<_1, _2, Tuple2>,
+        Traversable<_2, Tuple2<_1, ?>> {
 
     private final _1 _1;
     private final _2 _2;
@@ -40,34 +45,14 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>>
         return new Tuple3<>(_0, this);
     }
 
-    /**
-     * Retrieve the first (head) element in constant time.
-     *
-     * @return the head element
-     */
+    @Override
     public _1 _1() {
         return _1;
     }
 
-    /**
-     * Retrieve the second element in constant time.
-     *
-     * @return the second element
-     */
+    @Override
     public _2 _2() {
         return _2;
-    }
-
-    /**
-     * Destructure and apply this tuple to a function accepting the same number of arguments as this tuple's
-     * slots. This can be thought of as a kind of dual to uncurrying a function and applying a tuple to it.
-     *
-     * @param fn  the function to apply
-     * @param <R> the return type of the function
-     * @return the result of applying the destructured tuple to the function
-     */
-    public <R> R into(BiFunction<? super _1, ? super _2, ? extends R> fn) {
-        return fn.apply(_1, _2);
     }
 
     @Override

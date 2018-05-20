@@ -23,7 +23,7 @@ public final class Into5<A, B, C, D, E, F> implements Fn2<Fn5<? super A, ? super
     @Override
     public F apply(Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F> fn,
                    Tuple5<A, B, C, D, E> tuple) {
-        return tuple.into(fn);
+        return tuple.<F>into(fn);
     }
 
     @SuppressWarnings("unchecked")

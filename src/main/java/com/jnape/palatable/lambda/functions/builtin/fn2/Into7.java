@@ -26,7 +26,7 @@ public final class Into7<A, B, C, D, E, F, G, H> implements Fn2<Fn7<? super A, ?
     @Override
     public H apply(Fn7<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? extends H> fn,
                    Tuple7<A, B, C, D, E, F, G> tuple) {
-        return tuple.into(fn);
+        return tuple.<H>into(fn);
     }
 
     @SuppressWarnings("unchecked")

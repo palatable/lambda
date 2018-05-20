@@ -25,7 +25,7 @@ public final class Into6<A, B, C, D, E, F, G> implements Fn2<Fn6<? super A, ? su
     @Override
     public G apply(Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends G> fn,
                    Tuple6<A, B, C, D, E, F> tuple) {
-        return tuple.into(fn);
+        return tuple.<G>into(fn);
     }
 
     @SuppressWarnings("unchecked")

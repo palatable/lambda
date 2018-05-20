@@ -28,7 +28,7 @@ public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<? super A
     public I apply(
             Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I> fn,
             Tuple8<A, B, C, D, E, F, G, H> tuple) {
-        return tuple.into(fn);
+        return tuple.<I>into(fn);
     }
 
     @SuppressWarnings("unchecked")

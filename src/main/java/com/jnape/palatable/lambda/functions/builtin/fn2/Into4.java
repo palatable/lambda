@@ -21,7 +21,7 @@ public final class Into4<A, B, C, D, E> implements Fn2<Fn4<? super A, ? super B,
 
     @Override
     public E apply(Fn4<? super A, ? super B, ? super C, ? super D, ? extends E> fn, Tuple4<A, B, C, D> tuple) {
-        return tuple.into(fn);
+        return tuple.<E>into(fn);
     }
 
     @SuppressWarnings("unchecked")

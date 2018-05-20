@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
-import com.jnape.palatable.lambda.functions.Fn5;
+import com.jnape.palatable.lambda.adt.product.Product5;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -19,14 +19,19 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @param <_3> The third slot element type
  * @param <_4> The fourth slot element type
  * @param <_5> The fifth slot element type
+ * @see Product5
  * @see HList
  * @see SingletonHList
  * @see Tuple2
  * @see Tuple3
  * @see Tuple4
  */
-public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>>
-        implements Monad<_5, Tuple5<_1, _2, _3, _4, ?>>, Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>>, Traversable<_5, Tuple5<_1, _2, _3, _4, ?>> {
+public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>> implements
+        Product5<_1, _2, _3, _4, _5>,
+        Monad<_5, Tuple5<_1, _2, _3, _4, ?>>,
+        Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>>,
+        Traversable<_5, Tuple5<_1, _2, _3, _4, ?>> {
+
     private final _1 _1;
     private final _2 _2;
     private final _3 _3;
@@ -47,62 +52,29 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
         return new Tuple6<>(_0, this);
     }
 
-    /**
-     * Retrieve the first (head) element in constant time.
-     *
-     * @return the head element
-     */
+    @Override
     public _1 _1() {
         return _1;
     }
 
-    /**
-     * Retrieve the second element in constant time.
-     *
-     * @return the second element
-     */
+    @Override
     public _2 _2() {
         return _2;
     }
 
-    /**
-     * Retrieve the third element in constant time.
-     *
-     * @return the third element
-     */
+    @Override
     public _3 _3() {
         return _3;
     }
 
-    /**
-     * Retrieve the fourth element in constant time.
-     *
-     * @return the fourth element
-     */
+    @Override
     public _4 _4() {
         return _4;
     }
 
-    /**
-     * Retrieve the fifth element in constant time.
-     *
-     * @return the fifth element
-     */
+    @Override
     public _5 _5() {
         return _5;
-    }
-
-    /**
-     * Destructure and apply this tuple to a function accepting the same number of arguments as this tuple's
-     * slots.
-     *
-     * @param fn  the function to apply
-     * @param <R> the return type of the function
-     * @return the result of applying the destructured tuple to the function
-     * @see Tuple2#into
-     */
-    public <R> R into(Fn5<? super _1, ? super _2, ? super _3, ? super _4, ? super _5, ? extends R> fn) {
-        return fn.apply(_1, _2, _3, _4, _5);
     }
 
     @Override
