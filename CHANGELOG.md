@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 - mapped `TypeSafeKey` instances can be used for initial put in an `HMap`, and the base key can be used to retrieve them
+- Merged pull request fixing issue storing values at mapped `TypeSafeKey` in `singletonHMap` 
 
 ## [3.0.1] - 2018-05-13
 ### Changed
