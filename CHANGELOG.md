@@ -22,9 +22,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [3.0.2] - 2018-05-21
 ### Added
 - `IterableLens#mapping`, an `Iso` that maps values
+- `Product2-8` interfaces, representing general product types
 
 ### Changed
 - `TypeSafeKey.Simple` now has a default `#apply` implementation
+- `Tuple2-8` now implement `Product2-8`
+- `Into2-8` now accepts a product of the same cardinality, instead of requiring a tuple
 
 ### Fixed
 - mapped `TypeSafeKey` instances can be used for initial put in an `HMap`, and the base key can be used to retrieve them

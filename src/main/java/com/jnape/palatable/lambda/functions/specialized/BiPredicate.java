@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
-import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functions.Fn2;
 
 import java.util.function.Function;
@@ -43,7 +43,7 @@ public interface BiPredicate<A, B> extends Fn2<A, B, Boolean>, java.util.functio
      * {@inheritDoc}
      */
     @Override
-    default Predicate<Tuple2<A, B>> uncurry() {
+    default Predicate<? super Product2<? extends A, ? extends B>> uncurry() {
         return Fn2.super.uncurry()::apply;
     }
 

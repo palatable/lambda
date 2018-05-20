@@ -1,14 +1,14 @@
 package com.jnape.palatable.lambda.functions.builtin.fn2;
 
-import com.jnape.palatable.lambda.adt.hlist.Tuple8;
+import com.jnape.palatable.lambda.adt.product.Product8;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn8;
 
 /**
  * Given an <code>{@link Fn8}&lt;A, B, C, D, E, F, G, H, I&gt;</code> and a
- * <code>{@link Tuple8}&lt;A, B, C, D, E, F, G, H&gt;</code>, destructure the tuple and apply the slots as arguments to
- * the function, returning the result.
+ * <code>{@link Product8}&lt;A, B, C, D, E, F, G, H&gt;</code>, destructure the product and apply the slots as arguments
+ * to the function, returning the result.
  *
  * @param <A> the first argument type
  * @param <B> the second argument type
@@ -20,15 +20,15 @@ import com.jnape.palatable.lambda.functions.Fn8;
  * @param <H> the eighth argument type
  * @param <I> the result type
  */
-public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I>, Tuple8<A, B, C, D, E, F, G, H>, I> {
+public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I>, Product8<A, B, C, D, E, F, G, H>, I> {
 
     private static final Into8 INSTANCE = new Into8();
 
     @Override
     public I apply(
             Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I> fn,
-            Tuple8<A, B, C, D, E, F, G, H> tuple) {
-        return tuple.<I>into(fn);
+            Product8<A, B, C, D, E, F, G, H> product) {
+        return product.<I>into(fn);
     }
 
     @SuppressWarnings("unchecked")
@@ -36,14 +36,14 @@ public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<? super A
         return INSTANCE;
     }
 
-    public static <A, B, C, D, E, F, G, H, I> Fn1<Tuple8<A, B, C, D, E, F, G, H>, I> into8(
+    public static <A, B, C, D, E, F, G, H, I> Fn1<Product8<A, B, C, D, E, F, G, H>, I> into8(
             Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I> fn) {
         return Into8.<A, B, C, D, E, F, G, H, I>into8().apply(fn);
     }
 
     public static <A, B, C, D, E, F, G, H, I> I into8(
             Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I> fn,
-            Tuple8<A, B, C, D, E, F, G, H> tuple) {
-        return Into8.<A, B, C, D, E, F, G, H, I>into8(fn).apply(tuple);
+            Product8<A, B, C, D, E, F, G, H> product) {
+        return Into8.<A, B, C, D, E, F, G, H, I>into8(fn).apply(product);
     }
 }

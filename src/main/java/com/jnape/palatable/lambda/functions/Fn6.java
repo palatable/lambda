@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
-import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.BiFunction;
@@ -112,13 +112,13 @@ public interface Fn6<A, B, C, D, E, F, G> extends Fn5<A, B, C, D, E, Fn1<F, G>> 
     }
 
     /**
-     * Returns an {@link Fn5} that takes the first two arguments as a <code>{@link Tuple2}&lt;A, B&gt;</code> and the
+     * Returns an {@link Fn5} that takes the first two arguments as a <code>{@link Product2}&lt;A, B&gt;</code> and the
      * remaining arguments.
      *
-     * @return an {@link Fn5} taking a {@link Tuple2} and the remaining arguments
+     * @return an {@link Fn5} taking a {@link Product2} and the remaining arguments
      */
     @Override
-    default Fn5<Tuple2<A, B>, C, D, E, F, G> uncurry() {
+    default Fn5<? super Product2<? extends A, ? extends B>, C, D, E, F, G> uncurry() {
         return (ab, c, d, e, f) -> apply(ab._1(), ab._2(), c, d, e, f);
     }
 

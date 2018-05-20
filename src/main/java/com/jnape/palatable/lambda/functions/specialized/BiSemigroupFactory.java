@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
-import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functions.Fn4;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
@@ -21,7 +21,7 @@ public interface BiSemigroupFactory<A, B, C> extends Fn4<A, B, C, C, C> {
     }
 
     @Override
-    default SemigroupFactory<Tuple2<A, B>, C> uncurry() {
+    default SemigroupFactory<? super Product2<? extends A, ? extends B>, C> uncurry() {
         return ab -> apply(ab._1(), ab._2());
     }
 
