@@ -18,7 +18,7 @@ public final class PredicatedDroppingIterable<A> implements Iterable<A> {
         while (as instanceof PredicatedDroppingIterable) {
             PredicatedDroppingIterable<A> nested = (PredicatedDroppingIterable<A>) as;
             as = nested.as;
-            predicates.addAll(nested.predicates);
+            predicates.addAll(0, nested.predicates);
         }
         this.predicates = predicates;
         this.as = as;

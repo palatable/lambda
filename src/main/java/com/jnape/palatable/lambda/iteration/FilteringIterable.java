@@ -16,7 +16,7 @@ public final class FilteringIterable<A> implements Iterable<A> {
         List<Function<? super A, Boolean>> predicates = new ArrayList<>(singletonList(predicate));
         while (as instanceof FilteringIterable) {
             FilteringIterable<A> nested = (FilteringIterable<A>) as;
-            predicates.addAll(nested.predicates);
+            predicates.addAll(0, nested.predicates);
             as = nested.as;
         }
         this.predicates = predicates;

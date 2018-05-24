@@ -18,6 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Flatten.flatten;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;
 import static testsupport.matchers.IterableMatcher.iterates;
@@ -39,5 +40,11 @@ public class FlattenTest {
     public void flattensSparseIterableOfPopulatedIterables() {
         assertThat(flatten(asList(emptyList(), asList(1, 2, 3), emptyList(), emptyList(), singleton(4), asList(5, 6), emptyList())),
                    iterates(1, 2, 3, 4, 5, 6));
+    }
+
+    @Test
+    public void flattenMultipleLevelsOfNesting() {
+        assertThat(flatten(asList(asList(asList(1, 2, 3), asList(4, 5)), singletonList(asList(6, 7)))),
+                   iterates(asList(1, 2, 3), asList(4, 5), asList(6, 7)));
     }
 }

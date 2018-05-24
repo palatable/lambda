@@ -11,7 +11,11 @@ import testsupport.traits.FiniteIteration;
 import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Force.force;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.DropWhile.dropWhile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
@@ -40,5 +44,20 @@ public class DropWhileTest {
     @Test
     public void dropsNoElementsIfPredicateImmediatelyFails() {
         assertThat(dropWhile(constantly(false), asList(1, 2, 3)), iterates(1, 2, 3));
+    }
+
+    @Test
+    public void deforestingExecutesPredicatesInOrder() {
+        List<Integer> innerInvocations = new ArrayList<>();
+        List<Integer> outerInvocations = new ArrayList<>();
+        force(dropWhile(y -> {
+            outerInvocations.add(y);
+            return true;
+        }, dropWhile(x -> {
+            innerInvocations.add(x);
+            return x > 2;
+        }, asList(1, 2, 3))));
+        assertThat(innerInvocations, iterates(1, 2, 3));
+        assertThat(outerInvocations, iterates(1, 2));
     }
 }

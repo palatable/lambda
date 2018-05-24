@@ -15,6 +15,7 @@ import java.util.Collections;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Snoc.snoc;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
@@ -34,5 +35,10 @@ public class SnocTest {
     @Test
     public void appendToNonEmptyIterable() {
         assertThat(snoc(4, asList(1, 2, 3)), iterates(1, 2, 3, 4));
+    }
+
+    @Test
+    public void deforestingOrder() {
+        assertThat(snoc(3, snoc(2, snoc(1, emptyList()))), iterates(1, 2, 3));
     }
 }

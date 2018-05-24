@@ -11,7 +11,11 @@ import testsupport.traits.FiniteIteration;
 import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Force.force;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Filter.filter;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
@@ -21,7 +25,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class FilterTest {
 
     @TestTraits({Laziness.class, EmptyIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
-    public Fn1<? extends Iterable, ?> createTraitsTestSubject() {
+    public Fn1<? extends Iterable, ?> testSubject() {
         return filter(constantly(true));
     }
 
@@ -32,5 +36,20 @@ public class FilterTest {
                 filter(evens, asList(1, 2, 3, 4, 5, 6)),
                 iterates(2, 4, 6)
         );
+    }
+
+    @Test
+    public void deforestingExecutesPredicatesInOrder() {
+        List<Integer> innerInvocations = new ArrayList<>();
+        List<Integer> outerInvocations = new ArrayList<>();
+        force(filter(y -> {
+            outerInvocations.add(y);
+            return true;
+        }, filter(x -> {
+            innerInvocations.add(x);
+            return x % 2 == 0;
+        }, asList(1, 2, 3))));
+        assertThat(innerInvocations, iterates(1, 2, 3));
+        assertThat(outerInvocations, iterates(2));
     }
 }

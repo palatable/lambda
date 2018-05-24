@@ -37,7 +37,7 @@ public class ReverseTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
     public void doesNotBeginReversingUntilIterated() {
         Iterable<Integer> mockIterable = mock(Iterable.class);
         Iterator<Integer> mockIterator = mock(Iterator.class);
@@ -49,5 +49,10 @@ public class ReverseTest {
 
         verify(mockIterator).hasNext();
         verify(mockIterator, never()).next();
+    }
+
+    @Test
+    public void doubleReverseIsNoOp() {
+        assertThat(reverse(reverse(asList(1, 2, 3))), iterates(1, 2, 3));
     }
 }
