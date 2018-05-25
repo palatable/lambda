@@ -113,21 +113,21 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traver
     }
 
     /**
-     * Wrap an {@link Iterable} in a <code>TraversableIterable</code>.
+     * Wrap an {@link Iterable} in a {@link LambdaIterable}.
      *
      * @param as  the Iterable
      * @param <A> the Iterable element type
-     * @return the Iterable wrapped in a TraversableIterable
+     * @return the Iterable wrapped in a {@link LambdaIterable}
      */
     public static <A> LambdaIterable<A> wrap(Iterable<? extends A> as) {
         return new LambdaIterable<>(as);
     }
 
     /**
-     * Construct an empty <code>TraversableIterable</code> by wrapping {@link java.util.Collections#emptyList()}.
+     * Construct an empty {@link LambdaIterable} by wrapping {@link java.util.Collections#emptyList()}.
      *
      * @param <A> the Iterable element type
-     * @return a TraversableIterable wrapping Collections.emptyList()
+     * @return a {@link LambdaIterable} wrapping Collections.emptyList()
      */
     public static <A> LambdaIterable<A> empty() {
         return wrap(emptyList());

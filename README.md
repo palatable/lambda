@@ -444,8 +444,7 @@ Examples of traversable functors include:
 - `Choice*`
 - `Either`
 - `Const` and `Identity`
-- `TraversableIterable` for wrapping `Iterable` in an instance of `Traversable`
-- `TraversableOptional` for wrapping `Optional` in an instance of `Traversable`
+- `LambdaIterable` for wrapping `Iterable` in an instance of `Traversable`
 
 In addition to implementing `fmap` from `Functor`, implementing a traversable functor involves providing an implementation of `traverse`.
 
