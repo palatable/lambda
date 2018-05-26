@@ -1,7 +1,6 @@
 package com.jnape.palatable.lambda.functions.recursion;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -9,11 +8,11 @@ import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
-import static java.math.BigInteger.ONE;
-import static org.junit.Assert.assertEquals;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
+import static java.math.BigInteger.ONE;
+import static org.junit.Assert.assertEquals;
 
 public class TrampolineTest {
 

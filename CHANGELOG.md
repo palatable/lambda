@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 - `Lens#toIso`, for converting a lens to an iso
 - `HMap#hMap` overloads up to 8 bindings deep
+- `Schema`, schemas for extracting multiple values from `HMap`s by aggregating `TypeSafeKey`s
 
 ### Fixed
 - Deforested iterables execute in intended nesting order, where essential
