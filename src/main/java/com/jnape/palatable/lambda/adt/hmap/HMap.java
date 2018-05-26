@@ -19,7 +19,6 @@ import static com.jnape.palatable.lambda.adt.Maybe.maybe;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
 
 /**
  * An immutable heterogeneous mapping from a parametrized type-safe key to any value, supporting a minimal mapping
@@ -232,6 +231,194 @@ public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
     public static <V1, V2, V3> HMap hMap(TypeSafeKey<?, V1> key1, V1 value1,
                                          TypeSafeKey<?, V2> key2, V2 value2,
                                          TypeSafeKey<?, V3> key3, V3 value3) {
-        return hMap(key1, value1, key2, value2).put(key3, value3);
+        return hMap(key1, value1,
+                    key2, value2)
+                .put(key3, value3);
     }
+
+    /**
+     * Static factory method for creating an HMap from four given associations.
+     *
+     * @param key1   the first mapped key
+     * @param value1 the value mapped at key1
+     * @param key2   the second mapped key
+     * @param value2 the value mapped at key2
+     * @param key3   the third mapped key
+     * @param value3 the value mapped at key3
+     * @param key4   the fourth mapped key
+     * @param value4 the value mapped at key4
+     * @param <V1>   value1's type
+     * @param <V2>   value2's type
+     * @param <V3>   value3's type
+     * @param <V4>   value4's type
+     * @return an HMap with the given associations
+     */
+    public static <V1, V2, V3, V4> HMap hMap(TypeSafeKey<?, V1> key1, V1 value1,
+                                             TypeSafeKey<?, V2> key2, V2 value2,
+                                             TypeSafeKey<?, V3> key3, V3 value3,
+                                             TypeSafeKey<?, V4> key4, V4 value4) {
+        return hMap(key1, value1,
+                    key2, value2,
+                    key3, value3)
+                .put(key4, value4);
+    }
+
+    /**
+     * Static factory method for creating an HMap from five given associations.
+     *
+     * @param key1   the first mapped key
+     * @param value1 the value mapped at key1
+     * @param key2   the second mapped key
+     * @param value2 the value mapped at key2
+     * @param key3   the third mapped key
+     * @param value3 the value mapped at key3
+     * @param key4   the fourth mapped key
+     * @param value4 the value mapped at key4
+     * @param key5   the fifth mapped key
+     * @param value5 the value mapped at key5
+     * @param <V1>   value1's type
+     * @param <V2>   value2's type
+     * @param <V3>   value3's type
+     * @param <V4>   value4's type
+     * @param <V5>   value5's type
+     * @return an HMap with the given associations
+     */
+    public static <V1, V2, V3, V4, V5> HMap hMap(TypeSafeKey<?, V1> key1, V1 value1,
+                                                 TypeSafeKey<?, V2> key2, V2 value2,
+                                                 TypeSafeKey<?, V3> key3, V3 value3,
+                                                 TypeSafeKey<?, V4> key4, V4 value4,
+                                                 TypeSafeKey<?, V5> key5, V5 value5) {
+        return hMap(key1, value1,
+                    key2, value2,
+                    key3, value3,
+                    key4, value4)
+                .put(key5, value5);
+    }
+
+    /**
+     * Static factory method for creating an HMap from six given associations.
+     *
+     * @param key1   the first mapped key
+     * @param value1 the value mapped at key1
+     * @param key2   the second mapped key
+     * @param value2 the value mapped at key2
+     * @param key3   the third mapped key
+     * @param value3 the value mapped at key3
+     * @param key4   the fourth mapped key
+     * @param value4 the value mapped at key4
+     * @param key5   the fifth mapped key
+     * @param value5 the value mapped at key5
+     * @param key6   the sixth mapped key
+     * @param value6 the value mapped at key6
+     * @param <V1>   value1's type
+     * @param <V2>   value2's type
+     * @param <V3>   value3's type
+     * @param <V4>   value4's type
+     * @param <V5>   value5's type
+     * @param <V6>   value6's type
+     * @return an HMap with the given associations
+     */
+    public static <V1, V2, V3, V4, V5, V6> HMap hMap(TypeSafeKey<?, V1> key1, V1 value1,
+                                                     TypeSafeKey<?, V2> key2, V2 value2,
+                                                     TypeSafeKey<?, V3> key3, V3 value3,
+                                                     TypeSafeKey<?, V4> key4, V4 value4,
+                                                     TypeSafeKey<?, V5> key5, V5 value5,
+                                                     TypeSafeKey<?, V6> key6, V6 value6) {
+        return hMap(key1, value1,
+                    key2, value2,
+                    key3, value3,
+                    key4, value4,
+                    key5, value5)
+                .put(key6, value6);
+    }
+
+    /**
+     * Static factory method for creating an HMap from seven given associations.
+     *
+     * @param key1   the first mapped key
+     * @param value1 the value mapped at key1
+     * @param key2   the second mapped key
+     * @param value2 the value mapped at key2
+     * @param key3   the third mapped key
+     * @param value3 the value mapped at key3
+     * @param key4   the fourth mapped key
+     * @param value4 the value mapped at key4
+     * @param key5   the fifth mapped key
+     * @param value5 the value mapped at key5
+     * @param key6   the sixth mapped key
+     * @param value6 the value mapped at key6
+     * @param key7   the seventh mapped key
+     * @param value7 the value mapped at key7
+     * @param <V1>   value1's type
+     * @param <V2>   value2's type
+     * @param <V3>   value3's type
+     * @param <V4>   value4's type
+     * @param <V5>   value5's type
+     * @param <V6>   value6's type
+     * @param <V7>   value7's type
+     * @return an HMap with the given associations
+     */
+    public static <V1, V2, V3, V4, V5, V6, V7> HMap hMap(TypeSafeKey<?, V1> key1, V1 value1,
+                                                         TypeSafeKey<?, V2> key2, V2 value2,
+                                                         TypeSafeKey<?, V3> key3, V3 value3,
+                                                         TypeSafeKey<?, V4> key4, V4 value4,
+                                                         TypeSafeKey<?, V5> key5, V5 value5,
+                                                         TypeSafeKey<?, V6> key6, V6 value6,
+                                                         TypeSafeKey<?, V7> key7, V7 value7) {
+        return hMap(key1, value1,
+                    key2, value2,
+                    key3, value3,
+                    key4, value4,
+                    key5, value5,
+                    key6, value6)
+                .put(key7, value7);
+    }
+
+    /**
+     * Static factory method for creating an HMap from eight given associations.
+     *
+     * @param key1   the first mapped key
+     * @param value1 the value mapped at key1
+     * @param key2   the second mapped key
+     * @param value2 the value mapped at key2
+     * @param key3   the third mapped key
+     * @param value3 the value mapped at key3
+     * @param key4   the fourth mapped key
+     * @param value4 the value mapped at key4
+     * @param key5   the fifth mapped key
+     * @param value5 the value mapped at key5
+     * @param key6   the sixth mapped key
+     * @param value6 the value mapped at key6
+     * @param key7   the seventh mapped key
+     * @param value7 the value mapped at key7
+     * @param key8   the eighth mapped key
+     * @param value8 the value mapped at key8
+     * @param <V1>   value1's type
+     * @param <V2>   value2's type
+     * @param <V3>   value3's type
+     * @param <V4>   value4's type
+     * @param <V5>   value5's type
+     * @param <V6>   value6's type
+     * @param <V7>   value7's type
+     * @param <V8>   value8's type
+     * @return an HMap with the given associations
+     */
+    public static <V1, V2, V3, V4, V5, V6, V7, V8> HMap hMap(TypeSafeKey<?, V1> key1, V1 value1,
+                                                             TypeSafeKey<?, V2> key2, V2 value2,
+                                                             TypeSafeKey<?, V3> key3, V3 value3,
+                                                             TypeSafeKey<?, V4> key4, V4 value4,
+                                                             TypeSafeKey<?, V5> key5, V5 value5,
+                                                             TypeSafeKey<?, V6> key6, V6 value6,
+                                                             TypeSafeKey<?, V7> key7, V7 value7,
+                                                             TypeSafeKey<?, V8> key8, V8 value8) {
+        return hMap(key1, value1,
+                    key2, value2,
+                    key3, value3,
+                    key4, value4,
+                    key5, value5,
+                    key6, value6,
+                    key7, value7)
+                .put(key8, value8);
+    }
+
 }

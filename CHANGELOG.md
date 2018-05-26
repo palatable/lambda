@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Added
 - `Lens#toIso`, for converting a lens to an iso
+- `HMap#hMap` overloads up to 8 bindings deep
 
 ### Fixed
 - Deforested iterables execute in intended nesting order, where essential

@@ -191,18 +191,75 @@ public class HMapTest {
 
     @Test
     public void convenienceStaticFactoryMethods() {
-        TypeSafeKey<String, String> stringKey = typeSafeKey();
-        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
-        TypeSafeKey<Float, Float> floatKey = typeSafeKey();
-        assertEquals(emptyHMap().put(stringKey, "string value"),
+        TypeSafeKey.Simple<String> stringKey = typeSafeKey();
+        TypeSafeKey.Simple<Integer> intKey = typeSafeKey();
+        TypeSafeKey.Simple<Float> floatKey = typeSafeKey();
+        TypeSafeKey.Simple<Byte> byteKey = typeSafeKey();
+        TypeSafeKey.Simple<Short> shortKey = typeSafeKey();
+        TypeSafeKey.Simple<Long> longKey = typeSafeKey();
+        TypeSafeKey.Simple<Double> doubleKey = typeSafeKey();
+        TypeSafeKey.Simple<Character> charKey = typeSafeKey();
+
+        HMap m1 = emptyHMap().put(stringKey, "string value");
+        HMap m2 = m1.put(intKey, 1);
+        HMap m3 = m2.put(floatKey, 1f);
+        HMap m4 = m3.put(byteKey, (byte) 1);
+        HMap m5 = m4.put(shortKey, (short) 1);
+        HMap m6 = m5.put(longKey, 1L);
+        HMap m7 = m6.put(doubleKey, 1D);
+        HMap m8 = m7.put(charKey, '1');
+
+        assertEquals(m1,
                      singletonHMap(stringKey, "string value"));
-        assertEquals(emptyHMap().put(stringKey, "string value").put(intKey, 1),
+
+        assertEquals(m2,
                      hMap(stringKey, "string value",
                           intKey, 1));
-        assertEquals(emptyHMap().put(stringKey, "string value").put(intKey, 1).put(floatKey, 1f),
+
+        assertEquals(m3,
                      hMap(stringKey, "string value",
                           intKey, 1,
                           floatKey, 1f));
+
+        assertEquals(m4,
+                     hMap(stringKey, "string value",
+                          intKey, 1,
+                          floatKey, 1f,
+                          byteKey, (byte) 1));
+
+        assertEquals(m5,
+                     hMap(stringKey, "string value",
+                          intKey, 1,
+                          floatKey, 1f,
+                          byteKey, (byte) 1,
+                          shortKey, (short) 1));
+
+        assertEquals(m6,
+                     hMap(stringKey, "string value",
+                          intKey, 1,
+                          floatKey, 1f,
+                          byteKey, (byte) 1,
+                          shortKey, (short) 1,
+                          longKey, 1L));
+
+        assertEquals(m7,
+                     hMap(stringKey, "string value",
+                          intKey, 1,
+                          floatKey, 1f,
+                          byteKey, (byte) 1,
+                          shortKey, (short) 1,
+                          longKey, 1L,
+                          doubleKey, 1D));
+
+        assertEquals(m8,
+                     hMap(stringKey, "string value",
+                          intKey, 1,
+                          floatKey, 1f,
+                          byteKey, (byte) 1,
+                          shortKey, (short) 1,
+                          longKey, 1L,
+                          doubleKey, 1D,
+                          charKey, '1'));
     }
 
     @Test
