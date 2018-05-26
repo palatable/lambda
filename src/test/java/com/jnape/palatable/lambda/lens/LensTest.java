@@ -103,4 +103,11 @@ public class LensTest {
         assertEquals(tuple(3, '3'), view(both(stringToInt, stringToChar), "3"));
         assertEquals("133", set(both(stringToInt, stringToChar), tuple(3, '3'), "1"));
     }
+
+    @Test
+    public void toIso() {
+        Iso<List<String>, Set<Integer>, String, Integer> iso = LENS.toIso(singletonList(""));
+        assertEquals("1", view(iso, asList("1", "2", "3")));
+        assertEquals(singleton(1), view(iso.mirror(), 1));
+    }
 }

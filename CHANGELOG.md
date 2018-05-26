@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Added
+- `Lens#toIso`, for converting a lens to an iso
+
 ### Fixed
 - Deforested iterables execute in intended nesting order, where essential
 

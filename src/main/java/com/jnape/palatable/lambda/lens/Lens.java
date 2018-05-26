@@ -10,6 +10,7 @@ import com.jnape.palatable.lambda.monad.Monad;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.lens.Iso.iso;
 import static com.jnape.palatable.lambda.lens.Lens.Simple.adapt;
 import static com.jnape.palatable.lambda.lens.functions.Over.over;
 import static com.jnape.palatable.lambda.lens.functions.Set.set;
@@ -207,6 +208,16 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
     @Override
     default <Z> Lens<S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
         return lens(view(this), (s, z) -> set(this, fn.apply(z), s));
+    }
+
+    /**
+     * Produce an {@link Iso} from this {@link Lens} by providing a default <code>S</code> value.
+     *
+     * @param s the default <code>S</code>
+     * @return an {@link Iso}
+     */
+    default Iso<S, T, A, B> toIso(S s) {
+        return iso(view(this), set(this).flip().apply(s));
     }
 
     /**
