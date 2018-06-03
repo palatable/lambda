@@ -220,27 +220,13 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
         return iso(view(this), set(this).flip().apply(s));
     }
 
-    /**
-     * Left-to-right composition of lenses. Requires compatibility between S and T.
-     *
-     * @param f   the other lens
-     * @param <C> the new "smaller" value to read (previously A)
-     * @param <D> the new "smaller" update value (previously B)
-     * @return the composed lens
-     */
-    default <C, D> Lens<S, T, C, D> andThen(Lens<A, B, C, D> f) {
-        return f.compose(this);
+    @Override
+    default <C, D> Lens<S, T, C, D> andThen(LensLike<A, B, C, D, ?> f) {
+        return lens(view(this).fmap(view(f)), (q, b) -> over(this, set(f, b), q));
     }
 
-    /**
-     * Right-to-left composition of lenses. Requires compatibility between A and B.
-     *
-     * @param g   the other lens
-     * @param <Q> the new "larger" value for reading (previously S)
-     * @param <R> the new "larger" value for putting (previously T)
-     * @return the composed lens
-     */
-    default <Q, R> Lens<Q, R, A, B> compose(Lens<Q, R, S, T> g) {
+    @Override
+    default <Q, R> Lens<Q, R, A, B> compose(LensLike<Q, R, S, T, ?> g) {
         return lens(view(g).fmap(view(this)), (q, b) -> over(g, set(this, b), q));
     }
 
@@ -323,26 +309,12 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
     @FunctionalInterface
     interface Simple<S, A> extends Lens<S, S, A, A>, LensLike.Simple<S, A, Lens> {
 
-        /**
-         * Compose two simple lenses from right to left.
-         *
-         * @param g   the other simple lens
-         * @param <R> the other simple lens' larger type
-         * @return the composed simple lens
-         */
-        default <R> Lens.Simple<R, A> compose(Lens.Simple<R, S> g) {
+        default <R> Lens.Simple<R, A> compose(LensLike.Simple<R, S, ?> g) {
             return Lens.Simple.adapt(Lens.super.compose(g));
         }
 
-        /**
-         * Compose two simple lenses from left to right.
-         *
-         * @param f   the other simple lens
-         * @param <B> the other simple lens' smaller type
-         * @return the composed simple lens
-         */
-        default <B> Lens.Simple<S, B> andThen(Lens.Simple<A, B> f) {
-            return f.compose(this);
+        default <B> Lens.Simple<S, B> andThen(LensLike.Simple<A, B, ?> f) {
+            return Lens.Simple.adapt(Lens.super.andThen(f));
         }
 
         /**

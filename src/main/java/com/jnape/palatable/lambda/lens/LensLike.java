@@ -26,6 +26,26 @@ public interface LensLike<S, T, A, B, LL extends LensLike> extends Monad<T, Lens
             Function<? super A, ? extends FB> fn, S s);
 
     /**
+     * Right-to-left composition of lenses. Requires compatibility between A and B.
+     *
+     * @param g   the other lens
+     * @param <Q> the new "larger" value for reading (previously S)
+     * @param <R> the new "larger" value for putting (previously T)
+     * @return the composed lens
+     */
+    <Q, R> LensLike<Q, R, A, B, ?> compose(LensLike<Q, R, S, T, ?> g);
+
+    /**
+     * Left-to-right composition of lenses. Requires compatibility between S and T.
+     *
+     * @param f   the other lens
+     * @param <C> the new "smaller" value to read (previously A)
+     * @param <D> the new "smaller" update value (previously B)
+     * @return the composed lens
+     */
+    <C, D> LensLike<S, T, C, D, ?> andThen(LensLike<A, B, C, D, ?> f);
+
+    /**
      * Contravariantly map <code>S</code> to <code>R</code>, yielding a new lens.
      *
      * @param fn  the mapping function
@@ -117,5 +137,23 @@ public interface LensLike<S, T, A, B, LL extends LensLike> extends Monad<T, Lens
      * @param <LL> the concrete lens subtype
      */
     interface Simple<S, A, LL extends LensLike> extends LensLike<S, S, A, A, LL> {
+
+        /**
+         * Compose two simple lenses from right to left.
+         *
+         * @param g   the other simple lens
+         * @param <R> the other simple lens' larger type
+         * @return the composed simple lens
+         */
+        <R> LensLike.Simple<R, A, ?> compose(LensLike.Simple<R, S, ?> g);
+
+        /**
+         * Compose two simple lenses from left to right.
+         *
+         * @param f   the other simple lens
+         * @param <B> the other simple lens' smaller type
+         * @return the composed simple lens
+         */
+        <B> LensLike.Simple<S, B, ?> andThen(LensLike.Simple<A, B, ?> f);
     }
 }

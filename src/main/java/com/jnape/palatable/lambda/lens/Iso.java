@@ -176,6 +176,11 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
         return unIso().biMapR(f -> f.compose(fn)).into(Iso::iso);
     }
 
+    @Override
+    default <C, D> Lens<S, T, C, D> andThen(LensLike<A, B, C, D, ?> f) {
+        return toLens().andThen(f);
+    }
+
     /**
      * Left-to-right composition of {@link Iso}.
      *
@@ -198,6 +203,11 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
      */
     default <Q, R> Iso<Q, R, A, B> compose(Iso<Q, R, S, T> g) {
         return g.andThen(this);
+    }
+
+    @Override
+    default <Q, R> Lens<Q, R, A, B> compose(LensLike<Q, R, S, T, ?> f) {
+        return toLens().compose(f);
     }
 
     /**
@@ -243,22 +253,8 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
      * @param <S> the type of both "larger" values
      * @param <A> the type of both "smaller" values
      */
+    @FunctionalInterface
     interface Simple<S, A> extends Iso<S, S, A, A>, LensLike.Simple<S, A, Iso> {
-
-        @Override
-        default Iso.Simple<A, S> mirror() {
-            return adapt(Iso.super.mirror());
-        }
-
-        @Override
-        default Lens.Simple<S, A> toLens() {
-            return Lens.Simple.adapt(Iso.super.toLens());
-        }
-
-        @Override
-        default <U> Iso.Simple<S, A> discardR(Applicative<U, LensLike<S, ?, A, A, Iso>> appB) {
-            return adapt(Iso.super.discardR(appB));
-        }
 
         /**
          * Compose two simple isos from right to left.
@@ -280,6 +276,31 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
          */
         default <B> Iso.Simple<S, B> andThen(Iso.Simple<A, B> f) {
             return adapt(f.compose(this));
+        }
+
+        @Override
+        default Iso.Simple<A, S> mirror() {
+            return adapt(Iso.super.mirror());
+        }
+
+        @Override
+        default Lens.Simple<S, A> toLens() {
+            return Lens.Simple.adapt(Iso.super.toLens());
+        }
+
+        @Override
+        default <U> Iso.Simple<S, A> discardR(Applicative<U, LensLike<S, ?, A, A, Iso>> appB) {
+            return adapt(Iso.super.discardR(appB));
+        }
+
+        @Override
+        default <R> Lens.Simple<R, A> compose(LensLike.Simple<R, S, ?> g) {
+            return toLens().compose(g);
+        }
+
+        @Override
+        default <B> Lens.Simple<S, B> andThen(LensLike.Simple<A, B, ?> f) {
+            return toLens().andThen(f);
         }
 
         /**

@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Added
 - `Fn3-8` static factory overloads to aid in coercing lambdas
+- Adding composition guarantees to `LensLike`
 
 ## [3.0.3] - 2018-05-27
 ### Added
