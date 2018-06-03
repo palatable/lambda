@@ -1,7 +1,10 @@
 package com.jnape.palatable.lambda.adt.choice;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct4;
+import com.jnape.palatable.lambda.adt.hlist.HList;
+import com.jnape.palatable.lambda.adt.hlist.Tuple4;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -9,6 +12,8 @@ import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into4.into4;
 
 /**
  * Canonical ADT representation of {@link CoProduct4}.
@@ -27,6 +32,16 @@ public abstract class Choice4<A, B, C, D> implements
         Traversable<D, Choice4<A, B, C, ?>> {
 
     private Choice4() {
+    }
+
+    /**
+     * Specialize this choice's projection to a {@link Tuple4}.
+     *
+     * @return a {@link Tuple4}
+     */
+    @Override
+    public Tuple4<Maybe<A>, Maybe<B>, Maybe<C>, Maybe<D>> project() {
+        return into4(HList::tuple, CoProduct4.super.project());
     }
 
     @Override

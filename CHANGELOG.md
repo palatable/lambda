@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Tuple2-8` now implement `Product2-8`
 - `Into2-8` now accepts a product of the same cardinality, instead of requiring a tuple
 - `CoProduct2-8#project` now return generalized products
+- `Choice2-8#project` return tuples
 
 ## [3.0.3] - 2018-05-27
 ### Added

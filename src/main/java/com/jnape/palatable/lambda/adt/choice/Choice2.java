@@ -1,7 +1,10 @@
 package com.jnape.palatable.lambda.adt.choice;
 
 import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
+import com.jnape.palatable.lambda.adt.hlist.HList;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -9,6 +12,8 @@ import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 
 /**
  * Canonical ADT representation of {@link CoProduct2}. Unlike {@link Either}, there is no concept of "success" or
@@ -19,9 +24,23 @@ import java.util.function.Function;
  * @see Either
  * @see Choice3
  */
-public abstract class Choice2<A, B> implements CoProduct2<A, B, Choice2<A, B>>, Monad<B, Choice2<A, ?>>, Bifunctor<A, B, Choice2>, Traversable<B, Choice2<A, ?>> {
+public abstract class Choice2<A, B> implements
+        CoProduct2<A, B, Choice2<A, B>>,
+        Monad<B, Choice2<A, ?>>,
+        Bifunctor<A, B, Choice2>,
+        Traversable<B, Choice2<A, ?>> {
 
     private Choice2() {
+    }
+
+    /**
+     * Specialize this choice's projection to a {@link Tuple2}.
+     *
+     * @return a {@link Tuple2}
+     */
+    @Override
+    public Tuple2<Maybe<A>, Maybe<B>> project() {
+        return into(HList::tuple, CoProduct2.super.project());
     }
 
     @Override
