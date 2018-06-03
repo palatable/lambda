@@ -231,4 +231,21 @@ public interface Fn6<A, B, C, D, E, F, G> extends Fn5<A, B, C, D, E, Fn1<F, G>> 
     static <A, B, C, D, E, F, G> Fn6<A, B, C, D, E, F, G> fn6(Fn5<A, B, C, D, E, Fn1<F, G>> curriedFn5) {
         return (a, b, c, d, e, f) -> curriedFn5.apply(a, b, c, d, e).apply(f);
     }
+
+    /**
+     * Static factory method for coercing a lambda to an {@link Fn6};
+     *
+     * @param fn  the lambda to coerce
+     * @param <A> the first input argument type
+     * @param <B> the second input argument type
+     * @param <C> the third input argument type
+     * @param <D> the fourth input argument type
+     * @param <E> the fifth input argument type
+     * @param <F> the sixth input argument type
+     * @param <G> the output type
+     * @return the {@link Fn6}
+     */
+    static <A, B, C, D, E, F, G> Fn6<A, B, C, D, E, F, G> fn6(Fn6<A, B, C, D, E, F, G> fn) {
+        return fn;
+    }
 }

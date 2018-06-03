@@ -34,7 +34,7 @@ public class Fn7Test {
     }
 
     @Test
-    public void fn7() {
+    public void staticFactoryMethod() {
         Fn1<String, Fn6<String, String, String, String, String, String, String>> fn1 = a -> (b, c, d, e, f, g) -> a + b + c + d + e + f + g;
         assertEquals("abcdefg", Fn7.fn7(fn1).apply("a", "b", "c", "d", "e", "f", "g"));
 
@@ -52,5 +52,7 @@ public class Fn7Test {
 
         Fn6<String, String, String, String, String, String, Fn1<String, String>> fn6 = (a, b, c, d, e, f) -> (g) -> a + b + c + d + e + f + g;
         assertEquals("abcdefg", Fn7.fn7(fn6).apply("a", "b", "c", "d", "e", "f", "g"));
+
+        assertEquals("abcdefg", Fn7.<String, String, String, String, String, String, String, String>fn7((a, b, c, d, e, f, g) -> a + b + c + d + e + f + g).apply("a", "b", "c", "d", "e", "f", "g"));
     }
 }

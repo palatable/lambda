@@ -322,4 +322,23 @@ public interface Fn8<A, B, C, D, E, F, G, H, I> extends Fn7<A, B, C, D, E, F, G,
             Fn7<A, B, C, D, E, F, G, Fn1<H, I>> curriedFn7) {
         return (a, b, c, d, e, f, g, h) -> curriedFn7.apply(a, b, c, d, e, f, g).apply(h);
     }
+
+    /**
+     * Static factory method for coercing a lambda to an {@link Fn8};
+     *
+     * @param fn  the lambda to coerce
+     * @param <A> the first input argument type
+     * @param <B> the second input argument type
+     * @param <C> the third input argument type
+     * @param <D> the fourth input argument type
+     * @param <E> the fifth input argument type
+     * @param <F> the sixth input argument type
+     * @param <G> the seventh input argument type
+     * @param <H> the eighth input argument type
+     * @param <I> the output type
+     * @return the {@link Fn8}
+     */
+    static <A, B, C, D, E, F, G, H, I> Fn8<A, B, C, D, E, F, G, H, I> fn8(Fn8<A, B, C, D, E, F, G, H, I> fn) {
+        return fn;
+    }
 }

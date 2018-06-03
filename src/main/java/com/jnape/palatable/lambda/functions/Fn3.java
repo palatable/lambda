@@ -126,4 +126,18 @@ public interface Fn3<A, B, C, D> extends Fn2<A, B, Fn1<C, D>> {
     static <A, B, C, D> Fn3<A, B, C, D> fn3(Fn2<A, B, Fn1<C, D>> curriedFn2) {
         return (a, b, c) -> curriedFn2.apply(a, b).apply(c);
     }
+
+    /**
+     * Static factory method for coercing a lambda to an {@link Fn3};
+     *
+     * @param fn  the lambda to coerce
+     * @param <A> the first input argument type
+     * @param <B> the second input argument type
+     * @param <C> the third input argument type
+     * @param <D> the output type
+     * @return the {@link Fn3}
+     */
+    static <A, B, C, D> Fn3<A, B, C, D> fn3(Fn3<A, B, C, D> fn) {
+        return fn;
+    }
 }
