@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [3.0.3] - 2018-05-27
 ### Added
 - `Lens#toIso`, for converting a lens to an iso
 - `HMap#hMap` overloads up to 8 bindings deep
@@ -332,7 +334,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.0.2...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.0.3...HEAD
+[3.0.3]: https://github.com/palatable/lambda/compare/lambda-3.0.2...lambda-3.0.3
 [3.0.2]: https://github.com/palatable/lambda/compare/lambda-3.0.1...lambda-3.0.2
 [3.0.1]: https://github.com/palatable/lambda/compare/lambda-3.0.0...lambda-3.0.1
 [3.0.0]: https://github.com/palatable/lambda/compare/lambda-2.1.1...lambda-3.0.0
