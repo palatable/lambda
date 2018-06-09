@@ -1,0 +1,42 @@
+package com.jnape.palatable.lambda.functions.builtin.fn2;
+
+import com.jnape.palatable.lambda.functions.builtin.fn3.GTBy;
+import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
+import com.jnape.palatable.lambda.functions.specialized.Predicate;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.GTBy.gtBy;
+
+/**
+ * Given two {@link Comparable} values of type <code>A</code>, return <code>true</code> if the first value is strictly
+ * greater than the second value; otherwise, return false.
+ *
+ * @param <A> the value type
+ * @see GTBy
+ * @see LT
+ */
+public final class GT<A extends Comparable<A>> implements BiPredicate<A, A> {
+
+    private static final GT INSTANCE = new GT();
+
+    private GT() {
+    }
+
+    @Override
+    public Boolean apply(A x, A y) {
+        return gtBy(id(), x, y);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <A extends Comparable<A>> GT<A> gt() {
+        return INSTANCE;
+    }
+
+    public static <A extends Comparable<A>> Predicate<A> gt(A x) {
+        return GT.<A>gt().apply(x);
+    }
+
+    public static <A extends Comparable<A>> Boolean gt(A x, A y) {
+        return gt(x).apply(y);
+    }
+}
