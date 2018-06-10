@@ -12,13 +12,13 @@ import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.util.Collections.emptyList;
 
 @RunWith(Traits.class)
-public class ConcatenatingIterableTest {
-
+public class UnioningIterableTest {
     @TestTraits({Deforesting.class})
     public Subjects<Fn1<Iterable<Integer>, Iterable<Integer>>> testSubject() {
-        return subjects(xs -> new ConcatenatingIterable<>(emptyList(), xs),
-                        xs -> new ConcatenatingIterable<>(xs, emptyList()),
-                        xs -> new ConcatenatingIterable<>(repeat(1), xs),
-                        xs -> new ConcatenatingIterable<>(xs, repeat(1)));
+        return subjects(xs -> new UnioningIterable<>(emptyList(), xs),
+                        xs -> new UnioningIterable<>(xs, emptyList()),
+                        xs -> new UnioningIterable<>(repeat(1), xs),
+                        xs -> new UnioningIterable<>(xs, repeat(1)));
     }
+
 }

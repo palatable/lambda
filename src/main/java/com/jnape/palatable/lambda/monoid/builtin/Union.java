@@ -1,12 +1,10 @@
 package com.jnape.palatable.lambda.monoid.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.iteration.UnioningIterable;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 import java.util.Collections;
-
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Distinct.distinct;
-import static com.jnape.palatable.lambda.monoid.builtin.Concat.concat;
 
 /**
  * Given two {@link Iterable}s, return the union of all unique occurrences of elements between them. Note that this
@@ -29,7 +27,7 @@ public final class Union<A> implements Monoid<Iterable<A>> {
 
     @Override
     public Iterable<A> apply(Iterable<A> xs, Iterable<A> ys) {
-        return distinct(concat(xs, ys));
+        return new UnioningIterable<>(xs, ys);
     }
 
     @SuppressWarnings("unchecked")
