@@ -10,11 +10,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CmpEqBy`, `CmpEq`, `GTBy`, `GT`, `LTBy`, `LT`, `GTEBy`, `GTE`, `LTEBy`, and `LTE` inequality checks
 - `MinBy`, `MaxBy`, `Min`, and `Max` semigroups
 - `Product2-8` interfaces, representing general product types
-- `Union`, a semigroup that behaves like a lazy set union on `Iterable`s 
+- `Union`, a semigroup that behaves like a lazy set union on `Iterable`s
+- `Difference`, a semigroup that behaves like a partially lazy set difference on `Iterable`s
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`
-- `Into2-8` now accepts a product of the same cardinality, instead of requiring a tuple
+- `Into2-8` now accept a product of the same cardinality, instead of requiring a tuple
 - `CoProduct2-8#project` now return generalized products
 - `Choice2-8#project` return tuples
 
