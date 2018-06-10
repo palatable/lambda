@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Fn3-8` static factory overloads to aid in coercing lambdas
 - Adding composition guarantees to `LensLike`
 - `CmpEqBy`, `CmpEq`, `GTBy`, `GT`, `LTBy`, `LT`, `GTEBy`, `GTE`, `LTEBy`, and `LTE` inequality checks
+- `MinBy`, `MaxBy`, `Min`, and `Max` semigroups
 
 ## [3.0.3] - 2018-05-27
 ### Added
