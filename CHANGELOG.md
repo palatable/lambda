@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CmpEqBy`, `CmpEq`, `GTBy`, `GT`, `LTBy`, `LT`, `GTEBy`, `GTE`, `LTEBy`, and `LTE` inequality checks
 - `MinBy`, `MaxBy`, `Min`, and `Max` semigroups
 - `Product2-8` interfaces, representing general product types
+- `Union`, a semigroup that behaves like a lazy set union on `Iterable`s 
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`
