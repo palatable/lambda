@@ -8,7 +8,7 @@ import java.util.ListIterator;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 
-public class CombinatorialIterator<A, B> extends ImmutableIterator<Tuple2<A, B>> {
+public final class CombinatorialIterator<A, B> extends ImmutableIterator<Tuple2<A, B>> {
     private final Iterator<A>     asIterator;
     private final Iterator<B>     bsIterator;
     private final ListIterator<B> doublyLinkedBsIterator;

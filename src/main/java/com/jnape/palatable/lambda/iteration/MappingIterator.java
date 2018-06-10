@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.iteration;
 import java.util.Iterator;
 import java.util.function.Function;
 
-public class MappingIterator<A, B> extends ImmutableIterator<B> {
+public final class MappingIterator<A, B> extends ImmutableIterator<B> {
 
     private final Function<? super A, ? extends B> function;
     private final Iterator<A>                      iterator;

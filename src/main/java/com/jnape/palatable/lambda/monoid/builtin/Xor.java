@@ -13,7 +13,7 @@ import com.jnape.palatable.lambda.monoid.Monoid;
  * @see Or
  * @see And
  */
-public class Xor implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
+public final class Xor implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
 
     private static final Xor INSTANCE = new Xor();
 

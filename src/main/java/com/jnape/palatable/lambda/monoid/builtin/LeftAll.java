@@ -27,7 +27,7 @@ import static com.jnape.palatable.lambda.adt.Either.left;
  * @see RightAll
  * @see Either
  */
-public class LeftAll<L, R> implements MonoidFactory<Monoid<L>, Either<L, R>> {
+public final class LeftAll<L, R> implements MonoidFactory<Monoid<L>, Either<L, R>> {
 
     private static final LeftAll INSTANCE = new LeftAll();
 

@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.iteration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class TakingIterator<A> extends ImmutableIterator<A> {
+public final class TakingIterator<A> extends ImmutableIterator<A> {
 
     private final int         n;
     private final Iterator<A> iterator;

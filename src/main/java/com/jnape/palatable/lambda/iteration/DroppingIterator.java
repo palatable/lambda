@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.iteration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class DroppingIterator<A> extends ImmutableIterator<A> {
+public final class DroppingIterator<A> extends ImmutableIterator<A> {
     private final Integer     n;
     private final Iterator<A> asIterator;
     private       boolean     dropped;

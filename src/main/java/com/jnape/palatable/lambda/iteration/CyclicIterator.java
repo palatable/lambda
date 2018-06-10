@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-public class CyclicIterator<A> extends InfiniteIterator<A> {
+public final class CyclicIterator<A> extends InfiniteIterator<A> {
     private final Iterator<A>     iterator;
     private final ListIterator<A> doublyLinkedIterator;
 

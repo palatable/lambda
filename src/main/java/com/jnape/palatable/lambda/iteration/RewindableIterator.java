@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.iteration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class RewindableIterator<A> extends ImmutableIterator<A> {
+public final class RewindableIterator<A> extends ImmutableIterator<A> {
 
     private final Iterator<A> asIterator;
     private final Cache<A>    cache;

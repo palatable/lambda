@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Find.find;
  * @see And
  * @see Monoid
  */
-public class Or implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
+public final class Or implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
 
     private static final Or INSTANCE = new Or();
 

@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.iteration;
 import java.util.Iterator;
 import java.util.function.BiFunction;
 
-public class ZippingIterator<C, A, B> extends ImmutableIterator<C> {
+public final class ZippingIterator<C, A, B> extends ImmutableIterator<C> {
     private final BiFunction<? super A, ? super B, ? extends C> zipper;
     private final Iterator<A>                                   asIterator;
     private final Iterator<B>                                   bsIterator;

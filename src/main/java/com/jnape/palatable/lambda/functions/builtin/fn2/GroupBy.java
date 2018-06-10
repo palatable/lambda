@@ -20,7 +20,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  * @param <V> the Map value type
  * @see InGroupsOf
  */
-public class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>, Iterable<V>, Map<K, List<V>>> {
+public final class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>, Iterable<V>, Map<K, List<V>>> {
 
     private static final GroupBy INSTANCE = new GroupBy();
 

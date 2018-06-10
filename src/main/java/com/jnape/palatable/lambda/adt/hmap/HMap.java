@@ -27,7 +27,7 @@ import static java.util.Collections.emptyMap;
  * @see TypeSafeKey
  * @see com.jnape.palatable.lambda.adt.hlist.HList
  */
-public class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
+public final class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
 
     private static final HMap EMPTY = new HMap(emptyMap());
 

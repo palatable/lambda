@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
-public class PredicatedDroppingIterator<A> extends ImmutableIterator<A> {
+public final class PredicatedDroppingIterator<A> extends ImmutableIterator<A> {
     private final Function<? super A, Boolean> predicate;
     private final RewindableIterator<A>        rewindableIterator;
     private       boolean                      finishedDropping;

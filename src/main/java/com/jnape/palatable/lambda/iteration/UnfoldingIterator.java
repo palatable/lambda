@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
-public class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
+public final class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
     private final Function<? super B, Maybe<Tuple2<A, B>>> function;
     private       B                                        seed;
     private       Maybe<Tuple2<A, B>>                      maybeAcc;

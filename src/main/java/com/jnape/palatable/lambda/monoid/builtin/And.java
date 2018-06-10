@@ -14,7 +14,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Find.find;
  * @see Or
  * @see Monoid
  */
-public class And implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
+public final class And implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> {
 
     private static final And INSTANCE = new And();
 

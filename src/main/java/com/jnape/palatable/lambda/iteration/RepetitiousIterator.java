@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.iteration;
 
-public class RepetitiousIterator<A> extends InfiniteIterator<A> {
+public final class RepetitiousIterator<A> extends InfiniteIterator<A> {
 
     private final A value;
 

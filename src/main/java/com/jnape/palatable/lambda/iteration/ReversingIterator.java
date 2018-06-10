@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-public class ReversingIterator<A> extends ImmutableIterator<A> {
+public final class ReversingIterator<A> extends ImmutableIterator<A> {
     private final Iterator<A>     as;
     private final ListIterator<A> reversingIterator;
 
