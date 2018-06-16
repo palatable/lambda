@@ -8,20 +8,17 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Flatten.flatten;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.CartesianProduct.cartesianProduct;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight.foldRight;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 
 /**
- * Wrap an {@link Iterable} in a {@link Traversable} such that {@link Traversable#traverse(Function, Function)} applies
- * its computation against each element of the wrapped {@link Iterable}. Returns the result of <code>pure</code> if the
- * wrapped {@link Iterable} is empty.
+ * Extension point for {@link Iterable} to adapt lambda core types like {@link Monad} and {@link Traversable}.
  *
- * @param <A> the Iterable element type
+ * @param <A> the {@link Iterable} element type
+ * @see LambdaMap
  */
 public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traversable<A, LambdaIterable> {
     private final Iterable<A> as;
@@ -34,7 +31,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traver
     /**
      * Unwrap the underlying {@link Iterable}.
      *
-     * @return the wrapped Iterable
+     * @return the wrapped {@link Iterable}
      */
     public Iterable<A> unwrap() {
         return as;
@@ -61,10 +58,8 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traver
      * @return the zipped LambdaIterable
      */
     @Override
-    @SuppressWarnings("Convert2MethodRef")
     public <B> LambdaIterable<B> zip(Applicative<Function<? super A, ? extends B>, LambdaIterable> appFn) {
-        return wrap(map(into((f, x) -> f.apply(x)),
-                        cartesianProduct(appFn.<LambdaIterable<Function<? super A, ? extends B>>>coerce().unwrap(), as)));
+        return Monad.super.zip(appFn).coerce();
     }
 
     @Override
@@ -127,7 +122,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traver
      * Construct an empty {@link LambdaIterable} by wrapping {@link java.util.Collections#emptyList()}.
      *
      * @param <A> the Iterable element type
-     * @return a {@link LambdaIterable} wrapping Collections.emptyList()
+     * @return an empty {@link LambdaIterable}
      */
     public static <A> LambdaIterable<A> empty() {
         return wrap(emptyList());

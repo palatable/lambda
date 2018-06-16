@@ -13,6 +13,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Sequence.sequence;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
@@ -47,6 +48,12 @@ public class SequenceTest {
         assertThat(sequence(asList(right(1), right(2)), Either::right)
                            .orThrow(l -> new AssertionError("Expected a right value, but was a left value of <" + l + ">")),
                    iterates(1, 2));
+    }
+
+    @Test
+    public void mapSpecialization() {
+        assertEquals(right(singletonMap("foo", 1)),
+                     sequence(singletonMap("foo", right(1)), Either::right));
     }
 
     @Test

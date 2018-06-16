@@ -22,7 +22,6 @@ public final class Difference<A> implements Monoid<Iterable<A>> {
         return Collections::emptyIterator;
     }
 
-
     @Override
     public Iterable<A> apply(Iterable<A> xs, Iterable<A> ys) {
         return () -> {

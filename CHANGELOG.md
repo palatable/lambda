@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Product2-8` interfaces, representing general product types
 - `Union`, a semigroup that behaves like a lazy set union on `Iterable`s
 - `Difference`, a semigroup that behaves like a partially lazy set difference on `Iterable`s
+- `LambdaMap`, extension point for `j.u.Map`, similar to `LambdaIterable`
+- `Sequence#sequence` overloads for `j.u.Map` that traverse via intermediate `LambdaMap` instances
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`

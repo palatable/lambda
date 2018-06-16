@@ -4,8 +4,10 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.traversable.LambdaIterable;
+import com.jnape.palatable.lambda.traversable.LambdaMap;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
@@ -82,5 +84,18 @@ public final class Sequence<A, App extends Applicative, Trav extends Traversable
     public static <A, App extends Applicative, AppA extends Applicative<A, App>, AppIterable extends Applicative<Iterable<A>, App>, IterableApp extends Iterable<AppA>>
     AppIterable sequence(IterableApp iterableApp, Function<Iterable<A>, ? extends AppIterable> pure) {
         return Sequence.<A, App, AppA, AppIterable, IterableApp>sequence(iterableApp).apply(pure);
+    }
+
+    @SuppressWarnings({"unchecked", "RedundantTypeArguments"})
+    public static <A, B, App extends Applicative, AppB extends Applicative<B, App>, AppMap extends Applicative<Map<A, B>, App>, MapApp extends Map<A, AppB>>
+    Fn1<Function<Map<A, B>, ? extends AppMap>, AppMap> sequence(MapApp mapApp) {
+        return pure -> (AppMap) Sequence.<B, App, LambdaMap<A, ?>, LambdaMap<A, B>, AppB, Applicative<LambdaMap<A, B>, App>, LambdaMap<A, AppB>>sequence(
+                LambdaMap.wrap(mapApp), x -> pure.apply(x.unwrap()).fmap(LambdaMap::wrap))
+                .fmap(LambdaMap::unwrap);
+    }
+
+    public static <A, B, App extends Applicative, AppB extends Applicative<B, App>, AppMap extends Applicative<Map<A, B>, App>, MapApp extends Map<A, AppB>>
+    AppMap sequence(MapApp mapApp, Function<Map<A, B>, ? extends AppMap> pure) {
+        return Sequence.<A, B, App, AppB, AppMap, MapApp>sequence(mapApp).apply(pure);
     }
 }
