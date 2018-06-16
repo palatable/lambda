@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.adt.product;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
@@ -14,7 +15,7 @@ import java.util.function.BiFunction;
  * @param <_2> The second element type
  * @see Tuple2
  */
-public interface Product2<_1, _2> {
+public interface Product2<_1, _2> extends Map.Entry<_1, _2> {
 
     /**
      * Retrieve the first element.
@@ -40,5 +41,20 @@ public interface Product2<_1, _2> {
      */
     default <R> R into(BiFunction<? super _1, ? super _2, ? extends R> fn) {
         return fn.apply(_1(), _2());
+    }
+
+    @Override
+    default _1 getKey() {
+        return _1();
+    }
+
+    @Override
+    default _2 getValue() {
+        return _2();
+    }
+
+    @Override
+    default _2 setValue(_2 value) {
+        throw new UnsupportedOperationException();
     }
 }

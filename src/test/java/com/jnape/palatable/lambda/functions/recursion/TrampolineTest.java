@@ -1,10 +1,10 @@
 package com.jnape.palatable.lambda.functions.recursion;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.adt.product.Product2;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TrampolineTest {
 
-    private static final Function<Product2<BigInteger, BigInteger>, RecursiveResult<Tuple2<BigInteger, BigInteger>, BigInteger>> FACTORIAL =
+    private static final Function<Map.Entry<BigInteger, BigInteger>, RecursiveResult<Tuple2<BigInteger, BigInteger>, BigInteger>> FACTORIAL =
             into((x, acc) -> x.compareTo(ONE) > 0 ? recurse(tuple(x.subtract(ONE), x.multiply(acc))) : terminate(acc));
 
     @Test

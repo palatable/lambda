@@ -15,7 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`
-- `Into2-8` now accept a product of the same cardinality, instead of requiring a tuple
+- `Into` now accepts `Map.Entry`
+- `Into3-8` now accept a product of the same cardinality, instead of requiring a tuple
 - `CoProduct2-8#project` now return generalized products
 - `Choice2-8#project` return tuples
 
