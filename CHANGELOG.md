@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `LambdaMap`, extension point for `j.u.Map`, similar to `LambdaIterable`
 - `Sequence#sequence` overloads for `j.u.Map` that traverse via intermediate `LambdaMap` instances
 - `Intersection`, a semigroup that behaves like a lazy set intersection on `Iterable`s
+- `Fn0`, a function from `Unit` to some value
+- `Fn1#thunk`, producing an `Fn0`
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`

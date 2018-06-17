@@ -35,4 +35,10 @@ public class Fn1Test {
         Function<String, Integer> parseInt = Integer::parseInt;
         assertEquals((Integer) 1, Fn1.fn1(parseInt).apply("1"));
     }
+
+    @Test
+    public void thunk() {
+        Fn1<Integer, String> toString = Object::toString;
+        assertEquals("1", toString.thunk(1).apply());
+    }
 }

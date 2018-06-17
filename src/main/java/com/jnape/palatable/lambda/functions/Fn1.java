@@ -27,6 +27,17 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      */
     B apply(A a);
 
+    /**
+     * Convert this {@link Fn1} to an {@link Fn0} by supplying an argument to this function. Useful for fixing an
+     * argument now, but deferring application until a later time.
+     *
+     * @param a the argument
+     * @return an {@link Fn0}
+     */
+    default Fn0<B> thunk(A a) {
+        return __ -> apply(a);
+    }
+
     @Override
     default <C> Fn1<A, C> flatMap(Function<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
         return a -> f.apply(apply(a)).<Fn1<A, C>>coerce().apply(a);

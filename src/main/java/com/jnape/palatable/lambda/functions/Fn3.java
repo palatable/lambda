@@ -128,7 +128,7 @@ public interface Fn3<A, B, C, D> extends Fn2<A, B, Fn1<C, D>> {
     }
 
     /**
-     * Static factory method for coercing a lambda to an {@link Fn3};
+     * Static factory method for coercing a lambda to an {@link Fn3}.
      *
      * @param fn  the lambda to coerce
      * @param <A> the first input argument type

@@ -324,7 +324,7 @@ public interface Fn8<A, B, C, D, E, F, G, H, I> extends Fn7<A, B, C, D, E, F, G,
     }
 
     /**
-     * Static factory method for coercing a lambda to an {@link Fn8};
+     * Static factory method for coercing a lambda to an {@link Fn8}.
      *
      * @param fn  the lambda to coerce
      * @param <A> the first input argument type
