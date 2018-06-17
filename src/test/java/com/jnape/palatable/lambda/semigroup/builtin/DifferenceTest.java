@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.monoid;
+package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -11,7 +11,7 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.InfiniteIterableSupport;
 import testsupport.traits.Laziness;
 
-import static com.jnape.palatable.lambda.monoid.Difference.difference;
+import static com.jnape.palatable.lambda.semigroup.builtin.Difference.difference;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -25,11 +25,6 @@ public class DifferenceTest {
     @TestTraits({Laziness.class, InfiniteIterableSupport.class, EmptyIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
     public Fn1<Iterable<Integer>, Iterable<Integer>> testSubject() {
         return Difference.<Integer>difference().flip().apply(asList(1, 2, 3));
-    }
-
-    @Test
-    public void identity() {
-        assertThat(difference().identity(), isEmpty());
     }
 
     @Test

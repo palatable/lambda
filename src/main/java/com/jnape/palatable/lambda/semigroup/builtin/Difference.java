@@ -1,8 +1,9 @@
-package com.jnape.palatable.lambda.monoid;
+package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.builtin.fn1.Distinct;
+import com.jnape.palatable.lambda.semigroup.Semigroup;
 
-import java.util.Collections;
 import java.util.HashSet;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Distinct.distinct;
@@ -10,16 +11,21 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Empty.empty;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Filter.filter;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCollection;
 
-public final class Difference<A> implements Monoid<Iterable<A>> {
+/**
+ * Given two {@link Iterable Iterables} <code>xs</code> and <code>ys</code>, return the {@link Distinct distinct}
+ * elements of <code>xs</code> that are not in <code>ys</code>. Note that this is <strong>not</strong> symmetric
+ * difference.
+ * <p>
+ * This operation preserves order, so the resulting elements from <code>xs</code> are iterated in the order that
+ * they uniquely occur in.
+ *
+ * @param <A> the {@link Iterable} element type
+ */
+public final class Difference<A> implements Semigroup<Iterable<A>> {
 
     private static final Difference INSTANCE = new Difference();
 
     private Difference() {
-    }
-
-    @Override
-    public Iterable<A> identity() {
-        return Collections::emptyIterator;
     }
 
     @Override
@@ -31,7 +37,7 @@ public final class Difference<A> implements Monoid<Iterable<A>> {
             if (empty(ys))
                 return distinct(xs).iterator();
 
-            //todo: pre-order dfs fold the expression tree to make stack-safe
+            //todo: a pre-order depth-first fold of the expression tree would make this stack-safe
             HashSet<A> uniqueYs = toCollection(HashSet::new, ys);
             return distinct(filter(a -> !uniqueYs.contains(a), xs)).iterator();
         };
