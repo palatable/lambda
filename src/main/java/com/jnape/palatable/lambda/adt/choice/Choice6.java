@@ -6,7 +6,9 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct6;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple6;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -91,7 +93,7 @@ public abstract class Choice6<A, B, C, D, E, F> implements
 
     @Override
     public <G> Choice6<A, B, C, D, E, G> zip(
-            Applicative<Function<? super F, ? extends G>, Choice6<A, B, C, D, E, ?>> appFn) {
+            Apply<Function<? super F, ? extends G>, Choice6<A, B, C, D, E, ?>> appFn) {
         return appFn.<Choice6<A, B, C, D, E, Function<? super F, ? extends G>>>coerce()
                 .match(Choice6::a, Choice6::b, Choice6::c, Choice6::d, Choice6::e, this::biMapR);
     }
@@ -108,7 +110,7 @@ public abstract class Choice6<A, B, C, D, E, F> implements
 
     @Override
     public <G> Choice6<A, B, C, D, E, G> flatMap(
-            Function<? super F, ? extends Monad<G, Choice6<A, B, C, D, E, ?>>> fn) {
+            Function<? super F, ? extends Bind<G, Choice6<A, B, C, D, E, ?>>> fn) {
         return match(Choice6::a, Choice6::b, Choice6::c, Choice6::d, Choice6::e, f -> fn.apply(f).coerce());
     }
 

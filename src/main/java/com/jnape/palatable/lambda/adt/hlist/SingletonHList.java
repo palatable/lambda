@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -41,7 +43,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, Sin
 
     @Override
     public <_1Prime> SingletonHList<_1Prime> zip(
-            Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList> appFn) {
+            Apply<Function<? super _1, ? extends _1Prime>, SingletonHList> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -56,7 +58,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, Sin
     }
 
     @Override
-    public <_1Prime> SingletonHList<_1Prime> flatMap(Function<? super _1, ? extends Monad<_1Prime, SingletonHList>> f) {
+    public <_1Prime> SingletonHList<_1Prime> flatMap(Function<? super _1, ? extends Bind<_1Prime, SingletonHList>> f) {
         return f.apply(head()).coerce();
     }
 

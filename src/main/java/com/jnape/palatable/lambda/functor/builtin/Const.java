@@ -1,7 +1,9 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -54,7 +56,7 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
     }
 
     @Override
-    public <C> Const<A, C> zip(Applicative<Function<? super B, ? extends C>, Const<A, ?>> appFn) {
+    public <C> Const<A, C> zip(Apply<Function<? super B, ? extends C>, Const<A, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -70,7 +72,7 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C> Const<A, C> flatMap(Function<? super B, ? extends Monad<C, Const<A, ?>>> f) {
+    public <C> Const<A, C> flatMap(Function<? super B, ? extends Bind<C, Const<A, ?>>> f) {
         return (Const<A, C>) this;
     }
 

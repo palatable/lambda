@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -36,7 +37,7 @@ public final class Compose<F extends Applicative, G extends Applicative, A> impl
     }
 
     @Override
-    public <B> Compose<F, G, B> zip(Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>> appFn) {
+    public <B> Compose<F, G, B> zip(Apply<Function<? super A, ? extends B>, Compose<F, G, ?>> appFn) {
         return new Compose<>(fga.zip(appFn.<Compose<F, G, Function<? super A, ? extends B>>>coerce().getCompose().fmap(gFn -> g -> g.zip(gFn))));
     }
 

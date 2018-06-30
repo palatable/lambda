@@ -6,7 +6,9 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple3;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -82,7 +84,7 @@ public abstract class Choice3<A, B, C> implements
     }
 
     @Override
-    public <D> Choice3<A, B, D> zip(Applicative<Function<? super C, ? extends D>, Choice3<A, B, ?>> appFn) {
+    public <D> Choice3<A, B, D> zip(Apply<Function<? super C, ? extends D>, Choice3<A, B, ?>> appFn) {
         return appFn.<Choice3<A, B, Function<? super C, ? extends D>>>coerce()
                 .match(Choice3::a, Choice3::b, this::biMapR);
     }
@@ -98,7 +100,7 @@ public abstract class Choice3<A, B, C> implements
     }
 
     @Override
-    public <D> Choice3<A, B, D> flatMap(Function<? super C, ? extends Monad<D, Choice3<A, B, ?>>> f) {
+    public <D> Choice3<A, B, D> flatMap(Function<? super C, ? extends Bind<D, Choice3<A, B, ?>>> f) {
         return match(Choice3::a, Choice3::b, c -> f.apply(c).coerce());
     }
 

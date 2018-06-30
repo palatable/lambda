@@ -2,7 +2,9 @@ package com.jnape.palatable.lambda.functions.recursion;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -47,8 +49,7 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
     }
 
     @Override
-    public <C> RecursiveResult<A, C> flatMap(
-            Function<? super B, ? extends Monad<C, RecursiveResult<A, ?>>> f) {
+    public <C> RecursiveResult<A, C> flatMap(Function<? super B, ? extends Bind<C, RecursiveResult<A, ?>>> f) {
         return match(RecursiveResult::recurse, b -> f.apply(b).coerce());
     }
 
@@ -63,8 +64,7 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
     }
 
     @Override
-    public <C> RecursiveResult<A, C> zip(
-            Applicative<Function<? super B, ? extends C>, RecursiveResult<A, ?>> appFn) {
+    public <C> RecursiveResult<A, C> zip(Apply<Function<? super B, ? extends C>, RecursiveResult<A, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 

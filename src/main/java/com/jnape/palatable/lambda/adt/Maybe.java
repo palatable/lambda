@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
@@ -115,7 +117,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
     }
 
     @Override
-    public final <B> Maybe<B> zip(Applicative<Function<? super A, ? extends B>, Maybe> appFn) {
+    public final <B> Maybe<B> zip(Apply<Function<? super A, ? extends B>, Maybe> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -130,7 +132,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
     }
 
     @Override
-    public abstract <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f);
+    public abstract <B> Maybe<B> flatMap(Function<? super A, ? extends Bind<B, Maybe>> f);
 
     /**
      * If this value is present, accept it by <code>consumer</code>; otherwise, do nothing.
@@ -211,7 +213,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
         }
 
         @Override
-        public <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f) {
+        public <B> Maybe<B> flatMap(Function<? super A, ? extends Bind<B, Maybe>> f) {
             return f.apply(a).coerce();
         }
 
@@ -247,7 +249,7 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
 
         @Override
         @SuppressWarnings("unchecked")
-        public <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f) {
+        public <B> Maybe<B> flatMap(Function<? super A, ? extends Bind<B, Maybe>> f) {
             return nothing();
         }
 

@@ -1,6 +1,8 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -33,7 +35,7 @@ public final class Identity<A> implements Monad<A, Identity>, Traversable<A, Ide
      * {@inheritDoc}
      */
     @Override
-    public <B> Identity<B> flatMap(Function<? super A, ? extends Monad<B, Identity>> f) {
+    public <B> Identity<B> flatMap(Function<? super A, ? extends Bind<B, Identity>> f) {
         return f.apply(runIdentity()).coerce();
     }
 
@@ -51,7 +53,7 @@ public final class Identity<A> implements Monad<A, Identity>, Traversable<A, Ide
     }
 
     @Override
-    public <B> Identity<B> zip(Applicative<Function<? super A, ? extends B>, Identity> appFn) {
+    public <B> Identity<B> zip(Apply<Function<? super A, ? extends B>, Identity> appFn) {
         return new Identity<>(appFn.<Identity<Function<? super A, ? extends B>>>coerce().runIdentity().apply(a));
     }
 

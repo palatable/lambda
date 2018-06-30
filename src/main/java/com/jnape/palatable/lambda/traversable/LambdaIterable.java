@@ -1,6 +1,8 @@
 package com.jnape.palatable.lambda.traversable;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.Iterator;
@@ -58,7 +60,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traver
      * @return the zipped LambdaIterable
      */
     @Override
-    public <B> LambdaIterable<B> zip(Applicative<Function<? super A, ? extends B>, LambdaIterable> appFn) {
+    public <B> LambdaIterable<B> zip(Apply<Function<? super A, ? extends B>, LambdaIterable> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -73,7 +75,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable>, Traver
     }
 
     @Override
-    public <B> LambdaIterable<B> flatMap(Function<? super A, ? extends Monad<B, LambdaIterable>> f) {
+    public <B> LambdaIterable<B> flatMap(Function<? super A, ? extends Bind<B, LambdaIterable>> f) {
         return wrap(flatten(map(a -> f.apply(a).<LambdaIterable<B>>coerce().unwrap(), as)));
     }
 

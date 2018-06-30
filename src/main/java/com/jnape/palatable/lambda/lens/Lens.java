@@ -4,8 +4,9 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.functor.Functor;
-import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -150,7 +151,7 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
     }
 
     @Override
-    default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Lens>> appFn) {
+    default <U> Lens<S, U, A, B> zip(Apply<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Lens>> appFn) {
         return LensLike.super.zip(appFn).coerce();
     }
 
@@ -165,7 +166,7 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
     }
 
     @Override
-    default <U> Lens<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, Lens>>> f) {
+    default <U> Lens<S, U, A, B> flatMap(Function<? super T, ? extends Bind<U, LensLike<S, ?, A, B, Lens>>> f) {
         return lens(view(this), (s, b) -> set(f.apply(set(this, b, s)).<Lens<S, U, A, B>>coerce(), b, s));
     }
 

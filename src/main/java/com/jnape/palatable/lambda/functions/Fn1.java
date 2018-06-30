@@ -1,6 +1,8 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monad.Monad;
 
@@ -39,7 +41,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
     }
 
     @Override
-    default <C> Fn1<A, C> flatMap(Function<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
+    default <C> Fn1<A, C> flatMap(Function<? super B, ? extends Bind<C, Fn1<A, ?>>> f) {
         return a -> f.apply(apply(a)).<Fn1<A, C>>coerce().apply(a);
     }
 
@@ -67,7 +69,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      * {@inheritDoc}
      */
     @Override
-    default <C> Fn1<A, C> zip(Applicative<Function<? super B, ? extends C>, Fn1<A, ?>> appFn) {
+    default <C> Fn1<A, C> zip(Apply<Function<? super B, ? extends C>, Fn1<A, ?>> appFn) {
         return a -> appFn.<Fn1<A, Function<? super B, ? extends C>>>coerce().apply(a).apply(apply(a));
     }
 

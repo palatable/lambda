@@ -4,6 +4,8 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.functor.builtin.Exchange;
@@ -11,7 +13,6 @@ import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.lens.functions.Over;
 import com.jnape.palatable.lambda.lens.functions.Set;
 import com.jnape.palatable.lambda.lens.functions.View;
-import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.Function;
 
@@ -110,7 +111,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
     }
 
     @Override
-    default <U> Iso<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Iso>> appFn) {
+    default <U> Iso<S, U, A, B> zip(Apply<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Iso>> appFn) {
         return LensLike.super.zip(appFn).coerce();
     }
 
@@ -125,8 +126,8 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
     }
 
     @Override
-    default <U> Iso<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, Iso>>> fn) {
-        return unIso().fmap(bt -> Fn2.<B, B, U>fn2(fn1(bt.andThen(fn.<Iso<S, U, A, B>>andThen(Applicative::coerce))
+    default <U> Iso<S, U, A, B> flatMap(Function<? super T, ? extends Bind<U, LensLike<S, ?, A, B, Iso>>> fn) {
+        return unIso().fmap(bt -> Fn2.<B, B, U>fn2(fn1(bt.andThen(fn.<Iso<S, U, A, B>>andThen(Apply::coerce))
                                                                .andThen(Iso::unIso)
                                                                .andThen(Tuple2::_2)
                                                                .andThen(Fn1::fn1))))

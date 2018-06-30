@@ -4,7 +4,9 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -41,7 +43,7 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
      * {@inheritDoc}
      */
     @Override
-    public final <C> These<A, C> flatMap(Function<? super B, ? extends Monad<C, These<A, ?>>> f) {
+    public final <C> These<A, C> flatMap(Function<? super B, ? extends Bind<C, These<A, ?>>> f) {
         return match(These::a, b -> f.apply(b).coerce(), into((a, b) -> f.apply(b).<These<A, C>>coerce().biMapL(constantly(a))));
     }
 
@@ -92,7 +94,7 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
      * {@inheritDoc}
      */
     @Override
-    public final <C> These<A, C> zip(Applicative<Function<? super B, ? extends C>, These<A, ?>> appFn) {
+    public final <C> These<A, C> zip(Apply<Function<? super B, ? extends C>, These<A, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 

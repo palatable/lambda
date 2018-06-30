@@ -4,6 +4,8 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.functor.BoundedBifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
@@ -143,7 +145,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
     }
 
     @Override
-    public <B> Try<T, B> flatMap(Function<? super A, ? extends Monad<B, Try<T, ?>>> f) {
+    public <B> Try<T, B> flatMap(Function<? super A, ? extends Bind<B, Try<T, ?>>> f) {
         return match(Try::failure, a -> f.apply(a).coerce());
     }
 
@@ -153,7 +155,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
     }
 
     @Override
-    public <B> Try<T, B> zip(Applicative<Function<? super A, ? extends B>, Try<T, ?>> appFn) {
+    public <B> Try<T, B> zip(Apply<Function<? super A, ? extends B>, Try<T, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 

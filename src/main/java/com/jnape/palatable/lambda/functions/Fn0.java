@@ -2,7 +2,8 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,7 +39,7 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
     }
 
     @Override
-    default <B> Fn0<B> flatMap(Function<? super A, ? extends Monad<B, Fn1<Unit, ?>>> f) {
+    default <B> Fn0<B> flatMap(Function<? super A, ? extends Bind<B, Fn1<Unit, ?>>> f) {
         return Fn1.super.flatMap(f)::apply;
     }
 
@@ -53,7 +54,7 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
     }
 
     @Override
-    default <B> Fn0<B> zip(Applicative<Function<? super A, ? extends B>, Fn1<Unit, ?>> appFn) {
+    default <B> Fn0<B> zip(Apply<Function<? super A, ? extends B>, Fn1<Unit, ?>> appFn) {
         return Fn1.super.zip(appFn)::apply;
     }
 

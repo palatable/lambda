@@ -6,7 +6,9 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct8;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple8;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -90,7 +92,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
 
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> zip(
-            Applicative<Function<? super H, ? extends I>, Choice8<A, B, C, D, E, F, G, ?>> appFn) {
+            Apply<Function<? super H, ? extends I>, Choice8<A, B, C, D, E, F, G, ?>> appFn) {
         return appFn.<Choice8<A, B, C, D, E, F, G, Function<? super H, ? extends I>>>coerce()
                 .match(Choice8::a, Choice8::b, Choice8::c, Choice8::d, Choice8::e, Choice8::f, Choice8::g, this::biMapR);
     }
@@ -107,7 +109,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
 
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> flatMap(
-            Function<? super H, ? extends Monad<I, Choice8<A, B, C, D, E, F, G, ?>>> fn) {
+            Function<? super H, ? extends Bind<I, Choice8<A, B, C, D, E, F, G, ?>>> fn) {
         return match(Choice8::a, Choice8::b, Choice8::c, Choice8::d, Choice8::e, Choice8::f, Choice8::g, h -> fn.apply(h).coerce());
     }
 

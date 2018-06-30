@@ -7,7 +7,9 @@ import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -121,8 +123,8 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * @return the Either resulting from applying rightFn to this right value, or this left value if left
      */
     @Override
-    public <R2> Either<L, R2> flatMap(Function<? super R, ? extends Monad<R2, Either<L, ?>>> rightFn) {
-        return flatMap(Either::left, rightFn.andThen(Applicative::coerce));
+    public <R2> Either<L, R2> flatMap(Function<? super R, ? extends Bind<R2, Either<L, ?>>> rightFn) {
+        return flatMap(Either::left, rightFn.andThen(Apply::coerce));
     }
 
     /**
@@ -230,7 +232,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
     }
 
     @Override
-    public final <R2> Either<L, R2> zip(Applicative<Function<? super R, ? extends R2>, Either<L, ?>> appFn) {
+    public final <R2> Either<L, R2> zip(Apply<Function<? super R, ? extends R2>, Either<L, ?>> appFn) {
         return appFn.<Either<L, Function<? super R, ? extends R2>>>coerce().flatMap(this::biMapR);
     }
 

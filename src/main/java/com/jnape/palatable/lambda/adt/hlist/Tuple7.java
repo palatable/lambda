@@ -3,7 +3,9 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product7;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -126,7 +128,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
 
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> zip(
-            Applicative<Function<? super _7, ? extends _7Prime>, Tuple7<_1, _2, _3, _4, _5, _6, ?>> appFn) {
+            Apply<Function<? super _7, ? extends _7Prime>, Tuple7<_1, _2, _3, _4, _5, _6, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -144,7 +146,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
 
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> flatMap(
-            Function<? super _7, ? extends Monad<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>>> f) {
+            Function<? super _7, ? extends Bind<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>>> f) {
         return pure(f.apply(_7).<Tuple7<_1, _2, _3, _4, _5, _6, _7Prime>>coerce()._7());
     }
 

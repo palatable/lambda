@@ -4,7 +4,8 @@ import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 
 import java.util.function.Function;
 
@@ -24,7 +25,7 @@ public final class EqualityAwareFn0<A> implements Fn0<A> {
     }
 
     @Override
-    public <B> EqualityAwareFn0<B> flatMap(Function<? super A, ? extends Monad<B, Fn1<Unit, ?>>> f) {
+    public <B> EqualityAwareFn0<B> flatMap(Function<? super A, ? extends Bind<B, Fn1<Unit, ?>>> f) {
         return new EqualityAwareFn0<>(fn.flatMap(f));
     }
 
@@ -34,7 +35,7 @@ public final class EqualityAwareFn0<A> implements Fn0<A> {
     }
 
     @Override
-    public <B> EqualityAwareFn0<B> zip(Applicative<Function<? super A, ? extends B>, Fn1<Unit, ?>> appFn) {
+    public <B> EqualityAwareFn0<B> zip(Apply<Function<? super A, ? extends B>, Fn1<Unit, ?>> appFn) {
         return new EqualityAwareFn0<>(fn.zip(appFn));
     }
 

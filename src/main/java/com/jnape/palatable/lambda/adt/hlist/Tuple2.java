@@ -3,7 +3,9 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -100,7 +102,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
 
     @Override
     public <_2Prime> Tuple2<_1, _2Prime> zip(
-            Applicative<Function<? super _2, ? extends _2Prime>, Tuple2<_1, ?>> appFn) {
+            Apply<Function<? super _2, ? extends _2Prime>, Tuple2<_1, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -115,7 +117,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     }
 
     @Override
-    public <_2Prime> Tuple2<_1, _2Prime> flatMap(Function<? super _2, ? extends Monad<_2Prime, Tuple2<_1, ?>>> f) {
+    public <_2Prime> Tuple2<_1, _2Prime> flatMap(Function<? super _2, ? extends Bind<_2Prime, Tuple2<_1, ?>>> f) {
         return pure(f.apply(_2).<Tuple2<_1, _2Prime>>coerce()._2());
     }
 

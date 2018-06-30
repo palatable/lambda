@@ -1,6 +1,8 @@
 package com.jnape.palatable.lambda.lens;
 
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Apply;
+import com.jnape.palatable.lambda.functor.Bind;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -82,7 +84,7 @@ public interface LensLike<S, T, A, B, LL extends LensLike> extends Monad<T, Lens
     <Z> LensLike<S, T, A, Z, LL> mapB(Function<? super Z, ? extends B> fn);
 
     @Override
-    <U> LensLike<S, U, A, B, LL> flatMap(Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, LL>>> f);
+    <U> LensLike<S, U, A, B, LL> flatMap(Function<? super T, ? extends Bind<U, LensLike<S, ?, A, B, LL>>> f);
 
     @Override
     <U> LensLike<S, U, A, B, LL> pure(U u);
@@ -93,8 +95,7 @@ public interface LensLike<S, T, A, B, LL extends LensLike> extends Monad<T, Lens
     }
 
     @Override
-    default <U> LensLike<S, U, A, B, LL> zip(
-            Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, LL>> appFn) {
+    default <U> LensLike<S, U, A, B, LL> zip(Apply<Function<? super T, ? extends U>, LensLike<S, ?, A, B, LL>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
