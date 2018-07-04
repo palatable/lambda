@@ -23,6 +23,7 @@ import static com.jnape.palatable.lambda.monoid.builtin.First.first;
  *
  * @param <A> the Maybe value parameter type
  * @see Monoid
+ * @see Absent
  * @see Maybe
  */
 public final class Present<A> implements MonoidFactory<Semigroup<A>, Maybe<A>> {

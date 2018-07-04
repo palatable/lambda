@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Intersection`, a semigroup that behaves like a lazy set intersection on `Iterable`s
 - `Fn0`, a function from `Unit` to some value
 - `Fn1#thunk`, producing an `Fn0`
+- `Absent`, a monoid over `Maybe` that is absence biased
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`
