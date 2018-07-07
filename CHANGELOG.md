@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Into3-8` now accept a product of the same cardinality, instead of requiring a tuple
 - `CoProduct2-8#project` now return generalized products
 - `Choice2-8#project` return tuples
+- `liftA2` receives more parameters to aid inference
 
 ## [3.0.3] - 2018-05-27
 ### Added

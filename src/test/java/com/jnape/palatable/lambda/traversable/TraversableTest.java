@@ -15,7 +15,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class TraversableTest {
 
     @Test
-    public void compilation() {
+    public void inference() {
         Either<String, Maybe<Integer>> a = just(Either.<String, Integer>right(1)).traverse(id(), Either::right);
         assertEquals(right(just(1)), a);
 
