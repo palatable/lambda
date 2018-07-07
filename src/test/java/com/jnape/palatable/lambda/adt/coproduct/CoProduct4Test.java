@@ -22,7 +22,7 @@ public class CoProduct4Test {
     private CoProduct4<Integer, String, Boolean, Double, ?> d;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         a = new CoProduct4<Integer, String, Boolean, Double, CoProduct4<Integer, String, Boolean, Double, ?>>() {
             @Override
             public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,

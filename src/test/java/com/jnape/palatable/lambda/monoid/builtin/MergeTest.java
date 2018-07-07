@@ -19,7 +19,7 @@ public class MergeTest {
     private Monoid<Either<String, Integer>> merge;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         merge = merge(JOIN, ADD);
     }
 

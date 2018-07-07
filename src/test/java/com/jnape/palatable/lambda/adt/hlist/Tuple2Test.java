@@ -29,7 +29,7 @@ public class Tuple2Test {
     private Tuple2<Integer, Integer> tuple2;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         tuple2 = new Tuple2<>(1, new SingletonHList<>(2));
     }
 
