@@ -12,6 +12,10 @@ import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
@@ -22,11 +26,15 @@ import static com.jnape.palatable.lambda.adt.Try.failure;
 import static com.jnape.palatable.lambda.adt.Try.success;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static testsupport.matchers.LeftMatcher.isLeftThat;
 
 @RunWith(Traits.class)
@@ -149,5 +157,56 @@ public class TryTest {
         assertEquals(failure(expected), trying(() -> {throw expected;}));
 
         assertEquals(success("foo"), trying(() -> "foo"));
+    }
+
+    @Test
+    public void withResourcesCleansUpAutoCloseableInSuccessCase() {
+        AtomicBoolean closed = new AtomicBoolean(false);
+        assertEquals(Try.success(1), Try.withResources(() -> () -> closed.set(true), resource -> success(1)));
+        assertTrue(closed.get());
+    }
+
+    @Test
+    public void withResourcesCleansUpAutoCloseableInFailureCase() {
+        AtomicBoolean closed = new AtomicBoolean(false);
+        RuntimeException exception = new RuntimeException();
+        assertEquals(Try.failure(exception), Try.withResources(() -> () -> closed.set(true),
+                                                               resource -> { throw exception; }));
+        assertTrue(closed.get());
+    }
+
+    @Test
+    public void withResourcesExposesResourceCreationFailure() {
+        IOException ioException = new IOException();
+        assertEquals(Try.failure(ioException), Try.withResources(() -> { throw ioException; }, resource -> success(1)));
+    }
+
+    @Test
+    public void withResourcesExposesResourceCloseFailure() {
+        IOException ioException = new IOException();
+        assertEquals(Try.failure(ioException), Try.withResources(() -> () -> { throw ioException; },
+                                                                 resource -> success(1)));
+    }
+
+    @Test
+    public void withResourcesPreservesSuppressedExceptionThrownDuringClose() {
+        RuntimeException rootException = new RuntimeException();
+        IOException nestedIOException = new IOException();
+        Try<Exception, Exception> failure = Try.withResources(() -> () -> { throw nestedIOException; },
+                                                              resource -> { throw rootException; });
+        Exception thrown = failure.recover(id());
+
+        assertEquals(thrown, rootException);
+        assertArrayEquals(new Throwable[]{nestedIOException}, thrown.getSuppressed());
+    }
+
+    @Test
+    public void cascadingWithResourcesClosesInInverseOrder() {
+        List<String> closeMessages = new ArrayList<>();
+        assertEquals(success(1), Try.withResources(() -> (AutoCloseable) () -> closeMessages.add("close a"),
+                                                   a -> () -> closeMessages.add("close b"),
+                                                   b -> () -> closeMessages.add("close c"),
+                                                   c -> success(1)));
+        assertEquals(asList("close c", "close b", "close a"), closeMessages);
     }
 }
