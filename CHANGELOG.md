@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Fn0`, a function from `Unit` to some value
 - `Fn1#thunk`, producing an `Fn0`
 - `Absent`, a monoid over `Maybe` that is absence biased
+- `RateLimit`, a function that iterates elements from an `Iterable` according to some rate limit
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`
