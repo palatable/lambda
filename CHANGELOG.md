@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Absent`, a monoid over `Maybe` that is absence biased
 - `RateLimit`, a function that iterates elements from an `Iterable` according to some rate limit
 - `Try#withResources`, `Try`'s expression analog to Java 7's try-with-resources statement 
+- `Occurrences`, for counting the occurrences of the members of an `Iterable` 
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`
