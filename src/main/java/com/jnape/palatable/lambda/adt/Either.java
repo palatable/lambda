@@ -283,14 +283,14 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      *
      * @param supplier the supplier of the right value
      * @param leftFn   a function mapping E to L
-     * @param <E>      the most contravariant exception that the supplier might throw
+     * @param <T>      the most contravariant exception that the supplier might throw
      * @param <L>      the left parameter type
      * @param <R>      the right parameter type
      * @return the supplier result as a right value, or leftFn's mapping result as a left value
      */
-    public static <E extends Exception, L, R> Either<L, R> trying(CheckedSupplier<E, ? extends R> supplier,
-                                                                  Function<? super E, ? extends L> leftFn) {
-        return Try.<E, R>trying(supplier::get).toEither(leftFn);
+    public static <T extends Throwable, L, R> Either<L, R> trying(CheckedSupplier<T, ? extends R> supplier,
+                                                                  Function<? super T, ? extends L> leftFn) {
+        return Try.<T, R>trying(supplier::get).toEither(leftFn);
     }
 
     /**
@@ -298,11 +298,11 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * exception, wrap it in a left value and return it.
      *
      * @param supplier the supplier of the right value
-     * @param <E>      the left parameter type (the most contravariant exception that supplier might throw)
+     * @param <T>      the left parameter type (the most contravariant exception that supplier might throw)
      * @param <R>      the right parameter type
      * @return the supplier result as a right value, or a left value of the thrown exception
      */
-    public static <E extends Exception, R> Either<E, R> trying(CheckedSupplier<E, R> supplier) {
+    public static <T extends Throwable, R> Either<T, R> trying(CheckedSupplier<T, R> supplier) {
         return trying(supplier, id());
     }
 
@@ -312,12 +312,12 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      *
      * @param runnable the runnable
      * @param leftFn   a function mapping E to L
-     * @param <E>      the most contravariant exception that the runnable might throw
+     * @param <T>      the most contravariant exception that the runnable might throw
      * @param <L>      the left parameter type
      * @return {@link Unit} as a right value, or leftFn's mapping result as a left value
      */
-    public static <E extends Exception, L> Either<L, Unit> trying(CheckedRunnable<E> runnable,
-                                                                  Function<? super E, ? extends L> leftFn) {
+    public static <T extends Throwable, L> Either<L, Unit> trying(CheckedRunnable<T> runnable,
+                                                                  Function<? super T, ? extends L> leftFn) {
         return Try.trying(runnable).toEither(leftFn);
     }
 
@@ -326,10 +326,10 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * exception, wrap it in a left value and return it.
      *
      * @param runnable the runnable
-     * @param <E>      the left parameter type (the most contravariant exception that runnable might throw)
+     * @param <T>      the left parameter type (the most contravariant exception that runnable might throw)
      * @return {@link Unit} as a right value, or a left value of the thrown exception
      */
-    public static <E extends Exception> Either<E, Unit> trying(CheckedRunnable<E> runnable) {
+    public static <T extends Throwable> Either<T, Unit> trying(CheckedRunnable<T> runnable) {
         return trying(runnable, id());
     }
 
