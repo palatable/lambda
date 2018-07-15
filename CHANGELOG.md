@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Occurrences`, for counting the occurrences of the members of an `Iterable`
 - `Effect`, an `Fn0` returning `UNIT` 
 - `Noop`, a no-op `Effect` 
+- `Fn1#widen`, add an ignored argument to the beginning of any function to raise its arity by one 
 
 ### Changed
 - `Tuple2-8` now implement `Product2-8`

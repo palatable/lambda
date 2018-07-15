@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.Fn3.fn3;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A function taking two arguments.
@@ -30,6 +31,14 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      * @return the result of the function application
      */
     C apply(A a, B b);
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    default <Z> Fn3<Z, A, B, C> widen() {
+        return fn3(constantly(this));
+    }
 
     /**
      * Same as normal composition, except that the result is an instance of {@link Fn2} for convenience.

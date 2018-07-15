@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.Fn6.fn6;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A function taking five arguments. Defined in terms of {@link Fn4}, so similarly auto-curried.
@@ -33,6 +34,14 @@ public interface Fn5<A, B, C, D, E, F> extends Fn4<A, B, C, D, Fn1<E, F>> {
      * @return the result of the function application
      */
     F apply(A a, B b, C c, D d, E e);
+
+    /**
+     * @inheritDoc
+     */
+    @Override
+    default <Z> Fn6<Z, A, B, C, D, E, F> widen() {
+        return fn6(constantly(this));
+    }
 
     /**
      * Partially apply this function by taking its first argument.

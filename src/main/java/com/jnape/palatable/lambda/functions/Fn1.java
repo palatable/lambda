@@ -8,6 +8,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.Fn2.fn2;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
  * A function taking a single argument. This is the core function type that all other function types extend and
@@ -36,6 +37,16 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      */
     default Fn0<B> thunk(A a) {
         return __ -> apply(a);
+    }
+
+    /**
+     * Widen this function's argument list by prepending an ignored argument of any type to the front.
+     *
+     * @param <Z> the new first argument type
+     * @return the widened function
+     */
+    default <Z> Fn2<Z, A, B> widen() {
+        return fn2(constantly(this));
     }
 
     @Override

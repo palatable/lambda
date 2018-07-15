@@ -11,6 +11,9 @@ import testsupport.traits.MonadLaws;
 
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduceLeft;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Traits.class)
@@ -40,5 +43,11 @@ public class Fn1Test {
     public void thunk() {
         Fn1<Integer, String> toString = Object::toString;
         assertEquals("1", toString.thunk(1).apply());
+    }
+
+    @Test
+    public void widen() {
+        Fn1<Integer, Integer> addOne = x -> x + 1;
+        assertEquals(just(4), reduceLeft(addOne.widen().toBiFunction(), asList(1, 2, 3)));
     }
 }
