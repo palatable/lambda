@@ -15,14 +15,14 @@ import java.util.function.Function;
  */
 public final class Compose<F extends Applicative, G extends Applicative, A> implements Applicative<A, Compose<F, G, ?>> {
 
-    private final Applicative<Applicative<A, G>, F> fga;
+    private final Applicative<? extends Applicative<A, G>, F> fga;
 
-    public Compose(Applicative<Applicative<A, G>, F> fga) {
+    public Compose(Applicative<? extends Applicative<A, G>, F> fga) {
         this.fga = fga;
     }
 
-    public Applicative<? extends Applicative<A, G>, F> getCompose() {
-        return fga;
+    public <GA extends Applicative<A, G>, FGA extends Applicative<GA, F>> FGA getCompose() {
+        return fga.<GA>fmap(Applicative::coerce).coerce();
     }
 
     @Override
@@ -62,8 +62,6 @@ public final class Compose<F extends Applicative, G extends Applicative, A> impl
 
     @Override
     public String toString() {
-        return "Compose{" +
-                "fga=" + fga +
-                '}';
+        return "Compose{fga=" + fga + '}';
     }
 }

@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CoProduct2-8#project` now return generalized products
 - `Choice2-8#project` return tuples
 - `liftA2` receives more parameters to aid inference
+- `Compose#getCompose` now supports inference
 
 ## [3.0.3] - 2018-05-27
 ### Added
