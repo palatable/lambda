@@ -32,7 +32,7 @@ public interface Fn3<A, B, C, D> extends Fn2<A, B, Fn1<C, D>> {
     D apply(A a, B b, C c);
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     default <Z> Fn4<Z, A, B, C, D> widen() {

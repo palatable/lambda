@@ -21,15 +21,15 @@ import static java.util.Collections.singleton;
  * <p>
  * As an example, the following will print at most 10 elements per second:
  * <pre><code>
- * rateLimit(Clock.systemUTC()::instant, 10L, Duration.ofSeconds(1), iterate(x -> x + 1, 1)).forEach(System.out::println);
+ * rateLimit(Clock.systemUTC()::instant, 10L, Duration.ofSeconds(1), iterate(x -&gt; x + 1, 1)).forEach(System.out::println);
  * </code></pre>
  * Currying allows different rate limits to be combined naturally:
  * <pre><code>
- * Iterable<Integer> elements = iterate(x -> x + 1, 1);
+ * Iterable&lt;Integer&gt; elements = iterate(x -&gt; x + 1, 1);
  *
- * Supplier<Instant> instantSupplier = Clock.systemUTC()::instant;
- * Fn1<Iterable<Integer>, Iterable<Integer>> tenPerSecond = rateLimit(instantSupplier, 10L, Duration.ofSeconds(1));
- * Fn1<Iterable<Integer>, Iterable<Integer>> oneHundredEveryTwoMinutes = rateLimit(instantSupplier, 100L, Duration.ofMinutes(2));
+ * Supplier&lt;Instant&gt; instantSupplier = Clock.systemUTC()::instant;
+ * Fn1&lt;Iterable&lt;Integer&gt;, Iterable&lt;Integer&gt;&gt; tenPerSecond = rateLimit(instantSupplier, 10L, Duration.ofSeconds(1));
+ * Fn1&lt;Iterable&lt;Integer&gt;, Iterable&lt;Integer&gt;&gt; oneHundredEveryTwoMinutes = rateLimit(instantSupplier, 100L, Duration.ofMinutes(2));
  *
  * tenPerSecond.fmap(oneHundredEveryTwoMinutes).apply(elements).forEach(System.out::println);
  * </code></pre>

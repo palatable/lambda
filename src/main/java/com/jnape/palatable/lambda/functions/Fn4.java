@@ -34,7 +34,7 @@ public interface Fn4<A, B, C, D, E> extends Fn3<A, B, C, Fn1<D, E>> {
     E apply(A a, B b, C c, D d);
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     default <Z> Fn5<Z, A, B, C, D, E> widen() {

@@ -9,7 +9,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.LTEBy.lteBy;
 
 /**
  * Given two {@link Comparable} values of type <code>A</code>, return <code>true</code> if the first value is less than
- * or equal to the second value according to {@link Comparable#compareTo(Object);} otherwise, return false.
+ * or equal to the second value according to {@link Comparable#compareTo(Object)} otherwise, return false.
  *
  * @param <A> the value typ
  * @see LTEBy
