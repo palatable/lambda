@@ -35,23 +35,6 @@ public final class CollectionLens {
      * Convenience static factory method for creating a lens that focuses on an arbitrary {@link Collection} as a
      * {@link Set}.
      *
-     * @param <X>  the collection element type
-     * @param <CX> the type of the collection
-     * @return a lens that focuses on a Collection as a Set
-     * @deprecated in favor of lawful {@link CollectionLens#asSet(Function)}
-     */
-    @Deprecated
-    public static <X, CX extends Collection<X>> Lens.Simple<CX, Set<X>> asSet() {
-        return simpleLens(HashSet::new, (xsL, xsS) -> {
-            xsL.retainAll(xsS);
-            return xsL;
-        });
-    }
-
-    /**
-     * Convenience static factory method for creating a lens that focuses on an arbitrary {@link Collection} as a
-     * {@link Set}.
-     *
      * @param copyFn the copying function
      * @param <X>    the collection element type
      * @param <CX>   the type of the collection
@@ -66,23 +49,6 @@ public final class CollectionLens {
             updated.addAll(missing);
             updated.retainAll(xsS);
             return updated;
-        });
-    }
-
-    /**
-     * Convenience static factory method for creating a lens that focuses on a Collection as a Stream.
-     *
-     * @param <X>  the collection element type
-     * @param <CX> the type of the collection
-     * @return a lens that focuses on a Collection as a stream.
-     * @deprecated in favor of lawful {@link CollectionLens#asStream(Function)}
-     */
-    @Deprecated
-    public static <X, CX extends Collection<X>> Lens.Simple<CX, Stream<X>> asStream() {
-        return simpleLens(Collection::stream, (xsL, xsS) -> {
-            xsL.clear();
-            xsS.forEach(xsL::add);
-            return xsL;
         });
     }
 

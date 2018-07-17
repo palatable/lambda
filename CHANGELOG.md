@@ -34,6 +34,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `liftA2` receives more parameters to aid inference
 - `Compose#getCompose` now supports inference
 
+### Removed
+- `MapLens#mappingValues`, deprecated in a prior release
+- `CollectionLens#asSet`, deprecated in a prior release
+- `CollectionLens#asStream`, deprecated in a prior release
+
 ## [3.0.3] - 2018-05-27
 ### Added
 - `Lens#toIso`, for converting a lens to an iso

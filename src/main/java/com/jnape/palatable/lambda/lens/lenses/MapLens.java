@@ -12,10 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.maybe;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCollection;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToMap.toMap;
@@ -147,36 +145,6 @@ public final class MapLens {
             updated.putAll(view(inverted(), im));
             return updated;
         });
-    }
-
-    /**
-     * A lens that focuses on a map while mapping its values with the mapping function.
-     * <p>
-     * Note that this lens is very likely to NOT be lawful, since "you get back what you put in" will fail for all
-     * values <code>B</code> that do not map from the current values in <code>S</code> (new mappings cannot be
-     * preserved as the inversion of <code>fn</code> is not known). Furthermore, if <code>fn</code> is injective
-     * (multiple <code>V</code>s map to the same <code>V2</code>), this lens will also not be lawful for similar reasons
-     * as stated above.
-     *
-     * @param fn   the mapping function
-     * @param <K>  the key type
-     * @param <V>  the unfocused map value type
-     * @param <V2> the focused map value types
-     * @return a lens that focuses on a map while mapping its values
-     * @deprecated in favor of the lawful (and far more rational) {@link MapLens#mappingValues(Iso)}
-     */
-    @Deprecated
-    public static <K, V, V2> Lens.Simple<Map<K, V>, Map<K, V2>> mappingValues(Function<? super V, ? extends V2> fn) {
-        return simpleLens(m -> toMap(HashMap::new, map(t -> t.biMapR(fn), map(Tuple2::fromEntry, m.entrySet()))),
-                          (s, b) -> {
-                              Set<K> retainKeys = Filter.<Map.Entry<K, V>>filter(kv -> eq(fn.apply(kv.getValue()), b.get(kv.getKey())))
-                                      .andThen(map(Map.Entry::getKey))
-                                      .andThen(toCollection(HashSet::new))
-                                      .apply(s.entrySet());
-                              Map<K, V> copy = new HashMap<>(s);
-                              copy.keySet().retainAll(retainKeys);
-                              return copy;
-                          });
     }
 
     /**
