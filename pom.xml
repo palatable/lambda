@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>lambda</artifactId>
-    <version>3.0.4-SNAPSHOT</version>
+    <version>3.1.0</version>
     <packaging>jar</packaging>
 
     <name>Lambda</name>
