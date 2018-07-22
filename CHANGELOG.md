@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+_No changes yet_
+
+## [3.1.0] - 2018-07-16
 ### Added
 - `Fn3-8` static factory overloads to aid in coercing lambdas
 - Adding composition guarantees to `LensLike`
@@ -368,7 +371,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.0.3...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.1.0...HEAD
+[3.1.0]: https://github.com/palatable/lambda/compare/lambda-3.0.3...lambda-3.1.0
 [3.0.3]: https://github.com/palatable/lambda/compare/lambda-3.0.2...lambda-3.0.3
 [3.0.2]: https://github.com/palatable/lambda/compare/lambda-3.0.1...lambda-3.0.2
 [3.0.1]: https://github.com/palatable/lambda/compare/lambda-3.0.0...lambda-3.0.1
