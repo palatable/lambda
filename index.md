@@ -1,9 +1,9 @@
 λ
 ======
-[![Build Status](https://travis-ci.org/palatable/lambda.svg)](https://travis-ci.org/palatable/lambda)
+[![Build Status](https://img.shields.io/travis/palatable/lambda/master.svg)](https://travis-ci.org/palatable/lambda)
 [![Lambda](https://img.shields.io/maven-central/v/com.jnape.palatable/lambda.svg)](http://search.maven.org/#search%7Cga%7C1%7Ccom.jnape.palatable.lambda)
 
-Functional patterns for Java 8
+Functional patterns for Java
 
 #### Table of Contents
 
@@ -16,9 +16,11 @@ Functional patterns for Java 8
    - [Bifunctors](#bifunctors)
    - [Profunctors](#profunctors)
    - [Applicatives](#applicatives)
+   - [Monads](#monads)
    - [Traversables](#traversables)
  - [ADTs](#adts)
-   - [HLists](#hlists)
+   - [Maybe](#maybe)
+   - [HList](#hlist)
      - [Tuples](#tuples)
    - [HMaps](#hmaps)
    - [CoProducts](#coproducts)
@@ -55,14 +57,14 @@ Add the following dependency to your:
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>1.6.3</version>
+    <version>3.1.0</version>
 </dependency>
 ```
 
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
 
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '1.6.3'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '3.1.0'
 ```
 
 <a name="examples">Examples</a>
@@ -335,6 +337,41 @@ Examples of applicative functors include:
 
 In addition to implementing `fmap` from `Functor`, implementing an applicative functor involves providing two methods: `pure`, a method that lifts a value into the functor; and `zip`, a method that applies a lifted function to a lifted value, returning a new lifted value. As usual, there are [some laws](https://hackage.haskell.org/package/base-4.9.1.0/docs/Control-Applicative.html) that should be adhered to. 
 
+### <a name="monads">Monads</a>
+
+Monads are applicative functors that additionally support a chaining operation, `flatMap :: (a -> f b) -> f a -> f b`: a function from the functor's parameter to a new instance of the same functor over a potentially different parameter. Because the function passed to `flatMap` can return a different instance of the same functor, functors can take advantage of multiple constructions that yield different functorial operations, like short-circuiting, as in the following example using `Either`:
+
+```Java
+class Person {
+    Optional<Occupation> occupation() {
+        return Optional.empty();
+    } 
+}
+
+class Occupation {
+}
+
+public static void main(String[] args) {
+    Fn1<String, Either<String, Integer>> parseId = str -> Either.trying(() -> Integer.parseInt(str), __ -> str + " is not a valid id"); 
+
+    Map<Integer, Person> database = new HashMap<>();
+    Fn1<Integer, Either<String, Person>> lookupById = id -> Either.fromOptional(Optional.ofNullable(database.get(id)),
+                                                                                () -> "No person found for id " + id);
+    Fn1<Person, Either<String, Occupation>> getOccupation = p -> Either.fromOptional(p.occupation(), () -> "Person was unemployed");
+
+    Either<String, Occupation> occupationOrError = 
+        parseId.apply("12") // Either<String, Integer>
+            .flatMap(lookupById) // Either<String, Person>
+            .flatMap(getOccupation); // Either<String, Occupation>
+}
+```
+
+In the previous example, if any of `parseId`, `lookupById`, or `getOccupation` fail, no further `flatMap` computations can succeed, so the result short-circuits to the first `left` value that is returned. This is completely predictable from the type signature of `Monad` and `Either`: `Either<L, R>` is a `Monad<R>`, so the single arity `flatMap` can have nothing to map in the case where there is no `R` value. With experience, it generally becomes quickly clear what the logical behavior of `flatMap` *must* be given the type signatures.
+
+That's it. Monads are neither [elephants](http://james-iry.blogspot.com/2007/09/monads-are-elephants-part-1.html) nor are they [burritos](https://blog.plover.com/prog/burritos.html); they're simply types that support a) the ability to lift a value into them, and b) a chaining function `flatMap :: (a -> f b) -> f a -> f b` that can potentially return different instances of the same monad. If a type can do those two things (and obeys [the laws](https://wiki.haskell.org/Monad_laws)), it is a monad.
+
+Further, if a type is a monad, it is necessarily an `Applicative`, which makes it necessarily a `Functor`, so *lambda* enforces this tautology via a hierarchical constraint.
+
 ### <a name="traversables">Traversables</a>
 
 Traversable functors -- functors that can be "traversed from left to right" -- are implemented via the `Traversable` interface.
@@ -407,8 +444,7 @@ Examples of traversable functors include:
 - `Choice*`
 - `Either`
 - `Const` and `Identity`
-- `TraversableIterable` for wrapping `Iterable` in an instance of `Traversable`
-- `TraversableOptional` for wrapping `Optional` in an instance of `Traversable`
+- `LambdaIterable` for wrapping `Iterable` in an instance of `Traversable`
 
 In addition to implementing `fmap` from `Functor`, implementing a traversable functor involves providing an implementation of `traverse`.
 
@@ -418,6 +454,56 @@ As always, there are [some laws](https://hackage.haskell.org/package/base-4.9.1.
 ----
 
 Lambda also supports a few first-class [algebraic data types](https://www.wikiwand.com/en/Algebraic_data_type).
+
+### <a name="maybe">Maybe</a>
+
+`Maybe` is the _lambda_ analog to `java.util.Optional`. It behaves in much of the same way as `j.u.Optional`, except that it quite intentionally does not support the inherently unsafe `j.u.Optional#get`.
+
+```Java
+Maybe<Integer> maybeInt = Maybe.just(1); // Just 1
+Maybe<String> maybeString = Maybe.nothing(); // Nothing
+```
+
+Also, because it's a _lambda_ type, it takes advantage of the full functor hierarchy, as well as some helpful conversion functions:
+
+```Java
+Maybe<String> just = Maybe.maybe("string"); // Just "string"
+Maybe<String> nothing = Maybe.maybe(null); // Nothing
+
+Maybe<Integer> maybeX = Maybe.just(1);
+Maybe<Integer> maybeY = Maybe.just(2);
+
+maybeY.zip(maybeX.fmap(x -> y -> x + y)); // Just 3
+maybeY.zip(nothing()); // Nothing
+Maybe.<Integer>nothing().zip(maybeX.fmap(x -> y -> x + y)); // Nothing
+
+Either<String, Integer> right = maybeX.toEither(() -> "was empty"); // Right 1
+Either<String, Integer> left = Maybe.<Integer>nothing().toEither(() -> "was empty"); // Left "was empty"
+
+Maybe.fromEither(right); // Just 1
+Maybe.fromEither(left); // Nothing
+```
+
+Finally, for compatibility purposes, `Maybe` and `j.u.Optional` can be trivially converted back and forth:
+
+```Java
+Maybe<Integer> just1 = Maybe.just(1); // Just 1
+Optional<Integer> present1 = just1.toOptional(); // Optional.of(1)
+
+Optional<String> empty = Optional.empty(); // Optional.empty()
+Maybe<String> nothing = Maybe.fromOptional(empty); // Nothing
+```
+
+***Note***: One compatibility difference between `j.u.Optional` and `Maybe` is how `map`/`fmap` behave regarding functions that return `null`: `j.u.Optional` re-wraps `null` results from `map` operations in another `j.u.Optional`, whereas `Maybe` considers this to be an error, and throws an exception. The reason `Maybe` throws in this case is because `fmap` is not an operation to be called speculatively, and so any function that returns `null` in the context of an `fmap` operation is considered to be erroneous. Instead of calling `fmap` with a function that might return `null`, the function result should be wrapped in a `Maybe` and `flatMap` should be used, as illustrated in the following example: 
+
+```Java
+Function<Integer, Object> nullResultFn = __ -> null;
+
+Optional.of(1).map(nullResultFn); // Optional.empty()
+Maybe.just(1).fmap(nullResultFn); // throws NullPointerException
+
+Maybe.just(1).flatMap(nullResultFn.andThen(Maybe::maybe)); // Nothing
+```
 
 ### <a name="hlists">Heterogeneous Lists (HLists)</a>
 
@@ -439,21 +525,24 @@ HNil nil = hList.tail().tail();
 
 One of the primary downsides to using `HList`s in Java is how quickly the type signature grows.
 
-To address this, tuples in lambda are specializations of `HList`s up to 5 elements deep, with added support for index-based accessor methods.
+To address this, tuples in lambda are specializations of `HList`s up to 8 elements deep, with added support for index-based accessor methods.
 
 ```Java
 HNil nil = HList.nil();
-SingletonHList<Integer> singleton = nil.cons(5);
-Tuple2<Integer, Integer> tuple2 = singleton.cons(4);
-Tuple3<Integer, Integer, Integer> tuple3 = tuple2.cons(3);
-Tuple4<Integer, Integer, Integer, Integer> tuple4 = tuple3.cons(2);
-Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = tuple4.cons(1);
+SingletonHList<Integer> singleton = nil.cons(8);
+Tuple2<Integer, Integer> tuple2 = singleton.cons(7);
+Tuple3<Integer, Integer, Integer> tuple3 = tuple2.cons(6);
+Tuple4<Integer, Integer, Integer, Integer> tuple4 = tuple3.cons(5);
+Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = tuple4.cons(4);
+Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple6 = tuple5.cons(3);
+Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple7 = tuple6.cons(2);
+Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple8 = tuple7.cons(1);
 
-System.out.println(tuple2._1()); // prints 4
-System.out.println(tuple5._5()); // prints 5
+System.out.println(tuple2._1()); // prints 7
+System.out.println(tuple8._8()); // prints 8
 ```
 
-Additionally, `HList` provides convenience static factory methods for directly constructing lists of up to 5 elements:
+Additionally, `HList` provides convenience static factory methods for directly constructing lists of up to 8 elements:
 
 ```Java
 SingletonHList<Integer> singleton = HList.singletonHList(1);
@@ -461,6 +550,9 @@ Tuple2<Integer, Integer> tuple2 = HList.tuple(1, 2);
 Tuple3<Integer, Integer, Integer> tuple3 = HList.tuple(1, 2, 3);
 Tuple4<Integer, Integer, Integer, Integer> tuple4 = HList.tuple(1, 2, 3, 4);
 Tuple5<Integer, Integer, Integer, Integer, Integer> tuple5 = HList.tuple(1, 2, 3, 4, 5);
+Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple6 = HList.tuple(1, 2, 3, 4, 5, 6);
+Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple7 = HList.tuple(1, 2, 3, 4, 5, 6, 7);
+Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple8 = HList.tuple(1, 2, 3, 4, 5, 6, 7, 8);
 ```
 
 `Index` can be used for type-safe retrieval and updating of elements at specific indexes:
@@ -508,7 +600,7 @@ HMap hmap = HMap.hMap(stringKey, "string value",
 Optional<String> stringValue = hmap.get(stringKey); // Optional["string value"]
 Optional<Integer> intValue = hmap.get(intKey); // Optional[1]
 Optional<Integer> anotherIntValue = hmap.get(anotherIntKey); // Optional.empty
-```    
+```
 
 ### <a name="coproducts">CoProducts</a>
 
@@ -537,7 +629,7 @@ CoProduct2<String, Integer, ?> coProduct2 = Choice2.a("string");
 CoProduct3<String, Integer, Character, ?> coProduct3 = coProduct2.diverge(); // still just the coProduct2 value, adapted to the coProduct3 shape
 ```
 
-There are `CoProduct` and `Choice` specializations for type unions of up to 5 different types: `CoProduct2` through `CoProduct5`, and `Choice2` through `Choice5`, respectively.
+There are `CoProduct` and `Choice` specializations for type unions of up to 8 different types: `CoProduct2` through `CoProduct8`, and `Choice2` through `Choice8`, respectively.
 
 ### <a name="either">Either</a>
 
