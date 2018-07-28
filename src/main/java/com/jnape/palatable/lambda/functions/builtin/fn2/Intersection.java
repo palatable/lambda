@@ -4,9 +4,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Distinct;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Distinct.distinct;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
@@ -28,8 +25,7 @@ public final class Intersection<A> implements Fn2<Iterable<A>, Iterable<A>, Iter
 
     @Override
     public Iterable<A> apply(Iterable<A> xs, Iterable<A> ys) {
-        Set<A> seen = new HashSet<>();
-        return distinct(filter(a -> seen.contains(a) || find(eq(a), ys).peek(seen::add).fmap(constantly(true)).orElse(false), xs));
+        return filter(x -> find(eq(x), ys).fmap(constantly(true)).orElse(false), distinct(xs));
     }
 
     @SuppressWarnings("unchecked")
