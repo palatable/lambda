@@ -1,8 +1,8 @@
-package com.jnape.palatable.lambda.semigroup.builtin;
+package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Distinct;
-import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +19,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Find.find;
  *
  * @param <A> the {@link Iterable} element type
  */
-public final class Intersection<A> implements Semigroup<Iterable<A>> {
+public final class Intersection<A> implements Fn2<Iterable<A>, Iterable<A>, Iterable<A>> {
 
     private static final Intersection INSTANCE = new Intersection();
 

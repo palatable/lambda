@@ -1,8 +1,8 @@
-package com.jnape.palatable.lambda.semigroup.builtin;
+package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Distinct;
-import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 import java.util.HashSet;
 
@@ -21,7 +21,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCo
  *
  * @param <A> the {@link Iterable} element type
  */
-public final class Difference<A> implements Semigroup<Iterable<A>> {
+public final class Difference<A> implements Fn2<Iterable<A>, Iterable<A>, Iterable<A>> {
 
     private static final Difference INSTANCE = new Difference();
 

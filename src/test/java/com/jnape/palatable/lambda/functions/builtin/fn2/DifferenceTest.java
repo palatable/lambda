@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.semigroup.builtin;
+package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -11,7 +11,7 @@ import testsupport.traits.ImmutableIteration;
 import testsupport.traits.InfiniteIterableSupport;
 import testsupport.traits.Laziness;
 
-import static com.jnape.palatable.lambda.semigroup.builtin.Difference.difference;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Difference.difference;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;

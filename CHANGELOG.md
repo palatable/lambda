@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
-_No changes yet_
+### Changed
+- ***Breaking Change***: `Difference` and `Intersection` no longer instances of `Semigroup` and moved to `functions.builtin.fn2` package
 
 ## [3.1.0] - 2018-07-16
 ### Added
