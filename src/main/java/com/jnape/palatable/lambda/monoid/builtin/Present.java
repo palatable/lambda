@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.MonoidFactory;
 import com.jnape.palatable.lambda.monoid.Monoid;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
+import com.jnape.palatable.lambda.semigroup.builtin.Absent;
 
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.monoid.Monoid.monoid;

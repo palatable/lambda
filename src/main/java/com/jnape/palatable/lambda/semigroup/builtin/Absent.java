@@ -1,9 +1,10 @@
-package com.jnape.palatable.lambda.monoid.builtin;
+package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
+import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 /**

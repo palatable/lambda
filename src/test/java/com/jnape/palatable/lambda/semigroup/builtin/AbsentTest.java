@@ -1,17 +1,17 @@
-package com.jnape.palatable.lambda.monoid.builtin;
+package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
-import static com.jnape.palatable.lambda.monoid.builtin.Absent.absent;
+import static com.jnape.palatable.lambda.semigroup.builtin.Absent.absent;
 import static org.junit.Assert.assertEquals;
 
 public class AbsentTest {
 
     @Test
-    public void monoid() {
+    public void semigroup() {
         Absent<Integer> absent = absent();
         Semigroup<Integer> addition = (x, y) -> x + y;
 
