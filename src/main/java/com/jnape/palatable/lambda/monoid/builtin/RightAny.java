@@ -45,7 +45,7 @@ public final class RightAny<L, R> implements MonoidFactory<Monoid<R>, Either<L, 
         return INSTANCE;
     }
 
-    public static <L, R> Semigroup<Either<L, R>> rightAny(Monoid<R> rMonoid) {
+    public static <L, R> Monoid<Either<L, R>> rightAny(Monoid<R> rMonoid) {
         return RightAny.<L, R>rightAny().apply(rMonoid);
     }
 

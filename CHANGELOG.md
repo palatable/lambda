@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - ***Breaking Change***: `Difference` and `Intersection` no longer instances of `Semigroup` and moved to `functions.builtin.fn2` package
 - ***Breaking Change***: `Absent` moved to `semigroup.builtin` package
+- `RightAny` overload returns `Monoid`
 
 ## [3.1.0] - 2018-07-16
 ### Added
