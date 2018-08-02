@@ -43,6 +43,15 @@ public interface Product2<_1, _2> extends Map.Entry<_1, _2> {
         return fn.apply(_1(), _2());
     }
 
+    /**
+     * Flip the slots of this {@link Product2}.
+     *
+     * @return the flipped {@link Product2}
+     */
+    default Product2<_2, _1> invert() {
+        return into((_1, _2) -> product(_2, _1));
+    }
+
     @Override
     default _1 getKey() {
         return _1();
@@ -56,5 +65,28 @@ public interface Product2<_1, _2> extends Map.Entry<_1, _2> {
     @Override
     default _2 setValue(_2 value) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Static factory method for creating a generic {@link Product2}.
+     *
+     * @param _1   the first slot
+     * @param _2   the second slot
+     * @param <_1> the first slot type
+     * @param <_2> the second slot type
+     * @return the {@link Product2}
+     */
+    static <_1, _2> Product2<_1, _2> product(_1 _1, _2 _2) {
+        return new Product2<_1, _2>() {
+            @Override
+            public _1 _1() {
+                return _1;
+            }
+
+            @Override
+            public _2 _2() {
+                return _2;
+            }
+        };
     }
 }
