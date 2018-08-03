@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ***Breaking Change***: `Absent` moved to `semigroup.builtin` package
 - `RightAny` overload returns `Monoid`
 
+### Added
+- `Predicate#predicate` static factory method
+
 ## [3.1.0] - 2018-07-16
 ### Added
 - `Fn3-8` static factory overloads to aid in coercing lambdas

@@ -82,4 +82,15 @@ public interface Predicate<A> extends Fn1<A, Boolean>, java.util.function.Predic
     default Predicate<A> negate() {
         return a -> !apply(a);
     }
+
+    /**
+     * Static factory method to create a predicate from a function.
+     *
+     * @param predicate the function
+     * @param <A>       the input type
+     * @return the predicate
+     */
+    static <A> Predicate<A> predicate(Function<? super A, Boolean> predicate) {
+        return predicate::apply;
+    }
 }
