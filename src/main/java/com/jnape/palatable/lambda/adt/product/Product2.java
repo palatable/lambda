@@ -44,9 +44,9 @@ public interface Product2<_1, _2> extends Map.Entry<_1, _2> {
     }
 
     /**
-     * Flip the slots of this {@link Product2}.
+     * Rotate the first two slots of this product.
      *
-     * @return the flipped {@link Product2}
+     * @return the rotated product
      */
     default Product2<_2, _1> invert() {
         return into((_1, _2) -> product(_2, _1));

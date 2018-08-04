@@ -78,6 +78,41 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     }
 
     @Override
+    public Tuple5<_2, _3, _4, _5, _1> rotateL5() {
+        return tuple(_2, _3, _4, _5, _1);
+    }
+
+    @Override
+    public Tuple5<_5, _1, _2, _3, _4> rotateR5() {
+        return tuple(_5, _1, _2, _3, _4);
+    }
+
+    @Override
+    public Tuple5<_2, _3, _4, _1, _5> rotateL4() {
+        return tuple(_2, _3, _4, _1, _5);
+    }
+
+    @Override
+    public Tuple5<_4, _1, _2, _3, _5> rotateR4() {
+        return tuple(_4, _1, _2, _3, _5);
+    }
+
+    @Override
+    public Tuple5<_2, _3, _1, _4, _5> rotateL3() {
+        return tuple(_2, _3, _1, _4, _5);
+    }
+
+    @Override
+    public Tuple5<_3, _1, _2, _4, _5> rotateR3() {
+        return tuple(_3, _1, _2, _4, _5);
+    }
+
+    @Override
+    public Tuple5<_2, _1, _3, _4, _5> invert() {
+        return tuple(_2, _1, _3, _4, _5);
+    }
+
+    @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> fmap(Function<? super _5, ? extends _5Prime> fn) {
         return Monad.super.<_5Prime>fmap(fn).coerce();
     }

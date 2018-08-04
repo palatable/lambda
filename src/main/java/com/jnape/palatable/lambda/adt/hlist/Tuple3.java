@@ -62,6 +62,21 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     }
 
     @Override
+    public Tuple3<_2, _3, _1> rotateL3() {
+        return tuple(_2, _3, _1);
+    }
+
+    @Override
+    public Tuple3<_3, _1, _2> rotateR3() {
+        return tuple(_3, _1, _2);
+    }
+
+    @Override
+    public Tuple3<_2, _1, _3> invert() {
+        return tuple(_2, _1, _3);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <_3Prime> Tuple3<_1, _2, _3Prime> fmap(Function<? super _3, ? extends _3Prime> fn) {
         return (Tuple3<_1, _2, _3Prime>) Monad.super.fmap(fn);

@@ -105,6 +105,71 @@ public class Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> extends HCons<_1, Tuple7<_2,
     }
 
     @Override
+    public Tuple8<_2, _3, _4, _5, _6, _7, _8, _1> rotateL8() {
+        return tuple(_2, _3, _4, _5, _6, _7, _8, _1);
+    }
+
+    @Override
+    public Tuple8<_8, _1, _2, _3, _4, _5, _6, _7> rotateR8() {
+        return tuple(_8, _1, _2, _3, _4, _5, _6, _7);
+    }
+
+    @Override
+    public Tuple8<_2, _3, _4, _5, _6, _7, _1, _8> rotateL7() {
+        return tuple(_2, _3, _4, _5, _6, _7, _1, _8);
+    }
+
+    @Override
+    public Tuple8<_7, _1, _2, _3, _4, _5, _6, _8> rotateR7() {
+        return tuple(_7, _1, _2, _3, _4, _5, _6, _8);
+    }
+
+    @Override
+    public Tuple8<_2, _3, _4, _5, _6, _1, _7, _8> rotateL6() {
+        return tuple(_2, _3, _4, _5, _6, _1, _7, _8);
+    }
+
+    @Override
+    public Tuple8<_6, _1, _2, _3, _4, _5, _7, _8> rotateR6() {
+        return tuple(_6, _1, _2, _3, _4, _5, _7, _8);
+    }
+
+    @Override
+    public Tuple8<_2, _3, _4, _5, _1, _6, _7, _8> rotateL5() {
+        return tuple(_2, _3, _4, _5, _1, _6, _7, _8);
+    }
+
+    @Override
+    public Tuple8<_5, _1, _2, _3, _4, _6, _7, _8> rotateR5() {
+        return tuple(_5, _1, _2, _3, _4, _6, _7, _8);
+    }
+
+    @Override
+    public Tuple8<_2, _3, _4, _1, _5, _6, _7, _8> rotateL4() {
+        return tuple(_2, _3, _4, _1, _5, _6, _7, _8);
+    }
+
+    @Override
+    public Tuple8<_4, _1, _2, _3, _5, _6, _7, _8> rotateR4() {
+        return tuple(_4, _1, _2, _3, _5, _6, _7, _8);
+    }
+
+    @Override
+    public Tuple8<_2, _3, _1, _4, _5, _6, _7, _8> rotateL3() {
+        return tuple(_2, _3, _1, _4, _5, _6, _7, _8);
+    }
+
+    @Override
+    public Tuple8<_3, _1, _2, _4, _5, _6, _7, _8> rotateR3() {
+        return tuple(_3, _1, _2, _4, _5, _6, _7, _8);
+    }
+
+    @Override
+    public Tuple8<_2, _1, _3, _4, _5, _6, _7, _8> invert() {
+        return tuple(_2, _1, _3, _4, _5, _6, _7, _8);
+    }
+
+    @Override
     public <_8Prime> Tuple8<_1, _2, _3, _4, _5, _6, _7, _8Prime> fmap(Function<? super _8, ? extends _8Prime> fn) {
         return Monad.super.<_8Prime>fmap(fn).coerce();
     }

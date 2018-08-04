@@ -70,21 +70,43 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    public Tuple4<_2, _3, _4, _1> rotateL4() {
+        return tuple(_2, _3, _4, _1);
+    }
+
+    @Override
+    public Tuple4<_4, _1, _2, _3> rotateR4() {
+        return tuple(_4, _1, _2, _3);
+    }
+
+    @Override
+    public Tuple4<_2, _3, _1, _4> rotateL3() {
+        return tuple(_2, _3, _1, _4);
+    }
+
+    @Override
+    public Tuple4<_3, _1, _2, _4> rotateR3() {
+        return tuple(_3, _1, _2, _4);
+    }
+
+    @Override
+    public Tuple4<_2, _1, _3, _4> invert() {
+        return tuple(_2, _1, _3, _4);
+    }
+
+    @Override
     public <_4Prime> Tuple4<_1, _2, _3, _4Prime> fmap(Function<? super _4, ? extends _4Prime> fn) {
-        return (Tuple4<_1, _2, _3, _4Prime>) Monad.super.fmap(fn);
+        return (Tuple4<_1, _2, _3, _4Prime>) Monad.super.<_4Prime>fmap(fn);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <_3Prime> Tuple4<_1, _2, _3Prime, _4> biMapL(Function<? super _3, ? extends _3Prime> fn) {
-        return (Tuple4<_1, _2, _3Prime, _4>) Bifunctor.super.biMapL(fn);
+        return (Tuple4<_1, _2, _3Prime, _4>) Bifunctor.super.<_3Prime>biMapL(fn);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <_4Prime> Tuple4<_1, _2, _3, _4Prime> biMapR(Function<? super _4, ? extends _4Prime> fn) {
-        return (Tuple4<_1, _2, _3, _4Prime>) Bifunctor.super.biMapR(fn);
+        return (Tuple4<_1, _2, _3, _4Prime>) Bifunctor.super.<_4Prime>biMapR(fn);
     }
 
     @Override

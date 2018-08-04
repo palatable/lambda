@@ -96,6 +96,61 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     }
 
     @Override
+    public Tuple7<_2, _3, _4, _5, _6, _7, _1> rotateL7() {
+        return tuple(_2, _3, _4, _5, _6, _7, _1);
+    }
+
+    @Override
+    public Tuple7<_7, _1, _2, _3, _4, _5, _6> rotateR7() {
+        return tuple(_7, _1, _2, _3, _4, _5, _6);
+    }
+
+    @Override
+    public Tuple7<_2, _3, _4, _5, _6, _1, _7> rotateL6() {
+        return tuple(_2, _3, _4, _5, _6, _1, _7);
+    }
+
+    @Override
+    public Tuple7<_6, _1, _2, _3, _4, _5, _7> rotateR6() {
+        return tuple(_6, _1, _2, _3, _4, _5, _7);
+    }
+
+    @Override
+    public Tuple7<_2, _3, _4, _5, _1, _6, _7> rotateL5() {
+        return tuple(_2, _3, _4, _5, _1, _6, _7);
+    }
+
+    @Override
+    public Tuple7<_5, _1, _2, _3, _4, _6, _7> rotateR5() {
+        return tuple(_5, _1, _2, _3, _4, _6, _7);
+    }
+
+    @Override
+    public Tuple7<_2, _3, _4, _1, _5, _6, _7> rotateL4() {
+        return tuple(_2, _3, _4, _1, _5, _6, _7);
+    }
+
+    @Override
+    public Tuple7<_4, _1, _2, _3, _5, _6, _7> rotateR4() {
+        return tuple(_4, _1, _2, _3, _5, _6, _7);
+    }
+
+    @Override
+    public Tuple7<_2, _3, _1, _4, _5, _6, _7> rotateL3() {
+        return tuple(_2, _3, _1, _4, _5, _6, _7);
+    }
+
+    @Override
+    public Tuple7<_3, _1, _2, _4, _5, _6, _7> rotateR3() {
+        return tuple(_3, _1, _2, _4, _5, _6, _7);
+    }
+
+    @Override
+    public Tuple7<_2, _1, _3, _4, _5, _6, _7> invert() {
+        return tuple(_2, _1, _3, _4, _5, _6, _7);
+    }
+
+    @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> fmap(Function<? super _7, ? extends _7Prime> fn) {
         return Monad.super.<_7Prime>fmap(fn).coerce();
     }

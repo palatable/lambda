@@ -71,6 +71,11 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     }
 
     @Override
+    public Tuple2<_2, _1> invert() {
+        return tuple(_2, _1);
+    }
+
+    @Override
     public <_2Prime> Tuple2<_1, _2Prime> fmap(Function<? super _2, ? extends _2Prime> fn) {
         return Monad.super.<_2Prime>fmap(fn).coerce();
     }

@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 - `Predicate#predicate` static factory method
+- `Product2-8` left/right rotation methods
+- `Tuple2-8` specializations of left/right product rotation 
 
 ## [3.1.0] - 2018-07-16
 ### Added
