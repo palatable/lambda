@@ -1,9 +1,6 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
-import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functions.Effect;
-
-import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 
 /**
  * As the name might suggest, this is an {@link Effect} that, *ahem*, has no effect.
@@ -17,8 +14,7 @@ public final class Noop<A> implements Effect<A> {
     }
 
     @Override
-    public Unit apply(A a) {
-        return UNIT;
+    public void accept(A a) {
     }
 
     /**

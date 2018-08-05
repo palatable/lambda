@@ -20,8 +20,9 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 public interface Effect<A> extends Fn1<A, Unit>, Consumer<A> {
 
     @Override
-    default void accept(A a) {
-        apply(a);
+    default Unit apply(A a) {
+        accept(a);
+        return UNIT;
     }
 
     @Override
@@ -46,9 +47,27 @@ public interface Effect<A> extends Fn1<A, Unit>, Consumer<A> {
 
     @Override
     default Effect<A> andThen(Consumer<? super A> after) {
-        return a -> {
-            Consumer.super.andThen(after).accept(a);
-            return UNIT;
-        };
+        return Consumer.super.andThen(after)::accept;
+    }
+
+    /**
+     * Static factory method to aid in inference.
+     *
+     * @param effect the effect
+     * @param <A>    the effect argument type
+     * @return the effect
+     */
+    static <A> Effect<A> effect(Consumer<A> effect) {
+        return effect::accept;
+    }
+
+    /**
+     * Create an {@link Effect} from a {@link Runnable};
+     *
+     * @param runnable the runnable
+     * @return the effect
+     */
+    static Effect<Unit> effect(Runnable runnable) {
+        return effect(__ -> runnable.run());
     }
 }
