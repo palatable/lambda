@@ -7,8 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - ***Breaking Change***: `Difference` and `Intersection` no longer instances of `Semigroup` and moved to `functions.builtin.fn2` package
 - ***Breaking Change***: `Absent` moved to `semigroup.builtin` package
+- ***Breaking Change***: `Effect#accept()` is now the required method to implement in the functional interface
+- ***Breaking Change***: `Fn0#apply()` is now the required method to implement in the functional interface
 - `RightAny` overload returns `Monoid`
-- `Effect#apply()` is now the required method to implement in the functional interface
 
 ### Added
 - `Predicate#predicate` static factory method

@@ -36,7 +36,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      * @return an {@link Fn0}
      */
     default Fn0<B> thunk(A a) {
-        return __ -> apply(a);
+        return () -> apply(a);
     }
 
     /**

@@ -8,6 +8,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 @RunWith(Traits.class)
@@ -15,6 +16,6 @@ public class Fn0Test {
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
     public Fn0<Integer> testSubject() {
-        return new EqualityAwareFn0<>(constantly(1)::apply);
+        return new EqualityAwareFn0<>(constantly(1).thunk(UNIT));
     }
 }

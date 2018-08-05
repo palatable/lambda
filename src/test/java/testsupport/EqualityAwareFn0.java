@@ -19,8 +19,13 @@ public final class EqualityAwareFn0<A> implements Fn0<A> {
     }
 
     @Override
+    public A apply() {
+        return fn.apply();
+    }
+
+    @Override
     public A apply(Unit unit) {
-        return fn.apply(unit);
+        return apply();
     }
 
     @Override

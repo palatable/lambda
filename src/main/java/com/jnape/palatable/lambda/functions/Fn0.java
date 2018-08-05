@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functions.Effect.effect;
 
 /**
  * A function taking "no arguments", implemented as an <code>{@link Fn1}&lt;{@link Unit}, A&gt;</code>.
@@ -19,6 +20,8 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 @FunctionalInterface
 public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
 
+    A apply();
+
     /**
      * Invoke this function with {@link Unit}.
      *
@@ -26,55 +29,48 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
      * @return the result value
      */
     @Override
-    A apply(Unit unit);
-
-    /**
-     * Apply this {@link Fn0}, supplying {@link Unit} as the input.
-     *
-     * @return the output
-     */
-    default A apply() {
-        return apply(UNIT);
+    default A apply(Unit unit) {
+        return apply();
     }
 
     @Override
     default <B> Fn0<B> flatMap(Function<? super A, ? extends Monad<B, Fn1<Unit, ?>>> f) {
-        return Fn1.super.flatMap(f)::apply;
+        return Fn1.super.flatMap(f).thunk(UNIT);
     }
 
     @Override
     default <B> Fn0<B> fmap(Function<? super A, ? extends B> f) {
-        return Fn1.super.fmap(f)::apply;
+        return Fn1.super.<B>fmap(f).thunk(UNIT);
     }
 
     @Override
     default <B> Fn0<B> pure(B b) {
-        return Fn1.super.pure(b)::apply;
+        return Fn1.super.pure(b).thunk(UNIT);
     }
 
     @Override
     default <B> Fn0<B> zip(Applicative<Function<? super A, ? extends B>, Fn1<Unit, ?>> appFn) {
-        return Fn1.super.zip(appFn)::apply;
+        return Fn1.super.zip(appFn).thunk(UNIT);
     }
 
     @Override
     default <B> Fn0<B> zip(Fn2<Unit, A, B> appFn) {
-        return Fn1.super.zip(appFn)::apply;
+        return Fn1.super.zip(appFn).thunk(UNIT);
     }
 
     @Override
     default <B> Fn0<B> discardL(Applicative<B, Fn1<Unit, ?>> appB) {
-        return Fn1.super.discardL(appB)::apply;
+        return Fn1.super.discardL(appB).thunk(UNIT);
     }
 
     @Override
     default <B> Fn0<A> discardR(Applicative<B, Fn1<Unit, ?>> appB) {
-        return Fn1.super.discardR(appB)::apply;
+        return Fn1.super.discardR(appB).thunk(UNIT);
     }
 
     @Override
     default <B> Fn0<B> diMapR(Function<? super A, ? extends B> fn) {
-        return Fn1.super.diMapR(fn)::apply;
+        return Fn1.super.<B>diMapR(fn).thunk(UNIT);
     }
 
     @Override
@@ -84,7 +80,7 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
 
     @Override
     default <B> Fn0<B> andThen(Function<? super A, ? extends B> after) {
-        return Fn1.super.andThen(after)::apply;
+        return Fn1.super.<B>andThen(after).thunk(UNIT);
     }
 
     @Override
@@ -100,7 +96,7 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
      * @return the {@link Fn0}
      */
     static <A> Fn0<A> fn0(Supplier<A> supplier) {
-        return __ -> supplier.get();
+        return supplier::get;
     }
 
     /**
@@ -121,10 +117,7 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
      * @return the {@link Fn0}
      */
     static Fn0<Unit> fn0(Runnable fn) {
-        return unit -> {
-            fn.run();
-            return unit;
-        };
+        return effect(fn).thunk(UNIT);
     }
 
     /**
