@@ -34,4 +34,18 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      * @throws T any exception that can be thrown by this method
      */
     B checkedApply(A a) throws T;
+
+    /**
+     * Convenience static factory method for constructing a {@link CheckedFn1} without an explicit cast or type
+     * attribution at the call site.
+     *
+     * @param checkedFn1 the checked fn1
+     * @param <T>        the inferred Throwable type
+     * @param <A>        the input type
+     * @param <B>        the output type
+     * @return the checked fn1
+     */
+    static <T extends Throwable, A, B> CheckedFn1<T, A, B> checked(CheckedFn1<T, A, B> checkedFn1) {
+        return checkedFn1;
+    }
 }

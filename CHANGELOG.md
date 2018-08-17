@@ -14,7 +14,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 - `Predicate#predicate` static factory method
 - `Product2-8` left/right rotation methods
-- `Tuple2-8` specializations of left/right product rotation 
+- `Tuple2-8` specializations of left/right product rotation
+- `CheckedEffect`, an `Effect` variant that can throw checked exceptions 
+- `CheckedFn1#checked`, convenience static factory method to aid inference 
 
 ## [3.1.0] - 2018-07-16
 ### Added
