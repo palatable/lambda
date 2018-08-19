@@ -15,7 +15,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.TakeWhile.takeWhi
  *
  * @param <A> the {@link Iterable} element type
  */
-public final class Span<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> {
+public final class Span<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> {
 
     private static final Span INSTANCE = new Span();
 
@@ -23,7 +23,7 @@ public final class Span<A> implements Fn2<Function<? super A, Boolean>, Iterable
     }
 
     @Override
-    public Tuple2<Iterable<A>, Iterable<A>> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public Tuple2<Iterable<A>, Iterable<A>> apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return Tuple2.fill(as).biMap(takeWhile(predicate), dropWhile(predicate));
     }
 
@@ -32,11 +32,12 @@ public final class Span<A> implements Fn2<Function<? super A, Boolean>, Iterable
         return INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> span(Function<? super A, Boolean> predicate) {
+    public static <A> Fn1<Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> span(
+            Function<? super A, ? extends Boolean> predicate) {
         return Span.<A>span().apply(predicate);
     }
 
-    public static <A> Tuple2<Iterable<A>, Iterable<A>> span(Function<? super A, Boolean> predicate,
+    public static <A> Tuple2<Iterable<A>, Iterable<A>> span(Function<? super A, ? extends Boolean> predicate,
                                                             Iterable<A> as) {
         return Span.<A>span(predicate).apply(as);
     }

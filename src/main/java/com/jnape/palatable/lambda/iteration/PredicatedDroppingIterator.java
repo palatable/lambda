@@ -5,11 +5,11 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 public final class PredicatedDroppingIterator<A> extends ImmutableIterator<A> {
-    private final Function<? super A, Boolean> predicate;
-    private final RewindableIterator<A>        rewindableIterator;
-    private       boolean                      finishedDropping;
+    private final Function<? super A, ? extends Boolean> predicate;
+    private final RewindableIterator<A>                  rewindableIterator;
+    private       boolean                                finishedDropping;
 
-    public PredicatedDroppingIterator(Function<? super A, Boolean> predicate, Iterator<A> asIterator) {
+    public PredicatedDroppingIterator(Function<? super A, ? extends Boolean> predicate, Iterator<A> asIterator) {
         this.predicate = predicate;
         rewindableIterator = new RewindableIterator<>(asIterator);
         finishedDropping = false;

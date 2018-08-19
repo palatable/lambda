@@ -13,7 +13,9 @@ import java.util.Collection;
  * For the {@link Monoid}, see {@link com.jnape.palatable.lambda.monoid.builtin.AddAll}.
  *
  * @see Semigroup
+ * @deprecated in favor of the now non-modifying {@link com.jnape.palatable.lambda.monoid.builtin.AddAll monoid}
  */
+@Deprecated
 public final class AddAll<A, C extends Collection<A>> implements Semigroup<C> {
 
     private static final AddAll INSTANCE = new AddAll();

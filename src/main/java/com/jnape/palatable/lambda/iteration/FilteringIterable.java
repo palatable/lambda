@@ -9,11 +9,11 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.All.all;
 import static java.util.Collections.singletonList;
 
 public final class FilteringIterable<A> implements Iterable<A> {
-    private final List<Function<? super A, Boolean>> predicates;
-    private final Iterable<A>                        as;
+    private final List<Function<? super A, ? extends Boolean>> predicates;
+    private final Iterable<A>                                  as;
 
-    public FilteringIterable(Function<? super A, Boolean> predicate, Iterable<A> as) {
-        List<Function<? super A, Boolean>> predicates = new ArrayList<>(singletonList(predicate));
+    public FilteringIterable(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+        List<Function<? super A, ? extends Boolean>> predicates = new ArrayList<>(singletonList(predicate));
         while (as instanceof FilteringIterable) {
             FilteringIterable<A> nested = (FilteringIterable<A>) as;
             predicates.addAll(0, nested.predicates);
@@ -25,7 +25,7 @@ public final class FilteringIterable<A> implements Iterable<A> {
 
     @Override
     public Iterator<A> iterator() {
-        Function<? super A, Boolean> metaPredicate = a -> all(p -> p.apply(a), predicates);
+        Function<? super A, ? extends Boolean> metaPredicate = a -> all(p -> p.apply(a), predicates);
         return new FilteringIterator<>(metaPredicate, as.iterator());
     }
 }

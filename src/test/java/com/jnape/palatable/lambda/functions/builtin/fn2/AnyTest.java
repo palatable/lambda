@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(Traits.class)
 public class AnyTest {
 
-    public static final Function<? super Integer, Boolean> EVEN = x -> x % 2 == 0;
+    public static final Function<? super Integer, ? extends Boolean> EVEN = x -> x % 2 == 0;
 
     @TestTraits({EmptyIterableSupport.class})
     public Fn1<Iterable<Object>, Boolean> createTestSubject() {

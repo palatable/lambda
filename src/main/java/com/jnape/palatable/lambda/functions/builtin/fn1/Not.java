@@ -10,14 +10,14 @@ import java.util.function.Function;
  *
  * @param <A> the input argument type
  */
-public final class Not<A> implements BiPredicate<Function<? super A, Boolean>, A> {
+public final class Not<A> implements BiPredicate<Function<? super A, ? extends Boolean>, A> {
     private static final Not INSTANCE = new Not();
 
     private Not() {
     }
 
     @Override
-    public Boolean apply(Function<? super A, Boolean> pred, A a) {
+    public Boolean apply(Function<? super A, ? extends Boolean> pred, A a) {
         return !pred.apply(a);
     }
 
@@ -26,11 +26,11 @@ public final class Not<A> implements BiPredicate<Function<? super A, Boolean>, A
         return INSTANCE;
     }
 
-    public static <A> Predicate<A> not(Function<? super A, Boolean> pred) {
+    public static <A> Predicate<A> not(Function<? super A, ? extends Boolean> pred) {
         return Not.<A>not().apply(pred);
     }
 
-    public static <A> Boolean not(Function<? super A, Boolean> pred, A a) {
+    public static <A> Boolean not(Function<? super A, ? extends Boolean> pred, A a) {
         return not(pred).apply(a);
     }
 }

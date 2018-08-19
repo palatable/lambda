@@ -1,20 +1,21 @@
 package com.jnape.palatable.lambda.monoid.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft;
 import com.jnape.palatable.lambda.functions.specialized.MonoidFactory;
 import com.jnape.palatable.lambda.monoid.Monoid;
-import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.jnape.palatable.lambda.monoid.Monoid.monoid;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 
 /**
  * The {@link Monoid} instance formed under mutative concatenation for an arbitrary {@link Collection}. The collection
  * subtype (<code>C</code>) must support {@link Collection#addAll(Collection)}.
  * <p>
- * For the {@link Semigroup}, see {@link com.jnape.palatable.lambda.semigroup.builtin.AddAll}.
+ * Note that the result is a new collection, and the inputs to this monoid are left unmodified.
  *
  * @see Monoid
  */
@@ -27,8 +28,28 @@ public final class AddAll<A, C extends Collection<A>> implements MonoidFactory<S
 
     @Override
     public Monoid<C> apply(Supplier<C> cSupplier) {
-        Semigroup<C> semigroup = com.jnape.palatable.lambda.semigroup.builtin.AddAll.addAll();
-        return monoid(semigroup, cSupplier);
+        return new Monoid<C>() {
+            @Override
+            public C identity() {
+                return cSupplier.get();
+            }
+
+            @Override
+            public C apply(C xs, C ys) {
+                C c = identity();
+                c.addAll(xs);
+                c.addAll(ys);
+                return c;
+            }
+
+            @Override
+            public <B> C foldMap(Function<? super B, ? extends C> fn, Iterable<B> bs) {
+                return FoldLeft.foldLeft((x, y) -> {
+                    x.addAll(y);
+                    return x;
+                }, identity(), map(fn, bs));
+            }
+        };
     }
 
     @SuppressWarnings("unchecked")

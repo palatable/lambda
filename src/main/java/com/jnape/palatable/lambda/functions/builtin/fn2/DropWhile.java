@@ -16,7 +16,7 @@ import java.util.function.Function;
  * @see TakeWhile
  */
 
-public final class DropWhile<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Iterable<A>> {
+public final class DropWhile<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Iterable<A>> {
 
     private static final DropWhile INSTANCE = new DropWhile();
 
@@ -24,7 +24,7 @@ public final class DropWhile<A> implements Fn2<Function<? super A, Boolean>, Ite
     }
 
     @Override
-    public Iterable<A> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public Iterable<A> apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return new PredicatedDroppingIterable<>(predicate, as);
     }
 
@@ -33,11 +33,11 @@ public final class DropWhile<A> implements Fn2<Function<? super A, Boolean>, Ite
         return INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Iterable<A>> dropWhile(Function<? super A, Boolean> predicate) {
+    public static <A> Fn1<Iterable<A>, Iterable<A>> dropWhile(Function<? super A, ? extends Boolean> predicate) {
         return DropWhile.<A>dropWhile().apply(predicate);
     }
 
-    public static <A> Iterable<A> dropWhile(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public static <A> Iterable<A> dropWhile(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return DropWhile.<A>dropWhile(predicate).apply(as);
     }
 }

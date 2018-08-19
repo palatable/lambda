@@ -13,7 +13,7 @@ import java.util.function.Function;
  * @param <A> The input Iterable element type
  * @see All
  */
-public final class Any<A> implements BiPredicate<Function<? super A, Boolean>, Iterable<A>> {
+public final class Any<A> implements BiPredicate<Function<? super A, ? extends Boolean>, Iterable<A>> {
 
     private static final Any INSTANCE = new Any();
 
@@ -21,7 +21,7 @@ public final class Any<A> implements BiPredicate<Function<? super A, Boolean>, I
     }
 
     @Override
-    public Boolean apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public Boolean apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         for (A a : as)
             if (predicate.apply(a))
                 return true;
@@ -34,11 +34,11 @@ public final class Any<A> implements BiPredicate<Function<? super A, Boolean>, I
         return INSTANCE;
     }
 
-    public static <A> Predicate<Iterable<A>> any(Function<? super A, Boolean> predicate) {
+    public static <A> Predicate<Iterable<A>> any(Function<? super A, ? extends Boolean> predicate) {
         return Any.<A>any().apply(predicate);
     }
 
-    public static <A> Boolean any(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public static <A> Boolean any(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return Any.<A>any(predicate).apply(as);
     }
 }

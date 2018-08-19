@@ -5,6 +5,10 @@ import com.jnape.palatable.lambda.iteration.ConcatenatingIterable;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 import java.util.Collections;
+import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Flatten.flatten;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 
 /**
  * The {@link Monoid} instance formed under concatenation for an arbitrary {@link Iterable}.
@@ -26,6 +30,11 @@ public final class Concat<A> implements Monoid<Iterable<A>> {
     @Override
     public Iterable<A> apply(Iterable<A> xs, Iterable<A> ys) {
         return new ConcatenatingIterable<>(xs, ys);
+    }
+
+    @Override
+    public <B> Iterable<A> foldMap(Function<? super B, ? extends Iterable<A>> fn, Iterable<B> bs) {
+        return flatten(map(fn, bs));
     }
 
     @SuppressWarnings("unchecked")

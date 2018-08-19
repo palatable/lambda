@@ -14,7 +14,7 @@ import java.util.function.Function;
  * @see TakeWhile
  * @see DropWhile
  */
-public final class Filter<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Iterable<A>> {
+public final class Filter<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Iterable<A>> {
 
     private static final Filter INSTANCE = new Filter();
 
@@ -22,7 +22,7 @@ public final class Filter<A> implements Fn2<Function<? super A, Boolean>, Iterab
     }
 
     @Override
-    public Iterable<A> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public Iterable<A> apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return new FilteringIterable<>(predicate, as);
     }
 
@@ -31,11 +31,11 @@ public final class Filter<A> implements Fn2<Function<? super A, Boolean>, Iterab
         return INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Iterable<A>> filter(Function<? super A, Boolean> predicate) {
+    public static <A> Fn1<Iterable<A>, Iterable<A>> filter(Function<? super A, ? extends Boolean> predicate) {
         return Filter.<A>filter().apply(predicate);
     }
 
-    public static <A> Iterable<A> filter(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public static <A> Iterable<A> filter(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return Filter.<A>filter(predicate).apply(as);
     }
 }

@@ -52,7 +52,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param recoveryFn the function mapping the {@link Throwable} to the result
      * @return a new {@link Try} instance around either the original successful result or the mapped result
      */
-    public final Try<T, A> catching(Function<? super T, Boolean> predicate,
+    public final Try<T, A> catching(Function<? super T, ? extends Boolean> predicate,
                                     Function<? super T, ? extends A> recoveryFn) {
         return match(t -> predicate.apply(t) ? success(recoveryFn.apply(t)) : failure(t), Try::success);
     }

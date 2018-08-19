@@ -18,7 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.DropWhile.dropWhi
  *
  * @param <A> the Iterable element type
  */
-public final class Find<A> implements Fn2<Function<? super A, Boolean>, Iterable<A>, Maybe<A>> {
+public final class Find<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Maybe<A>> {
 
     private static final Find INSTANCE = new Find();
 
@@ -26,7 +26,7 @@ public final class Find<A> implements Fn2<Function<? super A, Boolean>, Iterable
     }
 
     @Override
-    public Maybe<A> apply(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public Maybe<A> apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return head(dropWhile(not(predicate), as));
     }
 
@@ -35,11 +35,11 @@ public final class Find<A> implements Fn2<Function<? super A, Boolean>, Iterable
         return INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Maybe<A>> find(Function<? super A, Boolean> predicate) {
+    public static <A> Fn1<Iterable<A>, Maybe<A>> find(Function<? super A, ? extends Boolean> predicate) {
         return Find.<A>find().apply(predicate);
     }
 
-    public static <A> Maybe<A> find(Function<? super A, Boolean> predicate, Iterable<A> as) {
+    public static <A> Maybe<A> find(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return Find.<A>find(predicate).apply(as);
     }
 }

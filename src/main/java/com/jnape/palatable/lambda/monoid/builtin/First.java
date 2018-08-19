@@ -4,9 +4,12 @@ import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
+import java.util.function.Function;
+
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.CatMaybes.catMaybes;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Head.head;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 
 /**
  * A {@link Monoid} instance formed by <code>{@link Maybe}&lt;A&gt;</code>. The application to two {@link Maybe} values
@@ -36,8 +39,8 @@ public final class First<A> implements Monoid<Maybe<A>> {
     }
 
     @Override
-    public Maybe<A> reduceLeft(Iterable<Maybe<A>> maybes) {
-        return head(catMaybes(maybes));
+    public <B> Maybe<A> foldMap(Function<? super B, ? extends Maybe<A>> fn, Iterable<B> bs) {
+        return head(catMaybes(map(fn, bs)));
     }
 
     @SuppressWarnings("unchecked")

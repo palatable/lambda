@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ***Breaking Change***: `Effect#accept()` is now the required method to implement in the functional interface
 - ***Breaking Change***: `Fn0#apply()` is now the required method to implement in the functional interface
 - `RightAny` overload returns `Monoid`
+- monoids now all fold with respect to `foldMap`
+- monoid folding now implicitly starts with the identity, regardless of iterable population
+- `Concat` monoid can now fold infinite iterables
+- all `Function<? super XXX, Boolean>` are now `Function<? super XXX, ? extends Boolean>` for better compatibility  
 
 ### Added
 - `Predicate#predicate` static factory method
@@ -17,6 +21,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Tuple2-8` specializations of left/right product rotation
 - `CheckedEffect`, an `Effect` variant that can throw checked exceptions 
 - `CheckedFn1#checked`, convenience static factory method to aid inference 
+
+### Deprecated
+- `AddAll` semigroup, in favor of the monoid that no longer mutates any argument 
 
 ## [3.1.0] - 2018-07-16
 ### Added

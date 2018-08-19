@@ -3,14 +3,16 @@ package com.jnape.palatable.lambda.monoid;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Map;
 import com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft;
 import com.jnape.palatable.lambda.functions.builtin.fn2.ReduceRight;
+import com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Reverse.reverse;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Snoc.snoc;
 
 /**
  * A {@link Monoid} is the pairing of a {@link Semigroup} with an identity element.
@@ -35,7 +37,7 @@ public interface Monoid<A> extends Semigroup<A> {
      * @see ReduceLeft
      */
     default A reduceLeft(Iterable<A> as) {
-        return ReduceLeft.reduceLeft(toBiFunction(), as).orElse(identity());
+        return foldMap(id(), as);
     }
 
     /**
@@ -47,7 +49,7 @@ public interface Monoid<A> extends Semigroup<A> {
      * @see ReduceRight
      */
     default A reduceRight(Iterable<A> as) {
-        return ReduceRight.reduceRight(toBiFunction(), as).orElse(identity());
+        return flip().foldMap(id(), reverse(as));
     }
 
     /**
@@ -63,7 +65,7 @@ public interface Monoid<A> extends Semigroup<A> {
      * @see Monoid#reduceLeft(Iterable)
      */
     default <B> A foldMap(Function<? super B, ? extends A> fn, Iterable<B> bs) {
-        return reduceLeft(map(fn, bs));
+        return FoldLeft.foldLeft(this.toBiFunction(), identity(), map(fn, bs));
     }
 
     /**
@@ -71,7 +73,7 @@ public interface Monoid<A> extends Semigroup<A> {
      */
     @Override
     default A foldLeft(A a, Iterable<A> as) {
-        return reduceLeft(cons(a, as));
+        return foldMap(id(), cons(a, as));
     }
 
     /**
@@ -79,7 +81,7 @@ public interface Monoid<A> extends Semigroup<A> {
      */
     @Override
     default A foldRight(A a, Iterable<A> as) {
-        return reduceRight(snoc(a, as));
+        return flip().foldMap(id(), reverse(cons(a, as)));
     }
 
     /**

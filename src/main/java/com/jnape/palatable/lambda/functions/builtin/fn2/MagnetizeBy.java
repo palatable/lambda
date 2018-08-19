@@ -25,7 +25,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Unfoldr.unfoldr;
  *
  * @param <A> the {@link Iterable} element type
  */
-public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A, Boolean>, Iterable<A>, Iterable<Iterable<A>>> {
+public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A, ? extends Boolean>, Iterable<A>, Iterable<Iterable<A>>> {
 
     private static final MagnetizeBy INSTANCE = new MagnetizeBy();
 
@@ -33,7 +33,7 @@ public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A
     }
 
     @Override
-    public Iterable<Iterable<A>> apply(BiFunction<? super A, ? super A, Boolean> predicate, Iterable<A> as) {
+    public Iterable<Iterable<A>> apply(BiFunction<? super A, ? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return () -> uncons(as).fmap(into((A head, Iterable<A> tail) -> {
             Iterable<A> group = cons(head, unfoldr(into((pivot, ys) -> uncons(ys)
                     .flatMap(into((y, recurse) -> predicate.apply(pivot, y)
@@ -49,12 +49,12 @@ public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<Iterable<A>>> magnetizeBy(
-            BiFunction<? super A, ? super A, Boolean> predicate) {
+            BiFunction<? super A, ? super A, ? extends Boolean> predicate) {
         return MagnetizeBy.<A>magnetizeBy().apply(predicate);
     }
 
     public static <A> Iterable<Iterable<A>> magnetizeBy(
-            BiFunction<? super A, ? super A, Boolean> predicate,
+            BiFunction<? super A, ? super A, ? extends Boolean> predicate,
             Iterable<A> as) {
         return MagnetizeBy.<A>magnetizeBy(predicate).apply(as);
     }

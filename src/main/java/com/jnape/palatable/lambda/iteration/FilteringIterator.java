@@ -6,10 +6,10 @@ import java.util.function.Function;
 
 public final class FilteringIterator<A> extends ImmutableIterator<A> {
 
-    private final Function<? super A, Boolean> predicate;
-    private final RewindableIterator<A>        rewindableIterator;
+    private final Function<? super A, ? extends Boolean> predicate;
+    private final RewindableIterator<A>                  rewindableIterator;
 
-    public FilteringIterator(Function<? super A, Boolean> predicate, Iterator<A> iterator) {
+    public FilteringIterator(Function<? super A, ? extends Boolean> predicate, Iterator<A> iterator) {
         this.predicate = predicate;
         rewindableIterator = new RewindableIterator<>(iterator);
     }

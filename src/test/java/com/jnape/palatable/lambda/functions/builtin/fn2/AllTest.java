@@ -19,10 +19,10 @@ import static org.junit.Assert.assertThat;
 @RunWith(Traits.class)
 public class AllTest {
 
-    private static final Function<? super Number, Boolean> EVEN = x -> x.doubleValue() % 2 == 0;
+    private static final Function<? super Number, ? extends Boolean> EVEN = x -> x.doubleValue() % 2 == 0;
 
     @TestTraits({EmptyIterableSupport.class})
-    public Fn1<Iterable<Object>, Boolean> createTestSubject() {
+    public Fn1<Iterable<Object>, ? extends Boolean> createTestSubject() {
         return all(constantly(true));
     }
 

@@ -4,7 +4,9 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Not.not;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Find.find;
 
@@ -32,8 +34,8 @@ public final class And implements Monoid<Boolean>, BiPredicate<Boolean, Boolean>
     }
 
     @Override
-    public Boolean reduceLeft(Iterable<Boolean> bools) {
-        return find(not(id()), bools).orElse(true);
+    public <B> Boolean foldMap(Function<? super B, ? extends Boolean> fn, Iterable<B> bs) {
+        return find(not(fn), bs).fmap(constantly(false)).orElse(true);
     }
 
     @Override

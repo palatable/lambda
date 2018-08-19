@@ -90,7 +90,7 @@ public interface Predicate<A> extends Fn1<A, Boolean>, java.util.function.Predic
      * @param <A>       the input type
      * @return the predicate
      */
-    static <A> Predicate<A> predicate(Function<? super A, Boolean> predicate) {
+    static <A> Predicate<A> predicate(Function<? super A, ? extends Boolean> predicate) {
         return predicate::apply;
     }
 }

@@ -92,7 +92,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * @return this if a left value or a right value that pred matches; otherwise, the result of leftSupplier wrapped in
      * a left
      */
-    public final Either<L, R> filter(Function<? super R, Boolean> pred, Supplier<L> leftSupplier) {
+    public final Either<L, R> filter(Function<? super R, ? extends Boolean> pred, Supplier<L> leftSupplier) {
         return filter(pred, __ -> leftSupplier.get());
     }
 
@@ -105,7 +105,8 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * @return this is a left value or a right value that pred matches; otherwise, the result of leftFn applied to the
      * right value, wrapped in a left
      */
-    public final Either<L, R> filter(Function<? super R, Boolean> pred, Function<? super R, ? extends L> leftFn) {
+    public final Either<L, R> filter(Function<? super R, ? extends Boolean> pred,
+                                     Function<? super R, ? extends L> leftFn) {
         return flatMap(r -> pred.apply(r) ? right(r) : left(leftFn.apply(r)));
     }
 
