@@ -14,7 +14,7 @@ import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.t
  * @see Effect
  */
 @FunctionalInterface
-public interface CheckedEffect1<T extends Throwable, A> extends Effect<A> {
+public interface CheckedEffect<T extends Throwable, A> extends Effect<A> {
 
     @Override
     default void accept(A a) {
@@ -34,7 +34,7 @@ public interface CheckedEffect1<T extends Throwable, A> extends Effect<A> {
     void checkedAccept(A a) throws T;
 
     /**
-     * Convenience static factory method for constructing a {@link CheckedEffect1} without an explicit cast or type
+     * Convenience static factory method for constructing a {@link CheckedEffect} without an explicit cast or type
      * attribution at the call site.
      *
      * @param checkedEffect the checked effect
@@ -42,7 +42,7 @@ public interface CheckedEffect1<T extends Throwable, A> extends Effect<A> {
      * @param <A>           the input type
      * @return the checked effect
      */
-    static <T extends Throwable, A> CheckedEffect1<T, A> checked(CheckedEffect1<T, A> checkedEffect) {
+    static <T extends Throwable, A> CheckedEffect<T, A> checked(CheckedEffect<T, A> checkedEffect) {
         return checkedEffect;
     }
 }
