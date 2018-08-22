@@ -31,7 +31,7 @@ public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory
 
     @Override
     public Semigroup<A> apply(Function<? super A, ? extends B> compareFn) {
-        return (x, y) -> ltBy(compareFn, x, y) ? y : x;
+        return (x, y) -> ltBy(compareFn, y, x) ? y : x;
     }
 
     @SuppressWarnings("unchecked")

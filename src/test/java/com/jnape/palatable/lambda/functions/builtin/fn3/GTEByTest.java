@@ -11,11 +11,11 @@ public class GTEByTest {
 
     @Test
     public void comparisons() {
-        assertTrue(gteBy(id(), 2, 1));
+        assertTrue(gteBy(id(), 1, 2));
         assertTrue(gteBy(id(), 1, 1));
-        assertFalse(gteBy(id(), 1, 2));
+        assertFalse(gteBy(id(), 2, 1));
 
-        assertTrue(gteBy(String::length, "ab", "b"));
-        assertTrue(gteBy(String::length, "ab", "bc"));
+        assertTrue(gteBy(String::length, "b", "ab"));
+        assertTrue(gteBy(String::length, "bc", "ab"));
     }
 }

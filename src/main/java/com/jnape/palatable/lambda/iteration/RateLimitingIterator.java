@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Filter.filter;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.GT.gt;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.GTE.gte;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.LT.lt;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.LTE.lte;
 import static com.jnape.palatable.lambda.semigroup.builtin.Max.max;
 import static java.lang.Thread.sleep;
@@ -67,8 +67,8 @@ public final class RateLimitingIterator<A> implements Iterator<A> {
         return rateLimit.into((limit, duration, instantSupplier) -> {
             Instant timeSliceEnd = instantSupplier.get();
             Instant previousTimeSliceEnd = timeSliceEnd.minus(duration);
-            timeSlicesForRateLimit.removeIf(gt(previousTimeSliceEnd));
-            return max(0L, limit - size(filter(mark -> gte(mark, previousTimeSliceEnd) && lte(mark, timeSliceEnd), timeSlicesForRateLimit))) == 0;
+            timeSlicesForRateLimit.removeIf(lt(previousTimeSliceEnd));
+            return max(0L, limit - size(filter(mark -> lte(mark, previousTimeSliceEnd) && gte(mark, timeSliceEnd), timeSlicesForRateLimit))) == 0;
         });
     }
 

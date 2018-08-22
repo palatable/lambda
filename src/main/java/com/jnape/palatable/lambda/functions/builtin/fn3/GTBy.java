@@ -25,7 +25,7 @@ public final class GTBy<A, B extends Comparable<B>> implements Fn3<Function<? su
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends B> compareFn, A x, A y) {
+    public Boolean apply(Function<? super A, ? extends B> compareFn, A y, A x) {
         return compareFn.apply(x).compareTo(compareFn.apply(y)) > 0;
     }
 
@@ -48,11 +48,11 @@ public final class GTBy<A, B extends Comparable<B>> implements Fn3<Function<? su
         return GTBy.<A, B>gtBy().apply(fn);
     }
 
-    public static <A, B extends Comparable<B>> Predicate<A> gtBy(Function<? super A, ? extends B> fn, A x) {
-        return GTBy.<A, B>gtBy(fn).apply(x);
+    public static <A, B extends Comparable<B>> Predicate<A> gtBy(Function<? super A, ? extends B> fn, A y) {
+        return GTBy.<A, B>gtBy(fn).apply(y);
     }
 
-    public static <A, B extends Comparable<B>> Boolean gtBy(Function<? super A, ? extends B> fn, A x, A y) {
-        return gtBy(fn, x).apply(y);
+    public static <A, B extends Comparable<B>> Boolean gtBy(Function<? super A, ? extends B> fn, A y, A x) {
+        return gtBy(fn, y).apply(x);
     }
 }

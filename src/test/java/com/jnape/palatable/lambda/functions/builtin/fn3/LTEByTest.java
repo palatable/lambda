@@ -11,11 +11,11 @@ public class LTEByTest {
 
     @Test
     public void comparisons() {
-        assertTrue(lteBy(id(), 1, 2));
+        assertTrue(lteBy(id(), 2, 1));
         assertTrue(lteBy(id(), 1, 1));
-        assertFalse(lteBy(id(), 2, 1));
+        assertFalse(lteBy(id(), 1, 2));
 
-        assertTrue(lteBy(String::length, "b", "ab"));
-        assertTrue(lteBy(String::length, "bc", "ab"));
+        assertTrue(lteBy(String::length, "ab", "b"));
+        assertTrue(lteBy(String::length, "ab", "bc"));
     }
 }

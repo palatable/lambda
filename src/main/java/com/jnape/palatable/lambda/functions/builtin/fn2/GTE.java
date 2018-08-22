@@ -23,8 +23,8 @@ public final class GTE<A extends Comparable<A>> implements BiPredicate<A, A> {
     }
 
     @Override
-    public Boolean apply(A x, A y) {
-        return gteBy(id(), x, y);
+    public Boolean apply(A y, A x) {
+        return gteBy(id(), y, x);
     }
 
     @SuppressWarnings("unchecked")
@@ -32,11 +32,11 @@ public final class GTE<A extends Comparable<A>> implements BiPredicate<A, A> {
         return INSTANCE;
     }
 
-    public static <A extends Comparable<A>> Predicate<A> gte(A x) {
-        return GTE.<A>gte().apply(x);
+    public static <A extends Comparable<A>> Predicate<A> gte(A y) {
+        return GTE.<A>gte().apply(y);
     }
 
-    public static <A extends Comparable<A>> Boolean gte(A x, A y) {
-        return gte(x).apply(y);
+    public static <A extends Comparable<A>> Boolean gte(A y, A x) {
+        return gte(y).apply(x);
     }
 }

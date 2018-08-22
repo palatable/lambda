@@ -10,8 +10,8 @@ public class GTETest {
 
     @Test
     public void comparisons() {
-        assertTrue(gte(2, 1));
+        assertTrue(gte(1, 2));
         assertTrue(gte(1, 1));
-        assertFalse(gte(1, 2));
+        assertFalse(gte(2, 1));
     }
 }

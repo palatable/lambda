@@ -28,8 +28,8 @@ public final class LTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends B> compareFn, A x, A y) {
-        return LTBy.<A, B>ltBy(compareFn).or(cmpEqBy(compareFn)).apply(x, y);
+    public Boolean apply(Function<? super A, ? extends B> compareFn, A y, A x) {
+        return LTBy.<A, B>ltBy(compareFn).or(cmpEqBy(compareFn)).apply(y, x);
     }
 
     @Override
@@ -38,8 +38,8 @@ public final class LTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
     }
 
     @Override
-    public Predicate<A> apply(Function<? super A, ? extends B> compareFn, A x) {
-        return Fn3.super.apply(compareFn, x)::apply;
+    public Predicate<A> apply(Function<? super A, ? extends B> compareFn, A y) {
+        return Fn3.super.apply(compareFn, y)::apply;
     }
 
     @SuppressWarnings("unchecked")
@@ -51,11 +51,11 @@ public final class LTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
         return LTEBy.<A, B>lteBy().apply(fn);
     }
 
-    public static <A, B extends Comparable<B>> Predicate<A> lteBy(Function<? super A, ? extends B> fn, A x) {
-        return LTEBy.<A, B>lteBy(fn).apply(x);
+    public static <A, B extends Comparable<B>> Predicate<A> lteBy(Function<? super A, ? extends B> fn, A y) {
+        return LTEBy.<A, B>lteBy(fn).apply(y);
     }
 
-    public static <A, B extends Comparable<B>> Boolean lteBy(Function<? super A, ? extends B> fn, A x, A y) {
-        return lteBy(fn, x).apply(y);
+    public static <A, B extends Comparable<B>> Boolean lteBy(Function<? super A, ? extends B> fn, A y, A x) {
+        return lteBy(fn, y).apply(x);
     }
 }

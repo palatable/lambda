@@ -10,8 +10,8 @@ public class LTTest {
 
     @Test
     public void comparisons() {
-        assertTrue(lt(1, 2));
+        assertTrue(lt(2, 1));
         assertFalse(lt(1, 1));
-        assertFalse(lt(2, 1));
+        assertFalse(lt(1, 2));
     }
 }

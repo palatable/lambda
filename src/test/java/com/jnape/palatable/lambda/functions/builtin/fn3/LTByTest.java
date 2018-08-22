@@ -11,10 +11,10 @@ public class LTByTest {
 
     @Test
     public void comparisons() {
-        assertTrue(ltBy(id(), 1, 2));
+        assertTrue(ltBy(id(), 2, 1));
         assertFalse(ltBy(id(), 1, 1));
-        assertFalse(ltBy(id(), 2, 1));
+        assertFalse(ltBy(id(), 1, 2));
 
-        assertTrue(ltBy(String::length, "b", "ab"));
+        assertTrue(ltBy(String::length, "ab", "b"));
     }
 }

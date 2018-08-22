@@ -23,8 +23,8 @@ public final class LTE<A extends Comparable<A>> implements BiPredicate<A, A> {
     }
 
     @Override
-    public Boolean apply(A x, A y) {
-        return lteBy(id(), x, y);
+    public Boolean apply(A y, A x) {
+        return lteBy(id(), y, x);
     }
 
     @SuppressWarnings("unchecked")
@@ -32,11 +32,11 @@ public final class LTE<A extends Comparable<A>> implements BiPredicate<A, A> {
         return INSTANCE;
     }
 
-    public static <A extends Comparable<A>> Predicate<A> lte(A x) {
-        return LTE.<A>lte().apply(x);
+    public static <A extends Comparable<A>> Predicate<A> lte(A y) {
+        return LTE.<A>lte().apply(y);
     }
 
-    public static <A extends Comparable<A>> Boolean lte(A x, A y) {
-        return lte(x).apply(y);
+    public static <A extends Comparable<A>> Boolean lte(A y, A x) {
+        return lte(y).apply(x);
     }
 }

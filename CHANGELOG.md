@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ***Breaking Change***: `Absent` moved to `semigroup.builtin` package
 - ***Breaking Change***: `Effect#accept()` is now the required method to implement in the functional interface
 - ***Breaking Change***: `Fn0#apply()` is now the required method to implement in the functional interface
+- ***Breaking Change***: `GTBy`, `GT`, `LTBy`, `LT`, `GTEBy`, `GTE`, `LTEBy`, and `LTE` take the right-hand side first for more intuitive partial application
 - `RightAny` overload returns `Monoid`
 - monoids now all fold with respect to `foldMap`
 - monoid folding now implicitly starts with the identity, regardless of iterable population

@@ -11,10 +11,10 @@ public class GTByTest {
 
     @Test
     public void comparisons() {
-        assertTrue(gtBy(id(), 2, 1));
+        assertTrue(gtBy(id(), 1, 2));
         assertFalse(gtBy(id(), 1, 1));
-        assertFalse(gtBy(id(), 1, 2));
+        assertFalse(gtBy(id(), 2, 1));
 
-        assertTrue(gtBy(String::length, "aaa", "bb"));
+        assertTrue(gtBy(String::length, "bb", "aaa"));
     }
 }

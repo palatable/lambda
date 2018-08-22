@@ -31,7 +31,7 @@ public final class MinBy<A, B extends Comparable<B>> implements SemigroupFactory
 
     @Override
     public Semigroup<A> apply(Function<? super A, ? extends B> compareFn) {
-        return (x, y) -> gtBy(compareFn, x, y) ? y : x;
+        return (x, y) -> gtBy(compareFn, y, x) ? y : x;
     }
 
     @SuppressWarnings("unchecked")

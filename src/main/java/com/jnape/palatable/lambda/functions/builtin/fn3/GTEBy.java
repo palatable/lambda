@@ -28,8 +28,8 @@ public final class GTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends B> compareFn, A x, A y) {
-        return GTBy.<A, B>gtBy(compareFn).or(cmpEqBy(compareFn)).apply(x, y);
+    public Boolean apply(Function<? super A, ? extends B> compareFn, A y, A x) {
+        return GTBy.<A, B>gtBy(compareFn).or(cmpEqBy(compareFn)).apply(y, x);
     }
 
     @Override
@@ -38,8 +38,8 @@ public final class GTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
     }
 
     @Override
-    public Predicate<A> apply(Function<? super A, ? extends B> compareFn, A x) {
-        return Fn3.super.apply(compareFn, x)::apply;
+    public Predicate<A> apply(Function<? super A, ? extends B> compareFn, A y) {
+        return Fn3.super.apply(compareFn, y)::apply;
     }
 
     @SuppressWarnings("unchecked")
@@ -51,11 +51,11 @@ public final class GTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
         return GTEBy.<A, B>gteBy().apply(fn);
     }
 
-    public static <A, B extends Comparable<B>> Predicate<A> gteBy(Function<? super A, ? extends B> fn, A x) {
-        return GTEBy.<A, B>gteBy(fn).apply(x);
+    public static <A, B extends Comparable<B>> Predicate<A> gteBy(Function<? super A, ? extends B> fn, A y) {
+        return GTEBy.<A, B>gteBy(fn).apply(y);
     }
 
-    public static <A, B extends Comparable<B>> Boolean gteBy(Function<? super A, ? extends B> fn, A x, A y) {
-        return gteBy(fn, x).apply(y);
+    public static <A, B extends Comparable<B>> Boolean gteBy(Function<? super A, ? extends B> fn, A y, A x) {
+        return gteBy(fn, y).apply(x);
     }
 }
