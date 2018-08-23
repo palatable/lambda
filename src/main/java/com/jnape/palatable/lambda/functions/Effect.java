@@ -5,16 +5,15 @@ import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 
 /**
- * A function taking "no arguments", implemented as an <code>{@link Fn1}&lt;{@link Unit}, A&gt;</code>.
+ * A function returning "no result", and therefore only useful as a side-effect.
  *
- * @param <A> the result type
- * @see Fn1
- * @see Supplier
+ * @param <A> the argument type
+ * @see Fn0
+ * @see Consumer
  */
 @FunctionalInterface
 public interface Effect<A> extends Fn1<A, Unit>, Consumer<A> {
