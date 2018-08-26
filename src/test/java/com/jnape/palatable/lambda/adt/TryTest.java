@@ -132,6 +132,16 @@ public class TryTest {
     }
 
     @Test
+    public void orThrowWithAThrowingFn() throws Throwable {
+        assertEquals((Integer) 1, trying(() -> 1).orThrow(IllegalArgumentException::new));
+
+        Throwable unexpected = new Exception("unexpected");
+        Throwable expected = new Exception("expected", unexpected);
+        thrown.expect(equalTo(expected));
+        trying(() -> {throw unexpected;}).orThrow(constantly(expected));
+    }
+
+    @Test
     public void toMaybe() {
         assertEquals(just("foo"), Try.success("foo").toMaybe());
         assertEquals(nothing(), Try.failure(new IllegalStateException()).toMaybe());

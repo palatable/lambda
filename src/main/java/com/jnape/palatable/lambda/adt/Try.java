@@ -18,6 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Peek2.peek2;
+import static java.util.function.Function.identity;
 
 /**
  * A {@link Monad} of the evaluation outcome of an expression that might throw. Try/catch/finally semantics map to
@@ -105,7 +106,19 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @return possibly the success value
      * @throws T the possible failure
      */
-    public abstract A orThrow() throws T;
+    public A orThrow() throws T {
+        return orThrow(identity());
+    }
+
+    /**
+     * If this is a success value, return it. Otherwise, throw the result of the throwableFn function
+     * applied to the captured failure.
+     * @param throwableFn the function mapping the potential {@link Throwable} <code>T</code> to <code>U</code>
+     * @param <U> the {@link Throwable} type that the throwableFn returns
+     * @return possibly the success value
+     * @throws U the result of applying the throwableFn to the possible failure
+     */
+    public abstract <U extends Throwable> A orThrow(Function<? super T, ? extends U> throwableFn) throws U;
 
     /**
      * If this is a success, wrap the value in a {@link Maybe#just} and return it. Otherwise, return {@link
@@ -335,8 +348,8 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
         }
 
         @Override
-        public A orThrow() throws T {
-            throw t;
+        public <U extends Throwable> A orThrow(Function<? super T, ? extends U> throwableFn) throws U {
+            throw throwableFn.apply(t);
         }
 
         @Override
@@ -370,7 +383,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
         }
 
         @Override
-        public A orThrow() throws T {
+        public <U extends Throwable> A orThrow(Function<? super T, ? extends U> throwableFn) throws U {
             return a;
         }
 
