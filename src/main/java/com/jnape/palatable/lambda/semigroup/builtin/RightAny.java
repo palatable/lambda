@@ -37,9 +37,9 @@ public final class RightAny<L, R> implements SemigroupFactory<Semigroup<R>, Eith
 
     @Override
     public Semigroup<Either<L, R>> apply(Semigroup<R> rSemigroup) {
-        return (x, y) -> x.flatMap(constantly(y),
-                                   xR -> y.flatMap(constantly(right(xR)),
-                                                   rSemigroup.apply(xR).andThen(Either::right)));
+        return (x, y) -> x.match(constantly(y),
+                                 xR -> y.match(constantly(right(xR)),
+                                               rSemigroup.apply(xR).andThen(Either::right)));
     }
 
     @SuppressWarnings("unchecked")

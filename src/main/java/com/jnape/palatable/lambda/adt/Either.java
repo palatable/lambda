@@ -123,7 +123,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      */
     @Override
     public <R2> Either<L, R2> flatMap(Function<? super R, ? extends Monad<R2, Either<L, ?>>> rightFn) {
-        return flatMap(Either::left, rightFn.andThen(Applicative::coerce));
+        return match(Either::left, rightFn.andThen(Applicative::coerce));
     }
 
     /**
@@ -136,7 +136,9 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      * @param <L2>    the new left parameter type
      * @param <R2>    the new right parameter type
      * @return the result of either rightFn or leftFn, depending on whether this is a right or a left
+     * @deprecated in favor of {@link Either#match(Function, Function)}
      */
+    @Deprecated
     public final <L2, R2> Either<L2, R2> flatMap(Function<? super L, ? extends Either<L2, R2>> leftFn,
                                                  Function<? super R, ? extends Either<L2, R2>> rightFn) {
         return match(leftFn, rightFn);
@@ -144,7 +146,7 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
 
     @Override
     public final Either<R, L> invert() {
-        return flatMap(Either::right, Either::left);
+        return match(Either::right, Either::left);
     }
 
     /**

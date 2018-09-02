@@ -111,15 +111,6 @@ public class EitherTest {
     }
 
     @Test
-    public void dyadicFlatMapDuallyLiftsAndFlattensBackToEither() {
-        Either<String, Integer> left = left("foo");
-        Either<String, Integer> right = right(1);
-
-        assertThat(left.flatMap(l -> left(l + "bar"), r -> right(r + 1)), is(left("foobar")));
-        assertThat(right.flatMap(l -> left(l + "bar"), r -> right(r + 1)), is(right(2)));
-    }
-
-    @Test
     public void mergeDuallyLiftsAndCombinesBiasingLeft() {
         Either<String, Integer> left1 = left("foo");
         Either<String, Integer> right1 = right(1);

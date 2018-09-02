@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Deprecated
 - `AddAll` semigroup, in favor of the monoid that no longer mutates any argument 
+- Dyadic `Either#flatMap()`, in favor of `Either#match` 
 
 ## [3.1.0] - 2018-07-16
 ### Added

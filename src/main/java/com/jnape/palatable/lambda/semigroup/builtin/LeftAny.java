@@ -36,9 +36,9 @@ public final class LeftAny<L, R> implements SemigroupFactory<Semigroup<L>, Eithe
 
     @Override
     public Semigroup<Either<L, R>> apply(Semigroup<L> lSemigroup) {
-        return (x, y) -> x.flatMap(xL -> y.flatMap(yL -> left(lSemigroup.apply(xL, yL)),
-                                                   yR -> left(xL)),
-                                   xR -> y);
+        return (x, y) -> x.match(xL -> y.match(yL -> left(lSemigroup.apply(xL, yL)),
+                                               yR -> left(xL)),
+                                 xR -> y);
     }
 
     @SuppressWarnings("unchecked")
