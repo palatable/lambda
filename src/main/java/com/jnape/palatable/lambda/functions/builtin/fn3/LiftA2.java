@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
  * {@link Applicative} context. Functionally equivalent to <code>appB.zip(appA.fmap(fn))</code>.
  *
  * @param <A>    the function's first argument type
- * @param <B>    the function's second argument typ
+ * @param <B>    the function's second argument type
  * @param <C>    the function's return type
  * @param <App>  the applicative unification type
  * @param <AppA> the inferred first applicative argument type
