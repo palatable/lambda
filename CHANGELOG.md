@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - monoid folding now implicitly starts with the identity, regardless of iterable population
 - `Concat` monoid can now fold infinite iterables
 - all `Function<? super XXX, Boolean>` are now `Function<? super XXX, ? extends Boolean>` for better compatibility  
+- `Either#diverge` returns a `Choice3`  
 
 ### Added
 - `Predicate#predicate` static factory method

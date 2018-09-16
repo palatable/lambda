@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt;
 
+import com.jnape.palatable.lambda.adt.choice.Choice3;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek2;
@@ -203,6 +204,11 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
      */
     @Override
     public abstract <V> V match(Function<? super L, ? extends V> leftFn, Function<? super R, ? extends V> rightFn);
+
+    @Override
+    public <C> Choice3<L, R, C> diverge() {
+        return match(Choice3::a, Choice3::b);
+    }
 
     @Override
     public final <R2> Either<L, R2> fmap(Function<? super R, ? extends R2> fn) {
