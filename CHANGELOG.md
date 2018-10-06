@@ -23,7 +23,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Tuple2-8` specializations of left/right product rotation
 - `CheckedEffect`, an `Effect` variant that can throw checked exceptions 
 - `CheckedFn1#checked`, convenience static factory method to aid inference 
-- `LiftA3-8`, higher-arity analogs to `LiftA2` 
+- `LiftA3-8`, higher-arity analogs to `LiftA2`
+- `Alter`, for applying an `Effect` to an input and returning it, presumably altered 
 
 ### Deprecated
 - `AddAll` semigroup, in favor of the monoid that no longer mutates any argument 
