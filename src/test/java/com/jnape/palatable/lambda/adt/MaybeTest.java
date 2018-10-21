@@ -1,5 +1,7 @@
 package com.jnape.palatable.lambda.adt;
 
+import com.jnape.palatable.lambda.adt.choice.Choice2;
+import com.jnape.palatable.lambda.adt.choice.Choice3;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -17,6 +19,8 @@ import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
@@ -107,5 +111,23 @@ public class MaybeTest {
     @Test(expected = IllegalStateException.class)
     public void nothingOrThrow() {
         nothing().orElseThrow(IllegalStateException::new);
+    }
+
+    @Test
+    public void divergesIntoChoice3() {
+        assertEquals(Choice3.a(UNIT), nothing().diverge());
+        assertEquals(Choice3.b(1), just(1).diverge());
+    }
+
+    @Test
+    public void projectsIntoTuple2() {
+        assertEquals(tuple(just(UNIT), nothing()), nothing().project());
+        assertEquals(tuple(nothing(), just(1)), just(1).project());
+    }
+
+    @Test
+    public void invertsIntoChoice2() {
+        assertEquals(Choice2.b(UNIT), nothing().invert());
+        assertEquals(Choice2.a(1), just(1).invert());
     }
 }

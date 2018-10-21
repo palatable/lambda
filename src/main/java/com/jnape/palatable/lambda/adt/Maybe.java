@@ -1,5 +1,10 @@
 package com.jnape.palatable.lambda.adt;
 
+import com.jnape.palatable.lambda.adt.choice.Choice2;
+import com.jnape.palatable.lambda.adt.choice.Choice3;
+import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
+import com.jnape.palatable.lambda.adt.hlist.HList;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
@@ -14,6 +19,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
  * The optional type, representing a potentially absent value. This is lambda's analog of {@link Optional}, supporting
@@ -22,7 +30,8 @@ import static com.jnape.palatable.lambda.adt.Either.left;
  * @param <A> the optional parameter type
  * @see Optional
  */
-public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe> {
+public abstract class Maybe<A> implements CoProduct2<Unit, A, Maybe<A>>, Monad<A, Maybe>, Traversable<A, Maybe> {
+
     private Maybe() {
     }
 
@@ -32,7 +41,9 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
      * @param otherSupplier the supplier for the other value
      * @return this value, or the supplied other value
      */
-    public abstract A orElseGet(Supplier<A> otherSupplier);
+    public final A orElseGet(Supplier<A> otherSupplier) {
+        return match(__ -> otherSupplier.get(), id());
+    }
 
     /**
      * If the value is present, return it; otherwise, return <code>other</code>.
@@ -130,7 +141,24 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
     }
 
     @Override
-    public abstract <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f);
+    public final <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f) {
+        return match(constantly(nothing()), f.andThen(Applicative::coerce));
+    }
+
+    @Override
+    public <B> Choice3<Unit, A, B> diverge() {
+        return match(Choice3::a, Choice3::b);
+    }
+
+    @Override
+    public Tuple2<Maybe<Unit>, Maybe<A>> project() {
+        return CoProduct2.super.project().into(HList::tuple);
+    }
+
+    @Override
+    public Choice2<A, Unit> invert() {
+        return match(Choice2::b, Choice2::a);
+    }
 
     /**
      * If this value is present, accept it by <code>consumer</code>; otherwise, do nothing.
@@ -140,6 +168,14 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
      */
     public final Maybe<A> peek(Consumer<A> consumer) {
         return Peek.peek(consumer, this);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public final <B, App extends Applicative, TravB extends Traversable<B, Maybe>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Function<? super A, ? extends AppB> fn,
+            Function<? super TravB, ? extends AppTrav> pure) {
+        return match(__ -> pure.apply((TravB) Maybe.<B>nothing()), a -> (AppTrav) fn.apply(a).fmap(Maybe::just));
     }
 
     /**
@@ -192,9 +228,32 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
         return new Just<>(a);
     }
 
+    /**
+     * Return nothing.
+     *
+     * @param <A> the type of the value, if there was one
+     * @return nothing
+     */
     @SuppressWarnings("unchecked")
     public static <A> Maybe<A> nothing() {
         return Nothing.INSTANCE;
+    }
+
+    private static final class Nothing<A> extends Maybe<A> {
+        private static final Nothing INSTANCE = new Nothing();
+
+        private Nothing() {
+        }
+
+        @Override
+        public <R> R match(Function<? super Unit, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
+            return aFn.apply(UNIT);
+        }
+
+        @Override
+        public String toString() {
+            return "Nothing";
+        }
     }
 
     private static final class Just<A> extends Maybe<A> {
@@ -206,21 +265,8 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
         }
 
         @Override
-        public A orElseGet(Supplier<A> otherSupplier) {
-            return a;
-        }
-
-        @Override
-        public <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f) {
-            return f.apply(a).coerce();
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public <B, App extends Applicative, TravB extends Traversable<B, Maybe>,
-                AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-                Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
-            return fn.apply(a).fmap(Just::new).<TravB>fmap(Applicative::coerce).coerce();
+        public <R> R match(Function<? super Unit, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
+            return bFn.apply(a);
         }
 
         @Override
@@ -236,36 +282,6 @@ public abstract class Maybe<A> implements Monad<A, Maybe>, Traversable<A, Maybe>
         @Override
         public String toString() {
             return "Just " + a;
-        }
-    }
-
-    private static final class Nothing<A> extends Maybe<A> {
-        private static final Nothing INSTANCE = new Nothing();
-
-        private Nothing() {
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f) {
-            return nothing();
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public <B, App extends Applicative, TravB extends Traversable<B, Maybe>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-                Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
-            return pure.apply((TravB) nothing());
-        }
-
-        @Override
-        public A orElseGet(Supplier<A> otherSupplier) {
-            return otherSupplier.get();
-        }
-
-        @Override
-        public String toString() {
-            return "Nothing";
         }
     }
 }
