@@ -16,7 +16,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Concat` monoid can now fold infinite iterables
 - all `Function<? super XXX, Boolean>` are now `Function<? super XXX, ? extends Boolean>` for better compatibility  
 - `Either#diverge` returns a `Choice3`
-- `Maybe` is now a `CoProduct2` of `Unit` and `A`  
+- `Maybe` is now a `CoProduct2` of `Unit` and `A`    
+- `Fn0` now additionally implements `Callable`
 
 ### Added
 - `Predicate#predicate` static factory method

@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -16,9 +17,10 @@ import static com.jnape.palatable.lambda.functions.Effect.effect;
  * @param <A> the result type
  * @see Fn1
  * @see Supplier
+ * @see Callable
  */
 @FunctionalInterface
-public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
+public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A>, Callable<A> {
 
     A apply();
 
@@ -85,7 +87,12 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A> {
 
     @Override
     default A get() {
-        return apply(UNIT);
+        return apply();
+    }
+
+    @Override
+    default A call() {
+        return apply();
     }
 
     /**
