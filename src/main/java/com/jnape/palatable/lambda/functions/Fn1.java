@@ -1,7 +1,8 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.functor.Profunctor;
+import com.jnape.palatable.lambda.functor.Strong;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.BiFunction;
@@ -18,7 +19,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @param <B> The result type
  */
 @FunctionalInterface
-public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, Function<A, B> {
+public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Function<A, B> {
 
     /**
      * Invoke this function with the given argument.
@@ -116,7 +117,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      */
     @Override
     default <Z> Fn1<Z, B> diMapL(Function<? super Z, ? extends A> fn) {
-        return (Fn1<Z, B>) Profunctor.super.<Z>diMapL(fn);
+        return (Fn1<Z, B>) Strong.super.<Z>diMapL(fn);
     }
 
     /**
@@ -129,7 +130,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
      */
     @Override
     default <C> Fn1<A, C> diMapR(Function<? super B, ? extends C> fn) {
-        return (Fn1<A, C>) Profunctor.super.<C>diMapR(fn);
+        return (Fn1<A, C>) Strong.super.<C>diMapR(fn);
     }
 
     /**
@@ -146,9 +147,24 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Profunctor<A, B, Fn1>, F
         return lFn.andThen(this).andThen(rFn)::apply;
     }
 
+    /**
+     * Pair a value with the input to this function, and preserve the paired value through to the output.
+     *
+     * @param <C> the paired value
+     * @return the strengthened {@link Fn1}
+     */
+    @Override
+    default <C> Fn1<Tuple2<C, A>, Tuple2<C, B>> strengthen() {
+        return t -> t.fmap(this);
+    }
+
+    default Fn1<A, Tuple2<A, B>> carry() {
+        return (Fn1<A, Tuple2<A, B>>) Strong.super.carry();
+    }
+
     @Override
     default <Z> Fn1<Z, B> contraMap(Function<? super Z, ? extends A> fn) {
-        return (Fn1<Z, B>) Profunctor.super.<Z>contraMap(fn);
+        return (Fn1<Z, B>) Strong.super.<Z>contraMap(fn);
     }
 
     /**

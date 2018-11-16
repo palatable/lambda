@@ -37,20 +37,17 @@ public final class Exchange<A, B, S, T> implements Profunctor<S, T, Exchange<A, 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <Z> Exchange<A, B, Z, T> diMapL(Function<? super Z, ? extends S> fn) {
-        return (Exchange<A, B, Z, T>) Profunctor.super.diMapL(fn);
+        return (Exchange<A, B, Z, T>) Profunctor.super.<Z>diMapL(fn);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <C> Exchange<A, B, S, C> diMapR(Function<? super T, ? extends C> fn) {
-        return (Exchange<A, B, S, C>) Profunctor.super.diMapR(fn);
+        return (Exchange<A, B, S, C>) Profunctor.super.<C>diMapR(fn);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <Z> Exchange<A, B, Z, T> contraMap(Function<? super Z, ? extends S> fn) {
-        return (Exchange<A, B, Z, T>) Profunctor.super.contraMap(fn);
+        return (Exchange<A, B, Z, T>) Profunctor.super.<Z>contraMap(fn);
     }
 }

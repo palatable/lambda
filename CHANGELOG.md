@@ -28,7 +28,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `LiftA3-8`, higher-arity analogs to `LiftA2`
 - `Alter`, for applying an `Effect` to an input and returning it, presumably altered 
 - `Clamp`, for clamping a value between two bounds 
-- `Between`, for determining if a value is in a closed interval 
+- `Between`, for determining if a value is in a closed interval
+- `Strong`, profunctor strength  
 
 ### Deprecated
 - `AddAll` semigroup, in favor of the monoid that no longer mutates any argument 

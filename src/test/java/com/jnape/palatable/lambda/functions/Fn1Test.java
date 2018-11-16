@@ -12,6 +12,7 @@ import testsupport.traits.MonadLaws;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduceLeft;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -49,5 +50,17 @@ public class Fn1Test {
     public void widen() {
         Fn1<Integer, Integer> addOne = x -> x + 1;
         assertEquals(just(4), reduceLeft(addOne.widen().toBiFunction(), asList(1, 2, 3)));
+    }
+
+    @Test
+    public void strengthen() {
+        Fn1<Integer, Integer> add1 = x -> x + 1;
+        assertEquals(tuple("a", 2), add1.<String>strengthen().apply(tuple("a", 1)));
+    }
+
+    @Test
+    public void carry() {
+        Fn1<Integer, Integer> add1 = x -> x + 1;
+        assertEquals(tuple(1, 2), add1.carry().apply(1));
     }
 }
