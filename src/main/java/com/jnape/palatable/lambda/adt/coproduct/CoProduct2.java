@@ -20,8 +20,9 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * <p>
  * Learn more about <a href="https://en.wikipedia.org/wiki/Coproduct">Coproducts</a>.
  *
- * @param <A> the first possible type
- * @param <B> the second possible type
+ * @param <A>   the first possible type
+ * @param <B>   the second possible type
+ * @param <CP2> the recursive type of this coproduct (used for embedding)
  * @see Choice2
  * @see Either
  */

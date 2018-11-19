@@ -15,10 +15,11 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 /**
  * A generalization of the coproduct of four types.
  *
- * @param <A> the first possible type
- * @param <B> the second possible type
- * @param <C> the third possible type
- * @param <D> the fourth possible type
+ * @param <A>   the first possible type
+ * @param <B>   the second possible type
+ * @param <C>   the third possible type
+ * @param <D>   the fourth possible type
+ * @param <CP4> the recursive type of this coproduct (used for embedding)
  * @see CoProduct2
  */
 @FunctionalInterface

@@ -16,13 +16,14 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 /**
  * A generalization of the coproduct of seven types.
  *
- * @param <A> the first possible type
- * @param <B> the second possible type
- * @param <C> the third possible type
- * @param <D> the fourth possible type
- * @param <E> the fifth possible type
- * @param <F> the sixth possible type
- * @param <G> the seventh possible type
+ * @param <A>   the first possible type
+ * @param <B>   the second possible type
+ * @param <C>   the third possible type
+ * @param <D>   the fourth possible type
+ * @param <E>   the fifth possible type
+ * @param <F>   the sixth possible type
+ * @param <G>   the seventh possible type
+ * @param <CP7> the recursive type of this coproduct (used for embedding)
  * @see CoProduct2
  */
 @FunctionalInterface

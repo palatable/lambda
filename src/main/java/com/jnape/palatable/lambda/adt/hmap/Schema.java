@@ -17,6 +17,14 @@ import com.jnape.palatable.lambda.lens.Lens;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.lens.lenses.HMapLens.valueAt;
 
+/**
+ * A lens that focuses on the {@link HList heterogeneous list} of values pointed at by one or more
+ * {@link TypeSafeKey typesafe keys} that must all exist in the same {@link HMap} to be collectively extracted. Note
+ * that if any of the keys is absent in the map, the result will be {@link Maybe#nothing()}.
+ *
+ * @param <Values> the {@link HList} of values to focus on
+ * @see TypeSafeKey
+ */
 public interface Schema<Values extends HCons<?, ?>> extends Lens.Simple<HMap, Maybe<Values>> {
 
     @SuppressWarnings("unchecked")
@@ -28,6 +36,7 @@ public interface Schema<Values extends HCons<?, ?>> extends Lens.Simple<HMap, Ma
                 ::apply;
     }
 
+    @SuppressWarnings("unchecked")
     static <A> Schema<SingletonHList<A>> schema(TypeSafeKey<?, A> key) {
         return valueAt(key)
                 .mapA(ma -> ma.fmap(HList::singletonHList))
