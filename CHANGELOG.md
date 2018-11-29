@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ***Breaking Change***: `Effect#accept()` is now the required method to implement in the functional interface
 - ***Breaking Change***: `Fn0#apply()` is now the required method to implement in the functional interface
 - ***Breaking Change***: `GTBy`, `GT`, `LTBy`, `LT`, `GTEBy`, `GTE`, `LTEBy`, and `LTE` take the right-hand side first for more intuitive partial application
+- ***Breaking Change***: `Effect` now returns an `IO`
+- ***Breaking Change***: `Alter` now returns an `IO`
 - `RightAny` overload returns `Monoid`
 - monoids now all fold with respect to `foldMap`
 - monoid folding now implicitly starts with the identity, regardless of iterable population
@@ -29,7 +31,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Alter`, for applying an `Effect` to an input and returning it, presumably altered 
 - `Clamp`, for clamping a value between two bounds 
 - `Between`, for determining if a value is in a closed interval
-- `Strong`, profunctor strength  
+- `Strong`, profunctor strength
+- `IO` monad  
 
 ### Deprecated
 - `AddAll` semigroup, in favor of the monoid that no longer mutates any argument 

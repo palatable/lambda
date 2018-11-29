@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
-import static com.jnape.palatable.lambda.functions.Effect.effect;
+import static com.jnape.palatable.lambda.functions.IO.io;
 
 /**
  * A function taking "no arguments", implemented as an <code>{@link Fn1}&lt;{@link Unit}, A&gt;</code>.
@@ -120,11 +120,11 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A>, Callable<A> {
     /**
      * Static factory method for adapting a {@link Runnable} to an <code>{@link Fn0}&lt;{@link Unit}&gt;</code>.
      *
-     * @param fn the {@link Runnable}
+     * @param runnable the {@link Runnable}
      * @return the {@link Fn0}
      */
-    static Fn0<Unit> fn0(Runnable fn) {
-        return effect(fn).thunk(UNIT);
+    static Fn0<Unit> fn0(Runnable runnable) {
+        return io(runnable)::unsafePerformIO;
     }
 
     /**

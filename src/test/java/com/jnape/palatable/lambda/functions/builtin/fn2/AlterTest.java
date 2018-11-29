@@ -14,7 +14,7 @@ public class AlterTest {
     @Test
     public void altersInput() {
         ArrayList<String> input = new ArrayList<>();
-        assertSame(input, alter(xs -> xs.add("foo"), input));
+        assertSame(input, alter(xs -> xs.add("foo"), input).unsafePerformIO());
         assertEquals(singletonList("foo"), input);
     }
 }

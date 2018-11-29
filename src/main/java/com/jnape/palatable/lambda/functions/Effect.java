@@ -6,7 +6,8 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functions.Fn0.fn0;
+import static com.jnape.palatable.lambda.functions.IO.io;
 
 /**
  * A function returning "no result", and therefore only useful as a side-effect.
@@ -16,12 +17,11 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
  * @see Consumer
  */
 @FunctionalInterface
-public interface Effect<A> extends Fn1<A, Unit>, Consumer<A> {
+public interface Effect<A> extends Fn1<A, IO<Unit>>, Consumer<A> {
 
     @Override
-    default Unit apply(A a) {
-        accept(a);
-        return UNIT;
+    default IO<Unit> apply(A a) {
+        return io(fn0(() -> accept(a)));
     }
 
     @Override
