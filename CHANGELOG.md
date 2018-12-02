@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Either#diverge` returns a `Choice3`
 - `Maybe` is now a `CoProduct2` of `Unit` and `A`    
 - `Fn0` now additionally implements `Callable`
+- `CheckedRunnable` is an `IO<Unit>`
 
 ### Added
 - `Predicate#predicate` static factory method
