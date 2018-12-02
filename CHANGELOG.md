@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Between`, for determining if a value is in a closed interval
 - `Strong`, profunctor strength
 - `IO` monad  
+- `RunAll` semigroup and monoid instance for `IO<A>`  
 
 ### Deprecated
 - `AddAll` semigroup, in favor of the monoid that no longer mutates any argument 
