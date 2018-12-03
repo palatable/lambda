@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 /**
  * "Strong" {@link Profunctor profunctors} are profunctors that can be "strengthened" to preserve the pairing of an
- * arbitrary type under <code>dimap</code> (<code>p a b -> p (c, a) (c, b)</code> for any type <code>c</code>).
+ * arbitrary type under <code>dimap</code> (<code>p a b -&gt; p (c, a) (c, b)</code> for any type <code>c</code>).
  *
  * @param <A> the type of the left parameter
  * @param <B> the type of the left parameter
