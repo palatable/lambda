@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Added
+- `MergeMaps`, a `Monoid` on `Map` formed by `Map#merge` 
+
+## [3.2.0] - 2018-12-08
 ### Changed
 - ***Breaking Change***: `Difference` and `Intersection` no longer instances of `Semigroup` and moved to `functions.builtin.fn2` package
 - ***Breaking Change***: `Absent` moved to `semigroup.builtin` package
@@ -404,7 +408,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.1.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.2.0...HEAD
+[3.2.0]: https://github.com/palatable/lambda/compare/lambda-3.1.0...lambda-3.2.0
 [3.1.0]: https://github.com/palatable/lambda/compare/lambda-3.0.3...lambda-3.1.0
 [3.0.3]: https://github.com/palatable/lambda/compare/lambda-3.0.2...lambda-3.0.3
 [3.0.2]: https://github.com/palatable/lambda/compare/lambda-3.0.1...lambda-3.0.2

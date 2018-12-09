@@ -19,7 +19,10 @@ import java.util.function.Supplier;
  * @see Monoid
  * @see java.util.Map
  */
-public class MergeMaps<K, V> implements BiMonoidFactory<Supplier<Map<K, V>>, Semigroup<V>, Map<K, V>> {
+public final class MergeMaps<K, V> implements BiMonoidFactory<Supplier<Map<K, V>>, Semigroup<V>, Map<K, V>> {
+
+    private static final MergeMaps INSTANCE = new MergeMaps();
+
     private MergeMaps() {
     }
 
@@ -33,23 +36,26 @@ public class MergeMaps<K, V> implements BiMonoidFactory<Supplier<Map<K, V>>, Sem
         }, mSupplier);
     }
 
-    public static <A, B> MergeMaps<A, B> mergeMaps() {
-        return new MergeMaps<>();
+    @SuppressWarnings("unchecked")
+    public static <K, V> MergeMaps<K, V> mergeMaps() {
+        return INSTANCE;
     }
 
-    public static <A, B> MonoidFactory<Semigroup<B>, Map<A, B>> mergeMaps(Supplier<Map<A, B>> mSupplier) {
-        return MergeMaps.<A, B>mergeMaps().apply(mSupplier);
+    public static <K, V> MonoidFactory<Semigroup<V>, Map<K, V>> mergeMaps(Supplier<Map<K, V>> mSupplier) {
+        return MergeMaps.<K, V>mergeMaps().apply(mSupplier);
     }
 
-    public static <A, B> Monoid<Map<A, B>> mergeMaps(Supplier<Map<A, B>> mSupplier, Semigroup<B> semigroup) {
+    public static <K, V> Monoid<Map<K, V>> mergeMaps(Supplier<Map<K, V>> mSupplier, Semigroup<V> semigroup) {
         return mergeMaps(mSupplier).apply(semigroup);
     }
 
-    public static <A, B> Fn1<Map<A, B>, Map<A, B>> mergeMaps(Supplier<Map<A, B>> mSupplier, Semigroup<B> semigroup, Map<A, B> x) {
+    public static <K, V> Fn1<Map<K, V>, Map<K, V>> mergeMaps(Supplier<Map<K, V>> mSupplier, Semigroup<V> semigroup,
+                                                             Map<K, V> x) {
         return mergeMaps(mSupplier, semigroup).apply(x);
     }
 
-    public static <A, B> Map<A, B> mergeMaps(Supplier<Map<A, B>> mSupplier, Semigroup<B> semigroup, Map<A, B> x, Map<A, B> y) {
+    public static <K, V> Map<K, V> mergeMaps(Supplier<Map<K, V>> mSupplier, Semigroup<V> semigroup, Map<K, V> x,
+                                             Map<K, V> y) {
         return mergeMaps(mSupplier, semigroup, x).apply(y);
     }
 }
