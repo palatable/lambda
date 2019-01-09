@@ -1,6 +1,7 @@
-package com.jnape.palatable.lambda.functions;
+package com.jnape.palatable.lambda.io;
 
 import com.jnape.palatable.lambda.adt.Unit;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 

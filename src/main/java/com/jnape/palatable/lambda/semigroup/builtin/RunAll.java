@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.IO;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 

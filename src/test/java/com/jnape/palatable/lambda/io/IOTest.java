@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.functions;
+package com.jnape.palatable.lambda.io;
 
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -11,7 +11,7 @@ import testsupport.traits.MonadLaws;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
-import static com.jnape.palatable.lambda.functions.IO.io;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Traits.class)
