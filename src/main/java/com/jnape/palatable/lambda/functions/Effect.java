@@ -27,22 +27,22 @@ public interface Effect<A> extends Fn1<A, IO<Unit>>, Consumer<A> {
 
     @Override
     default <Z> Effect<Z> diMapL(Function<? super Z, ? extends A> fn) {
-        return Fn1.super.diMapL(fn)::apply;
+        return effect(z -> Fn1.super.diMapL(fn).apply(z).unsafePerformIO());
     }
 
     @Override
     default <Z> Effect<Z> contraMap(Function<? super Z, ? extends A> fn) {
-        return Fn1.super.contraMap(fn)::apply;
+        return effect(z -> Fn1.super.contraMap(fn).apply(z).unsafePerformIO());
     }
 
     @Override
     default <Z> Effect<Z> compose(Function<? super Z, ? extends A> before) {
-        return Fn1.super.compose(before)::apply;
+        return effect(z -> Fn1.super.compose(before).apply(z).unsafePerformIO());
     }
 
     @Override
     default <C> Effect<A> discardR(Applicative<C, Fn1<A, ?>> appB) {
-        return Fn1.super.discardR(appB)::apply;
+        return effect(a -> Fn1.super.discardR(appB).apply(a).unsafePerformIO());
     }
 
     @Override

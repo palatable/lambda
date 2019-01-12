@@ -2,21 +2,33 @@ package com.jnape.palatable.lambda.functions;
 
 import org.junit.Test;
 
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
-import static com.jnape.palatable.lambda.functions.specialized.Noop.noop;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 public class EffectTest {
 
     @Test
-    @SuppressWarnings("unused")
     public void covariantReturns() {
-        Effect<String> effect = noop();
-        Effect<Object> diMapL = effect.diMapL(constantly("1"));
-        Effect<Object> contraMap = effect.contraMap(constantly("1"));
-        Effect<Object> compose = effect.compose(constantly("1"));
+        List<Object> results = new ArrayList<>();
+
+        Effect<String> effect = results::add;
+        Effect<Object> diMapL = effect.diMapL(Object::toString);
+        Effect<Object> contraMap = effect.contraMap(Object::toString);
+        Effect<Object> compose = effect.compose(Object::toString);
         Effect<String> stringEffect = effect.discardR(constantly("1"));
-        Effect<String> andThen = effect.andThen((Consumer<? super String>) noop());
+        Effect<String> andThen = effect.andThen(effect);
+
+        effect.accept("1");
+        diMapL.accept("2");
+        contraMap.accept("3");
+        compose.accept("4");
+        stringEffect.accept("5");
+        andThen.accept("6");
+
+        assertEquals(asList("1", "2", "3", "4", "5", "6", "6"), results);
     }
 }
