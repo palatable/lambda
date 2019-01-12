@@ -31,7 +31,7 @@ public interface Effect<A> extends Fn1<A, IO<Unit>>, Consumer<A> {
 
     @Override
     default <Z> Effect<Z> contraMap(Function<? super Z, ? extends A> fn) {
-        return Fn1.super.contraMap(fn)::apply;
+        return z -> accept(fn.apply(z));
     }
 
     @Override
