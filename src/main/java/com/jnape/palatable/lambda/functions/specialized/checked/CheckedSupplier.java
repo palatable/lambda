@@ -1,7 +1,16 @@
 package com.jnape.palatable.lambda.functions.specialized.checked;
 
+import com.jnape.palatable.lambda.adt.Unit;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.monad.Monad;
+
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.throwChecked;
 
 /**
@@ -13,16 +22,7 @@ import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.t
  * @see CheckedRunnable
  */
 @FunctionalInterface
-public interface CheckedSupplier<T extends Throwable, A> extends Supplier<A> {
-
-    @Override
-    default A get() {
-        try {
-            return checkedGet();
-        } catch (Throwable t) {
-            throw throwChecked(t);
-        }
-    }
+public interface CheckedSupplier<T extends Throwable, A> extends Supplier<A>, CheckedFn1<T, Unit, A> {
 
     /**
      * A version of {@link Supplier#get()} that can throw checked exceptions.
@@ -39,6 +39,95 @@ public interface CheckedSupplier<T extends Throwable, A> extends Supplier<A> {
      */
     default CheckedRunnable<T> toRunnable() {
         return this::get;
+    }
+
+    @Override
+    default A checkedApply(Unit unit) throws T {
+        return checkedGet();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default A get() {
+        try {
+            return checkedGet();
+        } catch (Throwable t) {
+            throw throwChecked(t);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <B> CheckedSupplier<T, B> fmap(Function<? super A, ? extends B> f) {
+        return CheckedFn1.super.<B>fmap(f).thunk(UNIT)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> CheckedSupplier<T, C> flatMap(Function<? super A, ? extends Monad<C, Fn1<Unit, ?>>> f) {
+        return CheckedFn1.super.flatMap(f).thunk(UNIT)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> CheckedSupplier<T, C> discardL(Applicative<C, Fn1<Unit, ?>> appB) {
+        return CheckedFn1.super.discardL(appB).thunk(UNIT)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> CheckedSupplier<T, A> discardR(Applicative<C, Fn1<Unit, ?>> appB) {
+        return CheckedFn1.super.discardR(appB).thunk(UNIT)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> CheckedSupplier<T, C> zip(Applicative<Function<? super A, ? extends C>, Fn1<Unit, ?>> appFn) {
+        return CheckedFn1.super.zip(appFn).thunk(UNIT)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> CheckedSupplier<T, C> zip(Fn2<Unit, A, C> appFn) {
+        return CheckedFn1.super.zip(appFn).thunk(UNIT)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> CheckedSupplier<T, C> diMapR(Function<? super A, ? extends C> fn) {
+        return CheckedFn1.super.diMapR(fn).thunk(UNIT)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default CheckedSupplier<T, Tuple2<Unit, A>> carry() {
+        return CheckedFn1.super.carry().thunk(UNIT)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> CheckedSupplier<T, C> andThen(Function<? super A, ? extends C> after) {
+        return CheckedFn1.super.andThen(after).thunk(UNIT)::apply;
     }
 
     /**
