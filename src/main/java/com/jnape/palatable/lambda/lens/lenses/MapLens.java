@@ -2,7 +2,9 @@ package com.jnape.palatable.lambda.lens.lenses;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Filter;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.lens.Iso;
 import com.jnape.palatable.lambda.lens.Lens;
 
@@ -12,12 +14,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.maybe;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Alter.alter;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCollection;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToMap.toMap;
 import static com.jnape.palatable.lambda.lens.Lens.Simple.adapt;
+import static com.jnape.palatable.lambda.lens.Lens.lens;
 import static com.jnape.palatable.lambda.lens.Lens.simpleLens;
 import static com.jnape.palatable.lambda.lens.functions.View.view;
 import static com.jnape.palatable.lambda.lens.lenses.MaybeLens.unLiftA;
@@ -32,6 +37,20 @@ public final class MapLens {
     }
 
     /**
+     * A lens that focuses on a copy of a {@link Map} as a subtype <code>M</code>. Useful for composition to avoid
+     * mutating a map reference.
+     *
+     * @param <M> the map subtype
+     * @param <K> the key type
+     * @param <V> the value type
+     * @return a lens that focuses on copies of maps as a specific subtype
+     */
+    public static <M extends Map<K, V>, K, V> Lens<Map<K, V>, M, M, M> asCopy(
+            Function<? super Map<K, V>, ? extends M> copyFn) {
+        return lens(copyFn, (__, copy) -> copy);
+    }
+
+    /**
      * A lens that focuses on a copy of a Map. Useful for composition to avoid mutating a map reference.
      *
      * @param <K> the key type
@@ -39,7 +58,26 @@ public final class MapLens {
      * @return a lens that focuses on copies of maps
      */
     public static <K, V> Lens.Simple<Map<K, V>, Map<K, V>> asCopy() {
-        return simpleLens(HashMap::new, (__, copy) -> copy);
+        return adapt(asCopy(HashMap::new));
+    }
+
+    /**
+     * A lens that focuses on a value at a key in a map, as a {@link Maybe}, and produces a subtype <code>M</code> on
+     * the way back out.
+     *
+     * @param <M> the map subtype
+     * @param <K> the key type
+     * @param <V> the value type
+     * @param k   the key to focus on
+     * @return a lens that focuses on the value at key, as a {@link Maybe}
+     */
+    public static <M extends Map<K, V>, K, V> Lens<Map<K, V>, M, Maybe<V>, Maybe<V>> valueAt(
+            Function<? super Map<K, V>, ? extends M> copyFn, K k) {
+        return lens(m -> maybe(m.get(k)), (m, maybeV) -> maybeV
+                .<Fn1<M, IO<M>>>fmap(v -> alter(updated -> updated.put(k, v)))
+                .orElse(alter(updated -> updated.remove(k)))
+                .apply(copyFn.apply(m))
+                .unsafePerformIO());
     }
 
     /**
@@ -51,16 +89,7 @@ public final class MapLens {
      * @return a lens that focuses on the value at key, as a {@link Maybe}
      */
     public static <K, V> Lens.Simple<Map<K, V>, Maybe<V>> valueAt(K k) {
-        return simpleLens(m -> maybe(m.get(k)), (m, maybeV) -> {
-            Map<K, V> updated = new HashMap<>(m);
-            return maybeV.fmap(v -> {
-                updated.put(k, v);
-                return updated;
-            }).orElseGet(() -> {
-                updated.remove(k);
-                return updated;
-            });
-        });
+        return adapt(valueAt(HashMap::new, k));
     }
 
     /**
@@ -75,7 +104,6 @@ public final class MapLens {
      * @param <V>          the value type
      * @return a lens that focuses on the value at the key
      */
-    @SuppressWarnings("unchecked")
     public static <K, V> Lens.Simple<Map<K, V>, V> valueAt(K k, V defaultValue) {
         return adapt(unLiftB(unLiftA(valueAt(k), defaultValue)));
     }
@@ -150,8 +178,7 @@ public final class MapLens {
     /**
      * A lens that focuses on a map while mapping its values with the mapping {@link Iso}.
      * <p>
-     * Note that for this lens to be lawful, <code>iso</code> must be bijective: that is, every <code>V</code> must
-     * uniquely and invertibly map to exactly one <code>V2</code>.
+     * Note that for this lens to be lawful, <code>iso</code> must be lawful.
      *
      * @param iso  the mapping {@link Iso}
      * @param <K>  the key type

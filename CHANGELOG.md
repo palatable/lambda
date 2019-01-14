@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CheckedEffect` is now a `CheckedFn1`
 - `CheckedSupplier` is now a `CheckedFn1`
 - `CheckedFn1` now overrides all possible methods with covariant return type 
+- `MapLens#asCopy` has overload taking copy function
+- `MapLens#valueAt` has overload taking copy function
 
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 
