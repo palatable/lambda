@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CheckedFn1` now overrides all possible methods with covariant return type 
 - `MapLens#asCopy` has overload taking copy function
 - `MapLens#valueAt` has overload taking copy function
+- `SortWith` for sorting an `Iterable` given a `Comparator` over its elements
 
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 

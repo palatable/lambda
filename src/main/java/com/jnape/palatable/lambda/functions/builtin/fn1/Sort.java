@@ -1,6 +1,8 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.builtin.fn2.SortBy;
+import com.jnape.palatable.lambda.functions.builtin.fn2.SortWith;
 
 import java.util.List;
 
@@ -12,7 +14,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.SortBy.sortBy;
  * this is both eager and monolithic.
  *
  * @param <A> the input Iterable and output List element type
- * @see com.jnape.palatable.lambda.functions.builtin.fn2.SortBy
+ * @see SortBy
+ * @see SortWith
  */
 public final class Sort<A extends Comparable<A>> implements Fn1<Iterable<A>, List<A>> {
 

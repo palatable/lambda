@@ -2,12 +2,12 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functions.builtin.fn1.Sort;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCollection;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.SortWith.sortWith;
 import static java.util.Comparator.comparing;
 
 /**
@@ -17,7 +17,8 @@ import static java.util.Comparator.comparing;
  *
  * @param <A> the input Iterable and output List element type
  * @param <B> the mapped Comparable type
- * @see com.jnape.palatable.lambda.functions.builtin.fn1.Sort
+ * @see Sort
+ * @see SortWith
  */
 public final class SortBy<A, B extends Comparable<B>> implements Fn2<Function<? super A, ? extends B>, Iterable<A>, List<A>> {
 
@@ -28,9 +29,7 @@ public final class SortBy<A, B extends Comparable<B>> implements Fn2<Function<? 
 
     @Override
     public List<A> apply(Function<? super A, ? extends B> fn, Iterable<A> as) {
-        List<A> result = toCollection(ArrayList::new, as);
-        result.sort(comparing(fn));
-        return result;
+        return sortWith(comparing(fn), as);
     }
 
     @SuppressWarnings("unchecked")
