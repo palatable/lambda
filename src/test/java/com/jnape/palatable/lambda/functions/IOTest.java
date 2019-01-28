@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.io;
+package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -13,8 +13,8 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
-import static com.jnape.palatable.lambda.io.IO.externallyManaged;
-import static com.jnape.palatable.lambda.io.IO.io;
+import static com.jnape.palatable.lambda.functions.IO.externallyManaged;
+import static com.jnape.palatable.lambda.functions.IO.io;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.ForkJoinPool.commonPool;

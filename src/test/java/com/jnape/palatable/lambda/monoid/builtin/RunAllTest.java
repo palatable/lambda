@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.monoid.builtin;
 import com.jnape.palatable.lambda.monoid.Monoid;
 import org.junit.Test;
 
-import static com.jnape.palatable.lambda.io.IO.io;
+import static com.jnape.palatable.lambda.functions.IO.io;
 import static com.jnape.palatable.lambda.monoid.builtin.RunAll.runAll;
 import static org.junit.Assert.assertEquals;
 

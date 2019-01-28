@@ -2,13 +2,12 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.io.IO;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
-import static com.jnape.palatable.lambda.io.IO.io;
+import static com.jnape.palatable.lambda.functions.IO.io;
 
 /**
  * A function returning "no result", and therefore only useful as a side-effect.

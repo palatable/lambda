@@ -1,6 +1,6 @@
 package testsupport;
 
-import com.jnape.palatable.lambda.io.IO;
+import com.jnape.palatable.lambda.functions.IO;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 
