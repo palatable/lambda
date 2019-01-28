@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `MapLens#valueAt` has overload taking copy function
 - `SortWith` for sorting an `Iterable` given a `Comparator` over its elements
 - `IO#externallyManaged`, for supplying an `IO` with externally-managed futures
+- test jar is now published
 
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 
