@@ -12,6 +12,8 @@ import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
+import static com.jnape.palatable.lambda.monad.Monad.join;
 import static java.util.Arrays.asList;
 
 public class MonadLaws<M extends Monad> implements Trait<Monad<?, M>> {
@@ -22,7 +24,8 @@ public class MonadLaws<M extends Monad> implements Trait<Monad<?, M>> {
                 .<Function<Monad<?, M>, Maybe<String>>>foldMap(f -> f.apply(m), asList(
                         this::testLeftIdentity,
                         this::testRightIdentity,
-                        this::testAssociativity))
+                        this::testAssociativity,
+                        this::testJoin))
                 .peek(s -> {
                     throw new AssertionError("The following Monad laws did not hold for instance of " + m.getClass() + ": \n\t - " + s);
                 });
@@ -32,21 +35,29 @@ public class MonadLaws<M extends Monad> implements Trait<Monad<?, M>> {
         Object a = new Object();
         Fn1<Object, Monad<Object, M>> fn = id().andThen(m::pure);
         return m.pure(a).flatMap(fn).equals(fn.apply(a))
-                ? nothing()
-                : just("left identity (m.pure(a).flatMap(fn).equals(fn.apply(a)))");
+               ? nothing()
+               : just("left identity (m.pure(a).flatMap(fn).equals(fn.apply(a)))");
     }
 
     private Maybe<String> testRightIdentity(Monad<?, M> m) {
         return m.flatMap(m::pure).equals(m)
-                ? nothing()
-                : just("right identity: (m.flatMap(m::pure).equals(m))");
+               ? nothing()
+               : just("right identity: (m.flatMap(m::pure).equals(m))");
     }
 
     private Maybe<String> testAssociativity(Monad<?, M> m) {
         Fn1<Object, Monad<Object, M>> f = constantly(m.pure(new Object()));
         Function<Object, Monad<Object, M>> g = constantly(m.pure(new Object()));
         return m.flatMap(f).flatMap(g).equals(m.flatMap(a -> f.apply(a).flatMap(g)))
-                ? nothing()
-                : just("associativity: (m.flatMap(f).flatMap(g).equals(m.flatMap(a -> f.apply(a).flatMap(g))))");
+               ? nothing()
+               : just("associativity: (m.flatMap(f).flatMap(g).equals(m.flatMap(a -> f.apply(a).flatMap(g))))");
+    }
+
+    private Maybe<String> testJoin(Monad<?, M> m) {
+        Monad<Monad<Object, M>, M> mma = m.pure(m.fmap(upcast()));
+        boolean equals = mma.flatMap(id()).equals(join(mma));
+        return equals
+               ? nothing()
+               : just("join: (m.pure(m).flatMap(id())).equals(Monad.join(m.pure(m)))");
     }
 }

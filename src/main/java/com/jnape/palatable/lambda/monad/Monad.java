@@ -1,8 +1,11 @@
 package com.jnape.palatable.lambda.monad;
 
+import com.jnape.palatable.lambda.functions.builtin.fn1.Id;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.Function;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
  * Monads are {@link Applicative} functors that support a flattening operation to unwrap <code>M&lt;M&lt;A&gt;&gt;
@@ -53,7 +56,7 @@ public interface Monad<A, M extends Monad> extends Applicative<A, M> {
      */
     @Override
     default <B> Monad<B, M> zip(Applicative<Function<? super A, ? extends B>, M> appFn) {
-        return appFn.<Monad<Function<? super A, ? extends B>, M>>coerce().flatMap(ab -> fmap(ab::apply));
+        return appFn.<Monad<Function<? super A, ? extends B>, M>>coerce().flatMap(this::fmap);
     }
 
     /**
@@ -70,5 +73,18 @@ public interface Monad<A, M extends Monad> extends Applicative<A, M> {
     @Override
     default <B> Monad<A, M> discardR(Applicative<B, M> appB) {
         return Applicative.super.discardR(appB).coerce();
+    }
+
+    /**
+     * Convenience static method equivalent to {@link Monad#flatMap(Function) flatMap}{@link Id#id() (id())};
+     *
+     * @param mma  the outer monad
+     * @param <M>  the monad type
+     * @param <A>  the nested type parameter
+     * @param <MA> the nested monad
+     * @return the nested monad
+     */
+    static <M extends Monad, A, MA extends Monad<A, M>> MA join(Monad<? extends MA, M> mma) {
+        return mma.flatMap(id()).coerce();
     }
 }

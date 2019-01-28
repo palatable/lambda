@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `SortWith` for sorting an `Iterable` given a `Comparator` over its elements
 - `IO#externallyManaged`, for supplying an `IO` with externally-managed futures
 - test jar is now published
+- `Monad#join` static alias for `flatMap(id())`
 
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 
