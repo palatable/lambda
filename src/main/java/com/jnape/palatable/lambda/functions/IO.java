@@ -46,6 +46,7 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * constructions may allow this method to delegate to externally-managed {@link CompletableFuture} instead of
      * synthesizing their own.
      *
+     * @param executor the {@link Executor} to run the {@link CompletableFuture} from
      * @return the {@link CompletableFuture} representing this {@link IO}'s eventual result
      * @see IO#unsafePerformAsyncIO()
      */

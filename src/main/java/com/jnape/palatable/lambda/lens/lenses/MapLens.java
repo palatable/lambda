@@ -3,8 +3,8 @@ package com.jnape.palatable.lambda.lens.lenses;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.builtin.fn2.Filter;
 import com.jnape.palatable.lambda.functions.IO;
+import com.jnape.palatable.lambda.functions.builtin.fn2.Filter;
 import com.jnape.palatable.lambda.lens.Iso;
 import com.jnape.palatable.lambda.lens.Lens;
 
@@ -40,9 +40,10 @@ public final class MapLens {
      * A lens that focuses on a copy of a {@link Map} as a subtype <code>M</code>. Useful for composition to avoid
      * mutating a map reference.
      *
-     * @param <M> the map subtype
-     * @param <K> the key type
-     * @param <V> the value type
+     * @param <M>    the map subtype
+     * @param <K>    the key type
+     * @param <V>    the value type
+     * @param copyFn the copy function
      * @return a lens that focuses on copies of maps as a specific subtype
      */
     public static <M extends Map<K, V>, K, V> Lens<Map<K, V>, M, M, M> asCopy(
@@ -65,10 +66,11 @@ public final class MapLens {
      * A lens that focuses on a value at a key in a map, as a {@link Maybe}, and produces a subtype <code>M</code> on
      * the way back out.
      *
-     * @param <M> the map subtype
-     * @param <K> the key type
-     * @param <V> the value type
-     * @param k   the key to focus on
+     * @param <M>    the map subtype
+     * @param <K>    the key type
+     * @param <V>    the value type
+     * @param k      the key to focus on
+     * @param copyFn the copy function
      * @return a lens that focuses on the value at key, as a {@link Maybe}
      */
     public static <M extends Map<K, V>, K, V> Lens<Map<K, V>, M, Maybe<V>, Maybe<V>> valueAt(

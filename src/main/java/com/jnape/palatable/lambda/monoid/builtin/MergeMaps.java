@@ -11,8 +11,8 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /**
- * A {@link Monoid} instance formed by {@link Map#merge(K, V, BiFunction)} and a semigroup over <code>V</code>.
- * Combines together multiple maps using the provided semigroup for key collisions.
+ * A {@link Monoid} instance formed by {@link java.util.Map#merge(Object, Object, BiFunction)} and a semigroup over
+ * <code>V</code>. Combines together multiple maps using the provided semigroup for key collisions.
  *
  * @param <K> The key parameter type of the Map
  * @param <V> The value parameter type of the Map
