@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `IO#externallyManaged`, for supplying an `IO` with externally-managed futures
 - test jar is now published
 - `Monad#join` static alias for `flatMap(id())`
+- `Effect#effect` static factory method taking `Fn1`
 
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 
