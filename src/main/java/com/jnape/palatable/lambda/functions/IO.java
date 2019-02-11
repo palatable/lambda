@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -14,7 +15,9 @@ import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedSu
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 /**
- * A {@link Monad} representing some effectful computation to be performed.
+ * A {@link Monad} representing some side-effecting computation to be performed. Note that because {@link IO} inherently
+ * offers an interface supporting parallelism, the optimal execution strategy for any given {@link IO} is encoded in
+ * its composition.
  *
  * @param <A> the result type
  */
@@ -55,11 +58,54 @@ public interface IO<A> extends Monad<A, IO<?>> {
     }
 
     /**
+     * Given a function from any {@link Throwable} to the result type <code>A</code>, if this {@link IO} successfully
+     * yields a result, return it; otherwise, map the {@link Throwable} to the result type and return that.
+     *
+     * @param recoveryFn the recovery function
+     * @return the guarded {@link IO}
+     */
+    default IO<A> exceptionally(Function<? super Throwable, ? extends A> recoveryFn) {
+        return new IO<A>() {
+            @Override
+            public A unsafePerformIO() {
+                return Try.trying(IO.this::unsafePerformIO).recover(recoveryFn);
+            }
+
+            @Override
+            public CompletableFuture<A> unsafePerformAsyncIO() {
+                return IO.this.unsafePerformAsyncIO().exceptionally(recoveryFn::apply);
+            }
+
+            @Override
+            public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
+                return IO.this.unsafePerformAsyncIO(executor).exceptionally(recoveryFn::apply);
+            }
+        };
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     default <B> IO<B> flatMap(Function<? super A, ? extends Monad<B, IO<?>>> f) {
-        return () -> f.apply(unsafePerformIO()).<IO<B>>coerce().unsafePerformIO();
+        return new IO<B>() {
+            @Override
+            public B unsafePerformIO() {
+                return f.apply(IO.this.unsafePerformIO()).<IO<B>>coerce().unsafePerformIO();
+            }
+
+            @Override
+            public CompletableFuture<B> unsafePerformAsyncIO() {
+                return IO.this.unsafePerformAsyncIO()
+                        .thenCompose(a -> f.apply(a).<IO<B>>coerce().unsafePerformAsyncIO());
+            }
+
+            @Override
+            public CompletableFuture<B> unsafePerformAsyncIO(Executor executor) {
+                return IO.this.unsafePerformAsyncIO(executor)
+                        .thenCompose(a -> f.apply(a).<IO<B>>coerce().unsafePerformAsyncIO(executor));
+            }
+        };
     }
 
     /**
@@ -83,7 +129,24 @@ public interface IO<A> extends Monad<A, IO<?>> {
      */
     @Override
     default <B> IO<B> zip(Applicative<Function<? super A, ? extends B>, IO<?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        IO<A> ioA = this;
+        IO<Function<? super A, ? extends B>> ioF = appFn.coerce();
+        return new IO<B>() {
+            @Override
+            public B unsafePerformIO() {
+                return ioF.unsafePerformIO().apply(ioA.unsafePerformIO());
+            }
+
+            @Override
+            public CompletableFuture<B> unsafePerformAsyncIO() {
+                return ioF.unsafePerformAsyncIO().thenCompose(ioA.unsafePerformAsyncIO()::thenApply);
+            }
+
+            @Override
+            public CompletableFuture<B> unsafePerformAsyncIO(Executor executor) {
+                return ioF.unsafePerformAsyncIO(executor).thenCompose(ioA.unsafePerformAsyncIO(executor)::thenApply);
+            }
+        };
     }
 
     /**

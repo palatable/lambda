@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - test jar is now published
 - `Monad#join` static alias for `flatMap(id())`
 - `Effect#effect` static factory method taking `Fn1`
+- `IO`s automatically encode parallelism in composition 
 
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 
