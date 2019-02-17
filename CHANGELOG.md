@@ -21,6 +21,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 
 
+### Removed
+- `AddAll` semigroup, deprecated in previous release 
+- Dyadic `Either#flatMap()`, deprecated in previous release
+
 ## [3.2.0] - 2018-12-08
 ### Changed
 - ***Breaking Change***: `Difference` and `Intersection` no longer instances of `Semigroup` and moved to `functions.builtin.fn2` package
