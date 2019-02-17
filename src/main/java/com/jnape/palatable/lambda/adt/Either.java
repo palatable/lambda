@@ -127,24 +127,6 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
         return match(Either::left, rightFn.andThen(Applicative::coerce));
     }
 
-    /**
-     * If a right value, apply <code>rightFn</code> to the unwrapped right value and return the resulting
-     * <code>Either</code>; otherwise, apply the unwrapped left value to leftFn and return the resulting
-     * <code>Either</code>.
-     *
-     * @param leftFn  the function to apply if a left value
-     * @param rightFn the function to apply if a right value
-     * @param <L2>    the new left parameter type
-     * @param <R2>    the new right parameter type
-     * @return the result of either rightFn or leftFn, depending on whether this is a right or a left
-     * @deprecated in favor of {@link Either#match(Function, Function)}
-     */
-    @Deprecated
-    public final <L2, R2> Either<L2, R2> flatMap(Function<? super L, ? extends Either<L2, R2>> leftFn,
-                                                 Function<? super R, ? extends Either<L2, R2>> rightFn) {
-        return match(leftFn, rightFn);
-    }
-
     @Override
     public final Either<R, L> invert() {
         return match(Either::right, Either::left);
