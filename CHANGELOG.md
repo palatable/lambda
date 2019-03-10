@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+No changes
+
+## [3.3.0] - 2019-02-18
 ### Added
 - `MergeMaps`, a `Monoid` on `Map` formed by `Map#merge`
 - `CheckedEffect` is now a `CheckedFn1`
@@ -16,7 +19,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - test jar is now published
 - `Monad#join` static alias for `flatMap(id())`
 - `Effect#effect` static factory method taking `Fn1`
+- `IO#unsafePerformAsyncIO` overloads for running `IO`s asynchronously 
 - `IO`s automatically encode parallelism in composition 
+- `IO#exceptionally` for recovering from failure during `IO` operation
 
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 
@@ -426,7 +431,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.2.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.3.0...HEAD
+[3.3.0]: https://github.com/palatable/lambda/compare/lambda-3.2.0...3.3.0
 [3.2.0]: https://github.com/palatable/lambda/compare/lambda-3.1.0...lambda-3.2.0
 [3.1.0]: https://github.com/palatable/lambda/compare/lambda-3.0.3...lambda-3.1.0
 [3.0.3]: https://github.com/palatable/lambda/compare/lambda-3.0.2...lambda-3.0.3
