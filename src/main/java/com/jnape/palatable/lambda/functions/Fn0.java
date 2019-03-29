@@ -9,7 +9,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
-import static com.jnape.palatable.lambda.functions.IO.io;
 
 /**
  * A function taking "no arguments", implemented as an <code>{@link Fn1}&lt;{@link Unit}, A&gt;</code>.
@@ -124,7 +123,10 @@ public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A>, Callable<A> {
      * @return the {@link Fn0}
      */
     static Fn0<Unit> fn0(Runnable runnable) {
-        return io(runnable)::unsafePerformIO;
+        return fn0(() -> {
+            runnable.run();
+            return UNIT;
+        });
     }
 
     /**

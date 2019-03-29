@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
-No changes
+### Changed
+- ***Breaking Change***: `IO` is now sealed. Most previous constructions using the static factory methods
+should continue to work (by simply targeting `Supplier` now instead of an anonymous `IO`), but some might
+need to be reworked, and subtyping is obviously no longer supported.
+- `IO` is now stack-safe, regardless of whether the composition nests linearly or recursively
 
 ## [3.3.0] - 2019-02-18
 ### Added

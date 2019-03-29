@@ -6,7 +6,6 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.IO.io;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
@@ -22,7 +21,7 @@ public interface Effect<A> extends Fn1<A, IO<Unit>>, Consumer<A> {
 
     @Override
     default IO<Unit> apply(A a) {
-        return io(fn0(() -> accept(a)));
+        return io(() -> accept(a));
     }
 
     @Override

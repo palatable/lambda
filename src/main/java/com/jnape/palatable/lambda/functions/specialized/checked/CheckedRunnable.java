@@ -1,7 +1,6 @@
 package com.jnape.palatable.lambda.functions.specialized.checked;
 
 import com.jnape.palatable.lambda.adt.Unit;
-import com.jnape.palatable.lambda.functions.IO;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.throwChecked;
@@ -14,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.t
  * @see CheckedFn1
  */
 @FunctionalInterface
-public interface CheckedRunnable<T extends Throwable> extends Runnable, IO<Unit> {
+public interface CheckedRunnable<T extends Throwable> extends Runnable {
 
     /**
      * A version of {@link Runnable#run()} that can throw checked exceptions.
@@ -30,12 +29,6 @@ public interface CheckedRunnable<T extends Throwable> extends Runnable, IO<Unit>
         } catch (Throwable t) {
             throw throwChecked(t);
         }
-    }
-
-    @Override
-    default Unit unsafePerformIO() {
-        run();
-        return UNIT;
     }
 
     /**

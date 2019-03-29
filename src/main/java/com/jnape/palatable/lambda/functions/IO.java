@@ -2,17 +2,29 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.Unit;
+import com.jnape.palatable.lambda.adt.choice.Choice2;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 
+import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.Fn0.fn0;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier.checked;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static java.util.concurrent.ForkJoinPool.commonPool;
 
 /**
  * A {@link Monad} representing some side-effecting computation to be performed. Note that because {@link IO} inherently
@@ -21,14 +33,17 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
  *
  * @param <A> the result type
  */
-public interface IO<A> extends Monad<A, IO<?>> {
+public abstract class IO<A> implements Monad<A, IO<?>> {
+
+    private IO() {
+    }
 
     /**
      * Run the effect represented by this {@link IO} instance, blocking the current thread until the effect terminates.
      *
      * @return the result of the effect
      */
-    A unsafePerformIO();
+    public abstract A unsafePerformIO();
 
     /**
      * Returns a {@link CompletableFuture} representing the result of this eventual effect. By default, this will
@@ -39,8 +54,8 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * @return the {@link CompletableFuture} representing this {@link IO}'s eventual result
      * @see IO#unsafePerformAsyncIO(Executor)
      */
-    default CompletableFuture<A> unsafePerformAsyncIO() {
-        return supplyAsync(this::unsafePerformIO);
+    public final CompletableFuture<A> unsafePerformAsyncIO() {
+        return unsafePerformAsyncIO(commonPool());
     }
 
     /**
@@ -53,9 +68,7 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * @return the {@link CompletableFuture} representing this {@link IO}'s eventual result
      * @see IO#unsafePerformAsyncIO()
      */
-    default CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
-        return supplyAsync(this::unsafePerformIO, executor);
-    }
+    public abstract CompletableFuture<A> unsafePerformAsyncIO(Executor executor);
 
     /**
      * Given a function from any {@link Throwable} to the result type <code>A</code>, if this {@link IO} successfully
@@ -64,16 +77,11 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * @param recoveryFn the recovery function
      * @return the guarded {@link IO}
      */
-    default IO<A> exceptionally(Function<? super Throwable, ? extends A> recoveryFn) {
+    public final IO<A> exceptionally(Function<? super Throwable, ? extends A> recoveryFn) {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
                 return Try.trying(IO.this::unsafePerformIO).recover(recoveryFn);
-            }
-
-            @Override
-            public CompletableFuture<A> unsafePerformAsyncIO() {
-                return IO.this.unsafePerformAsyncIO().exceptionally(recoveryFn::apply);
             }
 
             @Override
@@ -87,40 +95,15 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    default <B> IO<B> flatMap(Function<? super A, ? extends Monad<B, IO<?>>> f) {
-        return new IO<B>() {
-            @Override
-            public B unsafePerformIO() {
-                return f.apply(IO.this.unsafePerformIO()).<IO<B>>coerce().unsafePerformIO();
-            }
-
-            @Override
-            public CompletableFuture<B> unsafePerformAsyncIO() {
-                return IO.this.unsafePerformAsyncIO()
-                        .thenCompose(a -> f.apply(a).<IO<B>>coerce().unsafePerformAsyncIO());
-            }
-
-            @Override
-            public CompletableFuture<B> unsafePerformAsyncIO(Executor executor) {
-                return IO.this.unsafePerformAsyncIO(executor)
-                        .thenCompose(a -> f.apply(a).<IO<B>>coerce().unsafePerformAsyncIO(executor));
-            }
-        };
+    public final <B> IO<B> pure(B b) {
+        return io(b);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <B> IO<B> pure(B b) {
-        return () -> b;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default <B> IO<B> fmap(Function<? super A, ? extends B> fn) {
+    public final <B> IO<B> fmap(Function<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -128,32 +111,19 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    default <B> IO<B> zip(Applicative<Function<? super A, ? extends B>, IO<?>> appFn) {
-        IO<A> ioA = this;
-        IO<Function<? super A, ? extends B>> ioF = appFn.coerce();
-        return new IO<B>() {
-            @Override
-            public B unsafePerformIO() {
-                return ioF.unsafePerformIO().apply(ioA.unsafePerformIO());
-            }
-
-            @Override
-            public CompletableFuture<B> unsafePerformAsyncIO() {
-                return ioF.unsafePerformAsyncIO().thenCompose(ioA.unsafePerformAsyncIO()::thenApply);
-            }
-
-            @Override
-            public CompletableFuture<B> unsafePerformAsyncIO(Executor executor) {
-                return ioF.unsafePerformAsyncIO(executor).thenCompose(ioA.unsafePerformAsyncIO(executor)::thenApply);
-            }
-        };
+    public final <B> IO<B> zip(Applicative<Function<? super A, ? extends B>, IO<?>> appFn) {
+        @SuppressWarnings("unchecked")
+        IO<Object> source = (IO<Object>) this;
+        @SuppressWarnings("unchecked")
+        IO<Function<Object, Object>> zip = (IO<Function<Object, Object>>) (Object) appFn;
+        return new Compose<>(source, a(zip));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <B> IO<B> discardL(Applicative<B, IO<?>> appB) {
+    public final <B> IO<B> discardL(Applicative<B, IO<?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
@@ -161,19 +131,20 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    default <B> IO<A> discardR(Applicative<B, IO<?>> appB) {
+    public final <B> IO<A> discardR(Applicative<B, IO<?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
     /**
-     * Static factory method for coercing a lambda to an {@link IO}.
-     *
-     * @param io  the lambda to coerce
-     * @param <A> the result type
-     * @return the {@link IO}
+     * {@inheritDoc}
      */
-    static <A> IO<A> io(IO<A> io) {
-        return io;
+    @Override
+    public final <B> IO<B> flatMap(Function<? super A, ? extends Monad<B, IO<?>>> f) {
+        @SuppressWarnings("unchecked")
+        IO<Object> source = (IO<Object>) this;
+        @SuppressWarnings({"unchecked", "RedundantCast"})
+        Function<Object, IO<Object>> flatMap = (Function<Object, IO<Object>>) (Object) f;
+        return new Compose<>(source, Choice2.b(flatMap));
     }
 
     /**
@@ -183,8 +154,39 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * @param <A> the result type
      * @return the {@link IO}
      */
-    static <A> IO<A> io(A a) {
-        return io(() -> a);
+    public static <A> IO<A> io(A a) {
+        return new IO<A>() {
+            @Override
+            public A unsafePerformIO() {
+                return a;
+            }
+
+            @Override
+            public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
+                return completedFuture(a);
+            }
+        };
+    }
+
+    /**
+     * Static factory method for coercing a lambda to an {@link IO}.
+     *
+     * @param supplier the lambda to coerce
+     * @param <A>      the result type
+     * @return the {@link IO}
+     */
+    public static <A> IO<A> io(Supplier<A> supplier) {
+        return new IO<A>() {
+            @Override
+            public A unsafePerformIO() {
+                return supplier.get();
+            }
+
+            @Override
+            public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
+                return supplyAsync(supplier, executor);
+            }
+        };
     }
 
     /**
@@ -193,22 +195,8 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * @param runnable the {@link Runnable}
      * @return the {@link IO}
      */
-    static IO<Unit> io(Runnable runnable) {
-        return io(() -> {
-            runnable.run();
-            return UNIT;
-        });
-    }
-
-    /**
-     * Static factory method for creating an {@link IO} from an <code>{@link Fn1}&lt;{@link Unit}, A&gt;</code>.
-     *
-     * @param fn1 the {@link Fn1}
-     * @param <A> the result type
-     * @return the {@link IO}
-     */
-    static <A> IO<A> io(Fn1<Unit, A> fn1) {
-        return io(() -> fn1.apply(UNIT));
+    public static IO<Unit> io(Runnable runnable) {
+        return io(fn0(runnable));
     }
 
     /**
@@ -223,7 +211,7 @@ public interface IO<A> extends Monad<A, IO<?>> {
      * @param <A>      the result type
      * @return the {@link IO}
      */
-    static <A> IO<A> externallyManaged(Supplier<CompletableFuture<A>> supplier) {
+    public static <A> IO<A> externallyManaged(Supplier<CompletableFuture<A>> supplier) {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
@@ -231,14 +219,68 @@ public interface IO<A> extends Monad<A, IO<?>> {
             }
 
             @Override
-            public CompletableFuture<A> unsafePerformAsyncIO() {
-                return supplier.get();
-            }
-
-            @Override
             public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
                 return supplier.get();
             }
         };
+    }
+
+    private static final class Compose<A> extends IO<A> {
+        private final IO<Object>                                                          source;
+        private final Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>> composition;
+
+        private Compose(IO<Object> source,
+                        Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>> composition) {
+            this.source = source;
+            this.composition = composition;
+        }
+
+        @Override
+        public A unsafePerformIO() {
+            @SuppressWarnings("unchecked")
+            A result = (A) trampoline(into((source, compositions) -> {
+                Object res = source.unsafePerformIO();
+                return compositions.isEmpty()
+                       ? terminate(res)
+                       : compositions.pop().match(
+                               zip -> recurse(tuple(io(zip.unsafePerformIO().apply(res)), compositions)),
+                               flatMap -> {
+                                   IO<Object> next = flatMap.apply(res);
+                                   return (next instanceof Compose<?>)
+                                          ? recurse(((Compose<?>) next).deforest(compositions))
+                                          : recurse(tuple(next, compositions));
+                               });
+            }), deforest(new LinkedList<>()));
+
+            return result;
+        }
+
+        @Override
+        public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
+            @SuppressWarnings("unchecked")
+            CompletableFuture<A> future = (CompletableFuture<A>) deforest(new LinkedList<>())
+                    .into((source, compositions) -> foldLeft(
+                            (io, composition) -> composition
+                                    .match(zip -> zip.unsafePerformAsyncIO(executor).thenCompose(io::thenApply),
+                                           flatMap -> io.thenComposeAsync(obj -> flatMap.apply(obj)
+                                                   .unsafePerformAsyncIO(executor))),
+                            source.unsafePerformAsyncIO(executor),
+                            compositions));
+            return future;
+        }
+
+        private Tuple2<IO<Object>, LinkedList<Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>>>>
+        deforest(LinkedList<Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>>> branches) {
+            Tuple2<Compose<?>, LinkedList<Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>>>> args =
+                    tuple(this, branches);
+            return trampoline(into((source, compositions) -> {
+                IO<Object> leaf = source.source;
+                compositions.push(source.composition);
+                return leaf instanceof Compose<?>
+                       ? recurse(tuple((Compose<?>) leaf, compositions))
+                       : terminate(tuple(leaf, compositions));
+            }), args);
+        }
+
     }
 }

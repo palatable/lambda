@@ -16,11 +16,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
-import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.IO.externallyManaged;
 import static com.jnape.palatable.lambda.functions.IO.io;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
-import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1.checked;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
+import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier.checked;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.ForkJoinPool.commonPool;
@@ -29,8 +29,10 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class IOTest {
 
+    private static final int STACK_EXPLODING_NUMBER = 50_000;
+
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public IO<Integer> testSubject() {
+    public EqualityAwareIO<Integer> testSubject() {
         return new EqualityAwareIO<>(io(1));
     }
 
@@ -38,7 +40,6 @@ public class IOTest {
     public void staticFactoryMethods() {
         assertEquals((Integer) 1, io(1).unsafePerformIO());
         assertEquals((Integer) 1, io(() -> 1).unsafePerformIO());
-        assertEquals((Integer) 1, io(fn0(() -> 1)).unsafePerformIO());
         assertEquals(UNIT, io(() -> {}).unsafePerformIO());
     }
 
@@ -61,12 +62,12 @@ public class IOTest {
         CountDownLatch advanceFirst = new CountDownLatch(1);
         CountDownLatch advanceSecond = new CountDownLatch(1);
 
-        IO<String> ioA = io(checked(__ -> {
+        IO<String> ioA = io(checked(() -> {
             advanceFirst.countDown();
             advanceSecond.await();
             return a;
         }));
-        IO<Function<? super String, ? extends Tuple2<Integer, String>>> ioF = io(checked(__ -> {
+        IO<Function<? super String, ? extends Tuple2<Integer, String>>> ioF = io(checked(() -> {
             advanceFirst.await();
             advanceSecond.countDown();
             return f;
@@ -118,6 +119,63 @@ public class IOTest {
             completeExceptionally(new UnsupportedOperationException("foo"));
         }}).exceptionally(e -> e.getCause().getMessage());
         assertEquals("foo", externallyManaged.unsafePerformIO());
+    }
+
+    @Test
+    public void linearSyncStackSafety() {
+        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+                     times(STACK_EXPLODING_NUMBER, f -> f.fmap(x -> x + 1), io(0)).unsafePerformIO());
+        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+                     times(STACK_EXPLODING_NUMBER, f -> f.zip(f.pure(x -> x + 1)), io(0)).unsafePerformIO());
+        assertEquals((Integer) 0,
+                     times(STACK_EXPLODING_NUMBER, f -> f.pure(0).discardR(f), io(0)).unsafePerformIO());
+        assertEquals((Integer) 1,
+                     times(STACK_EXPLODING_NUMBER, f -> f.pure(1).discardR(f), io(0)).unsafePerformIO());
+        assertEquals((Integer) 0,
+                     times(STACK_EXPLODING_NUMBER, f -> f.pure(1).discardL(f), io(0)).unsafePerformIO());
+        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+                     times(STACK_EXPLODING_NUMBER, f -> f.flatMap(x -> f.pure(x + 1)), io(0)).unsafePerformIO());
+    }
+
+    @Test
+    public void recursiveSyncFlatMapStackSafety() {
+        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+                     new Fn1<IO<Integer>, IO<Integer>>() {
+                         @Override
+                         public IO<Integer> apply(IO<Integer> a) {
+                             return a.flatMap(x -> x < STACK_EXPLODING_NUMBER ? apply(io(x + 1)) : io(x));
+                         }
+                     }.apply(io(0)).unsafePerformIO());
+
+    }
+
+    @Test
+    public void linearAsyncStackSafety() {
+        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+                     times(STACK_EXPLODING_NUMBER, f -> f.fmap(x -> x + 1), io(0)).unsafePerformAsyncIO().join());
+        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+                     times(STACK_EXPLODING_NUMBER, f -> f.zip(f.pure(x -> x + 1)), io(0)).unsafePerformAsyncIO()
+                             .join());
+        assertEquals((Integer) 0,
+                     times(STACK_EXPLODING_NUMBER, f -> f.pure(0).discardR(f), io(0)).unsafePerformAsyncIO().join());
+        assertEquals((Integer) 1,
+                     times(STACK_EXPLODING_NUMBER, f -> f.pure(1).discardR(f), io(0)).unsafePerformAsyncIO().join());
+        assertEquals((Integer) 0,
+                     times(STACK_EXPLODING_NUMBER, f -> f.pure(1).discardL(f), io(0)).unsafePerformAsyncIO().join());
+        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+                     times(STACK_EXPLODING_NUMBER, f -> f.flatMap(x -> f.pure(x + 1)), io(0)).unsafePerformAsyncIO()
+                             .join());
+    }
+
+    @Test
+    public void recursiveAsyncFlatMapStackSafety() {
+        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+                     new Fn1<IO<Integer>, IO<Integer>>() {
+                         @Override
+                         public IO<Integer> apply(IO<Integer> a) {
+                             return a.flatMap(x -> x < STACK_EXPLODING_NUMBER ? apply(io(x + 1)) : io(x));
+                         }
+                     }.apply(io(0)).unsafePerformAsyncIO().join());
 
     }
 }
