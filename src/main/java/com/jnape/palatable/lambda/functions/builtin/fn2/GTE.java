@@ -8,8 +8,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.GTEBy.gteBy;
 
 /**
- * Given two {@link Comparable} values of type <code>A</code>, return <code>true</code> if the first value is greater
- * than or equal to the second value according to {@link Comparable#compareTo(Object)}; otherwise, return false.
+ * Given two {@link Comparable} values of type <code>A</code>, return <code>true</code> if the second value is greater
+ * than or equal to the first value according to {@link Comparable#compareTo(Object)}; otherwise, return false.
  *
  * @param <A> the value type
  * @see GTEBy

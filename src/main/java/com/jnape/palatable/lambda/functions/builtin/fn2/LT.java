@@ -8,8 +8,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.LTBy.ltBy;
 
 /**
- * Given two {@link Comparable} values of type <code>A</code>, return <code>true</code> if the first value is strictly
- * less than the second value; otherwise, return false.
+ * Given two {@link Comparable} values of type <code>A</code>, return <code>true</code> if the second value is strictly
+ * less than the first value; otherwise, return false.
  *
  * @param <A> the value type
  * @see LTBy

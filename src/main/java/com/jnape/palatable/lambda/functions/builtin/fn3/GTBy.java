@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 /**
  * Given a mapping function from some type <code>A</code> to some {@link Comparable} type <code>B</code> and two values
- * of type <code>A</code>, return <code>true</code> if the first value is strictly greater than the second value in
+ * of type <code>A</code>, return <code>true</code> if the second value is strictly greater than the first value in
  * terms of their mapped <code>B</code> results; otherwise, return false.
  *
  * @param <A> the value type

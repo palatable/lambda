@@ -11,7 +11,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.CmpEqBy.cmpEqBy;
 
 /**
  * Given a mapping function from some type <code>A</code> to some {@link Comparable} type <code>B</code> and two values
- * of type <code>A</code>, return <code>true</code> if the first value is greater than or equal to the second value in
+ * of type <code>A</code>, return <code>true</code> if the second value is greater than or equal to the first value in
  * terms of their mapped <code>B</code> results according to {@link Comparable#compareTo(Object)}; otherwise, return
  * false.
  *
