@@ -2,7 +2,6 @@ package com.jnape.palatable.lambda.io;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
@@ -18,20 +17,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
-import static com.jnape.palatable.lambda.io.IO.externallyManaged;
-import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier.checked;
+import static com.jnape.palatable.lambda.io.IO.externallyManaged;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.ForkJoinPool.commonPool;
 import static org.junit.Assert.assertEquals;
+import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 
 @RunWith(Traits.class)
 public class IOTest {
-
-    private static final int STACK_EXPLODING_NUMBER = 50_000;
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
     public EqualityAwareIO<Integer> testSubject() {
@@ -125,9 +123,9 @@ public class IOTest {
 
     @Test
     public void linearSyncStackSafety() {
-        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+        assertEquals(STACK_EXPLODING_NUMBER,
                      times(STACK_EXPLODING_NUMBER, f -> f.fmap(x -> x + 1), io(0)).unsafePerformIO());
-        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+        assertEquals(STACK_EXPLODING_NUMBER,
                      times(STACK_EXPLODING_NUMBER, f -> f.zip(f.pure(x -> x + 1)), io(0)).unsafePerformIO());
         assertEquals((Integer) 0,
                      times(STACK_EXPLODING_NUMBER, f -> f.pure(0).discardR(f), io(0)).unsafePerformIO());
@@ -135,13 +133,13 @@ public class IOTest {
                      times(STACK_EXPLODING_NUMBER, f -> f.pure(1).discardR(f), io(0)).unsafePerformIO());
         assertEquals((Integer) 0,
                      times(STACK_EXPLODING_NUMBER, f -> f.pure(1).discardL(f), io(0)).unsafePerformIO());
-        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+        assertEquals(STACK_EXPLODING_NUMBER,
                      times(STACK_EXPLODING_NUMBER, f -> f.flatMap(x -> f.pure(x + 1)), io(0)).unsafePerformIO());
     }
 
     @Test
     public void recursiveSyncFlatMapStackSafety() {
-        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+        assertEquals(STACK_EXPLODING_NUMBER,
                      new Fn1<IO<Integer>, IO<Integer>>() {
                          @Override
                          public IO<Integer> apply(IO<Integer> a) {
@@ -153,9 +151,9 @@ public class IOTest {
 
     @Test
     public void linearAsyncStackSafety() {
-        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+        assertEquals(STACK_EXPLODING_NUMBER,
                      times(STACK_EXPLODING_NUMBER, f -> f.fmap(x -> x + 1), io(0)).unsafePerformAsyncIO().join());
-        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+        assertEquals(STACK_EXPLODING_NUMBER,
                      times(STACK_EXPLODING_NUMBER, f -> f.zip(f.pure(x -> x + 1)), io(0)).unsafePerformAsyncIO()
                              .join());
         assertEquals((Integer) 0,
@@ -164,14 +162,14 @@ public class IOTest {
                      times(STACK_EXPLODING_NUMBER, f -> f.pure(1).discardR(f), io(0)).unsafePerformAsyncIO().join());
         assertEquals((Integer) 0,
                      times(STACK_EXPLODING_NUMBER, f -> f.pure(1).discardL(f), io(0)).unsafePerformAsyncIO().join());
-        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+        assertEquals(STACK_EXPLODING_NUMBER,
                      times(STACK_EXPLODING_NUMBER, f -> f.flatMap(x -> f.pure(x + 1)), io(0)).unsafePerformAsyncIO()
                              .join());
     }
 
     @Test
     public void recursiveAsyncFlatMapStackSafety() {
-        assertEquals((Integer) STACK_EXPLODING_NUMBER,
+        assertEquals(STACK_EXPLODING_NUMBER,
                      new Fn1<IO<Integer>, IO<Integer>>() {
                          @Override
                          public IO<Integer> apply(IO<Integer> a) {

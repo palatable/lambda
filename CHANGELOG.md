@@ -10,6 +10,9 @@ factory methods should continue to work (by simply targeting `Supplier` now inst
 might need to be reworked, and subtyping is obviously no longer supported.
 - `IO` is now stack-safe, regardless of whether the composition nests linearly or recursively
 
+### Added
+- `Lazy`, a monad supporting stack-safe lazy evaluation
+
 ## [3.3.0] - 2019-02-18
 ### Added
 - `MergeMaps`, a `Monoid` on `Map` formed by `Map#merge`
