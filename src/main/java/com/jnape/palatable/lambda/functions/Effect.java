@@ -2,11 +2,12 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.io.IO;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.functions.IO.io;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**

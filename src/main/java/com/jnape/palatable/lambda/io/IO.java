@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.functions;
+package com.jnape.palatable.lambda.io;
 
 import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.Unit;

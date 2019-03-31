@@ -1,6 +1,8 @@
-package com.jnape.palatable.lambda.functions;
+package com.jnape.palatable.lambda.io;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
@@ -16,8 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
-import static com.jnape.palatable.lambda.functions.IO.externallyManaged;
-import static com.jnape.palatable.lambda.functions.IO.io;
+import static com.jnape.palatable.lambda.io.IO.externallyManaged;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier.checked;

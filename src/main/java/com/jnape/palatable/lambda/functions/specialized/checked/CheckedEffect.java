@@ -3,13 +3,13 @@ package com.jnape.palatable.lambda.functions.specialized.checked;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functions.Effect;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.IO;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.functions.IO.io;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.throwChecked;
 
 /**

@@ -1,12 +1,12 @@
 package testsupport;
 
-import com.jnape.palatable.lambda.functions.IO;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.functions.IO.io;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static java.util.Objects.hash;
 
 public final class EqualityAwareIO<A> implements Monad<A, EqualityAwareIO<?>> {
