@@ -8,7 +8,7 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EqualityAwareLens;
+import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
@@ -35,12 +35,14 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class LensTest {
 
-    private static final Lens<Map<String, List<String>>, Map<String, Set<Integer>>, List<String>, Set<Integer>> EARLIER_LENS = lens(m -> m.get("foo"), (m, s) -> singletonMap("foo", s));
-    private static final Lens<List<String>, Set<Integer>, String, Integer>                                      LENS         = lens(xs -> xs.get(0), (xs, i) -> singleton(i));
+    private static final Lens<Map<String, List<String>>, Map<String, Set<Integer>>, List<String>, Set<Integer>>
+            EARLIER_LENS = lens(m -> m.get("foo"), (m, s) -> singletonMap("foo", s));
+    private static final Lens<List<String>, Set<Integer>, String, Integer>
+            LENS         = lens(xs -> xs.get(0), (xs, i) -> singleton(i));
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public Lens<Map<String, Integer>, List<Integer>, Integer, String> testSubject() {
-        return new EqualityAwareLens<>(emptyMap(), lens(m -> m.get("foo"), (m, s) -> singletonList(m.get(s))));
+    public EquatableM<LensLike<Map<String, Integer>, ?, Integer, String, Lens>, ?> testSubject() {
+        return new EquatableM<>(lens(m -> m.get("foo"), (m, s) -> singletonList(m.get(s))), l -> view(l, emptyMap()));
     }
 
     @Test

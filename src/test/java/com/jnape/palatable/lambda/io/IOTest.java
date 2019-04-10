@@ -6,7 +6,7 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EqualityAwareIO;
+import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
@@ -32,8 +32,8 @@ import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 public class IOTest {
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EqualityAwareIO<Integer> testSubject() {
-        return new EqualityAwareIO<>(io(1));
+    public EquatableM<IO<?>, Integer> testSubject() {
+        return new EquatableM<>(io(1), IO::unsafePerformIO);
     }
 
     @Test

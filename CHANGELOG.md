@@ -12,6 +12,7 @@ might need to be reworked, and subtyping is obviously no longer supported.
 
 ### Added
 - `Lazy`, a monad supporting stack-safe lazy evaluation
+- `LazyRec`, a function for writing stack-safe recursive algorithms embedded in `Lazy`
 
 ## [3.3.0] - 2019-02-18
 ### Added

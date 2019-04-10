@@ -48,7 +48,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> Lazy<B> pure(B b) {
+    public final <B> Lazy<B> pure(B b) {
         return lazy(b);
     }
 
@@ -56,7 +56,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> Lazy<B> fmap(Function<? super A, ? extends B> fn) {
+    public final <B> Lazy<B> fmap(Function<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -72,7 +72,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> Lazy<B> discardL(Applicative<B, Lazy<?>> appB) {
+    public final <B> Lazy<B> discardL(Applicative<B, Lazy<?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
@@ -80,7 +80,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> Lazy<A> discardR(Applicative<B, Lazy<?>> appB) {
+    public final <B> Lazy<A> discardR(Applicative<B, Lazy<?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
@@ -103,13 +103,13 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>> {
      * @return the new {@link Lazy}
      */
     public static <A> Lazy<A> lazy(Supplier<A> supplier) {
-        return new Val<>(fn0(supplier));
+        return new Later<>(fn0(supplier));
     }
 
-    private static final class Val<A> extends Lazy<A> {
+    private static final class Later<A> extends Lazy<A> {
         private final Fn0<A> fn0;
 
-        private Val(Fn0<A> fn0) {
+        private Later(Fn0<A> fn0) {
             this.fn0 = fn0;
         }
 

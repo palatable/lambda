@@ -1,11 +1,12 @@
 package com.jnape.palatable.lambda.lens;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EqualityAwareIso;
+import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
@@ -27,8 +28,8 @@ public class IsoTest {
             iso(Integer::parseInt, dbl -> dbl.toString().chars().mapToObj(x -> (char) x).collect(toList()));
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public Iso<String, List<Character>, Integer, Double> testSubject() {
-        return new EqualityAwareIso<>("123", 1.23d, ISO);
+    public EquatableM<LensLike<String, ?, Integer, Double, Iso>, ?> testSubject() {
+        return new EquatableM<>(ISO, iso -> iso.apply(Const::new, "123"));
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.semigroup;
 
-import com.jnape.palatable.lambda.semigroup.Semigroup;
 import org.junit.Test;
 
 import static java.util.Arrays.asList;
