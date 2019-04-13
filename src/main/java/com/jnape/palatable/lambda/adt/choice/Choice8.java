@@ -7,6 +7,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple8;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into8.into8;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * Canonical ADT representation of {@link CoProduct8}.
@@ -47,6 +49,9 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
         return into8(HList::tuple, CoProduct8.super.project());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Choice7<A, B, C, D, E, F, G> converge(
             Function<? super H, ? extends CoProduct7<A, B, C, D, E, F, G, ?>> convergenceFn) {
@@ -60,57 +65,102 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
                      convergenceFn.andThen(cp7 -> cp7.match(Choice7::a, Choice7::b, Choice7::c, Choice7::d, Choice7::e, Choice7::f, Choice7::g)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> fmap(Function<? super H, ? extends I> fn) {
         return Monad.super.<I>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <I> Choice8<A, B, C, D, E, F, I, H> biMapL(Function<? super G, ? extends I> fn) {
         return (Choice8<A, B, C, D, E, F, I, H>) Bifunctor.super.biMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <I> Choice8<A, B, C, D, E, F, G, I> biMapR(Function<? super H, ? extends I> fn) {
         return (Choice8<A, B, C, D, E, F, G, I>) Bifunctor.super.biMapR(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <I, J> Choice8<A, B, C, D, E, F, I, J> biMap(Function<? super G, ? extends I> lFn,
                                                         Function<? super H, ? extends J> rFn) {
         return match(Choice8::a, Choice8::b, Choice8::c, Choice8::d, Choice8::e, Choice8::f, g -> g(lFn.apply(g)), h -> h(rFn.apply(h)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> pure(I i) {
         return h(i);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> zip(
             Applicative<Function<? super H, ? extends I>, Choice8<A, B, C, D, E, F, G, ?>> appFn) {
-        return appFn.<Choice8<A, B, C, D, E, F, G, Function<? super H, ? extends I>>>coerce()
-                .match(Choice8::a, Choice8::b, Choice8::c, Choice8::d, Choice8::e, Choice8::f, Choice8::g, this::biMapR);
+        return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <I> Lazy<Choice8<A, B, C, D, E, F, G, I>> lazyZip(
+            Lazy<Applicative<Function<? super H, ? extends I>, Choice8<A, B, C, D, E, F, G, ?>>> lazyAppFn) {
+        return match(a -> lazy(a(a)),
+                     b -> lazy(b(b)),
+                     c -> lazy(c(c)),
+                     d -> lazy(d(d)),
+                     e -> lazy(e(e)),
+                     f -> lazy(f(f)),
+                     g -> lazy(g(g)),
+                     h -> lazyAppFn.fmap(choiceF -> choiceF.<I>fmap(f -> f.apply(h)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> discardL(Applicative<I, Choice8<A, B, C, D, E, F, G, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, H> discardR(Applicative<I, Choice8<A, B, C, D, E, F, G, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> flatMap(
             Function<? super H, ? extends Monad<I, Choice8<A, B, C, D, E, F, G, ?>>> fn) {
         return match(Choice8::a, Choice8::b, Choice8::c, Choice8::d, Choice8::e, Choice8::f, Choice8::g, h -> fn.apply(h).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <I, App extends Applicative, TravB extends Traversable<I, Choice8<A, B, C, D, E, F, G, ?>>, AppB extends Applicative<I, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(

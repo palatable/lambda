@@ -53,27 +53,50 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
         return (Const<A, C>) this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Const<A, C> zip(Applicative<Function<? super B, ? extends C>, Const<A, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <C> Lazy<Const<A, C>> lazyZip(Lazy<Applicative<Function<? super B, ? extends C>, Const<A, ?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Const<A, C> discardL(Applicative<C, Const<A, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Const<A, B> discardR(Applicative<C, Const<A, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <C> Const<A, C> flatMap(Function<? super B, ? extends Monad<C, Const<A, ?>>> f) {
         return (Const<A, C>) this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C, App extends Applicative, TravB extends Traversable<C, Const<A, ?>>, AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
             Function<? super B, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
@@ -81,11 +104,7 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
     }
 
     /**
-     * Covariantly map over the left parameter type (the value).
-     *
-     * @param fn  the mapping function
-     * @param <Z> the new left parameter type (the value)
-     * @return a Const over Z (the new value) and B (the same phantom parameter)
+     * {@inheritDoc}
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -94,11 +113,7 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
     }
 
     /**
-     * Covariantly map over the right parameter (phantom) type.
-     *
-     * @param fn  the mapping function
-     * @param <C> the new right parameter (phantom) type
-     * @return a Const over A (the same value) and C (the new phantom parameter)
+     * {@inheritDoc}
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -107,13 +122,7 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
     }
 
     /**
-     * Bifunctor's biMap, specialized for <code>Const</code>.
-     *
-     * @param lFn the left parameter mapping function
-     * @param rFn the right parameter mapping function
-     * @param <C> the new left parameter type
-     * @param <D> the new right parameter type
-     * @return a Const over C (the new value) and D (the new phantom parameter)
+     * {@inheritDoc}
      */
     @Override
     public <C, D> Const<C, D> biMap(Function<? super A, ? extends C> lFn,

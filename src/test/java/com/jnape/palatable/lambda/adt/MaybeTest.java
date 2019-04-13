@@ -22,6 +22,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -129,5 +130,13 @@ public class MaybeTest {
     public void invertsIntoChoice2() {
         assertEquals(Choice2.b(UNIT), nothing().invert());
         assertEquals(Choice2.a(1), just(1).invert());
+    }
+
+    @Test
+    public void lazyZip() {
+        assertEquals(just(2), just(1).<Integer>lazyZip(lazy(() -> just(x -> x + 1))).value());
+        assertEquals(nothing(), nothing().lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
     }
 }

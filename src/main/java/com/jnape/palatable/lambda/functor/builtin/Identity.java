@@ -45,26 +45,50 @@ public final class Identity<A> implements Monad<A, Identity>, Traversable<A, Ide
         return Monad.super.<B>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Identity<B> pure(B b) {
         return new Identity<>(b);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Identity<B> zip(Applicative<Function<? super A, ? extends B>, Identity> appFn) {
         return new Identity<>(appFn.<Identity<Function<? super A, ? extends B>>>coerce().runIdentity().apply(a));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Lazy<Identity<B>> lazyZip(
+            Lazy<Applicative<Function<? super A, ? extends B>, Identity>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Identity<B> discardL(Applicative<B, Identity> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Identity<A> discardR(Applicative<B, Identity> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative, TravB extends Traversable<B, Identity>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(

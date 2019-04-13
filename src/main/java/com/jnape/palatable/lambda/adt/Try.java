@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.BoundedBifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -18,6 +19,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Peek2.peek2;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * A {@link Monad} of the evaluation outcome of an expression that might throw. Try/catch/finally semantics map to
@@ -139,36 +141,63 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
         return match(fn.andThen(Either::left), Either::right);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Try<T, B> fmap(Function<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Try<T, B> flatMap(Function<? super A, ? extends Monad<B, Try<T, ?>>> f) {
         return match(Try::failure, a -> f.apply(a).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Try<T, B> pure(B b) {
         return success(b);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Try<T, B> zip(Applicative<Function<? super A, ? extends B>, Try<T, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
     @Override
+    public <B> Lazy<Try<T, B>> lazyZip(Lazy<Applicative<Function<? super A, ? extends B>, Try<T, ?>>> lazyAppFn) {
+        return match(f -> lazy(failure(f)),
+                     s -> lazyAppFn.fmap(tryF -> tryF.<B>fmap(f -> f.apply(s)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <B> Try<T, B> discardL(Applicative<B, Try<T, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Try<T, A> discardR(Applicative<B, Try<T, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative, TravB extends Traversable<B, Try<T, ?>>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
@@ -177,17 +206,26 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
                      a -> fn.apply(a).fmap(Try::success).<TravB>fmap(Applicative::coerce).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <U extends Throwable, D> Try<U, D> biMap(Function<? super T, ? extends U> lFn,
                                                     Function<? super A, ? extends D> rFn) {
         return match(t -> failure(lFn.apply(t)), a -> success(rFn.apply(a)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <U extends Throwable> Try<U, A> biMapL(Function<? super T, ? extends U> fn) {
         return (Try<U, A>) BoundedBifunctor.super.<U>biMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Try<T, B> biMapR(Function<? super A, ? extends B> fn) {
         return (Try<T, B>) BoundedBifunctor.super.<B>biMapR(fn);

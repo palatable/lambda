@@ -23,6 +23,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -222,5 +223,13 @@ public class EitherTest {
         right.peek(stringRef::set, intRef::set);
         assertEquals("foo", stringRef.get());
         assertEquals(1, intRef.get());
+    }
+
+    @Test
+    public void lazyZip() {
+        assertEquals(right(2), right(1).lazyZip(lazy(right(x -> x + 1))).value());
+        assertEquals(left("foo"), left("foo").lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
     }
 }

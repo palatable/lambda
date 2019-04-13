@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product4;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -124,6 +125,12 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     public <_4Prime> Tuple4<_1, _2, _3, _4Prime> zip(
             Applicative<Function<? super _4, ? extends _4Prime>, Tuple4<_1, _2, _3, ?>> appFn) {
         return biMapR(appFn.<Tuple4<_1, _2, _3, Function<? super _4, ? extends _4Prime>>>coerce()._4());
+    }
+
+    @Override
+    public <_4Prime> Lazy<Tuple4<_1, _2, _3, _4Prime>> lazyZip(
+            Lazy<Applicative<Function<? super _4, ? extends _4Prime>, Tuple4<_1, _2, _3, ?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
     }
 
     @Override

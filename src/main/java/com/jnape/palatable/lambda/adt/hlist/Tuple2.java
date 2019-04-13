@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -107,6 +108,12 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     public <_2Prime> Tuple2<_1, _2Prime> zip(
             Applicative<Function<? super _2, ? extends _2Prime>, Tuple2<_1, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
+    }
+
+    @Override
+    public <_2Prime> Lazy<Tuple2<_1, _2Prime>> lazyZip(
+            Lazy<Applicative<Function<? super _2, ? extends _2Prime>, Tuple2<_1, ?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
     }
 
     @Override

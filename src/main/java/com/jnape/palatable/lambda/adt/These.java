@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -14,6 +15,7 @@ import java.util.function.Function;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * The coproduct of a coproduct (<code>{@link CoProduct2}&lt;A, B&gt;</code>) and its product (<code>{@link
@@ -94,6 +96,12 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
     @Override
     public final <C> These<A, C> zip(Applicative<Function<? super B, ? extends C>, These<A, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
+    }
+
+    @Override
+    public <C> Lazy<These<A, C>> lazyZip(Lazy<Applicative<Function<? super B, ? extends C>, These<A, ?>>> lazyAppFn) {
+        return projectA().<Lazy<These<A, C>>>fmap(a -> lazy(a(a)))
+                .orElseGet(() -> Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce));
     }
 
     /**

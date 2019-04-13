@@ -8,11 +8,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ***Breaking Change***: `IO` is now sealed and moved to its own package. Most previous constructions using the static 
 factory methods should continue to work (by simply targeting `Supplier` now instead of an anonymous `IO`), but some 
 might need to be reworked, and subtyping is obviously no longer supported.
+- ***Breaking Change***: `FoldRight` now requires `Lazy` as part of its interface to support short-circuiting operations
 - `IO` is now stack-safe, regardless of whether the composition nests linearly or recursively
 
 ### Added
 - `Lazy`, a monad supporting stack-safe lazy evaluation
 - `LazyRec`, a function for writing stack-safe recursive algorithms embedded in `Lazy`
+- `Applicative#lazyZip`, for zipping two applicatives in a way that might not require evaluation of one applicative
 
 ## [3.3.0] - 2019-02-18
 ### Added

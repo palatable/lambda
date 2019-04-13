@@ -11,6 +11,8 @@ import java.util.function.Function;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static java.util.Arrays.asList;
 import static java.util.function.Function.identity;
 
@@ -26,7 +28,8 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
                                this::testHomomorphism,
                                this::testInterchange,
                                this::testDiscardL,
-                               this::testDiscardR)
+                               this::testDiscardR,
+                               this::testLazyZip)
                 )
                 .peek(s -> {
                     throw new AssertionError("The following Applicative laws did not hold for instance of " + applicative.getClass() + ": \n\t - " + s);
@@ -37,8 +40,8 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
         Applicative<Integer, App> v = applicative.pure(1);
         Applicative<Function<? super Integer, ? extends Integer>, App> pureId = v.pure(identity());
         return v.zip(pureId).equals(v)
-                ? nothing()
-                : just("identity (v.zip(pureId).equals(v))");
+               ? nothing()
+               : just("identity (v.zip(pureId).equals(v))");
     }
 
     private Maybe<String> testComposition(Applicative<?, App> applicative) {
@@ -53,8 +56,8 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
 
         Applicative<Function<? super Function<? super String, ? extends String>, ? extends Function<? super Function<? super String, ? extends String>, ? extends Function<? super String, ? extends String>>>, App> pureCompose = u.pure(compose);
         return w.zip(v.zip(u.zip(pureCompose))).equals(w.zip(v).zip(u))
-                ? nothing()
-                : just("composition (w.zip(v.zip(u.zip(pureCompose))).equals((w.zip(v)).zip(u)))");
+               ? nothing()
+               : just("composition (w.zip(v.zip(u.zip(pureCompose))).equals((w.zip(v)).zip(u)))");
     }
 
     private Maybe<String> testHomomorphism(Applicative<?, App> applicative) {
@@ -65,8 +68,8 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
         Applicative<Function<? super Integer, ? extends Integer>, App> pureF = applicative.pure(f);
         Applicative<Integer, App> pureFx = applicative.pure(f.apply(x));
         return pureX.zip(pureF).equals(pureFx)
-                ? nothing()
-                : just("homomorphism (pureX.zip(pureF).equals(pureFx))");
+               ? nothing()
+               : just("homomorphism (pureX.zip(pureF).equals(pureFx))");
     }
 
     private Maybe<String> testInterchange(Applicative<?, App> applicative) {
@@ -75,8 +78,8 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
 
         Applicative<Integer, App> pureY = applicative.pure(y);
         return pureY.zip(u).equals(u.zip(applicative.pure(f -> f.apply(y))))
-                ? nothing()
-                : just("interchange (pureY.zip(u).equals(u.zip(applicative.pure(f -> f.apply(y)))))");
+               ? nothing()
+               : just("interchange (pureY.zip(u).equals(u.zip(applicative.pure(f -> f.apply(y)))))");
     }
 
     private Maybe<String> testDiscardL(Applicative<?, App> applicative) {
@@ -84,8 +87,8 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
         Applicative<String, App> v = applicative.pure("v");
 
         return u.discardL(v).equals(v.zip(u.zip(applicative.pure(constantly(identity())))))
-                ? nothing()
-                : just("discardL u.discardL(v).equals(v.zip(u.zip(applicative.pure(constantly(identity())))))");
+               ? nothing()
+               : just("discardL u.discardL(v).equals(v.zip(u.zip(applicative.pure(constantly(identity())))))");
     }
 
     private Maybe<String> testDiscardR(Applicative<?, App> applicative) {
@@ -93,7 +96,13 @@ public class ApplicativeLaws<App extends Applicative> implements Trait<Applicati
         Applicative<String, App> v = applicative.pure("v");
 
         return u.discardR(v).equals(v.zip(u.zip(applicative.pure(constantly()))))
-                ? nothing()
-                : just("discardR u.discardR(v).equals(v.zip(u.zip(applicative.pure(constantly()))))");
+               ? nothing()
+               : just("discardR u.discardR(v).equals(v.zip(u.zip(applicative.pure(constantly()))))");
+    }
+
+    private Maybe<String> testLazyZip(Applicative<?, App> applicative) {
+        return applicative.lazyZip(lazy(applicative.pure(id()))).value().equals(applicative.zip(applicative.pure(id())))
+               ? nothing()
+               : just("lazyZip app.zip(lazy(app.pure(id()))).equals(app.zip(app.pure(id())))");
     }
 }

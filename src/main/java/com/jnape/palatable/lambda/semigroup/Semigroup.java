@@ -3,6 +3,9 @@ package com.jnape.palatable.lambda.semigroup;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
+
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * A <code>Semigroup</code> is a closed, associative category. As closure can be implied by the type signature, and
@@ -35,8 +38,8 @@ public interface Semigroup<A> extends Fn2<A, A, A> {
      * @return the folded result
      * @see FoldRight
      */
-    default A foldRight(A a, Iterable<A> as) {
-        return FoldRight.foldRight(toBiFunction(), a, as);
+    default Lazy<A> foldRight(A a, Iterable<A> as) {
+        return FoldRight.foldRight((y, lazyX) -> lazyX.fmap(x -> apply(x, y)), lazy(a), as);
     }
 
     /**

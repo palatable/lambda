@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.monad;
 
 import com.jnape.palatable.lambda.functions.builtin.fn1.Id;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 
 import java.util.function.Function;
 
@@ -57,6 +58,14 @@ public interface Monad<A, M extends Monad> extends Applicative<A, M> {
     @Override
     default <B> Monad<B, M> zip(Applicative<Function<? super A, ? extends B>, M> appFn) {
         return appFn.<Monad<Function<? super A, ? extends B>, M>>coerce().flatMap(this::fmap);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <B> Lazy<? extends Monad<B, M>> lazyZip(Lazy<Applicative<Function<? super A, ? extends B>, M>> lazyAppFn) {
+        return Applicative.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
     }
 
     /**

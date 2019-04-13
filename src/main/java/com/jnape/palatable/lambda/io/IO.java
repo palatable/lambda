@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.LinkedList;
@@ -117,6 +118,14 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
         @SuppressWarnings("unchecked")
         IO<Function<Object, Object>> zip = (IO<Function<Object, Object>>) (Object) appFn;
         return new Compose<>(source, a(zip));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Lazy<IO<B>> lazyZip(Lazy<Applicative<Function<? super A, ? extends B>, IO<?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
     }
 
     /**

@@ -7,6 +7,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple5;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into5.into5;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * Canonical ADT representation of {@link CoProduct5}.
@@ -45,11 +47,17 @@ public abstract class Choice5<A, B, C, D, E> implements
         return into5(HList::tuple, CoProduct5.super.project());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <F> Choice6<A, B, C, D, E, F> diverge() {
         return match(Choice6::a, Choice6::b, Choice6::c, Choice6::d, Choice6::e);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Choice4<A, B, C, D> converge(Function<? super E, ? extends CoProduct4<A, B, C, D, ?>> convergenceFn) {
         return match(Choice4::a,
@@ -59,55 +67,97 @@ public abstract class Choice5<A, B, C, D, E> implements
                      convergenceFn.andThen(cp4 -> cp4.match(Choice4::a, Choice4::b, Choice4::c, Choice4::d)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <F> Choice5<A, B, C, D, F> fmap(Function<? super E, ? extends F> fn) {
         return Monad.super.<F>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <F> Choice5<A, B, C, F, E> biMapL(Function<? super D, ? extends F> fn) {
         return (Choice5<A, B, C, F, E>) Bifunctor.super.biMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <F> Choice5<A, B, C, D, F> biMapR(Function<? super E, ? extends F> fn) {
         return (Choice5<A, B, C, D, F>) Bifunctor.super.biMapR(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <F, G> Choice5<A, B, C, F, G> biMap(Function<? super D, ? extends F> lFn,
                                                Function<? super E, ? extends G> rFn) {
         return match(Choice5::a, Choice5::b, Choice5::c, d -> d(lFn.apply(d)), e -> e(rFn.apply(e)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <F> Choice5<A, B, C, D, F> pure(F f) {
         return e(f);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <F> Choice5<A, B, C, D, F> zip(Applicative<Function<? super E, ? extends F>, Choice5<A, B, C, D, ?>> appFn) {
-        return appFn.<Choice5<A, B, C, D, Function<? super E, ? extends F>>>coerce()
-                .match(Choice5::a, Choice5::b, Choice5::c, Choice5::d, this::biMapR);
+        return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <F> Lazy<Choice5<A, B, C, D, F>> lazyZip(
+            Lazy<Applicative<Function<? super E, ? extends F>, Choice5<A, B, C, D, ?>>> lazyAppFn) {
+        return match(a -> lazy(a(a)),
+                     b -> lazy(b(b)),
+                     c -> lazy(c(c)),
+                     d -> lazy(d(d)),
+                     e -> lazyAppFn.fmap(choiceF -> choiceF.<F>fmap(f -> f.apply(e)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <F> Choice5<A, B, C, D, F> discardL(Applicative<F, Choice5<A, B, C, D, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <F> Choice5<A, B, C, D, E> discardR(Applicative<F, Choice5<A, B, C, D, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <F> Choice5<A, B, C, D, F> flatMap(Function<? super E, ? extends Monad<F, Choice5<A, B, C, D, ?>>> f) {
         return match(Choice5::a, Choice5::b, Choice5::c, Choice5::d, e -> f.apply(e).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <F, App extends Applicative, TravB extends Traversable<F, Choice5<A, B, C, D, ?>>, AppB extends Applicative<F, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(

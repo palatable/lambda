@@ -91,26 +91,41 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
         return this::apply;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <D> Fn2<A, B, C> discardR(Applicative<D, Fn1<A, ?>> appB) {
         return fn2(Fn1.super.discardR(appB));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <Z> Fn2<Z, B, C> diMapL(Function<? super Z, ? extends A> fn) {
         return fn2(Fn1.super.diMapL(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <Z> Fn2<Z, B, C> contraMap(Function<? super Z, ? extends A> fn) {
         return fn2(Fn1.super.contraMap(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <Y, Z> Fn3<Y, Z, B, C> compose(BiFunction<? super Y, ? super Z, ? extends A> before) {
         return fn3(Fn1.super.compose(before));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <Y, Z> Fn3<Y, Z, B, C> compose(Fn2<? super Y, ? super Z, ? extends A> before) {
         return fn3(Fn1.super.compose(before));

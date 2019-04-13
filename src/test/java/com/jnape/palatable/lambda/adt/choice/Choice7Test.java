@@ -22,6 +22,7 @@ import static com.jnape.palatable.lambda.adt.choice.Choice7.d;
 import static com.jnape.palatable.lambda.adt.choice.Choice7.e;
 import static com.jnape.palatable.lambda.adt.choice.Choice7.f;
 import static com.jnape.palatable.lambda.adt.choice.Choice7.g;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 
@@ -74,5 +75,28 @@ public class Choice7Test {
         assertEquals(Choice8.e('z'), e.diverge());
         assertEquals(Choice8.f(5L), f.diverge());
         assertEquals(Choice8.g(6F), g.diverge());
+    }
+
+    @Test
+    public void lazyZip() {
+        assertEquals(g(2), g(1).lazyZip(lazy(g(x -> x + 1))).value());
+        assertEquals(a(1), a(1).lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
+        assertEquals(b(1), b(1).lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
+        assertEquals(c(1), c(1).lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
+        assertEquals(d(1), d(1).lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
+        assertEquals(e(1), e(1).lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
+        assertEquals(f(1), f(1).lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
     }
 }

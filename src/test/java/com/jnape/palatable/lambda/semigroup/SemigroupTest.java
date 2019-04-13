@@ -16,6 +16,6 @@ public class SemigroupTest {
     @Test
     public void foldRight() {
         Semigroup<Integer> sum = (x, y) -> x + y;
-        assertEquals((Integer) 6, sum.foldRight(0, asList(1, 2, 3)));
+        assertEquals((Integer) 6, sum.foldRight(0, asList(1, 2, 3)).value());
     }
 }

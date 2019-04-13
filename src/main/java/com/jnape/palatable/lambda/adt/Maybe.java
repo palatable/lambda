@@ -9,6 +9,7 @@ import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -22,6 +23,7 @@ import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * The optional type, representing a potentially absent value. This is lambda's analog of {@link Optional}, supporting
@@ -125,36 +127,70 @@ public abstract class Maybe<A> implements CoProduct2<Unit, A, Maybe<A>>, Monad<A
         return Monad.super.<B>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <B> Maybe<B> zip(Applicative<Function<? super A, ? extends B>, Maybe> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * Terminate early if this is a {@link Nothing}; otherwise, continue the {@link Applicative#zip zip}.
+     *
+     * @param lazyAppFn the lazy other applicative instance
+     * @param <B>       the result type
+     * @return the zipped {@link Maybe}
+     */
+    @Override
+    public <B> Lazy<Maybe<B>> lazyZip(Lazy<Applicative<Function<? super A, ? extends B>, Maybe>> lazyAppFn) {
+        return match(constantly(lazy(nothing())),
+                     a -> lazyAppFn.fmap(maybeF -> maybeF.<B>fmap(f -> f.apply(a)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <B> Maybe<B> discardL(Applicative<B, Maybe> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <B> Maybe<A> discardR(Applicative<B, Maybe> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <B> Maybe<B> flatMap(Function<? super A, ? extends Monad<B, Maybe>> f) {
         return match(constantly(nothing()), f.andThen(Applicative::coerce));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Choice3<Unit, A, B> diverge() {
         return match(Choice3::a, Choice3::b);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Tuple2<Maybe<Unit>, Maybe<A>> project() {
         return CoProduct2.super.project().into(HList::tuple);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Choice2<A, Unit> invert() {
         return match(Choice2::b, Choice2::a);

@@ -9,6 +9,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Drop.drop;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Iterate.iterate;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Take.take;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight.foldRight;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,9 +52,10 @@ public class ConsingIteratorTest {
     @Test
     public void stackSafety() {
         Integer stackBlowingNumber = 10_000;
-        Iterable<Integer> ints = foldRight((x, acc) -> () -> new ConsingIterator<>(x, acc),
-                                           (Iterable<Integer>) Collections.<Integer>emptyList(),
-                                           take(stackBlowingNumber, iterate(x -> x + 1, 1)));
+        Iterable<Integer> ints = foldRight((x, lazyAcc) -> lazyAcc.fmap(acc -> () -> new ConsingIterator<>(x, acc)),
+                                           lazy((Iterable<Integer>) Collections.<Integer>emptyList()),
+                                           take(stackBlowingNumber, iterate(x -> x + 1, 1)))
+                .value();
 
         assertEquals(stackBlowingNumber,
                      take(1, drop(stackBlowingNumber - 1, ints)).iterator().next());

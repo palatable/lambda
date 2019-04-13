@@ -9,6 +9,7 @@ import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -20,6 +21,7 @@ import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static java.util.Arrays.asList;
 
 /**
@@ -187,54 +189,94 @@ public abstract class Either<L, R> implements CoProduct2<L, R, Either<L, R>>, Mo
     @Override
     public abstract <V> V match(Function<? super L, ? extends V> leftFn, Function<? super R, ? extends V> rightFn);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Choice3<L, R, C> diverge() {
         return match(Choice3::a, Choice3::b);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <R2> Either<L, R2> fmap(Function<? super R, ? extends R2> fn) {
         return Monad.super.<R2>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <L2> Either<L2, R> biMapL(Function<? super L, ? extends L2> fn) {
         return (Either<L2, R>) Bifunctor.super.biMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <R2> Either<L, R2> biMapR(Function<? super R, ? extends R2> fn) {
         return (Either<L, R2>) Bifunctor.super.biMapR(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <L2, R2> Either<L2, R2> biMap(Function<? super L, ? extends L2> leftFn,
                                                Function<? super R, ? extends R2> rightFn) {
         return match(l -> left(leftFn.apply(l)), r -> right(rightFn.apply(r)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <R2> Either<L, R2> pure(R2 r2) {
         return right(r2);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <R2> Either<L, R2> zip(Applicative<Function<? super R, ? extends R2>, Either<L, ?>> appFn) {
         return appFn.<Either<L, Function<? super R, ? extends R2>>>coerce().flatMap(this::biMapR);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <R2> Lazy<Either<L, R2>> lazyZip(
+            Lazy<Applicative<Function<? super R, ? extends R2>, Either<L, ?>>> lazyAppFn) {
+        return match(l -> lazy(left(l)),
+                     r -> lazyAppFn.fmap(eitherLF -> eitherLF.<R2>fmap(f -> f.apply(r)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <R2> Either<L, R2> discardL(Applicative<R2, Either<L, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <R2> Either<L, R> discardR(Applicative<R2, Either<L, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <R2, App extends Applicative, TravB extends Traversable<R2, Either<L, ?>>, AppB extends Applicative<R2, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(

@@ -7,6 +7,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple4;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into4.into4;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * Canonical ADT representation of {@link CoProduct4}.
@@ -44,11 +46,17 @@ public abstract class Choice4<A, B, C, D> implements
         return into4(HList::tuple, CoProduct4.super.project());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E> Choice5<A, B, C, D, E> diverge() {
         return match(Choice5::a, Choice5::b, Choice5::c, Choice5::d);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Choice3<A, B, C> converge(Function<? super D, ? extends CoProduct3<A, B, C, ?>> convergenceFn) {
         return match(Choice3::a,
@@ -57,17 +65,26 @@ public abstract class Choice4<A, B, C, D> implements
                      convergenceFn.andThen(cp3 -> cp3.match(Choice3::a, Choice3::b, Choice3::c)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <E> Choice4<A, B, C, E> fmap(Function<? super D, ? extends E> fn) {
         return Monad.super.<E>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <E> Choice4<A, B, E, D> biMapL(Function<? super C, ? extends E> fn) {
         return (Choice4<A, B, E, D>) Bifunctor.super.biMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <E> Choice4<A, B, C, E> biMapR(Function<? super D, ? extends E> fn) {
@@ -80,32 +97,61 @@ public abstract class Choice4<A, B, C, D> implements
         return match(Choice4::a, Choice4::b, c -> c(lFn.apply(c)), d -> d(rFn.apply(d)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E> Choice4<A, B, C, E> pure(E e) {
         return d(e);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E> Choice4<A, B, C, E> zip(Applicative<Function<? super D, ? extends E>, Choice4<A, B, C, ?>> appFn) {
-        return appFn.<Choice4<A, B, C, Function<? super D, ? extends E>>>coerce()
-                .match(Choice4::a, Choice4::b, Choice4::c, this::biMapR);
+        return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <E> Lazy<Choice4<A, B, C, E>> lazyZip(
+            Lazy<Applicative<Function<? super D, ? extends E>, Choice4<A, B, C, ?>>> lazyAppFn) {
+        return match(a -> lazy(a(a)),
+                     b -> lazy(b(b)),
+                     c -> lazy(c(c)),
+                     d -> lazyAppFn.fmap(choiceF -> choiceF.<E>fmap(f -> f.apply(d)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E> Choice4<A, B, C, E> discardL(Applicative<E, Choice4<A, B, C, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E> Choice4<A, B, C, D> discardR(Applicative<E, Choice4<A, B, C, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E> Choice4<A, B, C, E> flatMap(Function<? super D, ? extends Monad<E, Choice4<A, B, C, ?>>> f) {
         return match(Choice4::a, Choice4::b, Choice4::c, d -> f.apply(d).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <E, App extends Applicative, TravB extends Traversable<E, Choice4<A, B, C, ?>>, AppB extends Applicative<E, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(

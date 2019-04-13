@@ -27,6 +27,7 @@ import static com.jnape.palatable.lambda.adt.Try.success;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -208,5 +209,14 @@ public class TryTest {
                                                    b -> () -> closeMessages.add("close c"),
                                                    c -> success(1)));
         assertEquals(asList("close c", "close b", "close a"), closeMessages);
+    }
+
+    @Test
+    public void lazyZip() {
+        assertEquals(success(2), success(1).lazyZip(lazy(success(x -> x + 1))).value());
+        IllegalStateException e = new IllegalStateException();
+        assertEquals(failure(e), failure(e).lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
     }
 }

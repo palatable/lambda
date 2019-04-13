@@ -7,6 +7,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * Canonical ADT representation of {@link CoProduct2}. Unlike {@link Either}, there is no concept of "success" or
@@ -43,65 +45,110 @@ public abstract class Choice2<A, B> implements
         return into(HList::tuple, CoProduct2.super.project());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <C> Choice3<A, B, C> diverge() {
         return match(Choice3::a, Choice3::b);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Choice2<B, A> invert() {
         return match(Choice2::b, Choice2::a);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <C> Choice2<A, C> fmap(Function<? super B, ? extends C> fn) {
         return Monad.super.<C>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <C> Choice2<C, B> biMapL(Function<? super A, ? extends C> fn) {
         return (Choice2<C, B>) Bifunctor.super.biMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <C> Choice2<A, C> biMapR(Function<? super B, ? extends C> fn) {
         return (Choice2<A, C>) Bifunctor.super.biMapR(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <C, D> Choice2<C, D> biMap(Function<? super A, ? extends C> lFn,
                                             Function<? super B, ? extends D> rFn) {
         return match(a -> a(lFn.apply(a)), b -> b(rFn.apply(b)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Choice2<A, C> pure(C c) {
         return b(c);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Choice2<A, C> zip(Applicative<Function<? super B, ? extends C>, Choice2<A, ?>> appFn) {
-        return appFn.<Choice2<A, Function<? super B, ? extends C>>>coerce()
-                .match(Choice2::a, this::biMapR);
+        return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <C> Lazy<? extends Monad<C, Choice2<A, ?>>> lazyZip(
+            Lazy<Applicative<Function<? super B, ? extends C>, Choice2<A, ?>>> lazyAppFn) {
+        return match(a -> lazy(a(a)),
+                     b -> lazyAppFn.fmap(choiceF -> choiceF.<C>fmap(f -> f.apply(b)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Choice2<A, C> discardL(Applicative<C, Choice2<A, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Choice2<A, B> discardR(Applicative<C, Choice2<A, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <C> Choice2<A, C> flatMap(Function<? super B, ? extends Monad<C, Choice2<A, ?>>> f) {
         return match(Choice2::a, b -> f.apply(b).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <C, App extends Applicative, TravB extends Traversable<C, Choice2<A, ?>>, AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(

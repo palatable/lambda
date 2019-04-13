@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.functions;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Strong;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.BiFunction;
@@ -50,6 +51,9 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Funct
         return fn2(constantly(this));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C> Fn1<A, C> flatMap(Function<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
         return a -> f.apply(apply(a)).<Fn1<A, C>>coerce().apply(a);
@@ -80,7 +84,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Funct
      */
     @Override
     default <C> Fn1<A, C> zip(Applicative<Function<? super B, ? extends C>, Fn1<A, ?>> appFn) {
-        return a -> appFn.<Fn1<A, Function<? super B, ? extends C>>>coerce().apply(a).apply(apply(a));
+        return Monad.super.zip(appFn).coerce();
     }
 
     /**
@@ -89,6 +93,14 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Funct
     @SuppressWarnings("unchecked")
     default <C> Fn1<A, C> zip(Fn2<A, B, C> appFn) {
         return zip((Fn1<A, Function<? super B, ? extends C>>) (Object) appFn);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> Lazy<Fn1<A, C>> lazyZip(Lazy<Applicative<Function<? super B, ? extends C>, Fn1<A, ?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
     }
 
     /**
@@ -158,6 +170,10 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Funct
         return t -> t.fmap(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     default Fn1<A, Tuple2<A, B>> carry() {
         return (Fn1<A, Tuple2<A, B>>) Strong.super.carry();
     }

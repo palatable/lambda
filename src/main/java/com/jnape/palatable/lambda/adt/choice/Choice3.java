@@ -7,6 +7,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple3;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into3.into3;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * Canonical ADT representation of {@link CoProduct3}.
@@ -43,65 +45,111 @@ public abstract class Choice3<A, B, C> implements
         return into3(HList::tuple, CoProduct3.super.project());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <D> Choice4<A, B, C, D> diverge() {
         return match(Choice4::a, Choice4::b, Choice4::c);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final Choice2<A, B> converge(Function<? super C, ? extends CoProduct2<A, B, ?>> convergenceFn) {
         return match(Choice2::a, Choice2::b, convergenceFn.andThen(cp2 -> cp2.match(Choice2::a, Choice2::b)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <D> Choice3<A, B, D> fmap(Function<? super C, ? extends D> fn) {
         return Monad.super.<D>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <D> Choice3<A, D, C> biMapL(Function<? super B, ? extends D> fn) {
         return (Choice3<A, D, C>) Bifunctor.super.biMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final <D> Choice3<A, B, D> biMapR(Function<? super C, ? extends D> fn) {
         return (Choice3<A, B, D>) Bifunctor.super.biMapR(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final <D, E> Choice3<A, D, E> biMap(Function<? super B, ? extends D> lFn,
                                                Function<? super C, ? extends E> rFn) {
         return match(Choice3::a, b -> b(lFn.apply(b)), c -> c(rFn.apply(c)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <D> Choice3<A, B, D> pure(D d) {
         return c(d);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <D> Choice3<A, B, D> zip(Applicative<Function<? super C, ? extends D>, Choice3<A, B, ?>> appFn) {
-        return appFn.<Choice3<A, B, Function<? super C, ? extends D>>>coerce()
-                .match(Choice3::a, Choice3::b, this::biMapR);
+        return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <D> Lazy<Choice3<A, B, D>> lazyZip(
+            Lazy<Applicative<Function<? super C, ? extends D>, Choice3<A, B, ?>>> lazyAppFn) {
+        return match(a -> lazy(a(a)),
+                     b -> lazy(b(b)),
+                     c -> lazyAppFn.fmap(choiceF -> choiceF.<D>fmap(f -> f.apply(c)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <D> Choice3<A, B, D> discardL(Applicative<D, Choice3<A, B, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <D> Choice3<A, B, C> discardR(Applicative<D, Choice3<A, B, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <D> Choice3<A, B, D> flatMap(Function<? super C, ? extends Monad<D, Choice3<A, B, ?>>> f) {
         return match(Choice3::a, Choice3::b, c -> f.apply(c).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <D, App extends Applicative, TravB extends Traversable<D, Choice3<A, B, ?>>, AppB extends Applicative<D, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(

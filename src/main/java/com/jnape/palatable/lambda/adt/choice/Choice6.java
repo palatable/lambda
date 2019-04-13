@@ -7,6 +7,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple6;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into6.into6;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * Canonical ADT representation of {@link CoProduct6}.
@@ -46,11 +48,17 @@ public abstract class Choice6<A, B, C, D, E, F> implements
         return into6(HList::tuple, CoProduct6.super.project());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <G> Choice7<A, B, C, D, E, F, G> diverge() {
         return match(Choice7::a, Choice7::b, Choice7::c, Choice7::d, Choice7::e, Choice7::f);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Choice5<A, B, C, D, E> converge(Function<? super F, ? extends CoProduct5<A, B, C, D, E, ?>> convergenceFn) {
         return match(Choice5::a,
@@ -61,57 +69,100 @@ public abstract class Choice6<A, B, C, D, E, F> implements
                      convergenceFn.andThen(cp5 -> cp5.match(Choice5::a, Choice5::b, Choice5::c, Choice5::d, Choice5::e)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <G> Choice6<A, B, C, D, E, G> fmap(Function<? super F, ? extends G> fn) {
         return Monad.super.<G>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <G> Choice6<A, B, C, D, G, F> biMapL(Function<? super E, ? extends G> fn) {
         return (Choice6<A, B, C, D, G, F>) Bifunctor.super.biMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <G> Choice6<A, B, C, D, E, G> biMapR(Function<? super F, ? extends G> fn) {
         return (Choice6<A, B, C, D, E, G>) Bifunctor.super.biMapR(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <G, H> Choice6<A, B, C, D, G, H> biMap(Function<? super E, ? extends G> lFn,
                                                   Function<? super F, ? extends H> rFn) {
         return match(Choice6::a, Choice6::b, Choice6::c, Choice6::d, e -> e(lFn.apply(e)), f -> f(rFn.apply(f)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <G> Choice6<A, B, C, D, E, G> pure(G g) {
         return f(g);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <G> Choice6<A, B, C, D, E, G> zip(
             Applicative<Function<? super F, ? extends G>, Choice6<A, B, C, D, E, ?>> appFn) {
-        return appFn.<Choice6<A, B, C, D, E, Function<? super F, ? extends G>>>coerce()
-                .match(Choice6::a, Choice6::b, Choice6::c, Choice6::d, Choice6::e, this::biMapR);
+        return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <G> Lazy<Choice6<A, B, C, D, E, G>> lazyZip(
+            Lazy<Applicative<Function<? super F, ? extends G>, Choice6<A, B, C, D, E, ?>>> lazyAppFn) {
+        return match(a -> lazy(a(a)),
+                     b -> lazy(b(b)),
+                     c -> lazy(c(c)),
+                     d -> lazy(d(d)),
+                     e -> lazy(e(e)),
+                     f -> lazyAppFn.fmap(choiceFn -> choiceFn.<G>fmap(fn -> fn.apply(f)).coerce()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <G> Choice6<A, B, C, D, E, G> discardL(Applicative<G, Choice6<A, B, C, D, E, ?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <G> Choice6<A, B, C, D, E, F> discardR(Applicative<G, Choice6<A, B, C, D, E, ?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <G> Choice6<A, B, C, D, E, G> flatMap(
             Function<? super F, ? extends Monad<G, Choice6<A, B, C, D, E, ?>>> fn) {
         return match(Choice6::a, Choice6::b, Choice6::c, Choice6::d, Choice6::e, f -> fn.apply(f).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <G, App extends Applicative, TravB extends Traversable<G, Choice6<A, B, C, D, E, ?>>, AppB extends Applicative<G, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(

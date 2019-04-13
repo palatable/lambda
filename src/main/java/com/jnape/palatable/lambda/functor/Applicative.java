@@ -1,5 +1,7 @@
 package com.jnape.palatable.lambda.functor;
 
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
+
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -46,6 +48,22 @@ public interface Applicative<A, App extends Applicative> extends Functor<A, App>
      * @return the mapped applicative
      */
     <B> Applicative<B, App> zip(Applicative<Function<? super A, ? extends B>, App> appFn);
+
+    /**
+     * Given a {@link Lazy lazy} instance of this applicative over a mapping function, "zip" the two instances together
+     * using whatever application semantics the current applicative supports. This is useful for applicatives that
+     * support lazy evaluation and early termination.
+     *
+     * @param lazyAppFn the lazy other applicative instance
+     * @param <B>       the resulting applicative parameter type
+     * @return the mapped applicative
+     * @see com.jnape.palatable.lambda.adt.Maybe
+     * @see com.jnape.palatable.lambda.adt.Either
+     */
+    default <B> Lazy<? extends Applicative<B, App>> lazyZip(
+            Lazy<Applicative<Function<? super A, ? extends B>, App>> lazyAppFn) {
+        return lazyAppFn.fmap(this::zip);
+    }
 
     @Override
     default <B> Applicative<B, App> fmap(Function<? super A, ? extends B> fn) {

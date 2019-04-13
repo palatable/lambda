@@ -14,6 +14,7 @@ import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 
@@ -38,5 +39,13 @@ public class Choice2Test {
     public void divergeStaysInChoice() {
         assertEquals(Choice3.a(1), a.diverge());
         assertEquals(Choice3.b(true), b.diverge());
+    }
+
+    @Test
+    public void lazyZip() {
+        assertEquals(b(2), b(1).lazyZip(lazy(b(x -> x + 1))).value());
+        assertEquals(a("foo"), a("foo").lazyZip(lazy(() -> {
+            throw new AssertionError();
+        })).value());
     }
 }

@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.functions.builtin.fn2.Map;
 import com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft;
 import com.jnape.palatable.lambda.functions.builtin.fn2.ReduceRight;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 import java.util.function.Function;
@@ -13,6 +14,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Reverse.reverse;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * A {@link Monoid} is the pairing of a {@link Semigroup} with an identity element.
@@ -80,8 +82,8 @@ public interface Monoid<A> extends Semigroup<A> {
      * {@inheritDoc}
      */
     @Override
-    default A foldRight(A a, Iterable<A> as) {
-        return flip().foldMap(id(), reverse(cons(a, as)));
+    default Lazy<A> foldRight(A a, Iterable<A> as) {
+        return lazy(() -> flip().foldMap(id(), reverse(cons(a, as))));
     }
 
     /**

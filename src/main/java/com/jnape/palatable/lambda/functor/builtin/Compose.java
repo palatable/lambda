@@ -25,26 +25,50 @@ public final class Compose<F extends Applicative, G extends Applicative, A> impl
         return fga.<GA>fmap(Applicative::coerce).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Compose<F, G, B> fmap(Function<? super A, ? extends B> fn) {
         return new Compose<>(fga.fmap(g -> g.fmap(fn)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Compose<F, G, B> pure(B b) {
         return new Compose<>(fga.fmap(g -> g.pure(b)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Compose<F, G, B> zip(Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>> appFn) {
         return new Compose<>(fga.zip(appFn.<Compose<F, G, Function<? super A, ? extends B>>>coerce().getCompose().fmap(gFn -> g -> g.zip(gFn))));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Lazy<Compose<F, G, B>> lazyZip(
+            Lazy<Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>>> lazyAppFn) {
+        return Applicative.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Compose<F, G, B> discardL(Applicative<B, Compose<F, G, ?>> appB) {
         return Applicative.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B> Compose<F, G, A> discardR(Applicative<B, Compose<F, G, ?>> appB) {
         return Applicative.super.discardR(appB).coerce();

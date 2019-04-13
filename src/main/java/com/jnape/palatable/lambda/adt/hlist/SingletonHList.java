@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -46,6 +47,12 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, Sin
     }
 
     @Override
+    public <_1Prime> Lazy<SingletonHList<_1Prime>> lazyZip(
+            Lazy<Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+    }
+
+    @Override
     public <_1Prime> SingletonHList<_1Prime> discardL(Applicative<_1Prime, SingletonHList> appB) {
         return Monad.super.discardL(appB).coerce();
     }
@@ -68,7 +75,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, Sin
     }
 
     /**
-     * Apply {@link SingletonHList#head} to <code>fn</code> and return the result.
+     * Apply {@link SingletonHList#head()} to <code>fn</code> and return the result.
      *
      * @param fn  the function to apply
      * @param <R> the return type of the function
