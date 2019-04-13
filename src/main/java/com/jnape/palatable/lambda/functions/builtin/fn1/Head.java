@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.nothing;
  */
 public final class Head<A> implements Fn1<Iterable<A>, Maybe<A>> {
 
-    private static final Head INSTANCE = new Head();
+    private static final Head<?> INSTANCE = new Head<>();
 
     private Head() {
     }
@@ -29,7 +29,7 @@ public final class Head<A> implements Fn1<Iterable<A>, Maybe<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Head<A> head() {
-        return INSTANCE;
+        return (Head<A>) INSTANCE;
     }
 
     public static <A> Maybe<A> head(Iterable<A> as) {

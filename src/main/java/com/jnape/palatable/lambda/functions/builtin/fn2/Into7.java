@@ -21,7 +21,7 @@ import com.jnape.palatable.lambda.functions.Fn7;
  */
 public final class Into7<A, B, C, D, E, F, G, H> implements Fn2<Fn7<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? extends H>, Product7<A, B, C, D, E, F, G>, H> {
 
-    private static final Into7 INSTANCE = new Into7();
+    private static final Into7<?,?,?,?,?,?,?,?> INSTANCE = new Into7<>();
 
     @Override
     public H apply(Fn7<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? extends H> fn,
@@ -31,7 +31,7 @@ public final class Into7<A, B, C, D, E, F, G, H> implements Fn2<Fn7<? super A, ?
 
     @SuppressWarnings("unchecked")
     public static <A, B, C, D, E, F, G, H> Into7<A, B, C, D, E, F, G, H> into7() {
-        return INSTANCE;
+        return (Into7<A, B, C, D, E, F, G, H>) INSTANCE;
     }
 
     public static <A, B, C, D, E, F, G, H> Fn1<Product7<A, B, C, D, E, F, G>, H> into7(

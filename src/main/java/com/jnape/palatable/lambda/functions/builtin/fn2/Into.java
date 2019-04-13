@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
  */
 public final class Into<A, B, C> implements Fn2<BiFunction<? super A, ? super B, ? extends C>, Map.Entry<A, B>, C> {
 
-    private static final Into INSTANCE = new Into();
+    private static final Into<?,?,?> INSTANCE = new Into<>();
 
     private Into() {
     }
@@ -28,7 +28,7 @@ public final class Into<A, B, C> implements Fn2<BiFunction<? super A, ? super B,
 
     @SuppressWarnings("unchecked")
     public static <A, B, C> Into<A, B, C> into() {
-        return INSTANCE;
+        return (Into<A, B, C>) INSTANCE;
     }
 
     public static <A, B, C> Fn1<Map.Entry<A, B>, C> into(

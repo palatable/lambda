@@ -14,7 +14,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  * @param <A> the {@link Iterable} element type
  */
 public final class Occurrences<A> implements Fn1<Iterable<A>, Map<A, Long>> {
-    private static final Occurrences INSTANCE = new Occurrences();
+    private static final Occurrences<?> INSTANCE = new Occurrences<>();
 
     private Occurrences() {
     }
@@ -29,7 +29,7 @@ public final class Occurrences<A> implements Fn1<Iterable<A>, Map<A, Long>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Occurrences<A> occurrences() {
-        return INSTANCE;
+        return (Occurrences<A>) INSTANCE;
     }
 
     public static <A> Map<A, Long> occurrences(Iterable<A> as) {

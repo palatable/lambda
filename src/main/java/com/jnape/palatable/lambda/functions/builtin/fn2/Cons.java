@@ -11,7 +11,7 @@ import com.jnape.palatable.lambda.iteration.ConsingIterator;
  */
 public final class Cons<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
-    private static final Cons INSTANCE = new Cons();
+    private static final Cons<?> INSTANCE = new Cons<>();
 
     private Cons() {
     }

@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
  */
 public final class ToArray<A> implements Fn2<Class<A[]>, Iterable<? extends A>, A[]> {
 
-    private static final ToArray INSTANCE = new ToArray<>();
+    private static final ToArray<?> INSTANCE = new ToArray<>();
 
     private ToArray() {
     }
@@ -37,7 +37,7 @@ public final class ToArray<A> implements Fn2<Class<A[]>, Iterable<? extends A>, 
 
     @SuppressWarnings("unchecked")
     public static <A> ToArray<A> toArray() {
-        return INSTANCE;
+        return (ToArray<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<? extends A>, A[]> toArray(Class<A[]> arrayType) {

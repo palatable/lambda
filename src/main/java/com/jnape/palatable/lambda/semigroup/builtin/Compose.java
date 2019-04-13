@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public final class Compose<A> implements SemigroupFactory<Semigroup<A>, CompletableFuture<A>> {
 
-    private static final Compose INSTANCE = new Compose();
+    private static final Compose<?> INSTANCE = new Compose<>();
 
     private Compose() {
     }
@@ -32,7 +32,7 @@ public final class Compose<A> implements SemigroupFactory<Semigroup<A>, Completa
 
     @SuppressWarnings("unchecked")
     public static <A> Compose<A> compose() {
-        return INSTANCE;
+        return (Compose<A>) INSTANCE;
     }
 
     public static <A> Semigroup<CompletableFuture<A>> compose(Semigroup<A> aSemigroup) {

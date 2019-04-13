@@ -9,7 +9,7 @@ import com.jnape.palatable.lambda.iteration.DistinctIterable;
  * @param <A> the Iterable element type
  */
 public final class Distinct<A> implements Fn1<Iterable<A>, Iterable<A>> {
-    private static final Distinct INSTANCE = new Distinct();
+    private static final Distinct<?> INSTANCE = new Distinct<>();
 
     private Distinct() {
     }
@@ -21,7 +21,7 @@ public final class Distinct<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Distinct<A> distinct() {
-        return INSTANCE;
+        return (Distinct<A>) INSTANCE;
     }
 
     public static <A> Iterable<A> distinct(Iterable<A> as) {

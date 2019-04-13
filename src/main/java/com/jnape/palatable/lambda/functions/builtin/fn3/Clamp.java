@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.semigroup.builtin.Min.min;
  */
 public final class Clamp<A extends Comparable<A>> implements Fn3<A, A, A, A> {
 
-    private static final Clamp INSTANCE = new Clamp<>();
+    private static final Clamp<?> INSTANCE = new Clamp<>();
 
     private Clamp() {
     }
@@ -29,7 +29,7 @@ public final class Clamp<A extends Comparable<A>> implements Fn3<A, A, A, A> {
 
     @SuppressWarnings("unchecked")
     public static <A extends Comparable<A>> Clamp<A> clamp() {
-        return INSTANCE;
+        return (Clamp<A>) INSTANCE;
     }
 
     public static <A extends Comparable<A>> Fn2<A, A, A> clamp(A lower) {

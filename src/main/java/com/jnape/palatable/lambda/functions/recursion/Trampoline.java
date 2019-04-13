@@ -22,7 +22,7 @@ import java.util.function.Function;
  */
 public final class Trampoline<A, B> implements Fn2<Function<? super A, ? extends RecursiveResult<A, B>>, A, B> {
 
-    private static final Trampoline INSTANCE = new Trampoline<>();
+    private static final Trampoline<?, ?> INSTANCE = new Trampoline<>();
 
     @Override
     public B apply(Function<? super A, ? extends RecursiveResult<A, B>> fn, A a) {
@@ -34,7 +34,7 @@ public final class Trampoline<A, B> implements Fn2<Function<? super A, ? extends
 
     @SuppressWarnings("unchecked")
     public static <A, B> Trampoline<A, B> trampoline() {
-        return INSTANCE;
+        return (Trampoline<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn1<A, B> trampoline(Function<? super A, ? extends RecursiveResult<A, B>> fn) {

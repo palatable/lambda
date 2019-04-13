@@ -10,7 +10,7 @@ import com.jnape.palatable.lambda.iteration.FlatteningIterator;
  * @param <A> the nested Iterable element type
  */
 public final class Flatten<A> implements Fn1<Iterable<? extends Iterable<? extends A>>, Iterable<A>> {
-    private static final Flatten INSTANCE = new Flatten();
+    private static final Flatten<?> INSTANCE = new Flatten<>();
 
     private Flatten() {
     }
@@ -22,7 +22,7 @@ public final class Flatten<A> implements Fn1<Iterable<? extends Iterable<? exten
 
     @SuppressWarnings("unchecked")
     public static <A> Flatten<A> flatten() {
-        return INSTANCE;
+        return (Flatten<A>) INSTANCE;
     }
 
     public static <A> Iterable<A> flatten(Iterable<? extends Iterable<? extends A>> as) {

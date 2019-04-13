@@ -25,14 +25,16 @@ import java.util.function.Function;
  */
 public final class Over<S, T, A, B> implements Fn3<LensLike<S, T, A, B, ?>, Function<? super A, ? extends B>, S, T> {
 
-    private static final Over INSTANCE = new Over();
+    private static final Over<?, ?, ?, ?> INSTANCE = new Over<>();
 
     private Over() {
     }
 
     @Override
     public T apply(LensLike<S, T, A, B, ?> lens, Function<? super A, ? extends B> fn, S s) {
-        return lens.<Identity, Identity<T>, Identity<B>>apply(fn.andThen((Function<B, Identity<B>>) Identity::new), s).runIdentity();
+        return lens.<Identity<?>, Identity<T>, Identity<B>>apply(fn.andThen((Function<B, Identity<B>>) Identity::new),
+                                                                 s)
+                .runIdentity();
     }
 
     @SuppressWarnings("unchecked")

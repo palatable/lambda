@@ -20,7 +20,7 @@ import static com.jnape.palatable.lambda.semigroup.builtin.MaxBy.maxBy;
  */
 public final class Max<A extends Comparable<A>> implements Semigroup<A> {
 
-    private static final Max INSTANCE = new Max();
+    private static final Max<?> INSTANCE = new Max<>();
 
     private Max() {
     }
@@ -32,7 +32,7 @@ public final class Max<A extends Comparable<A>> implements Semigroup<A> {
 
     @SuppressWarnings("unchecked")
     public static <A extends Comparable<A>> Max<A> max() {
-        return INSTANCE;
+        return (Max<A>) INSTANCE;
     }
 
     public static <A extends Comparable<A>> Fn1<A, A> max(A x) {

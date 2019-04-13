@@ -18,7 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Unfoldr.unfoldr;
  */
 public final class Iterate<A> implements Fn2<Function<? super A, ? extends A>, A, Iterable<A>> {
 
-    private static final Iterate INSTANCE = new Iterate();
+    private static final Iterate<?> INSTANCE = new Iterate<>();
 
     private Iterate() {
     }
@@ -30,7 +30,7 @@ public final class Iterate<A> implements Fn2<Function<? super A, ? extends A>, A
 
     @SuppressWarnings("unchecked")
     public static <A> Iterate<A> iterate() {
-        return INSTANCE;
+        return (Iterate<A>) INSTANCE;
     }
 
     public static <A> Fn1<A, Iterable<A>> iterate(Function<? super A, ? extends A> fn) {

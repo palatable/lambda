@@ -47,7 +47,7 @@ import static java.util.Collections.singleton;
  */
 public final class RateLimit<A> implements Fn4<Supplier<Instant>, Long, Duration, Iterable<A>, Iterable<A>> {
 
-    private static final RateLimit INSTANCE = new RateLimit();
+    private static final RateLimit<?> INSTANCE = new RateLimit<>();
 
     private RateLimit() {
     }
@@ -62,7 +62,7 @@ public final class RateLimit<A> implements Fn4<Supplier<Instant>, Long, Duration
 
     @SuppressWarnings("unchecked")
     public static <A> RateLimit<A> rateLimit() {
-        return INSTANCE;
+        return (RateLimit<A>) INSTANCE;
     }
 
     public static <A> Fn3<Long, Duration, Iterable<A>, Iterable<A>> rateLimit(Supplier<Instant> instantSupplier) {

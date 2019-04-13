@@ -15,7 +15,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.PrependAll.prepen
  */
 public final class Intersperse<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
-    private static final Intersperse INSTANCE = new Intersperse();
+    private static final Intersperse<?> INSTANCE = new Intersperse<>();
 
     private Intersperse() {
     }
@@ -27,7 +27,7 @@ public final class Intersperse<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Intersperse<A> intersperse() {
-        return INSTANCE;
+        return (Intersperse<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> intersperse(A a) {

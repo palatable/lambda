@@ -21,7 +21,7 @@ import com.jnape.palatable.lambda.semigroup.Semigroup;
  */
 public final class Collapse<_1, _2> implements BiSemigroupFactory<Semigroup<_1>, Semigroup<_2>, Tuple2<_1, _2>> {
 
-    private static final Collapse INSTANCE = new Collapse();
+    private static final Collapse<?,?> INSTANCE = new Collapse<>();
 
     private Collapse() {
     }
@@ -34,7 +34,7 @@ public final class Collapse<_1, _2> implements BiSemigroupFactory<Semigroup<_1>,
 
     @SuppressWarnings("unchecked")
     public static <_1, _2> Collapse<_1, _2> collapse() {
-        return INSTANCE;
+        return (Collapse<_1, _2>) INSTANCE;
     }
 
     public static <_1, _2> SemigroupFactory<Semigroup<_2>, Tuple2<_1, _2>> collapse(Semigroup<_1> _1Semigroup) {

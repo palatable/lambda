@@ -42,11 +42,11 @@ abstract class ImmutableStack<A> implements Iterable<A> {
 
     @SuppressWarnings("unchecked")
     public static <A> ImmutableStack<A> empty() {
-        return Empty.INSTANCE;
+        return (ImmutableStack<A>) Empty.INSTANCE;
     }
 
     private static final class Empty<A> extends ImmutableStack<A> {
-        private static final Empty INSTANCE = new Empty();
+        private static final Empty<?> INSTANCE = new Empty<>();
 
         @Override
         Maybe<A> head() {

@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.ZipWith.zipWith;
  */
 public final class Zip<A, B> implements Fn2<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
 
-    private static final Zip INSTANCE = new Zip();
+    private static final Zip<?, ?> INSTANCE = new Zip<>();
 
     private Zip() {
     }
@@ -29,7 +29,7 @@ public final class Zip<A, B> implements Fn2<Iterable<A>, Iterable<B>, Iterable<T
 
     @SuppressWarnings("unchecked")
     public static <A, B> Zip<A, B> zip() {
-        return INSTANCE;
+        return (Zip<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn1<Iterable<B>, Iterable<Tuple2<A, B>>> zip(Iterable<A> as) {

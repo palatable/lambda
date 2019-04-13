@@ -15,7 +15,7 @@ import com.jnape.palatable.lambda.iteration.DroppingIterable;
  */
 public final class Drop<A> implements Fn2<Integer, Iterable<A>, Iterable<A>> {
 
-    private static final Drop INSTANCE = new Drop();
+    private static final Drop<?> INSTANCE = new Drop<>();
 
     private Drop() {
     }
@@ -27,7 +27,7 @@ public final class Drop<A> implements Fn2<Integer, Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Drop<A> drop() {
-        return INSTANCE;
+        return (Drop<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> drop(int n) {

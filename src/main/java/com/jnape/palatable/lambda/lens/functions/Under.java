@@ -23,7 +23,7 @@ import java.util.function.Function;
  */
 public final class Under<S, T, A, B> implements Fn3<Iso<S, T, A, B>, Function<? super T, ? extends S>, B, A> {
 
-    private static final Under INSTANCE = new Under();
+    private static final Under<?, ?, ?, ?> INSTANCE = new Under<>();
 
     private Under() {
     }
@@ -35,7 +35,7 @@ public final class Under<S, T, A, B> implements Fn3<Iso<S, T, A, B>, Function<? 
 
     @SuppressWarnings("unchecked")
     public static <S, T, A, B> Under<S, T, A, B> under() {
-        return INSTANCE;
+        return (Under<S, T, A, B>) INSTANCE;
     }
 
     public static <S, T, A, B> Fn2<Function<? super T, ? extends S>, B, A> under(Iso<S, T, A, B> iso) {

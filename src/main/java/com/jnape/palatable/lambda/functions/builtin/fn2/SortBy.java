@@ -22,7 +22,7 @@ import static java.util.Comparator.comparing;
  */
 public final class SortBy<A, B extends Comparable<B>> implements Fn2<Function<? super A, ? extends B>, Iterable<A>, List<A>> {
 
-    private static final SortBy INSTANCE = new SortBy();
+    private static final SortBy<?,?> INSTANCE = new SortBy<>();
 
     private SortBy() {
     }
@@ -34,7 +34,7 @@ public final class SortBy<A, B extends Comparable<B>> implements Fn2<Function<? 
 
     @SuppressWarnings("unchecked")
     public static <A, B extends Comparable<B>> SortBy<A, B> sortBy() {
-        return INSTANCE;
+        return (SortBy<A, B>) INSTANCE;
     }
 
     public static <A, B extends Comparable<B>> Fn1<Iterable<A>, List<A>> sortBy(

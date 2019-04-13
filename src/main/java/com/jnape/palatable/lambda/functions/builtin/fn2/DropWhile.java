@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public final class DropWhile<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Iterable<A>> {
 
-    private static final DropWhile INSTANCE = new DropWhile();
+    private static final DropWhile<?> INSTANCE = new DropWhile<>();
 
     private DropWhile() {
     }
@@ -30,7 +30,7 @@ public final class DropWhile<A> implements Fn2<Function<? super A, ? extends Boo
 
     @SuppressWarnings("unchecked")
     public static <A> DropWhile<A> dropWhile() {
-        return INSTANCE;
+        return (DropWhile<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> dropWhile(Function<? super A, ? extends Boolean> predicate) {

@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * @see com.jnape.palatable.lambda.adt.hlist.Tuple2
  */
 @FunctionalInterface
-public interface Bifunctor<A, B, BF extends Bifunctor> extends BoundedBifunctor<A, B, Object, Object, BF> {
+public interface Bifunctor<A, B, BF extends Bifunctor<?, ?, BF>> extends BoundedBifunctor<A, B, Object, Object, BF> {
 
     /**
      * Covariantly map over the left parameter.

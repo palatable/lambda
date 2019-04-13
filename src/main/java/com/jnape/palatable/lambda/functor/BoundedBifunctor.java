@@ -16,7 +16,12 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * @see Bifunctor
  */
 @FunctionalInterface
-public interface BoundedBifunctor<A extends ContraA, B extends ContraB, ContraA, ContraB, BF extends BoundedBifunctor> {
+public interface BoundedBifunctor<
+        A extends ContraA,
+        B extends ContraB,
+        ContraA,
+        ContraB,
+        BF extends BoundedBifunctor<?, ?, ?, ?, BF>> {
 
     /**
      * Covariantly map the left parameter into a value that is covariant to <code>ContraA</code>.

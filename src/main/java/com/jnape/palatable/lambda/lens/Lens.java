@@ -246,7 +246,7 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
         return new Lens<S, T, A, B>() {
             @Override
             @SuppressWarnings("unchecked")
-            public <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
+            public <F extends Functor<?, F>, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
                     Function<? super A, ? extends FB> fn,
                     S s) {
                 return (FT) fn.apply(getter.apply(s)).fmap(b -> setter.apply(s, b));
@@ -325,9 +325,14 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
          * @param <A>  A/B
          * @return the simple lens
          */
-        @SuppressWarnings("unchecked")
         static <S, A> Lens.Simple<S, A> adapt(Lens<S, S, A, A> lens) {
-            return lens::apply;
+            return new Lens.Simple<S, A>() {
+                @Override
+                public <F extends Functor<?, F>, FT extends Functor<S, F>, FB extends Functor<A, F>> FT apply(
+                        Function<? super A, ? extends FB> fn, S s) {
+                    return lens.apply(fn, s);
+                }
+            };
         }
 
         /**

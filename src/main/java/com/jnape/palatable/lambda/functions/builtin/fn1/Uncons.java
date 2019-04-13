@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Tail.tail;
  */
 public final class Uncons<A> implements Fn1<Iterable<A>, Maybe<Tuple2<A, Iterable<A>>>> {
 
-    private static final Uncons INSTANCE = new Uncons();
+    private static final Uncons<?> INSTANCE = new Uncons<>();
 
     private Uncons() {
     }
@@ -28,7 +28,7 @@ public final class Uncons<A> implements Fn1<Iterable<A>, Maybe<Tuple2<A, Iterabl
 
     @SuppressWarnings("unchecked")
     public static <A> Uncons<A> uncons() {
-        return INSTANCE;
+        return (Uncons<A>) INSTANCE;
     }
 
     public static <A> Maybe<Tuple2<A, Iterable<A>>> uncons(Iterable<A> as) {

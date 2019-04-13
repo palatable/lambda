@@ -23,7 +23,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCo
  */
 public final class Difference<A> implements Fn2<Iterable<A>, Iterable<A>, Iterable<A>> {
 
-    private static final Difference INSTANCE = new Difference();
+    private static final Difference<?> INSTANCE = new Difference<>();
 
     private Difference() {
     }
@@ -45,7 +45,7 @@ public final class Difference<A> implements Fn2<Iterable<A>, Iterable<A>, Iterab
 
     @SuppressWarnings("unchecked")
     public static <A> Difference<A> difference() {
-        return INSTANCE;
+        return (Difference<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> difference(Iterable<A> xs) {

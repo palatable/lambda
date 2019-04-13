@@ -19,7 +19,7 @@ import static com.jnape.palatable.lambda.monoid.builtin.First.first;
  * @see Maybe
  */
 public final class Last<A> implements Monoid<Maybe<A>> {
-    private static final Last INSTANCE = new Last();
+    private static final Last<?> INSTANCE = new Last<>();
 
     private Last() {
     }
@@ -36,7 +36,7 @@ public final class Last<A> implements Monoid<Maybe<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Last<A> last() {
-        return INSTANCE;
+        return (Last<A>) INSTANCE;
     }
 
     public static <A> Fn1<Maybe<A>, Maybe<A>> last(Maybe<A> x) {

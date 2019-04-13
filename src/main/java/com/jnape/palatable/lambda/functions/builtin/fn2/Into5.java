@@ -18,7 +18,7 @@ import com.jnape.palatable.lambda.functions.Fn5;
  */
 public final class Into5<A, B, C, D, E, F> implements Fn2<Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F>, Product5<A, B, C, D, E>, F> {
 
-    private static final Into5 INSTANCE = new Into5();
+    private static final Into5<?,?,?,?,?,?> INSTANCE = new Into5<>();
 
     @Override
     public F apply(Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F> fn,
@@ -28,7 +28,7 @@ public final class Into5<A, B, C, D, E, F> implements Fn2<Fn5<? super A, ? super
 
     @SuppressWarnings("unchecked")
     public static <A, B, C, D, E, F> Into5<A, B, C, D, E, F> into5() {
-        return INSTANCE;
+        return (Into5<A, B, C, D, E, F>) INSTANCE;
     }
 
     public static <A, B, C, D, E, F> Fn1<Product5<A, B, C, D, E>, F> into5(

@@ -19,7 +19,7 @@ import java.util.function.Function;
  * @param <FAB> the bifunctor type
  */
 public final class Peek2<A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>> implements Fn3<Consumer<? super A>, Consumer<? super B>, FAB, FAB> {
-    private static final Peek2 INSTANCE = new Peek2<>();
+    private static final Peek2<?, ?, ?> INSTANCE = new Peek2<>();
 
     private Peek2() {
     }
@@ -38,7 +38,7 @@ public final class Peek2<A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? s
 
     @SuppressWarnings("unchecked")
     public static <A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>> Peek2<A, B, FAB> peek2() {
-        return INSTANCE;
+        return (Peek2<A, B, FAB>) INSTANCE;
     }
 
     public static <A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>> Fn2<Consumer<? super B>, FAB, FAB> peek2(

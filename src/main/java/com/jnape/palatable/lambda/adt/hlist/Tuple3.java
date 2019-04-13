@@ -136,8 +136,10 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_3Prime, App extends Applicative, TravB extends Traversable<_3Prime, Tuple3<_1, _2, ?>>, AppB extends Applicative<_3Prime, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super _3, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+    public <_3Prime, App extends Applicative<?, App>, TravB extends Traversable<_3Prime, Tuple3<_1, _2, ?>>,
+            AppB extends Applicative<_3Prime, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super _3, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_3).fmap(_3Prime -> fmap(constantly(_3Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

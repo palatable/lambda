@@ -13,7 +13,7 @@ import com.jnape.palatable.lambda.iteration.PrependingIterator;
  */
 public final class PrependAll<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
-    private static final PrependAll INSTANCE = new PrependAll();
+    private static final PrependAll<?> INSTANCE = new PrependAll<>();
 
     private PrependAll() {
     }
@@ -25,7 +25,7 @@ public final class PrependAll<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> PrependAll<A> prependAll() {
-        return INSTANCE;
+        return (PrependAll<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> prependAll(A a) {

@@ -25,7 +25,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  */
 public final class Coalesce<L, R> implements Fn1<Iterable<Either<L, R>>, Either<Iterable<L>, Iterable<R>>> {
 
-    private static final Coalesce INSTANCE = new Coalesce();
+    private static final Coalesce<?, ?> INSTANCE = new Coalesce<>();
 
     private Coalesce() {
     }
@@ -42,7 +42,7 @@ public final class Coalesce<L, R> implements Fn1<Iterable<Either<L, R>>, Either<
 
     @SuppressWarnings("unchecked")
     public static <A, B> Coalesce<A, B> coalesce() {
-        return INSTANCE;
+        return (Coalesce<A, B>) INSTANCE;
     }
 
     public static <A, B> Either<Iterable<A>, Iterable<B>> coalesce(Iterable<Either<A, B>> eithers) {

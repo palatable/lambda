@@ -13,7 +13,7 @@ import com.jnape.palatable.lambda.semigroup.Semigroup;
  */
 public final class RunAll<A> implements SemigroupFactory<Semigroup<A>, IO<A>> {
 
-    private static final RunAll INSTANCE = new RunAll();
+    private static final RunAll<?> INSTANCE = new RunAll<>();
 
     private RunAll() {
     }
@@ -25,7 +25,7 @@ public final class RunAll<A> implements SemigroupFactory<Semigroup<A>, IO<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> RunAll<A> runAll() {
-        return INSTANCE;
+        return (RunAll<A>) INSTANCE;
     }
 
     public static <A> Semigroup<IO<A>> runAll(Semigroup<A> semigroup) {

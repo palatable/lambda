@@ -15,7 +15,7 @@ import java.util.function.Function;
  */
 public final class Any<A> implements BiPredicate<Function<? super A, ? extends Boolean>, Iterable<A>> {
 
-    private static final Any INSTANCE = new Any();
+    private static final Any<?> INSTANCE = new Any<>();
 
     private Any() {
     }
@@ -31,7 +31,7 @@ public final class Any<A> implements BiPredicate<Function<? super A, ? extends B
 
     @SuppressWarnings("unchecked")
     public static <A> Any<A> any() {
-        return INSTANCE;
+        return (Any<A>) INSTANCE;
     }
 
     public static <A> Predicate<Iterable<A>> any(Function<? super A, ? extends Boolean> predicate) {

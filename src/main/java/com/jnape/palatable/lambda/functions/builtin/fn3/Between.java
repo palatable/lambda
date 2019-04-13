@@ -14,7 +14,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.Clamp.clamp;
  */
 public final class Between<A extends Comparable<A>> implements Fn3<A, A, A, Boolean> {
 
-    private static final Between INSTANCE = new Between<>();
+    private static final Between<?> INSTANCE = new Between<>();
 
     private Between() {
     }
@@ -26,7 +26,7 @@ public final class Between<A extends Comparable<A>> implements Fn3<A, A, A, Bool
 
     @SuppressWarnings("unchecked")
     public static <A extends Comparable<A>> Between<A> between() {
-        return INSTANCE;
+        return (Between<A>) INSTANCE;
     }
 
     public static <A extends Comparable<A>> BiPredicate<A, A> between(A lower) {

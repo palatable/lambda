@@ -11,7 +11,7 @@ import com.jnape.palatable.lambda.iteration.InitIterator;
  */
 public final class Init<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
-    private static final Init INSTANCE = new Init();
+    private static final Init<?> INSTANCE = new Init<>();
 
     private Init() {
     }
@@ -23,7 +23,7 @@ public final class Init<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Init<A> init() {
-        return INSTANCE;
+        return (Init<A>) INSTANCE;
     }
 
     public static <A> Iterable<A> init(Iterable<A> as) {

@@ -15,7 +15,7 @@ import java.util.Collections;
  */
 public final class Union<A> implements Monoid<Iterable<A>> {
 
-    private static final Union INSTANCE = new Union();
+    private static final Union<?> INSTANCE = new Union<>();
 
     private Union() {
     }
@@ -32,7 +32,7 @@ public final class Union<A> implements Monoid<Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Union<A> union() {
-        return INSTANCE;
+        return (Union<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> union(Iterable<A> xs) {

@@ -27,7 +27,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  */
 public final class ReduceLeft<A> implements Fn2<BiFunction<? super A, ? super A, ? extends A>, Iterable<A>, Maybe<A>> {
 
-    private static final ReduceLeft INSTANCE = new ReduceLeft();
+    private static final ReduceLeft<?> INSTANCE = new ReduceLeft<>();
 
     private ReduceLeft() {
     }
@@ -40,7 +40,7 @@ public final class ReduceLeft<A> implements Fn2<BiFunction<? super A, ? super A,
 
     @SuppressWarnings("unchecked")
     public static <A> ReduceLeft<A> reduceLeft() {
-        return INSTANCE;
+        return (ReduceLeft<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Maybe<A>> reduceLeft(BiFunction<? super A, ? super A, ? extends A> fn) {

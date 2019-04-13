@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @param <FA> the functor type
  */
 public final class Peek<A, FA extends Functor<A, ?>> implements Fn2<Consumer<? super A>, FA, FA> {
-    private static final Peek INSTANCE = new Peek<>();
+    private static final Peek<?,?> INSTANCE = new Peek<>();
 
     private Peek() {
     }
@@ -31,7 +31,7 @@ public final class Peek<A, FA extends Functor<A, ?>> implements Fn2<Consumer<? s
 
     @SuppressWarnings("unchecked")
     public static <A, FA extends Functor<A, ?>> Peek<A, FA> peek() {
-        return INSTANCE;
+        return (Peek<A, FA>) INSTANCE;
     }
 
     public static <A, FA extends Functor<A, ?>> Fn1<FA, FA> peek(Consumer<? super A> consumer) {

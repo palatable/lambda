@@ -22,7 +22,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  */
 public final class Times<A> implements Fn3<Integer, Function<? super A, ? extends A>, A, A> {
 
-    private static final Times INSTANCE = new Times();
+    private static final Times<?> INSTANCE = new Times<>();
 
     private Times() {
     }
@@ -37,7 +37,7 @@ public final class Times<A> implements Fn3<Integer, Function<? super A, ? extend
 
     @SuppressWarnings("unchecked")
     public static <A> Times<A> times() {
-        return INSTANCE;
+        return (Times<A>) INSTANCE;
     }
 
     public static <A> Fn2<Function<? super A, ? extends A>, A, A> times(Integer n) {

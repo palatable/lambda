@@ -18,7 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static java.util.Arrays.asList;
 
 @SuppressWarnings("Convert2MethodRef")
-public class TraversableLaws<Trav extends Traversable> implements Trait<Traversable<?, Trav>> {
+public class TraversableLaws<Trav extends Traversable<?, Trav>> implements Trait<Traversable<?, Trav>> {
 
     @Override
     public void test(Traversable<?, Trav> traversable) {
@@ -38,31 +38,30 @@ public class TraversableLaws<Trav extends Traversable> implements Trait<Traversa
         Function<Object, Identity<Object>> f = Identity::new;
         Function<Identity<Object>, Either<String, Object>> t = id -> right(id.runIdentity());
 
-        Function<Traversable<Object, Trav>, Applicative<Traversable<Object, Trav>, Identity>> pureFn = x -> new Identity<>(x);
+        Function<Traversable<Object, Trav>, Applicative<Traversable<Object, Trav>, Identity<?>>> pureFn = x -> new Identity<>(x);
         Function<Traversable<Object, Trav>, Applicative<Traversable<Object, Trav>, Either<String, ?>>> pureFn2 = x -> right(x);
 
         return t.apply(trav.traverse(f, pureFn).<Object>fmap(id()).coerce())
-                .equals(trav.traverse(t.compose(f), pureFn2).<Object>fmap(id()).coerce())
-                ? nothing()
-                : just("naturality (t.apply(trav.traverse(f, pureFn).<Object>fmap(id()).coerce())\n" +
-                               "                .equals(trav.traverse(t.compose(f), pureFn2).<Object>fmap(id()).coerce()))");
+                       .equals(trav.traverse(t.compose(f), pureFn2).<Object>fmap(id()).coerce())
+               ? nothing()
+               : just("naturality (t.apply(trav.traverse(f, pureFn).<Object>fmap(id()).coerce())\n" +
+                              "                .equals(trav.traverse(t.compose(f), pureFn2).<Object>fmap(id()).coerce()))");
     }
 
     private Maybe<String> testIdentity(Traversable<?, Trav> trav) {
         return trav.traverse(Identity::new, x -> new Identity<>(x)).equals(new Identity<>(trav))
-                ? nothing()
-                : just("identity (trav.traverse(Identity::new, x -> new Identity<>(x)).equals(new Identity<>(trav))");
+               ? nothing()
+               : just("identity (trav.traverse(Identity::new, x -> new Identity<>(x)).equals(new Identity<>(trav))");
     }
 
-    @SuppressWarnings("unchecked")
     private Maybe<String> testComposition(Traversable<?, Trav> trav) {
         Function<Object, Identity<Object>> f = Identity::new;
-        Function<Object, Applicative<Object, Identity>> g = x -> new Identity<>(x);
+        Function<Object, Applicative<Object, Identity<?>>> g = x -> new Identity<>(x);
 
         return trav.traverse(f.andThen(x -> x.fmap(g)).andThen(Compose::new), x -> new Compose<>(new Identity<>(new Identity<>(x))))
                        .equals(new Compose<>(trav.traverse(f, x -> new Identity<>(x)).fmap(t -> t.traverse(g, x -> new Identity<>(x)))))
-                ? nothing()
-                : just("compose (trav.traverse(f.andThen(x -> x.fmap(g)).andThen(Compose::new), x -> new Compose<>(new Identity<>(new Identity<>(x))))\n" +
-                               "                .equals(new Compose<Identity, Identity, Traversable<Object, Trav>>(trav.traverse(f, x -> new Identity<>(x)).fmap(t -> t.traverse(g, x -> new Identity<>(x))))))");
+               ? nothing()
+               : just("compose (trav.traverse(f.andThen(x -> x.fmap(g)).andThen(Compose::new), x -> new Compose<>(new Identity<>(new Identity<>(x))))\n" +
+                              "                .equals(new Compose<Identity, Identity, Traversable<Object, Trav>>(trav.traverse(f, x -> new Identity<>(x)).fmap(t -> t.traverse(g, x -> new Identity<>(x))))))");
     }
 }

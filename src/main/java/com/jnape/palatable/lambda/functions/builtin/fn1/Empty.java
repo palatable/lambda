@@ -9,7 +9,7 @@ import com.jnape.palatable.lambda.functions.specialized.Predicate;
  */
 public final class Empty<A> implements Predicate<Iterable<A>> {
 
-    private static final Empty INSTANCE = new Empty();
+    private static final Empty<?> INSTANCE = new Empty<>();
 
     private Empty() {
     }
@@ -21,7 +21,7 @@ public final class Empty<A> implements Predicate<Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Empty<A> empty() {
-        return INSTANCE;
+        return (Empty<A>) INSTANCE;
     }
 
     public static <A> Boolean empty(Iterable<A> as) {

@@ -6,7 +6,7 @@ import com.jnape.palatable.lambda.monad.Monad;
 import java.util.Objects;
 import java.util.function.Function;
 
-public final class EquatableM<M extends Monad<?, ?>, A> implements Monad<A, EquatableM<M, ?>> {
+public final class EquatableM<M extends Monad<?, M>, A> implements Monad<A, EquatableM<M, ?>> {
 
     private final Monad<A, M>            ma;
     private final Function<? super M, ?> equatable;

@@ -18,7 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.CmpEqBy.cmpEqBy;
  */
 public final class CmpEq<A extends Comparable<A>> implements BiPredicate<A, A> {
 
-    private static final CmpEq INSTANCE = new CmpEq();
+    private static final CmpEq<?> INSTANCE = new CmpEq<>();
 
     private CmpEq() {
     }
@@ -30,7 +30,7 @@ public final class CmpEq<A extends Comparable<A>> implements BiPredicate<A, A> {
 
     @SuppressWarnings("unchecked")
     public static <A extends Comparable<A>> CmpEq<A> cmpEq() {
-        return INSTANCE;
+        return (CmpEq<A>) INSTANCE;
     }
 
     public static <A extends Comparable<A>> Predicate<A> cmpEq(A x) {

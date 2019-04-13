@@ -12,7 +12,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Drop.drop;
  */
 public final class Tail<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
-    private static final Tail INSTANCE = new Tail();
+    private static final Tail<?> INSTANCE = new Tail<>();
 
     private Tail() {
     }
@@ -24,7 +24,7 @@ public final class Tail<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Tail<A> tail() {
-        return INSTANCE;
+        return (Tail<A>) INSTANCE;
     }
 
     public static <A> Iterable<A> tail(Iterable<A> as) {

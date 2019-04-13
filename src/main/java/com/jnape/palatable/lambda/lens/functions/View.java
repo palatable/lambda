@@ -20,7 +20,7 @@ import com.jnape.palatable.lambda.lens.LensLike;
  */
 public final class View<S, T, A, B> implements Fn2<LensLike<S, T, A, B, ?>, S, A> {
 
-    private static final View INSTANCE = new View();
+    private static final View<?,?,?,?> INSTANCE = new View<>();
 
     private View() {
     }
@@ -32,7 +32,7 @@ public final class View<S, T, A, B> implements Fn2<LensLike<S, T, A, B, ?>, S, A
 
     @SuppressWarnings("unchecked")
     public static <S, T, A, B> View<S, T, A, B> view() {
-        return INSTANCE;
+        return (View<S, T, A, B>) INSTANCE;
     }
 
     public static <S, T, A, B> Fn1<S, A> view(LensLike<S, T, A, B, ?> lens) {

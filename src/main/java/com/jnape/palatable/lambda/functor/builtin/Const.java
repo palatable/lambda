@@ -17,7 +17,10 @@ import java.util.function.Function;
  * @param <A> the left parameter type, and the type of the stored value
  * @param <B> the right (phantom) parameter type
  */
-public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B, Const>, Traversable<B, Const<A, ?>> {
+public final class Const<A, B> implements
+        Monad<B, Const<A, ?>>,
+        Bifunctor<A, B, Const<?, ?>>,
+        Traversable<B, Const<A, ?>> {
 
     private final A a;
 
@@ -98,8 +101,10 @@ public final class Const<A, B> implements Monad<B, Const<A, ?>>, Bifunctor<A, B,
      * {@inheritDoc}
      */
     @Override
-    public <C, App extends Applicative, TravB extends Traversable<C, Const<A, ?>>, AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super B, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+    public <C, App extends Applicative<?, App>, TravB extends Traversable<C, Const<A, ?>>,
+            AppB extends Applicative<C, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super B, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
         return pure.apply(coerce());
     }
 

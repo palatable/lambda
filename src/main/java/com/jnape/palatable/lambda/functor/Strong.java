@@ -13,7 +13,7 @@ import java.util.function.Function;
  * @param <S> the unification parameter
  * @see com.jnape.palatable.lambda.functions.Fn1
  */
-public interface Strong<A, B, S extends Strong> extends Profunctor<A, B, S> {
+public interface Strong<A, B, S extends Strong<?, ?, S>> extends Profunctor<A, B, S> {
 
     /**
      * Pair some type <code>C</code> to this profunctor's carrier types.

@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @param <MB> the output {@link Monad} type
  */
 @FunctionalInterface
-public interface Kleisli<A, B, M extends Monad, MB extends Monad<B, M>> extends Fn1<A, MB> {
+public interface Kleisli<A, B, M extends Monad<?, M>, MB extends Monad<B, M>> extends Fn1<A, MB> {
 
     /**
      * Left-to-right composition of two compatible {@link Kleisli} arrows, yielding a new {@link Kleisli} arrow.
@@ -83,7 +83,7 @@ public interface Kleisli<A, B, M extends Monad, MB extends Monad<B, M>> extends 
      * @param <MB> the returned {@link Monad} instance
      * @return the function adapted as a {@link Kleisli} arrow
      */
-    static <A, B, M extends Monad, MB extends Monad<B, M>> Kleisli<A, B, M, MB> kleisli(
+    static <A, B, M extends Monad<?, M>, MB extends Monad<B, M>> Kleisli<A, B, M, MB> kleisli(
             Function<? super A, ? extends MB> fn) {
         return fn::apply;
     }

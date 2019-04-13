@@ -19,7 +19,7 @@ import java.util.function.Function;
  */
 public final class LTBy<A, B extends Comparable<B>> implements Fn3<Function<? super A, ? extends B>, A, A, Boolean> {
 
-    private static final LTBy INSTANCE = new LTBy();
+    private static final LTBy<?,?> INSTANCE = new LTBy<>();
 
     private LTBy() {
     }
@@ -41,7 +41,7 @@ public final class LTBy<A, B extends Comparable<B>> implements Fn3<Function<? su
 
     @SuppressWarnings("unchecked")
     public static <A, B extends Comparable<B>> LTBy<A, B> ltBy() {
-        return INSTANCE;
+        return (LTBy<A, B>) INSTANCE;
     }
 
     public static <A, B extends Comparable<B>> BiPredicate<A, A> ltBy(Function<? super A, ? extends B> fn) {

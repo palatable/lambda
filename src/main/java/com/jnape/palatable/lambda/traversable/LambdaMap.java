@@ -46,12 +46,15 @@ public final class LambdaMap<A, B> implements Functor<B, LambdaMap<A, ?>>, Trave
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C, App extends Applicative, TravC extends Traversable<C, LambdaMap<A, ?>>, AppC extends Applicative<C, App>, AppTrav extends Applicative<TravC, App>> AppTrav traverse(
-            Function<? super B, ? extends AppC> fn, Function<? super TravC, ? extends AppTrav> pure) {
-        return foldLeft(Fn2.<AppTrav, Map.Entry<A, AppC>, AppTrav>fn2(appTrav -> into((k, appV) -> (AppTrav) appTrav.<TravC>zip(appV.fmap(v -> m -> {
-                            ((LambdaMap<A, C>) m).unwrap().put(k, v);
-                            return (TravC) m;
-                        })))).toBiFunction(),
+    public <C, App extends Applicative<?, App>, TravC extends Traversable<C, LambdaMap<A, ?>>,
+            AppC extends Applicative<C, App>,
+            AppTrav extends Applicative<TravC, App>> AppTrav traverse(Function<? super B, ? extends AppC> fn,
+                                                                      Function<? super TravC, ? extends AppTrav> pure) {
+        return foldLeft(Fn2.<AppTrav, Map.Entry<A, AppC>, AppTrav>fn2(
+                appTrav -> into((k, appV) -> (AppTrav) appTrav.<TravC>zip(appV.fmap(v -> m -> {
+                    ((LambdaMap<A, C>) m).unwrap().put(k, v);
+                    return (TravC) m;
+                })))).toBiFunction(),
                         pure.apply((TravC) LambdaMap.<A, C>wrap(new HashMap<>())),
                         this.<AppC>fmap(fn).unwrap().entrySet());
     }

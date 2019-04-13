@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.GTBy.gtBy;
  */
 public final class GT<A extends Comparable<A>> implements BiPredicate<A, A> {
 
-    private static final GT INSTANCE = new GT();
+    private static final GT<?> INSTANCE = new GT<>();
 
     private GT() {
     }
@@ -29,7 +29,7 @@ public final class GT<A extends Comparable<A>> implements BiPredicate<A, A> {
 
     @SuppressWarnings("unchecked")
     public static <A extends Comparable<A>> GT<A> gt() {
-        return INSTANCE;
+        return (GT<A>) INSTANCE;
     }
 
     public static <A extends Comparable<A>> Predicate<A> gt(A y) {

@@ -15,7 +15,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
  * @param <A> the {@link Maybe} element type, as well as the resulting {@link Iterable} element type
  */
 public final class CatMaybes<A> implements Fn1<Iterable<Maybe<A>>, Iterable<A>> {
-    private static final CatMaybes INSTANCE = new CatMaybes();
+    private static final CatMaybes<?> INSTANCE = new CatMaybes<>();
 
     private CatMaybes() {
     }
@@ -28,7 +28,7 @@ public final class CatMaybes<A> implements Fn1<Iterable<Maybe<A>>, Iterable<A>> 
 
     @SuppressWarnings("unchecked")
     public static <A> CatMaybes<A> catMaybes() {
-        return INSTANCE;
+        return (CatMaybes<A>) INSTANCE;
     }
 
     public static <A> Iterable<A> catMaybes(Iterable<Maybe<A>> as) {

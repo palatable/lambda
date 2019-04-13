@@ -19,7 +19,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  */
 public final class ToMap<K, V, M extends Map<K, V>> implements Fn2<Supplier<M>, Iterable<? extends Map.Entry<K, V>>, M> {
 
-    private static final ToMap INSTANCE = new ToMap<>();
+    private static final ToMap<?, ?, ?> INSTANCE = new ToMap<>();
 
     private ToMap() {
     }
@@ -34,7 +34,7 @@ public final class ToMap<K, V, M extends Map<K, V>> implements Fn2<Supplier<M>, 
 
     @SuppressWarnings("unchecked")
     public static <K, V, M extends Map<K, V>> ToMap<K, V, M> toMap() {
-        return INSTANCE;
+        return (ToMap<K, V, M>) INSTANCE;
     }
 
     public static <K, V, M extends Map<K, V>> Fn1<Iterable<? extends Map.Entry<K, V>>, M> toMap(Supplier<M> mSupplier) {

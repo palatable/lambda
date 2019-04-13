@@ -57,8 +57,10 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C, App extends Applicative, TravB extends Traversable<C, These<A, ?>>, AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super B, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+    public <C, App extends Applicative<?, App>, TravB extends Traversable<C, These<A, ?>>,
+            AppB extends Applicative<C, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super B, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) a(a)),
                      b -> fn.apply(b).fmap(this::pure).<TravB>fmap(Applicative::coerce).coerce(),
                      into((a, b) -> fn.apply(b).fmap(c -> both(a, c)).<TravB>fmap(Applicative::coerce).coerce()));

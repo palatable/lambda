@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  */
 public final class ToCollection<A, C extends Collection<A>> implements Fn2<Supplier<C>, Iterable<A>, C> {
 
-    private static final ToCollection INSTANCE = new ToCollection();
+    private static final ToCollection<?, ?> INSTANCE = new ToCollection<>();
 
     private ToCollection() {
     }
@@ -30,7 +30,7 @@ public final class ToCollection<A, C extends Collection<A>> implements Fn2<Suppl
 
     @SuppressWarnings("unchecked")
     public static <A, C extends Collection<A>> ToCollection<A, C> toCollection() {
-        return INSTANCE;
+        return (ToCollection<A, C>) INSTANCE;
     }
 
     public static <A, C extends Collection<A>> Fn1<Iterable<A>, C> toCollection(Supplier<C> cSupplier) {

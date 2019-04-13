@@ -24,7 +24,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.LTBy.ltBy;
  */
 public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory<Function<? super A, ? extends B>, A> {
 
-    private static final MaxBy INSTANCE = new MaxBy();
+    private static final MaxBy<?,?> INSTANCE = new MaxBy<>();
 
     private MaxBy() {
     }
@@ -36,7 +36,7 @@ public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory
 
     @SuppressWarnings("unchecked")
     public static <A, B extends Comparable<B>> MaxBy<A, B> maxBy() {
-        return INSTANCE;
+        return (MaxBy<A, B>) INSTANCE;
     }
 
     public static <A, B extends Comparable<B>> Semigroup<A> maxBy(

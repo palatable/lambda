@@ -22,7 +22,7 @@ import static java.util.Collections.emptyList;
  */
 public final class Tails<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>>> {
 
-    private static final Tails INSTANCE = new Tails();
+    private static final Tails<?> INSTANCE = new Tails<>();
 
     private Tails() {
     }
@@ -34,7 +34,7 @@ public final class Tails<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Tails<A> tails() {
-        return INSTANCE;
+        return (Tails<A>) INSTANCE;
     }
 
     public static <A> Iterable<Iterable<A>> tails(Iterable<A> as) {

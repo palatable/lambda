@@ -29,7 +29,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
         Product2<_1, _2>,
         Map.Entry<_1, _2>,
         Monad<_2, Tuple2<_1, ?>>,
-        Bifunctor<_1, _2, Tuple2>,
+        Bifunctor<_1, _2, Tuple2<?, ?>>,
         Traversable<_2, Tuple2<_1, ?>> {
 
     private final _1 _1;
@@ -113,7 +113,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     @Override
     public <_2Prime> Lazy<Tuple2<_1, _2Prime>> lazyZip(
             Lazy<Applicative<Function<? super _2, ? extends _2Prime>, Tuple2<_1, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_2Prime, Tuple2<_1, ?>>::coerce);
     }
 
     @Override
@@ -133,8 +133,10 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_2Prime, App extends Applicative, TravB extends Traversable<_2Prime, Tuple2<_1, ?>>, AppB extends Applicative<_2Prime, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super _2, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+    public <_2Prime, App extends Applicative<?, App>, TravB extends Traversable<_2Prime, Tuple2<_1, ?>>,
+            AppB extends Applicative<_2Prime, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super _2, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_2).fmap(_2Prime -> fmap(constantly(_2Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

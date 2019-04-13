@@ -11,7 +11,7 @@ import com.jnape.palatable.lambda.iteration.ReversingIterable;
  */
 public final class Reverse<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
-    private static final Reverse INSTANCE = new Reverse();
+    private static final Reverse<?> INSTANCE = new Reverse<>();
 
     private Reverse() {
     }
@@ -23,7 +23,7 @@ public final class Reverse<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Reverse<A> reverse() {
-        return INSTANCE;
+        return (Reverse<A>) INSTANCE;
     }
 
     public static <A> Iterable<A> reverse(Iterable<A> as) {

@@ -5,7 +5,7 @@ import com.jnape.palatable.lambda.functor.Bifunctor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-public final class InvocationRecordingBifunctor<A, B> implements Bifunctor<A, B, InvocationRecordingBifunctor> {
+public final class InvocationRecordingBifunctor<A, B> implements Bifunctor<A, B, InvocationRecordingBifunctor<?, ?>> {
     private final AtomicReference<Function> leftFn;
     private final AtomicReference<Function> rightFn;
 

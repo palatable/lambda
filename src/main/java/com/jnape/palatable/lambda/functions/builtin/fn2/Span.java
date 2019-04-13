@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.TakeWhile.takeWhi
  */
 public final class Span<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> {
 
-    private static final Span INSTANCE = new Span();
+    private static final Span<?> INSTANCE = new Span<>();
 
     private Span() {
     }
@@ -29,7 +29,7 @@ public final class Span<A> implements Fn2<Function<? super A, ? extends Boolean>
 
     @SuppressWarnings("unchecked")
     public static <A> Span<A> span() {
-        return INSTANCE;
+        return (Span<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> span(

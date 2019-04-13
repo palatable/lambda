@@ -20,7 +20,7 @@ import java.util.function.Function;
  */
 public final class CmpEqBy<A, B extends Comparable<B>> implements Fn3<Function<? super A, ? extends B>, A, A, Boolean> {
 
-    private static final CmpEqBy INSTANCE = new CmpEqBy();
+    private static final CmpEqBy<?, ?> INSTANCE = new CmpEqBy<>();
 
     private CmpEqBy() {
     }
@@ -42,7 +42,7 @@ public final class CmpEqBy<A, B extends Comparable<B>> implements Fn3<Function<?
 
     @SuppressWarnings("unchecked")
     public static <A, B extends Comparable<B>> CmpEqBy<A, B> cmpEqBy() {
-        return INSTANCE;
+        return (CmpEqBy<A, B>) INSTANCE;
     }
 
     public static <A, B extends Comparable<B>> BiPredicate<A, A> cmpEqBy(Function<? super A, ? extends B> compareFn) {

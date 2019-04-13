@@ -16,7 +16,7 @@ import com.jnape.palatable.lambda.functions.Fn3;
  */
 public final class Into3<A, B, C, D> implements Fn2<Fn3<? super A, ? super B, ? super C, ? extends D>, Product3<A, B, C>, D> {
 
-    private static final Into3 INSTANCE = new Into3();
+    private static final Into3<?,?,?,?> INSTANCE = new Into3<>();
 
     @Override
     public D apply(Fn3<? super A, ? super B, ? super C, ? extends D> fn, Product3<A, B, C> product) {
@@ -25,7 +25,7 @@ public final class Into3<A, B, C, D> implements Fn2<Fn3<? super A, ? super B, ? 
 
     @SuppressWarnings("unchecked")
     public static <A, B, C, D> Into3<A, B, C, D> into3() {
-        return INSTANCE;
+        return (Into3<A, B, C, D>) INSTANCE;
     }
 
     public static <A, B, C, D> Fn1<Product3<A, B, C>, D> into3(Fn3<? super A, ? super B, ? super C, ? extends D> fn) {

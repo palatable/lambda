@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 import static java.util.Arrays.asList;
 import static java.util.function.Function.identity;
 
-public class FunctorLaws<F extends Functor> implements Trait<Functor<?, F>> {
+public class FunctorLaws<F extends Functor<?, F>> implements Trait<Functor<?, F>> {
 
     @Override
     public void test(Functor<?, F> f) {
@@ -29,8 +29,8 @@ public class FunctorLaws<F extends Functor> implements Trait<Functor<?, F>> {
 
     private Maybe<String> testIdentity(Functor<?, F> f) {
         return f.fmap(identity()).equals(f)
-                ? nothing()
-                : just("identity (f.fmap(identity()).equals(f))");
+               ? nothing()
+               : just("identity (f.fmap(identity()).equals(f))");
     }
 
     private Maybe<String> testComposition(Functor<?, F> functor) {
@@ -38,7 +38,7 @@ public class FunctorLaws<F extends Functor> implements Trait<Functor<?, F>> {
         Function<Integer, Integer> f = x -> x * 3;
         Function<Integer, Integer> g = x -> x - 2;
         return subject.fmap(f.compose(g)).equals(subject.fmap(g).fmap(f))
-                ? nothing()
-                : just("composition (functor.fmap(f.compose(g)).equals(functor.fmap(g).fmap(f)))");
+               ? nothing()
+               : just("composition (functor.fmap(f.compose(g)).equals(functor.fmap(g).fmap(f)))");
     }
 }

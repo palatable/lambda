@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.maybe;
  */
 public final class Last<A> implements Fn1<Iterable<A>, Maybe<A>> {
 
-    private static final Last INSTANCE = new Last();
+    private static final Last<?> INSTANCE = new Last<>();
 
     private Last() {
     }
@@ -29,7 +29,7 @@ public final class Last<A> implements Fn1<Iterable<A>, Maybe<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Last<A> last() {
-        return INSTANCE;
+        return (Last<A>) INSTANCE;
     }
 
     public static <A> Maybe<A> last(Iterable<A> as) {

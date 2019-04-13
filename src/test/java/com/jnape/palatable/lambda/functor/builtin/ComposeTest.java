@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class ComposeTest {
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class})
-    public Compose<Identity, Identity, Integer> testSubject() {
+    public Compose<Identity<?>, Identity<?>, Integer> testSubject() {
         return new Compose<>(new Identity<>(new Identity<>(1)));
     }
 

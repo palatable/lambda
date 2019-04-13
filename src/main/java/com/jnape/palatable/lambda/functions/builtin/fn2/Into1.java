@@ -15,7 +15,7 @@ import java.util.function.Function;
  */
 public final class Into1<A, B> implements Fn2<Function<? super A, ? extends B>, SingletonHList<A>, B> {
 
-    private static final Into1 INSTANCE = new Into1();
+    private static final Into1<?,?> INSTANCE = new Into1<>();
 
     @Override
     public B apply(Function<? super A, ? extends B> fn, SingletonHList<A> singletonHList) {
@@ -24,7 +24,7 @@ public final class Into1<A, B> implements Fn2<Function<? super A, ? extends B>, 
 
     @SuppressWarnings("unchecked")
     public static <A, B> Into1<A, B> into1() {
-        return INSTANCE;
+        return (Into1<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn1<SingletonHList<A>, B> into1(Function<? super A, ? extends B> fn) {

@@ -34,7 +34,7 @@ import com.jnape.palatable.lambda.functor.Applicative;
  * @see Applicative#zip(Applicative)
  */
 public final class LiftA7<A, B, C, D, E, F, G, H,
-        App extends Applicative,
+        App extends Applicative<?, App>,
         AppA extends Applicative<A, App>,
         AppB extends Applicative<B, App>,
         AppC extends Applicative<C, App>,
@@ -44,7 +44,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
         AppG extends Applicative<G, App>,
         AppH extends Applicative<H, App>> implements Fn8<Fn7<A, B, C, D, E, F, G, H>, AppA, AppB, AppC, AppD, AppE, AppF, AppG, AppH> {
 
-    private static final LiftA7 INSTANCE = new LiftA7();
+    private static final LiftA7<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> INSTANCE = new LiftA7<>();
 
     private LiftA7() {
     }
@@ -57,7 +57,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
 
     @SuppressWarnings("unchecked")
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -66,11 +66,11 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
             AppF extends Applicative<F, App>,
             AppG extends Applicative<G, App>,
             AppH extends Applicative<H, App>> LiftA7<A, B, C, D, E, F, G, H, App, AppA, AppB, AppC, AppD, AppE, AppF, AppG, AppH> liftA7() {
-        return INSTANCE;
+        return (LiftA7<A, B, C, D, E, F, G, H, App, AppA, AppB, AppC, AppD, AppE, AppF, AppG, AppH>) INSTANCE;
     }
 
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -84,7 +84,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
     }
 
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -98,7 +98,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
     }
 
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -112,7 +112,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
     }
 
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -127,7 +127,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
     }
 
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -142,7 +142,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
     }
 
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -156,7 +156,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
     }
 
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -171,7 +171,7 @@ public final class LiftA7<A, B, C, D, E, F, G, H,
     }
 
     public static <A, B, C, D, E, F, G, H,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,

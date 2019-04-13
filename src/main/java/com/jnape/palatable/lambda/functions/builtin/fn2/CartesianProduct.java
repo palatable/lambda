@@ -21,7 +21,7 @@ import com.jnape.palatable.lambda.iteration.CombinatorialIterator;
  */
 public final class CartesianProduct<A, B> implements Fn2<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
 
-    private static final CartesianProduct INSTANCE = new CartesianProduct();
+    private static final CartesianProduct<?,?> INSTANCE = new CartesianProduct<>();
 
     private CartesianProduct() {
     }
@@ -33,7 +33,7 @@ public final class CartesianProduct<A, B> implements Fn2<Iterable<A>, Iterable<B
 
     @SuppressWarnings("unchecked")
     public static <A, B> CartesianProduct<A, B> cartesianProduct() {
-        return INSTANCE;
+        return (CartesianProduct<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn1<Iterable<B>, Iterable<Tuple2<A, B>>> cartesianProduct(Iterable<A> as) {

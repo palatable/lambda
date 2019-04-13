@@ -31,7 +31,7 @@ import java.util.function.Function;
  */
 public final class Unfoldr<A, B> implements Fn2<Function<? super B, Maybe<Tuple2<A, B>>>, B, Iterable<A>> {
 
-    private static final Unfoldr INSTANCE = new Unfoldr();
+    private static final Unfoldr<?, ?> INSTANCE = new Unfoldr<>();
 
     private Unfoldr() {
     }
@@ -43,7 +43,7 @@ public final class Unfoldr<A, B> implements Fn2<Function<? super B, Maybe<Tuple2
 
     @SuppressWarnings("unchecked")
     public static <A, B> Unfoldr<A, B> unfoldr() {
-        return INSTANCE;
+        return (Unfoldr<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn1<B, Iterable<A>> unfoldr(Function<? super B, Maybe<Tuple2<A, B>>> fn) {

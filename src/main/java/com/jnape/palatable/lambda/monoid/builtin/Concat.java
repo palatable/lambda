@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
  */
 public final class Concat<A> implements Monoid<Iterable<A>> {
 
-    private static final Concat INSTANCE = new Concat();
+    private static final Concat<?> INSTANCE = new Concat<>();
 
     private Concat() {
     }
@@ -39,7 +39,7 @@ public final class Concat<A> implements Monoid<Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Concat<A> concat() {
-        return INSTANCE;
+        return (Concat<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> concat(Iterable<A> xs) {

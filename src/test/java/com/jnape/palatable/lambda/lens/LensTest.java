@@ -47,7 +47,7 @@ public class LensTest {
 
     @Test
     public void setsUnderIdentity() {
-        Set<Integer> ints = LENS.<Identity, Identity<Set<Integer>>, Identity<Integer>>apply(s -> new Identity<>(s.length()), asList("foo", "bar", "baz")).runIdentity();
+        Set<Integer> ints = LENS.<Identity<?>, Identity<Set<Integer>>, Identity<Integer>>apply(s -> new Identity<>(s.length()), asList("foo", "bar", "baz")).runIdentity();
         assertEquals(singleton(3), ints);
     }
 
@@ -67,7 +67,7 @@ public class LensTest {
                 .mapB((Maybe<Integer> maybeI) -> maybeI.orElse(-1));
 
         assertEquals(just(true),
-                     theGambit.<Identity, Identity<Maybe<Boolean>>, Identity<Maybe<Integer>>>apply(
+                     theGambit.<Identity<?>, Identity<Maybe<Boolean>>, Identity<Maybe<Integer>>>apply(
                              maybeC -> new Identity<>(maybeC.fmap(c -> parseInt(Character.toString(c)))),
                              just("321")).runIdentity()
         );

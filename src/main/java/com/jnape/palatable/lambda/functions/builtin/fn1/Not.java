@@ -11,7 +11,7 @@ import java.util.function.Function;
  * @param <A> the input argument type
  */
 public final class Not<A> implements BiPredicate<Function<? super A, ? extends Boolean>, A> {
-    private static final Not INSTANCE = new Not();
+    private static final Not<?> INSTANCE = new Not<>();
 
     private Not() {
     }
@@ -23,7 +23,7 @@ public final class Not<A> implements BiPredicate<Function<? super A, ? extends B
 
     @SuppressWarnings("unchecked")
     public static <A> Not<A> not() {
-        return INSTANCE;
+        return (Not<A>) INSTANCE;
     }
 
     public static <A> Predicate<A> not(Function<? super A, ? extends Boolean> pred) {

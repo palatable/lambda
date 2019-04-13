@@ -20,9 +20,11 @@ import java.util.function.Function;
  * @see Lens
  * @see Iso
  */
-public interface LensLike<S, T, A, B, LL extends LensLike> extends Monad<T, LensLike<S, ?, A, B, LL>>, Profunctor<S, T, LensLike<?, ?, A, B, LL>> {
+public interface LensLike<S, T, A, B, LL extends LensLike> extends
+        Monad<T, LensLike<S, ?, A, B, LL>>,
+        Profunctor<S, T, LensLike<?, ?, A, B, LL>> {
 
-    <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
+    <F extends Functor<?, F>, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
             Function<? super A, ? extends FB> fn, S s);
 
     /**

@@ -15,7 +15,7 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
  */
 public final class Tupler2<A, B> implements Fn2<A, B, Tuple2<A, B>> {
 
-    private static final Tupler2 INSTANCE = new Tupler2();
+    private static final Tupler2<?, ?> INSTANCE = new Tupler2<>();
 
     private Tupler2() {
     }
@@ -27,7 +27,7 @@ public final class Tupler2<A, B> implements Fn2<A, B, Tuple2<A, B>> {
 
     @SuppressWarnings("unchecked")
     public static <A, B> Tupler2<A, B> tupler() {
-        return INSTANCE;
+        return (Tupler2<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn1<B, Tuple2<A, B>> tupler(A a) {

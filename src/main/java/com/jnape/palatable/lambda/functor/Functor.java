@@ -20,7 +20,7 @@ import java.util.function.Function;
  * @see com.jnape.palatable.lambda.adt.Either
  */
 @FunctionalInterface
-public interface Functor<A, F extends Functor> {
+public interface Functor<A, F extends Functor<?, F>> {
 
     /**
      * Covariantly transmute this functor's parameter using the given mapping function. Generally this method is

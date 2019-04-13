@@ -19,7 +19,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.SortBy.sortBy;
  */
 public final class Sort<A extends Comparable<A>> implements Fn1<Iterable<A>, List<A>> {
 
-    private static final Sort INSTANCE = new Sort();
+    private static final Sort<?> INSTANCE = new Sort<>();
 
     private Sort() {
     }
@@ -31,7 +31,7 @@ public final class Sort<A extends Comparable<A>> implements Fn1<Iterable<A>, Lis
 
     @SuppressWarnings("unchecked")
     public static <A extends Comparable<A>> Sort<A> sort() {
-        return INSTANCE;
+        return (Sort<A>) INSTANCE;
     }
 
     public static <A extends Comparable<A>> List<A> sort(Iterable<A> as) {

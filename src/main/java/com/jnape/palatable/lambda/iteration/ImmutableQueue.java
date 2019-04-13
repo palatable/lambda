@@ -45,11 +45,11 @@ abstract class ImmutableQueue<A> implements Iterable<A> {
 
     @SuppressWarnings("unchecked")
     public static <A> ImmutableQueue<A> empty() {
-        return Empty.INSTANCE;
+        return (ImmutableQueue<A>) Empty.INSTANCE;
     }
 
     private static final class Empty<A> extends ImmutableQueue<A> {
-        private static final Empty INSTANCE = new Empty();
+        private static final Empty<?> INSTANCE = new Empty<>();
 
         @Override
         ImmutableQueue<A> pushFront(A a) {

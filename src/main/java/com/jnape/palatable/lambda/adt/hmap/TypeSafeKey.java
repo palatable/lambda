@@ -28,9 +28,10 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
         Iso.Simple<A, B> discarded = Iso.Simple.super.discardR(appB);
         return new TypeSafeKey<A, B>() {
             @Override
-            public <P extends Profunctor, F extends Functor, FB extends Functor<B, F>, FT extends Functor<A, F>, PAFB extends Profunctor<B, FB, P>, PSFT extends Profunctor<A, FT, P>> PSFT apply(
-                    PAFB pafb) {
-                return discarded.<P, F, FB, FT, PAFB, PSFT>apply(pafb);
+            public <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<B, F>,
+                    FT extends Functor<A, F>, PAFB extends Profunctor<B, FB, P>,
+                    PSFT extends Profunctor<A, FT, P>> PSFT apply(PAFB pafb) {
+                return discarded.apply(pafb);
             }
 
             @Override
@@ -64,9 +65,10 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
         Iso.Simple<A, C> composed = Iso.Simple.super.andThen(f);
         return new TypeSafeKey<A, C>() {
             @Override
-            public <P extends Profunctor, F extends Functor, FB extends Functor<C, F>, FT extends Functor<A, F>, PAFB extends Profunctor<C, FB, P>, PSFT extends Profunctor<A, FT, P>> PSFT apply(
-                    PAFB pafb) {
-                return composed.<P, F, FB, FT, PAFB, PSFT>apply(pafb);
+            public <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<C, F>,
+                    FT extends Functor<A, F>, PAFB extends Profunctor<C, FB, P>,
+                    PSFT extends Profunctor<A, FT, P>> PSFT apply(PAFB pafb) {
+                return composed.apply(pafb);
             }
 
             @Override
@@ -105,8 +107,9 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
 
         @Override
         @SuppressWarnings("unchecked")
-        default <P extends Profunctor, F extends Functor, FB extends Functor<A, F>, FT extends Functor<A, F>, PAFB extends Profunctor<A, FB, P>, PSFT extends Profunctor<A, FT, P>> PSFT apply(
-                PAFB pafb) {
+        default <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<A, F>,
+                FT extends Functor<A, F>, PAFB extends Profunctor<A, FB, P>,
+                PSFT extends Profunctor<A, FT, P>> PSFT apply(PAFB pafb) {
             return (PSFT) pafb;
         }
     }

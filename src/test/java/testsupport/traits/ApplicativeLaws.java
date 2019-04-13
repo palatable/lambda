@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static java.util.Arrays.asList;
 import static java.util.function.Function.identity;
 
-public class ApplicativeLaws<App extends Applicative> implements Trait<Applicative<?, App>> {
+public class ApplicativeLaws<App extends Applicative<?, App>> implements Trait<Applicative<?, App>> {
 
     @Override
     public void test(Applicative<?, App> applicative) {

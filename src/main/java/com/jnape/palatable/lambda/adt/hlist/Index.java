@@ -55,7 +55,7 @@ public abstract class Index<Target, TargetList extends HCons<?, ?>> {
 
     private static final class Z<Target> extends Index<Target, HCons<Target, ?>> {
 
-        private static final Z INSTANCE = new Z();
+        private static final Z<?> INSTANCE = new Z<>();
 
         @Override
         public Target get(HCons<Target, ?> hList) {

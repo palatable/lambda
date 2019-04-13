@@ -24,7 +24,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
  */
 public final class Compose<A> implements MonoidFactory<Monoid<A>, CompletableFuture<A>> {
 
-    private static final Compose INSTANCE = new Compose();
+    private static final Compose<?> INSTANCE = new Compose<>();
 
     private Compose() {
     }
@@ -37,7 +37,7 @@ public final class Compose<A> implements MonoidFactory<Monoid<A>, CompletableFut
 
     @SuppressWarnings("unchecked")
     public static <A> Compose<A> compose() {
-        return INSTANCE;
+        return (Compose<A>) INSTANCE;
     }
 
     public static <A> Monoid<CompletableFuture<A>> compose(Monoid<A> aMonoid) {

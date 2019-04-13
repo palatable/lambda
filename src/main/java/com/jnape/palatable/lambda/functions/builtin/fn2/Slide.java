@@ -21,7 +21,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
  */
 public final class Slide<A> implements Fn2<Integer, Iterable<A>, Iterable<Iterable<A>>> {
 
-    private static final Slide INSTANCE = new Slide<>();
+    private static final Slide<?> INSTANCE = new Slide<>();
 
     private Slide() {
     }
@@ -36,7 +36,7 @@ public final class Slide<A> implements Fn2<Integer, Iterable<A>, Iterable<Iterab
 
     @SuppressWarnings("unchecked")
     public static <A> Slide<A> slide() {
-        return INSTANCE;
+        return (Slide<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<Iterable<A>>> slide(Integer k) {

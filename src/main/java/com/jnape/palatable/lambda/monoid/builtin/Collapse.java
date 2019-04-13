@@ -23,7 +23,7 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
  */
 public final class Collapse<_1, _2> implements BiMonoidFactory<Monoid<_1>, Monoid<_2>, Tuple2<_1, _2>> {
 
-    private static final Collapse INSTANCE = new Collapse();
+    private static final Collapse<?, ?> INSTANCE = new Collapse<>();
 
     private Collapse() {
     }
@@ -36,7 +36,7 @@ public final class Collapse<_1, _2> implements BiMonoidFactory<Monoid<_1>, Monoi
 
     @SuppressWarnings("unchecked")
     public static <_1, _2> Collapse<_1, _2> collapse() {
-        return INSTANCE;
+        return (Collapse<_1, _2>) INSTANCE;
     }
 
     public static <_1, _2> MonoidFactory<Monoid<_2>, Tuple2<_1, _2>> collapse(Monoid<_1> _1Monoid) {

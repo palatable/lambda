@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.LTEBy.lteBy;
  */
 public final class LTE<A extends Comparable<A>> implements BiPredicate<A, A> {
 
-    private static final LTE INSTANCE = new LTE();
+    private static final LTE<?> INSTANCE = new LTE<>();
 
     private LTE() {
     }
@@ -29,7 +29,7 @@ public final class LTE<A extends Comparable<A>> implements BiPredicate<A, A> {
 
     @SuppressWarnings("unchecked")
     public static <A extends Comparable<A>> LTE<A> lte() {
-        return INSTANCE;
+        return (LTE<A>) INSTANCE;
     }
 
     public static <A extends Comparable<A>> Predicate<A> lte(A y) {

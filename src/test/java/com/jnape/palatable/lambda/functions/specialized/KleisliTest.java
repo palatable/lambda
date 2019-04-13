@@ -9,8 +9,8 @@ import static org.junit.Assert.assertEquals;
 
 public class KleisliTest {
 
-    private static final Kleisli<Integer, String, Identity, Identity<String>>  G = kleisli(i -> new Identity<>(i.toString()));
-    private static final Kleisli<String, Integer, Identity, Identity<Integer>> F = kleisli(s -> new Identity<>(parseInt(s)));
+    private static final Kleisli<Integer, String, Identity<?>, Identity<String>>  G = kleisli(i -> new Identity<>(i.toString()));
+    private static final Kleisli<String, Integer, Identity<?>, Identity<Integer>> F = kleisli(s -> new Identity<>(parseInt(s)));
 
     @Test
     public void leftToRightComposition() {

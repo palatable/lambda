@@ -20,7 +20,7 @@ import java.util.function.BiFunction;
  */
 public final class ScanLeft<A, B> implements Fn3<BiFunction<? super B, ? super A, ? extends B>, B, Iterable<A>, Iterable<B>> {
 
-    private static final ScanLeft INSTANCE = new ScanLeft();
+    private static final ScanLeft<?,?> INSTANCE = new ScanLeft<>();
 
     private ScanLeft() {
     }
@@ -32,7 +32,7 @@ public final class ScanLeft<A, B> implements Fn3<BiFunction<? super B, ? super A
 
     @SuppressWarnings("unchecked")
     public static <A, B> ScanLeft<A, B> scanLeft() {
-        return INSTANCE;
+        return (ScanLeft<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn2<B, Iterable<A>, Iterable<B>> scanLeft(BiFunction<? super B, ? super A, ? extends B> fn) {

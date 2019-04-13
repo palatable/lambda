@@ -13,7 +13,8 @@ import java.util.function.Function;
  * @param <G> The inner applicative
  * @param <A> The carrier type
  */
-public final class Compose<F extends Applicative, G extends Applicative, A> implements Applicative<A, Compose<F, G, ?>> {
+public final class Compose<F extends Applicative<?, F>, G extends Applicative<?, G>, A> implements
+        Applicative<A, Compose<F, G, ?>> {
 
     private final Applicative<? extends Applicative<A, G>, F> fga;
 

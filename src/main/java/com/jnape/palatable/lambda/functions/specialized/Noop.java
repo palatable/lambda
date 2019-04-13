@@ -8,7 +8,7 @@ import com.jnape.palatable.lambda.functions.Effect;
  * @param <A> the argument type
  */
 public final class Noop<A> implements Effect<A> {
-    private static final Noop INSTANCE = new Noop();
+    private static final Noop<?> INSTANCE = new Noop<>();
 
     private Noop() {
     }
@@ -25,6 +25,6 @@ public final class Noop<A> implements Effect<A> {
      */
     @SuppressWarnings("unchecked")
     public static <A> Noop<A> noop() {
-        return INSTANCE;
+        return (Noop<A>) INSTANCE;
     }
 }

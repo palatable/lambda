@@ -22,7 +22,7 @@ import com.jnape.palatable.lambda.functions.Fn8;
  */
 public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I>, Product8<A, B, C, D, E, F, G, H>, I> {
 
-    private static final Into8 INSTANCE = new Into8();
+    private static final Into8<?, ?, ?, ?, ?, ?, ?, ?, ?> INSTANCE = new Into8<>();
 
     @Override
     public I apply(
@@ -33,7 +33,7 @@ public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<? super A
 
     @SuppressWarnings("unchecked")
     public static <A, B, C, D, E, F, G, H, I> Into8<A, B, C, D, E, F, G, H, I> into8() {
-        return INSTANCE;
+        return (Into8<A, B, C, D, E, F, G, H, I>) INSTANCE;
     }
 
     public static <A, B, C, D, E, F, G, H, I> Fn1<Product8<A, B, C, D, E, F, G, H>, I> into8(

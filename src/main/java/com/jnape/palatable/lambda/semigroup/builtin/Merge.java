@@ -20,7 +20,7 @@ import com.jnape.palatable.lambda.semigroup.Semigroup;
  */
 public final class Merge<L, R> implements BiSemigroupFactory<Semigroup<L>, Semigroup<R>, Either<L, R>> {
 
-    private static final Merge INSTANCE = new Merge();
+    private static final Merge<?, ?> INSTANCE = new Merge<>();
 
     private Merge() {
     }
@@ -32,7 +32,7 @@ public final class Merge<L, R> implements BiSemigroupFactory<Semigroup<L>, Semig
 
     @SuppressWarnings("unchecked")
     public static <L, R> Merge<L, R> merge() {
-        return INSTANCE;
+        return (Merge<L, R>) INSTANCE;
     }
 
     public static <L, R> SemigroupFactory<Semigroup<R>, Either<L, R>> merge(Semigroup<L> lSemigroup) {

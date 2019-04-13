@@ -22,7 +22,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.CmpEqBy.cmpEqBy;
  */
 public final class GTEBy<A, B extends Comparable<B>> implements Fn3<Function<? super A, ? extends B>, A, A, Boolean> {
 
-    private static final GTEBy INSTANCE = new GTEBy();
+    private static final GTEBy<?, ?> INSTANCE = new GTEBy<>();
 
     private GTEBy() {
     }
@@ -44,7 +44,7 @@ public final class GTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
 
     @SuppressWarnings("unchecked")
     public static <A, B extends Comparable<B>> GTEBy<A, B> gteBy() {
-        return INSTANCE;
+        return (GTEBy<A, B>) INSTANCE;
     }
 
     public static <A, B extends Comparable<B>> BiPredicate<A, A> gteBy(Function<? super A, ? extends B> fn) {

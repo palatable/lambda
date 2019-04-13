@@ -26,7 +26,7 @@ import static java.util.Collections.emptySet;
  */
 public final class Partition<A, B, C> implements Fn2<Function<? super A, ? extends CoProduct2<B, C, ?>>, Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> {
 
-    private static final Partition INSTANCE = new Partition();
+    private static final Partition<?,?,?> INSTANCE = new Partition<>();
 
     private Partition() {
     }
@@ -42,7 +42,7 @@ public final class Partition<A, B, C> implements Fn2<Function<? super A, ? exten
 
     @SuppressWarnings("unchecked")
     public static <A, B, C> Partition<A, B, C> partition() {
-        return INSTANCE;
+        return (Partition<A, B, C>) INSTANCE;
     }
 
     public static <A, B, C> Fn1<Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> partition(

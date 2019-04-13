@@ -22,7 +22,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * @see Lens
  */
 @FunctionalInterface
-public interface Profunctor<A, B, PF extends Profunctor> extends Contravariant<A, Profunctor<?, B, PF>> {
+public interface Profunctor<A, B, PF extends Profunctor<?, ?, PF>> extends Contravariant<A, Profunctor<?, B, PF>> {
 
     /**
      * Dually map contravariantly over the left parameter and covariantly over the right parameter. This is isomorphic

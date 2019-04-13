@@ -10,7 +10,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
  */
 public final class Force<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
-    private static final Force INSTANCE = new Force();
+    private static final Force<?> INSTANCE = new Force<>();
 
     private Force() {
     }
@@ -25,7 +25,7 @@ public final class Force<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Force<A> force() {
-        return INSTANCE;
+        return (Force<A>) INSTANCE;
     }
 
     public static <A> Iterable<A> force(Iterable<A> as) {

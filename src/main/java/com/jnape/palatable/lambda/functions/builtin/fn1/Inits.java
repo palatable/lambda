@@ -19,7 +19,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.ScanLeft.scanLeft
  */
 public final class Inits<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>>> {
 
-    private static final Inits INSTANCE = new Inits();
+    private static final Inits<?> INSTANCE = new Inits<>();
 
     private Inits() {
     }
@@ -31,7 +31,7 @@ public final class Inits<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Inits<A> inits() {
-        return INSTANCE;
+        return (Inits<A>) INSTANCE;
     }
 
     public static <A> Iterable<Iterable<A>> inits(Iterable<A> as) {

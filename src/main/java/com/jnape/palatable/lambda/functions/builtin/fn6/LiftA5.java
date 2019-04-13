@@ -28,7 +28,7 @@ import com.jnape.palatable.lambda.functor.Applicative;
  * @see Applicative#zip(Applicative)
  */
 public final class LiftA5<A, B, C, D, E, F,
-        App extends Applicative,
+        App extends Applicative<?, App>,
         AppA extends Applicative<A, App>,
         AppB extends Applicative<B, App>,
         AppC extends Applicative<C, App>,
@@ -36,7 +36,7 @@ public final class LiftA5<A, B, C, D, E, F,
         AppE extends Applicative<E, App>,
         AppF extends Applicative<F, App>> implements Fn6<Fn5<A, B, C, D, E, F>, AppA, AppB, AppC, AppD, AppE, AppF> {
 
-    private static final LiftA5 INSTANCE = new LiftA5();
+    private static final LiftA5<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> INSTANCE = new LiftA5<>();
 
     private LiftA5() {
     }
@@ -48,18 +48,18 @@ public final class LiftA5<A, B, C, D, E, F,
 
     @SuppressWarnings("unchecked")
     public static <A, B, C, D, E, F,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
             AppD extends Applicative<D, App>,
             AppE extends Applicative<E, App>,
             AppF extends Applicative<F, App>> LiftA5<A, B, C, D, E, F, App, AppA, AppB, AppC, AppD, AppE, AppF> liftA5() {
-        return INSTANCE;
+        return (LiftA5<A, B, C, D, E, F, App, AppA, AppB, AppC, AppD, AppE, AppF>) INSTANCE;
     }
 
     public static <A, B, C, D, E, F,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -70,7 +70,7 @@ public final class LiftA5<A, B, C, D, E, F,
     }
 
     public static <A, B, C, D, E, F,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -82,7 +82,7 @@ public final class LiftA5<A, B, C, D, E, F,
     }
 
     public static <A, B, C, D, E, F,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -94,7 +94,7 @@ public final class LiftA5<A, B, C, D, E, F,
     }
 
     public static <A, B, C, D, E, F,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -107,7 +107,7 @@ public final class LiftA5<A, B, C, D, E, F,
     }
 
     public static <A, B, C, D, E, F,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,
@@ -119,7 +119,7 @@ public final class LiftA5<A, B, C, D, E, F,
     }
 
     public static <A, B, C, D, E, F,
-            App extends Applicative,
+            App extends Applicative<?, App>,
             AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>,

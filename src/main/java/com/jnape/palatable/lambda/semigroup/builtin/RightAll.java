@@ -29,7 +29,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  */
 public final class RightAll<L, R> implements SemigroupFactory<Semigroup<R>, Either<L, R>> {
 
-    private static final RightAll INSTANCE = new RightAll();
+    private static final RightAll<?,?> INSTANCE = new RightAll<>();
 
     private RightAll() {
     }
@@ -41,7 +41,7 @@ public final class RightAll<L, R> implements SemigroupFactory<Semigroup<R>, Eith
 
     @SuppressWarnings("unchecked")
     public static <L, R> RightAll<L, R> rightAll() {
-        return INSTANCE;
+        return (RightAll<L, R>) INSTANCE;
     }
 
     public static <L, R> Semigroup<Either<L, R>> rightAll(Semigroup<R> rSemigroup) {

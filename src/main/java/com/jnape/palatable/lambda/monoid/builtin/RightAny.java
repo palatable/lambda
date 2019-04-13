@@ -29,7 +29,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  */
 public final class RightAny<L, R> implements MonoidFactory<Monoid<R>, Either<L, R>> {
 
-    private static final RightAny INSTANCE = new RightAny();
+    private static final RightAny<?,?> INSTANCE = new RightAny<>();
 
     private RightAny() {
     }
@@ -42,7 +42,7 @@ public final class RightAny<L, R> implements MonoidFactory<Monoid<R>, Either<L, 
 
     @SuppressWarnings("unchecked")
     public static <L, R> RightAny<L, R> rightAny() {
-        return INSTANCE;
+        return (RightAny<L, R>) INSTANCE;
     }
 
     public static <L, R> Monoid<Either<L, R>> rightAny(Monoid<R> rMonoid) {

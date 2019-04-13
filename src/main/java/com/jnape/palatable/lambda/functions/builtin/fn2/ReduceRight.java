@@ -25,7 +25,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduce
  */
 public final class ReduceRight<A> implements Fn2<BiFunction<? super A, ? super A, ? extends A>, Iterable<A>, Maybe<A>> {
 
-    private static final ReduceRight INSTANCE = new ReduceRight();
+    private static final ReduceRight<?> INSTANCE = new ReduceRight<>();
 
     private ReduceRight() {
     }
@@ -37,7 +37,7 @@ public final class ReduceRight<A> implements Fn2<BiFunction<? super A, ? super A
 
     @SuppressWarnings("unchecked")
     public static <A> ReduceRight<A> reduceRight() {
-        return INSTANCE;
+        return (ReduceRight<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Maybe<A>> reduceRight(BiFunction<? super A, ? super A, ? extends A> fn) {

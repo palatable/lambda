@@ -22,7 +22,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  */
 public final class Merge<L, R> implements BiMonoidFactory<Semigroup<L>, Monoid<R>, Either<L, R>> {
 
-    private static final Merge INSTANCE = new Merge();
+    private static final Merge<?,?> INSTANCE = new Merge<>();
 
     private Merge() {
     }
@@ -35,7 +35,7 @@ public final class Merge<L, R> implements BiMonoidFactory<Semigroup<L>, Monoid<R
 
     @SuppressWarnings("unchecked")
     public static <L, R> Merge<L, R> merge() {
-        return INSTANCE;
+        return (Merge<L, R>) INSTANCE;
     }
 
     public static <L, R> MonoidFactory<Monoid<R>, Either<L, R>> merge(Semigroup<L> lSemigroup) {

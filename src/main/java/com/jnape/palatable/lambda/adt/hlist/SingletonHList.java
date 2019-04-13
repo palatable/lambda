@@ -19,7 +19,9 @@ import java.util.function.Function;
  * @see Tuple4
  * @see Tuple5
  */
-public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, SingletonHList>, Traversable<_1, SingletonHList> {
+public class SingletonHList<_1> extends HCons<_1, HNil> implements
+        Monad<_1, SingletonHList<?>>,
+        Traversable<_1, SingletonHList<?>> {
 
     SingletonHList(_1 _1) {
         super(_1, nil());
@@ -42,35 +44,38 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements Monad<_1, Sin
 
     @Override
     public <_1Prime> SingletonHList<_1Prime> zip(
-            Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList> appFn) {
+            Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList<?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
     @Override
     public <_1Prime> Lazy<SingletonHList<_1Prime>> lazyZip(
-            Lazy<Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList>> lazyAppFn) {
+            Lazy<Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList<?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
     }
 
     @Override
-    public <_1Prime> SingletonHList<_1Prime> discardL(Applicative<_1Prime, SingletonHList> appB) {
+    public <_1Prime> SingletonHList<_1Prime> discardL(Applicative<_1Prime, SingletonHList<?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
     @Override
-    public <_1Prime> SingletonHList<_1> discardR(Applicative<_1Prime, SingletonHList> appB) {
+    public <_1Prime> SingletonHList<_1> discardR(Applicative<_1Prime, SingletonHList<?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
     @Override
-    public <_1Prime> SingletonHList<_1Prime> flatMap(Function<? super _1, ? extends Monad<_1Prime, SingletonHList>> f) {
+    public <_1Prime> SingletonHList<_1Prime> flatMap(
+            Function<? super _1, ? extends Monad<_1Prime, SingletonHList<?>>> f) {
         return f.apply(head()).coerce();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <B, App extends Applicative, TravB extends Traversable<B, SingletonHList>, AppB extends Applicative<B, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super _1, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+    public <B, App extends Applicative<?, App>, TravB extends Traversable<B, SingletonHList<?>>,
+            AppB extends Applicative<B, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super _1, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(head()).fmap(SingletonHList::new).<TravB>fmap(Applicative::coerce).coerce();
     }
 

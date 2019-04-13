@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
 import static com.jnape.palatable.lambda.monad.Monad.join;
 import static java.util.Arrays.asList;
 
-public class MonadLaws<M extends Monad> implements Trait<Monad<?, M>> {
+public class MonadLaws<M extends Monad<?, M>> implements Trait<Monad<?, M>> {
 
     @Override
     public void test(Monad<?, M> m) {

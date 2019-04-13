@@ -20,7 +20,7 @@ import static com.jnape.palatable.lambda.semigroup.builtin.MinBy.minBy;
  */
 public final class Min<A extends Comparable<A>> implements Semigroup<A> {
 
-    private static final Min INSTANCE = new Min();
+    private static final Min<?> INSTANCE = new Min<>();
 
     private Min() {
     }
@@ -32,7 +32,7 @@ public final class Min<A extends Comparable<A>> implements Semigroup<A> {
 
     @SuppressWarnings("unchecked")
     public static <A extends Comparable<A>> Min<A> min() {
-        return INSTANCE;
+        return (Min<A>) INSTANCE;
     }
 
     public static <A extends Comparable<A>> Fn1<A, A> min(A x) {

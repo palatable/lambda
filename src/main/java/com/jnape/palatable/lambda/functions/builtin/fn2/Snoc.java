@@ -15,7 +15,7 @@ import com.jnape.palatable.lambda.iteration.SnocIterable;
  */
 public final class Snoc<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
-    private static final Snoc INSTANCE = new Snoc();
+    private static final Snoc<?> INSTANCE = new Snoc<>();
 
     private Snoc() {
     }
@@ -27,7 +27,7 @@ public final class Snoc<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Snoc<A> snoc() {
-        return INSTANCE;
+        return (Snoc<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> snoc(A a) {

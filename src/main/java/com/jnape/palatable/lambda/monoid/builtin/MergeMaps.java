@@ -21,7 +21,7 @@ import java.util.function.Supplier;
  */
 public final class MergeMaps<K, V> implements BiMonoidFactory<Supplier<Map<K, V>>, Semigroup<V>, Map<K, V>> {
 
-    private static final MergeMaps INSTANCE = new MergeMaps();
+    private static final MergeMaps<?, ?> INSTANCE = new MergeMaps<>();
 
     private MergeMaps() {
     }
@@ -38,7 +38,7 @@ public final class MergeMaps<K, V> implements BiMonoidFactory<Supplier<Map<K, V>
 
     @SuppressWarnings("unchecked")
     public static <K, V> MergeMaps<K, V> mergeMaps() {
-        return INSTANCE;
+        return (MergeMaps<K, V>) INSTANCE;
     }
 
     public static <K, V> MonoidFactory<Semigroup<V>, Map<K, V>> mergeMaps(Supplier<Map<K, V>> mSupplier) {

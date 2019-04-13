@@ -52,14 +52,14 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
 @FunctionalInterface
 public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
 
-    <P extends Profunctor, F extends Functor, FB extends Functor<B, F>, FT extends Functor<T, F>,
+    <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<B, F>, FT extends Functor<T, F>,
             PAFB extends Profunctor<A, FB, P>,
             PSFT extends Profunctor<S, FT, P>> PSFT apply(PAFB pafb);
 
     @Override
-    default <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
+    default <F extends Functor<?, F>, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
             Function<? super A, ? extends FB> fn, S s) {
-        return this.<Fn1, F, FB, FT, Fn1<A, FB>, Fn1<S, FT>>apply(fn1(fn)).apply(s);
+        return this.<Fn1<?, ?>, F, FB, FT, Fn1<A, FB>, Fn1<S, FT>>apply(fn1(fn)).apply(s);
     }
 
     /**
@@ -70,7 +70,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
     default Lens<S, T, A, B> toLens() {
         return new Lens<S, T, A, B>() {
             @Override
-            public <F extends Functor, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
+            public <F extends Functor<?, F>, FT extends Functor<T, F>, FB extends Functor<B, F>> FT apply(
                     Function<? super A, ? extends FB> fn, S s) {
                 return Iso.this.apply(fn, s);
             }
@@ -93,7 +93,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
      * @return the destructured iso
      */
     default Tuple2<Fn1<? super S, ? extends A>, Fn1<? super B, ? extends T>> unIso() {
-        return Tuple2.fill(this.<Exchange<A, B, ?, ?>, Identity, Identity<B>, Identity<T>,
+        return Tuple2.fill(this.<Exchange<A, B, ?, ?>, Identity<?>, Identity<B>, Identity<T>,
                 Exchange<A, B, A, Identity<B>>,
                 Exchange<A, B, S, Identity<T>>>apply(new Exchange<>(id(), Identity::new)).diMapR(Identity::runIdentity))
                 .biMap(e -> fn1(e.sa()), e -> fn1(e.bt()));
@@ -226,8 +226,9 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
         return new Iso<S, T, A, B>() {
             @Override
             @SuppressWarnings("unchecked")
-            public <P extends Profunctor, F extends Functor, FB extends Functor<B, F>, FT extends Functor<T, F>, PAFB extends Profunctor<A, FB, P>, PSFT extends Profunctor<S, FT, P>> PSFT apply(
-                    PAFB pafb) {
+            public <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<B, F>,
+                    FT extends Functor<T, F>, PAFB extends Profunctor<A, FB, P>,
+                    PSFT extends Profunctor<S, FT, P>> PSFT apply(PAFB pafb) {
                 return (PSFT) pafb.<S, FT>diMap(f, fb -> (FT) fb.<T>fmap(g));
             }
         };
@@ -311,9 +312,14 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
          * @param <A> A/B
          * @return the simple iso
          */
-        @SuppressWarnings("unchecked")
         static <S, A> Iso.Simple<S, A> adapt(Iso<S, S, A, A> iso) {
-            return iso::apply;
+            return new Iso.Simple<S, A>() {
+                @Override
+                public <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<A, F>, FT extends Functor<S, F>, PAFB extends Profunctor<A, FB, P>, PSFT extends Profunctor<S, FT, P>> PSFT apply(
+                        PAFB pafb) {
+                    return iso.apply(pafb);
+                }
+            };
         }
     }
 }

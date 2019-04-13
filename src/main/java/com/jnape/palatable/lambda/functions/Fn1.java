@@ -20,7 +20,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @param <B> The result type
  */
 @FunctionalInterface
-public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Function<A, B> {
+public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1<?, ?>>, Function<A, B> {
 
     /**
      * Invoke this function with the given argument.
@@ -100,7 +100,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Funct
      */
     @Override
     default <C> Lazy<Fn1<A, C>> lazyZip(Lazy<Applicative<Function<? super B, ? extends C>, Fn1<A, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, Fn1<A, ?>>::coerce);
     }
 
     /**
@@ -205,6 +205,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Funct
      * @param <Z>    the resulting function's second argument type
      * @return an {@link Fn2}&lt;Y, Z, B&gt;
      */
+    @SuppressWarnings({"overloads"})
     default <Y, Z> Fn2<Y, Z, B> compose(BiFunction<? super Y, ? super Z, ? extends A> before) {
         return compose(fn2(before));
     }
@@ -217,6 +218,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1>, Funct
      * @param <Z>    the resulting function's second argument type
      * @return an {@link Fn2}&lt;Y, Z, B&gt;
      */
+    @SuppressWarnings({"overloads"})
     default <Y, Z> Fn2<Y, Z, B> compose(Fn2<? super Y, ? super Z, ? extends A> before) {
         return fn2(before.fmap(this::compose))::apply;
     }

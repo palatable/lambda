@@ -15,7 +15,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  */
 public final class Alter<A> implements Fn2<Effect<? super A>, A, IO<A>> {
 
-    private static final Alter INSTANCE = new Alter();
+    private static final Alter<?> INSTANCE = new Alter<>();
 
     private Alter() {
     }
@@ -27,7 +27,7 @@ public final class Alter<A> implements Fn2<Effect<? super A>, A, IO<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Alter<A> alter() {
-        return INSTANCE;
+        return (Alter<A>) INSTANCE;
     }
 
     public static <A> Fn1<A, IO<A>> alter(Effect<? super A> effect) {

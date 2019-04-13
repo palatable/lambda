@@ -34,7 +34,7 @@ public abstract class HList {
 
         HList next = this;
         while (next != HNil.INSTANCE) {
-            HCons hCons = (HCons) next;
+            HCons<?, ?> hCons = (HCons<?, ?>) next;
             body.append(" ").append(hCons.head).append(" ");
             next = hCons.tail;
             if (next != HNil.INSTANCE)
@@ -269,7 +269,7 @@ public abstract class HList {
         @Override
         public final boolean equals(Object other) {
             if (other instanceof HCons) {
-                HCons that = (HCons) other;
+                HCons<?, ?> that = (HCons<?, ?>) other;
                 return this.head.equals(that.head)
                         && this.tail.equals(that.tail);
             }

@@ -30,7 +30,7 @@ import java.util.function.Function;
  * @param <A> The type of the parameter
  * @param <T> The unification parameter
  */
-public interface Traversable<A, T extends Traversable> extends Functor<A, T> {
+public interface Traversable<A, T extends Traversable<?, T>> extends Functor<A, T> {
 
     /**
      * Apply <code>fn</code> to each element of this traversable from left to right, and collapse the results into
@@ -45,7 +45,7 @@ public interface Traversable<A, T extends Traversable> extends Functor<A, T> {
      * @param <AppTrav> the full inferred resulting type from the traversal
      * @return the traversed Traversable, wrapped inside an applicative
      */
-    <B, App extends Applicative, TravB extends Traversable<B, T>, AppB extends Applicative<B, App>,
+    <B, App extends Applicative<?, App>, TravB extends Traversable<B, T>, AppB extends Applicative<B, App>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(
             Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure);
 

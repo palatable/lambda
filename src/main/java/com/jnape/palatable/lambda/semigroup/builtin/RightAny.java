@@ -30,7 +30,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  */
 public final class RightAny<L, R> implements SemigroupFactory<Semigroup<R>, Either<L, R>> {
 
-    private static final RightAny INSTANCE = new RightAny();
+    private static final RightAny<?,?> INSTANCE = new RightAny<>();
 
     private RightAny() {
     }
@@ -44,7 +44,7 @@ public final class RightAny<L, R> implements SemigroupFactory<Semigroup<R>, Eith
 
     @SuppressWarnings("unchecked")
     public static <L, R> RightAny<L, R> rightAny() {
-        return INSTANCE;
+        return (RightAny<L, R>) INSTANCE;
     }
 
     public static <L, R> Semigroup<Either<L, R>> rightAny(Semigroup<R> rSemigroup) {

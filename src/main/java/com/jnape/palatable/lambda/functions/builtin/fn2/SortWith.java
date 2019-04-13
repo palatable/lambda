@@ -21,7 +21,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCo
  */
 public final class SortWith<A> implements Fn2<Comparator<? super A>, Iterable<A>, List<A>> {
 
-    private static final SortWith INSTANCE = new SortWith();
+    private static final SortWith<?> INSTANCE = new SortWith<>();
 
     private SortWith() {
     }
@@ -35,7 +35,7 @@ public final class SortWith<A> implements Fn2<Comparator<? super A>, Iterable<A>
 
     @SuppressWarnings("unchecked")
     public static <A> SortWith<A> sortWith() {
-        return INSTANCE;
+        return (SortWith<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, List<A>> sortWith(Comparator<? super A> comparator) {

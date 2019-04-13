@@ -18,7 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Find.find;
  */
 public final class Intersection<A> implements Fn2<Iterable<A>, Iterable<A>, Iterable<A>> {
 
-    private static final Intersection INSTANCE = new Intersection();
+    private static final Intersection<?> INSTANCE = new Intersection<>();
 
     private Intersection() {
     }
@@ -30,7 +30,7 @@ public final class Intersection<A> implements Fn2<Iterable<A>, Iterable<A>, Iter
 
     @SuppressWarnings("unchecked")
     public static <A> Intersection<A> intersection() {
-        return INSTANCE;
+        return (Intersection<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<A>> intersection(Iterable<A> xs) {

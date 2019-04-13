@@ -23,7 +23,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
  */
 public final class First<A> implements Monoid<Maybe<A>> {
 
-    private static final First INSTANCE = new First();
+    private static final First<?> INSTANCE = new First<>();
 
     private First() {
     }
@@ -45,7 +45,7 @@ public final class First<A> implements Monoid<Maybe<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> First<A> first() {
-        return INSTANCE;
+        return (First<A>) INSTANCE;
     }
 
     public static <A> Fn1<Maybe<A>, Maybe<A>> first(Maybe<A> x) {

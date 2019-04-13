@@ -10,7 +10,7 @@ import com.jnape.palatable.lambda.iteration.RepetitiousIterator;
  */
 public final class Repeat<A> implements Fn1<A, Iterable<A>> {
 
-    private static final Repeat INSTANCE = new Repeat();
+    private static final Repeat<?> INSTANCE = new Repeat<>();
 
     private Repeat() {
     }
@@ -22,7 +22,7 @@ public final class Repeat<A> implements Fn1<A, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Repeat<A> repeat() {
-        return INSTANCE;
+        return (Repeat<A>) INSTANCE;
     }
 
     public static <A> Iterable<A> repeat(A a) {

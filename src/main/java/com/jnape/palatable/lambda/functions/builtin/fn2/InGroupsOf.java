@@ -14,7 +14,7 @@ import com.jnape.palatable.lambda.iteration.GroupingIterator;
  */
 public final class InGroupsOf<A> implements Fn2<Integer, Iterable<A>, Iterable<Iterable<A>>> {
 
-    private static final InGroupsOf INSTANCE = new InGroupsOf();
+    private static final InGroupsOf<?> INSTANCE = new InGroupsOf<>();
 
     private InGroupsOf() {
     }
@@ -26,7 +26,7 @@ public final class InGroupsOf<A> implements Fn2<Integer, Iterable<A>, Iterable<I
 
     @SuppressWarnings("unchecked")
     public static <A> InGroupsOf<A> inGroupsOf() {
-        return INSTANCE;
+        return (InGroupsOf<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<Iterable<A>>> inGroupsOf(Integer k) {

@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public final class IfThenElse<A, B> implements Fn4<Function<? super A, ? extends Boolean>, Function<? super A, ? extends B>, Function<? super A, ? extends B>, A, B> {
 
-    private static final IfThenElse INSTANCE = new IfThenElse();
+    private static final IfThenElse<?, ?> INSTANCE = new IfThenElse<>();
 
     private IfThenElse() {
     }
@@ -22,7 +22,7 @@ public final class IfThenElse<A, B> implements Fn4<Function<? super A, ? extends
 
     @SuppressWarnings("unchecked")
     public static <A, B> IfThenElse<A, B> ifThenElse() {
-        return INSTANCE;
+        return (IfThenElse<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn3<Function<? super A, ? extends B>, Function<? super A, ? extends B>, A, B> ifThenElse(

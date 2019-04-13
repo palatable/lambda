@@ -21,7 +21,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
  */
 public final class AddAll<A, C extends Collection<A>> implements MonoidFactory<Supplier<C>, C> {
 
-    private static final AddAll INSTANCE = new AddAll();
+    private static final AddAll<?,?> INSTANCE = new AddAll<>();
 
     private AddAll() {
     }
@@ -54,7 +54,7 @@ public final class AddAll<A, C extends Collection<A>> implements MonoidFactory<S
 
     @SuppressWarnings("unchecked")
     public static <A, C extends Collection<A>> AddAll<A, C> addAll() {
-        return INSTANCE;
+        return (AddAll<A, C>) INSTANCE;
     }
 
     public static <A, C extends Collection<A>> Monoid<C> addAll(Supplier<C> collectionSupplier) {

@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Take.take;
  */
 public final class Replicate<A> implements Fn2<Integer, A, Iterable<A>> {
 
-    private static final Replicate INSTANCE = new Replicate();
+    private static final Replicate<?> INSTANCE = new Replicate<>();
 
     private Replicate() {
     }
@@ -25,7 +25,7 @@ public final class Replicate<A> implements Fn2<Integer, A, Iterable<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> Replicate<A> replicate() {
-        return INSTANCE;
+        return (Replicate<A>) INSTANCE;
     }
 
     public static <A> Fn1<A, Iterable<A>> replicate(Integer n) {

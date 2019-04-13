@@ -27,7 +27,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Unfoldr.unfoldr;
  */
 public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A, ? extends Boolean>, Iterable<A>, Iterable<Iterable<A>>> {
 
-    private static final MagnetizeBy INSTANCE = new MagnetizeBy();
+    private static final MagnetizeBy<?> INSTANCE = new MagnetizeBy<>();
 
     private MagnetizeBy() {
     }
@@ -45,7 +45,7 @@ public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A
 
     @SuppressWarnings("unchecked")
     public static <A> MagnetizeBy<A> magnetizeBy() {
-        return INSTANCE;
+        return (MagnetizeBy<A>) INSTANCE;
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<Iterable<A>>> magnetizeBy(

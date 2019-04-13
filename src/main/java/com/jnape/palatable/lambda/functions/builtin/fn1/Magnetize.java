@@ -12,7 +12,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.MagnetizeBy.magne
  */
 public final class Magnetize<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>>> {
 
-    private static final Magnetize INSTANCE = new Magnetize();
+    private static final Magnetize<?> INSTANCE = new Magnetize<>();
 
     private Magnetize() {
     }
@@ -24,7 +24,7 @@ public final class Magnetize<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>
 
     @SuppressWarnings("unchecked")
     public static <A> Magnetize<A> magnetize() {
-        return INSTANCE;
+        return (Magnetize<A>) INSTANCE;
     }
 
     public static <A> Iterable<Iterable<A>> magnetize(Iterable<A> as) {

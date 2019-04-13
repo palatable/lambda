@@ -9,7 +9,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
  */
 public final class Id<A> implements Fn1<A, A> {
 
-    private static final Id INSTANCE = new Id();
+    private static final Id<?> INSTANCE = new Id<>();
 
     private Id() {
     }
@@ -21,6 +21,6 @@ public final class Id<A> implements Fn1<A, A> {
 
     @SuppressWarnings("unchecked")
     public static <A> Id<A> id() {
-        return INSTANCE;
+        return (Id<A>) INSTANCE;
     }
 }

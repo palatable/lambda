@@ -14,7 +14,7 @@ import java.util.function.Function;
  * @param <C> the unification parameter
  * @see Profunctor
  */
-public interface Contravariant<A, C extends Contravariant> {
+public interface Contravariant<A, C extends Contravariant<?, C>> {
 
     /**
      * Contravariantly map <code>A &lt;- B</code>.

@@ -22,7 +22,7 @@ import java.util.function.BiFunction;
  */
 public final class FoldLeft<A, B> implements Fn3<BiFunction<? super B, ? super A, ? extends B>, B, Iterable<A>, B> {
 
-    private static final FoldLeft INSTANCE = new FoldLeft();
+    private static final FoldLeft<?,?> INSTANCE = new FoldLeft<>();
 
     private FoldLeft() {
     }
@@ -37,7 +37,7 @@ public final class FoldLeft<A, B> implements Fn3<BiFunction<? super B, ? super A
 
     @SuppressWarnings("unchecked")
     public static <A, B> FoldLeft<A, B> foldLeft() {
-        return INSTANCE;
+        return (FoldLeft<A, B>) INSTANCE;
     }
 
     public static <A, B> Fn2<B, Iterable<A>, B> foldLeft(BiFunction<? super B, ? super A, ? extends B> fn) {

@@ -16,7 +16,7 @@ import java.util.function.Function;
  */
 public final class Both<A, B, C> implements Fn3<Function<? super A, ? extends B>, Function<? super A, ? extends C>, A, Tuple2<B, C>> {
 
-    private static final Both INSTANCE = new Both();
+    private static final Both<?,?,?> INSTANCE = new Both<>();
 
     private Both() {
     }
@@ -30,7 +30,7 @@ public final class Both<A, B, C> implements Fn3<Function<? super A, ? extends B>
 
     @SuppressWarnings("unchecked")
     public static <A, B, C> Both<A, B, C> both() {
-        return INSTANCE;
+        return (Both<A, B, C>) INSTANCE;
     }
 
     public static <A, B, C> Fn1<Function<? super A, ? extends C>, Fn1<A, Tuple2<B, C>>> both(

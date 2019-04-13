@@ -17,7 +17,7 @@ import static com.jnape.palatable.lambda.monoid.Monoid.monoid;
  */
 public final class RunAll<A> implements MonoidFactory<Monoid<A>, IO<A>> {
 
-    private static final RunAll INSTANCE = new RunAll();
+    private static final RunAll<?> INSTANCE = new RunAll<>();
 
     private RunAll() {
     }
@@ -30,7 +30,7 @@ public final class RunAll<A> implements MonoidFactory<Monoid<A>, IO<A>> {
 
     @SuppressWarnings("unchecked")
     public static <A> RunAll<A> runAll() {
-        return INSTANCE;
+        return (RunAll<A>) INSTANCE;
     }
 
     public static <A> Monoid<IO<A>> runAll(Monoid<A> monoid) {

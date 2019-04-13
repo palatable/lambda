@@ -165,8 +165,10 @@ public abstract class Choice6<A, B, C, D, E, F> implements
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <G, App extends Applicative, TravB extends Traversable<G, Choice6<A, B, C, D, E, ?>>, AppB extends Applicative<G, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super F, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+    public <G, App extends Applicative<?, App>, TravB extends Traversable<G, Choice6<A, B, C, D, E, ?>>,
+            AppB extends Applicative<G, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super F, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>a(a)).coerce(),
                      b -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>b(b)).coerce(),
                      c -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>c(c)),

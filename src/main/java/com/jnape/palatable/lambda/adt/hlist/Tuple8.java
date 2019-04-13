@@ -231,8 +231,11 @@ public class Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> extends HCons<_1, Tuple7<_2,
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_8Prime, App extends Applicative, TravB extends Traversable<_8Prime, Tuple8<_1, _2, _3, _4, _5, _6, _7, ?>>, AppB extends Applicative<_8Prime, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super _8, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+    public <_8Prime, App extends Applicative<?, App>,
+            TravB extends Traversable<_8Prime, Tuple8<_1, _2, _3, _4, _5, _6, _7, ?>>,
+            AppB extends Applicative<_8Prime, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super _8, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_8).fmap(_8Prime -> fmap(constantly(_8Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

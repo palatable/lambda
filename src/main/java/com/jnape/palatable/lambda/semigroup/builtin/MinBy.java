@@ -24,7 +24,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.GTBy.gtBy;
  */
 public final class MinBy<A, B extends Comparable<B>> implements SemigroupFactory<Function<? super A, ? extends B>, A> {
 
-    private static final MinBy INSTANCE = new MinBy();
+    private static final MinBy<?,?> INSTANCE = new MinBy<>();
 
     private MinBy() {
     }
@@ -36,7 +36,7 @@ public final class MinBy<A, B extends Comparable<B>> implements SemigroupFactory
 
     @SuppressWarnings("unchecked")
     public static <A, B extends Comparable<B>> MinBy<A, B> minBy() {
-        return INSTANCE;
+        return (MinBy<A, B>) INSTANCE;
     }
 
     public static <A, B extends Comparable<B>> Semigroup<A> minBy(

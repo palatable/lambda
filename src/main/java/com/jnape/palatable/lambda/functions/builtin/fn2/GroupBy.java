@@ -22,7 +22,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  */
 public final class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>, Iterable<V>, Map<K, List<V>>> {
 
-    private static final GroupBy INSTANCE = new GroupBy();
+    private static final GroupBy<?,?> INSTANCE = new GroupBy<>();
 
     private GroupBy() {
     }
@@ -37,7 +37,7 @@ public final class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>
 
     @SuppressWarnings("unchecked")
     public static <K, V> GroupBy<K, V> groupBy() {
-        return INSTANCE;
+        return (GroupBy<K, V>) INSTANCE;
     }
 
     public static <K, V> Fn1<Iterable<V>, Map<K, List<V>>> groupBy(Function<? super V, ? extends K> keyFn) {

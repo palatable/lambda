@@ -29,7 +29,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 public abstract class Choice2<A, B> implements
         CoProduct2<A, B, Choice2<A, B>>,
         Monad<B, Choice2<A, ?>>,
-        Bifunctor<A, B, Choice2>,
+        Bifunctor<A, B, Choice2<?, ?>>,
         Traversable<B, Choice2<A, ?>> {
 
     private Choice2() {
@@ -151,8 +151,10 @@ public abstract class Choice2<A, B> implements
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <C, App extends Applicative, TravB extends Traversable<C, Choice2<A, ?>>, AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super B, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure) {
+    public <C, App extends Applicative<?, App>, TravB extends Traversable<C, Choice2<A, ?>>,
+            AppB extends Applicative<C, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super B, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) a(a)),
                      b -> fn.apply(b).fmap(Choice2::b).<TravB>fmap(Applicative::coerce).coerce());
     }
