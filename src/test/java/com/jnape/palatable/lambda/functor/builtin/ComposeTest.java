@@ -9,8 +9,10 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 
+import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Traits.class)
@@ -25,5 +27,15 @@ public class ComposeTest {
     public void inference() {
         Either<Object, Maybe<Integer>> a = new Compose<>(right(just(1))).fmap(x -> x + 1).getCompose();
         assertEquals(right(just(2)), a);
+    }
+
+    @Test
+    public void lazyZip() {
+        assertEquals(new Compose<>(right(just(2))),
+                     new Compose<>(right(just(1))).lazyZip(lazy(new Compose<>(right(just(x -> x + 1))))).value());
+        assertEquals(new Compose<>(left("foo")),
+                     new Compose<>(left("foo")).lazyZip(lazy(() -> {
+                         throw new AssertionError();
+                     })).value());
     }
 }

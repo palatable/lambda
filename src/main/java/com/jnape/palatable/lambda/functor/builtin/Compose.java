@@ -5,6 +5,8 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
+
 /**
  * A functor representing the type-level composition of two {@link Applicative} functors; useful for preserving nested
  * type-level transformations during traversal of a {@link com.jnape.palatable.lambda.traversable.Traversable}.
@@ -60,7 +62,16 @@ public final class Compose<F extends Applicative<?, F>, G extends Applicative<?,
     @Override
     public <B> Lazy<Compose<F, G, B>> lazyZip(
             Lazy<? extends Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>>> lazyAppFn) {
-        return Applicative.super.lazyZip(lazyAppFn).fmap(Applicative<B, Compose<F, G, ?>>::coerce);
+        @SuppressWarnings("RedundantTypeArguments")
+        Lazy<Applicative<Applicative<Function<? super A, ? extends B>, G>, F>> lazyAppFnCoerced =
+                lazyAppFn
+                        .<Compose<F, G, Function<? super A, ? extends B>>>fmap(
+                                Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>>::coerce)
+                        .fmap(Compose<F, G, Function<? super A, ? extends B>>::getCompose);
+
+        return fga.<Applicative<A, G>>fmap(upcast())
+                .<Applicative<B, G>>lazyZip(lazyAppFnCoerced.fmap(fgf -> fgf.fmap(gf -> ga -> ga.zip(gf))))
+                .fmap(Compose::new);
     }
 
     /**
