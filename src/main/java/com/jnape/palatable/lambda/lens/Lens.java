@@ -137,7 +137,7 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
  * @param <B> the type of the "smaller" update value
  */
 @FunctionalInterface
-public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
+public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens<?, ?, ?, ?>> {
 
     @Override
     default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
@@ -150,22 +150,24 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
     }
 
     @Override
-    default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Lens>> appFn) {
+    default <U> Lens<S, U, A, B> zip(
+            Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Lens<?, ?, ?, ?>>> appFn) {
         return LensLike.super.zip(appFn).coerce();
     }
 
     @Override
-    default <U> Lens<S, U, A, B> discardL(Applicative<U, LensLike<S, ?, A, B, Lens>> appB) {
+    default <U> Lens<S, U, A, B> discardL(Applicative<U, LensLike<S, ?, A, B, Lens<?, ?, ?, ?>>> appB) {
         return LensLike.super.discardL(appB).coerce();
     }
 
     @Override
-    default <U> Lens<S, T, A, B> discardR(Applicative<U, LensLike<S, ?, A, B, Lens>> appB) {
+    default <U> Lens<S, T, A, B> discardR(Applicative<U, LensLike<S, ?, A, B, Lens<?, ?, ?, ?>>> appB) {
         return LensLike.super.discardR(appB).coerce();
     }
 
     @Override
-    default <U> Lens<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, Lens>>> f) {
+    default <U> Lens<S, U, A, B> flatMap(
+            Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, Lens<?, ?, ?, ?>>>> f) {
         return lens(view(this), (s, b) -> set(f.apply(set(this, b, s)).<Lens<S, U, A, B>>coerce(), b, s));
     }
 
@@ -307,7 +309,7 @@ public interface Lens<S, T, A, B> extends LensLike<S, T, A, B, Lens> {
      * @param <A> the type of both "smaller" values
      */
     @FunctionalInterface
-    interface Simple<S, A> extends Lens<S, S, A, A>, LensLike.Simple<S, A, Lens> {
+    interface Simple<S, A> extends Lens<S, S, A, A>, LensLike.Simple<S, A, Lens<?, ?, ?, ?>> {
 
         default <R> Lens.Simple<R, A> compose(LensLike.Simple<R, S, ?> g) {
             return Lens.Simple.adapt(Lens.super.compose(g));

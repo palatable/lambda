@@ -101,9 +101,10 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
     }
 
     @Override
-    public <C> Lazy<These<A, C>> lazyZip(Lazy<Applicative<Function<? super B, ? extends C>, These<A, ?>>> lazyAppFn) {
+    public <C> Lazy<These<A, C>> lazyZip(
+            Lazy<? extends Applicative<Function<? super B, ? extends C>, These<A, ?>>> lazyAppFn) {
         return projectA().<Lazy<These<A, C>>>fmap(a -> lazy(a(a)))
-                .orElseGet(() -> Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce));
+                .orElseGet(() -> Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, These<A, ?>>::coerce));
     }
 
     /**

@@ -19,7 +19,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class UnconsTest {
 
     @TestTraits({EmptyIterableSupport.class})
-    public Uncons testSubject() {
+    public Uncons<?> testSubject() {
         return uncons();
     }
 

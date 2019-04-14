@@ -112,7 +112,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
 
     @Override
     public <_2Prime> Lazy<Tuple2<_1, _2Prime>> lazyZip(
-            Lazy<Applicative<Function<? super _2, ? extends _2Prime>, Tuple2<_1, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Function<? super _2, ? extends _2Prime>, Tuple2<_1, ?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_2Prime, Tuple2<_1, ?>>::coerce);
     }
 

@@ -207,8 +207,9 @@ public class Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> extends HCons<_1, Tuple7<_2,
 
     @Override
     public <_8Prime> Lazy<Tuple8<_1, _2, _3, _4, _5, _6, _7, _8Prime>> lazyZip(
-            Lazy<Applicative<Function<? super _8, ? extends _8Prime>, Tuple8<_1, _2, _3, _4, _5, _6, _7, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+            Lazy<? extends Applicative<Function<? super _8, ? extends _8Prime>,
+                    Tuple8<_1, _2, _3, _4, _5, _6, _7, ?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_8Prime, Tuple8<_1, _2, _3, _4, _5, _6, _7, ?>>::coerce);
     }
 
     @Override

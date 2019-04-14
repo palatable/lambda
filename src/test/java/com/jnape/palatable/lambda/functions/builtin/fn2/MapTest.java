@@ -21,7 +21,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class MapTest {
 
     @TestTraits({Laziness.class, EmptyIterableSupport.class, InfiniteIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
-    public Fn1<? extends Iterable, ?> createTraitsTestSubject() {
+    public Fn1<? extends Iterable<?>, ?> createTraitsTestSubject() {
         return map(id());
     }
 

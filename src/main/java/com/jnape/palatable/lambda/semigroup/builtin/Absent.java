@@ -25,7 +25,7 @@ import com.jnape.palatable.lambda.semigroup.Semigroup;
  */
 public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>> {
 
-    private static final Absent INSTANCE = new Absent<>();
+    private static final Absent<?> INSTANCE = new Absent<>();
 
     private Absent() {
     }
@@ -37,7 +37,7 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
 
     @SuppressWarnings("unchecked")
     public static <A> Absent<A> absent() {
-        return INSTANCE;
+        return (Absent<A>) INSTANCE;
     }
 
     public static <A> Semigroup<Maybe<A>> absent(Semigroup<A> semigroup) {

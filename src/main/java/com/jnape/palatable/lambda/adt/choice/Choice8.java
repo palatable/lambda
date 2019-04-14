@@ -119,10 +119,11 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
 
     /**
      * {@inheritDoc}
+     * @param lazyAppFn
      */
     @Override
     public <I> Lazy<Choice8<A, B, C, D, E, F, G, I>> lazyZip(
-            Lazy<Applicative<Function<? super H, ? extends I>, Choice8<A, B, C, D, E, F, G, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Function<? super H, ? extends I>, Choice8<A, B, C, D, E, F, G, ?>>> lazyAppFn) {
         return match(a -> lazy(a(a)),
                      b -> lazy(b(b)),
                      c -> lazy(c(c)),

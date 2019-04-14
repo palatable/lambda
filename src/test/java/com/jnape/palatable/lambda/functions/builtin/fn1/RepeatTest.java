@@ -17,7 +17,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class RepeatTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, InfiniteIteration.class})
-    public Repeat createTestSubject() {
+    public Repeat<?> createTestSubject() {
         return repeat();
     }
 

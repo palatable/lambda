@@ -23,7 +23,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class UnfoldrTest {
 
     @TestTraits({Laziness.class, InfiniteIteration.class, ImmutableIteration.class})
-    public Fn1<? extends Iterable, ? extends Iterable> createTestSubject() {
+    public Fn1<? extends Iterable<?>, ? extends Iterable<?>> createTestSubject() {
         return unfoldr(x -> just(tuple(x, x)));
     }
 

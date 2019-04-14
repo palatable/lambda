@@ -34,7 +34,7 @@ public class Tuple2Test {
     }
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
-    public Tuple2 testSubject() {
+    public Tuple2<?, ?> testSubject() {
         return tuple("one", 2);
     }
 
@@ -93,6 +93,7 @@ public class Tuple2Test {
     }
 
     @Test
+    @SuppressWarnings("serial")
     public void staticFactoryMethodFromMapEntry() {
         Map.Entry<String, Integer> stringIntEntry = new HashMap<String, Integer>() {{
             put("string", 1);

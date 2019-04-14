@@ -21,7 +21,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class IterateTest {
 
     @TestTraits({Laziness.class, InfiniteIteration.class, ImmutableIteration.class})
-    public Fn1<? extends Iterable, ? extends Iterable> createTestSubject() {
+    public Fn1<? extends Iterable<?>, ? extends Iterable<?>> createTestSubject() {
         return iterate(constantly(new ArrayList<>()));
     }
 

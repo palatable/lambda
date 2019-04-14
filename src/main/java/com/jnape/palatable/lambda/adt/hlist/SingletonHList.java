@@ -50,8 +50,8 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
 
     @Override
     public <_1Prime> Lazy<SingletonHList<_1Prime>> lazyZip(
-            Lazy<Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList<?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+            Lazy<? extends Applicative<Function<? super _1, ? extends _1Prime>, SingletonHList<?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_1Prime, SingletonHList<?>>::coerce);
     }
 
     @Override

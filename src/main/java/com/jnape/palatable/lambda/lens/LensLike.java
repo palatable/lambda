@@ -20,7 +20,7 @@ import java.util.function.Function;
  * @see Lens
  * @see Iso
  */
-public interface LensLike<S, T, A, B, LL extends LensLike> extends
+public interface LensLike<S, T, A, B, LL extends LensLike<?, ?, ?, ?, LL>> extends
         Monad<T, LensLike<S, ?, A, B, LL>>,
         Profunctor<S, T, LensLike<?, ?, A, B, LL>> {
 
@@ -138,7 +138,7 @@ public interface LensLike<S, T, A, B, LL extends LensLike> extends
      * @param <A>  the "smaller" type
      * @param <LL> the concrete lens subtype
      */
-    interface Simple<S, A, LL extends LensLike> extends LensLike<S, S, A, A, LL> {
+    interface Simple<S, A, LL extends LensLike<?, ?, ?, ?, LL>> extends LensLike<S, S, A, A, LL> {
 
         /**
          * Compose two simple lenses from right to left.

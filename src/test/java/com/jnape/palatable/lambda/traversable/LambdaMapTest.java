@@ -15,6 +15,7 @@ import static java.util.Collections.singletonMap;
 @RunWith(Traits.class)
 public class LambdaMapTest {
 
+    @SuppressWarnings("serial")
     @TestTraits({FunctorLaws.class, TraversableLaws.class})
     public Subjects<LambdaMap<Integer, String>> testSubject() {
         return subjects(LambdaMap.empty(),

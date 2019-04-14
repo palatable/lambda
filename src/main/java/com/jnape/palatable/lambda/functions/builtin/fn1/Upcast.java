@@ -22,7 +22,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
  */
 public final class Upcast<A extends B, B> implements Fn1<A, B> {
 
-    private static final Upcast INSTANCE = new Upcast<>();
+    private static final Upcast<?, ?> INSTANCE = new Upcast<>();
 
     private Upcast() {
     }
@@ -34,7 +34,7 @@ public final class Upcast<A extends B, B> implements Fn1<A, B> {
 
     @SuppressWarnings("unchecked")
     public static <A extends B, B> Upcast<A, B> upcast() {
-        return INSTANCE;
+        return (Upcast<A, B>) INSTANCE;
     }
 
     public static <A extends B, B> B upcast(A a) {

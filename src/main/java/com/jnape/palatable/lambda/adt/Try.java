@@ -174,7 +174,8 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
     }
 
     @Override
-    public <B> Lazy<Try<T, B>> lazyZip(Lazy<Applicative<Function<? super A, ? extends B>, Try<T, ?>>> lazyAppFn) {
+    public <B> Lazy<Try<T, B>> lazyZip(
+            Lazy<? extends Applicative<Function<? super A, ? extends B>, Try<T, ?>>> lazyAppFn) {
         return match(f -> lazy(failure(f)),
                      s -> lazyAppFn.fmap(tryF -> tryF.<B>fmap(f -> f.apply(s)).coerce()));
     }
@@ -315,6 +316,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param <B>       the function return type
      * @return a {@link Try} representing the result of the function's application to the resource
      */
+    @SuppressWarnings("try")
     public static <A extends AutoCloseable, B> Try<Exception, B> withResources(
             CheckedSupplier<? extends Exception, A> aSupplier,
             CheckedFn1<? extends Exception, ? super A, ? extends Try<? extends Exception, ? extends B>> fn) {

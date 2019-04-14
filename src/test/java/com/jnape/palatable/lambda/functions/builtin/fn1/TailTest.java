@@ -20,7 +20,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class TailTest {
 
     @TestTraits({Laziness.class, EmptyIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
-    public Fn1<? extends Iterable, ?> createTraitsTestSubject() {
+    public Fn1<? extends Iterable<?>, ?> createTraitsTestSubject() {
         return tail();
     }
 

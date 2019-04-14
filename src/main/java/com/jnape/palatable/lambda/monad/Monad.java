@@ -62,9 +62,11 @@ public interface Monad<A, M extends Monad<?, M>> extends Applicative<A, M> {
 
     /**
      * {@inheritDoc}
+     * @param lazyAppFn
      */
     @Override
-    default <B> Lazy<? extends Monad<B, M>> lazyZip(Lazy<Applicative<Function<? super A, ? extends B>, M>> lazyAppFn) {
+    default <B> Lazy<? extends Monad<B, M>> lazyZip(
+            Lazy<? extends Applicative<Function<? super A, ? extends B>, M>> lazyAppFn) {
         return Applicative.super.lazyZip(lazyAppFn).fmap(Applicative<B, M>::coerce);
     }
 

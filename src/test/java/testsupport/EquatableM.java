@@ -55,4 +55,9 @@ public final class EquatableM<M extends Monad<?, M>, A> implements Monad<A, Equa
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

@@ -73,13 +73,15 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
 
     /**
      * {@inheritDoc}
+     *
+     * @param lazyAppFn
      */
     @Override
     public <B> Lazy<LambdaIterable<B>> lazyZip(
-            Lazy<Applicative<Function<? super A, ? extends B>, LambdaIterable<?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Function<? super A, ? extends B>, LambdaIterable<?>>> lazyAppFn) {
         return Empty.empty(as)
                ? lazy(LambdaIterable.empty())
-               : Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+               : Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, LambdaIterable<?>>::coerce);
     }
 
     /**
@@ -129,7 +131,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
     public boolean equals(Object other) {
         if (other instanceof LambdaIterable) {
             Iterator<A> xs = as.iterator();
-            Iterator ys = ((LambdaIterable) other).as.iterator();
+            Iterator<?> ys = ((LambdaIterable<?>) other).as.iterator();
 
             while (xs.hasNext() && ys.hasNext())
                 if (!Objects.equals(xs.next(), ys.next()))

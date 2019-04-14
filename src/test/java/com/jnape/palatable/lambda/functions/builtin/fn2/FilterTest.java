@@ -25,7 +25,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class FilterTest {
 
     @TestTraits({Laziness.class, EmptyIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
-    public Fn1<? extends Iterable, ?> testSubject() {
+    public Fn1<? extends Iterable<?>, ?> testSubject() {
         return filter(constantly(true));
     }
 

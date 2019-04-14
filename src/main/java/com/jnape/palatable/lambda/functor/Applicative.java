@@ -54,14 +54,14 @@ public interface Applicative<A, App extends Applicative<?, App>> extends Functor
      * using whatever application semantics the current applicative supports. This is useful for applicatives that
      * support lazy evaluation and early termination.
      *
-     * @param lazyAppFn the lazy other applicative instance
      * @param <B>       the resulting applicative parameter type
+     * @param lazyAppFn the lazy other applicative instance
      * @return the mapped applicative
      * @see com.jnape.palatable.lambda.adt.Maybe
      * @see com.jnape.palatable.lambda.adt.Either
      */
     default <B> Lazy<? extends Applicative<B, App>> lazyZip(
-            Lazy<Applicative<Function<? super A, ? extends B>, App>> lazyAppFn) {
+            Lazy<? extends Applicative<Function<? super A, ? extends B>, App>> lazyAppFn) {
         return lazyAppFn.fmap(this::zip);
     }
 

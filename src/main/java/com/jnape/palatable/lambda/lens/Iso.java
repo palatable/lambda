@@ -50,7 +50,7 @@ import static com.jnape.palatable.lambda.lens.functions.View.view;
  * @param <B> the smaller type for mirrored focusing
  */
 @FunctionalInterface
-public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
+public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso<?, ?, ?, ?>> {
 
     <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<B, F>, FT extends Functor<T, F>,
             PAFB extends Profunctor<A, FB, P>,
@@ -110,23 +110,27 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
     }
 
     @Override
-    default <U> Iso<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Iso>> appFn) {
+    default <U> Iso<S, U, A, B> zip(
+            Applicative<Function<? super T, ? extends U>, LensLike<S, ?, A, B, Iso<?, ?, ?, ?>>> appFn) {
         return LensLike.super.zip(appFn).coerce();
     }
 
     @Override
-    default <U> Iso<S, U, A, B> discardL(Applicative<U, LensLike<S, ?, A, B, Iso>> appB) {
+    default <U> Iso<S, U, A, B> discardL(Applicative<U, LensLike<S, ?, A, B, Iso<?, ?, ?, ?>>> appB) {
         return LensLike.super.discardL(appB).coerce();
     }
 
     @Override
-    default <U> Iso<S, T, A, B> discardR(Applicative<U, LensLike<S, ?, A, B, Iso>> appB) {
+    default <U> Iso<S, T, A, B> discardR(Applicative<U, LensLike<S, ?, A, B, Iso<?, ?, ?, ?>>> appB) {
         return LensLike.super.discardR(appB).coerce();
     }
 
     @Override
-    default <U> Iso<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, Iso>>> fn) {
-        return unIso().fmap(bt -> Fn2.<B, B, U>fn2(fn1(bt.andThen(fn.<Iso<S, U, A, B>>andThen(Applicative::coerce))
+    @SuppressWarnings("RedundantTypeArguments")
+    default <U> Iso<S, U, A, B> flatMap(
+            Function<? super T, ? extends Monad<U, LensLike<S, ?, A, B, Iso<?, ?, ?, ?>>>> fn) {
+        return unIso().fmap(bt -> Fn2.<B, B, U>fn2(fn1(bt.andThen(
+                fn.<Iso<S, U, A, B>>andThen(Monad<U, LensLike<S, ?, A, B, Iso<?, ?, ?, ?>>>::coerce))
                                                                .andThen(Iso::unIso)
                                                                .andThen(Tuple2::_2)
                                                                .andThen(Fn1::fn1))))
@@ -255,7 +259,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
      * @param <A> the type of both "smaller" values
      */
     @FunctionalInterface
-    interface Simple<S, A> extends Iso<S, S, A, A>, LensLike.Simple<S, A, Iso> {
+    interface Simple<S, A> extends Iso<S, S, A, A>, LensLike.Simple<S, A, Iso<?, ?, ?, ?>> {
 
         /**
          * Compose two simple isos from right to left.
@@ -264,6 +268,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
          * @param <R> the other simple iso' larger type
          * @return the composed simple iso
          */
+        @SuppressWarnings("overloads")
         default <R> Iso.Simple<R, A> compose(Iso.Simple<R, S> g) {
             return Iso.Simple.adapt(Iso.super.compose(g));
         }
@@ -275,6 +280,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
          * @param <B> the other simple iso' smaller type
          * @return the composed simple iso
          */
+        @SuppressWarnings("overloads")
         default <B> Iso.Simple<S, B> andThen(Iso.Simple<A, B> f) {
             return adapt(f.compose(this));
         }
@@ -290,7 +296,7 @@ public interface Iso<S, T, A, B> extends LensLike<S, T, A, B, Iso> {
         }
 
         @Override
-        default <U> Iso.Simple<S, A> discardR(Applicative<U, LensLike<S, ?, A, A, Iso>> appB) {
+        default <U> Iso.Simple<S, A> discardR(Applicative<U, LensLike<S, ?, A, A, Iso<?, ?, ?, ?>>> appB) {
             return adapt(Iso.super.discardR(appB));
         }
 

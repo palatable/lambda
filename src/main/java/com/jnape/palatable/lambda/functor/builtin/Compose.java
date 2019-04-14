@@ -22,8 +22,9 @@ public final class Compose<F extends Applicative<?, F>, G extends Applicative<?,
         this.fga = fga;
     }
 
+    @SuppressWarnings("RedundantTypeArguments")
     public <GA extends Applicative<A, G>, FGA extends Applicative<GA, F>> FGA getCompose() {
-        return fga.<GA>fmap(Applicative::coerce).coerce();
+        return fga.<GA>fmap(Applicative<A, G>::coerce).coerce();
     }
 
     /**
@@ -47,16 +48,19 @@ public final class Compose<F extends Applicative<?, F>, G extends Applicative<?,
      */
     @Override
     public <B> Compose<F, G, B> zip(Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>> appFn) {
-        return new Compose<>(fga.zip(appFn.<Compose<F, G, Function<? super A, ? extends B>>>coerce().getCompose().fmap(gFn -> g -> g.zip(gFn))));
+        return new Compose<>(fga.zip(appFn.<Compose<F, G, Function<? super A, ? extends B>>>coerce()
+                                             .getCompose().fmap(gFn -> g -> g.zip(gFn))));
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @param lazyAppFn
      */
     @Override
     public <B> Lazy<Compose<F, G, B>> lazyZip(
-            Lazy<Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>>> lazyAppFn) {
-        return Applicative.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+            Lazy<? extends Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>>> lazyAppFn) {
+        return Applicative.super.lazyZip(lazyAppFn).fmap(Applicative<B, Compose<F, G, ?>>::coerce);
     }
 
     /**

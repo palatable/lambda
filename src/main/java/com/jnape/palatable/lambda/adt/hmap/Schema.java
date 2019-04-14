@@ -12,7 +12,10 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple6;
 import com.jnape.palatable.lambda.adt.hlist.Tuple7;
 import com.jnape.palatable.lambda.adt.hlist.Tuple8;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
+import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.lens.Lens;
+
+import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.lens.lenses.HMapLens.valueAt;
@@ -27,21 +30,34 @@ import static com.jnape.palatable.lambda.lens.lenses.HMapLens.valueAt;
  */
 public interface Schema<Values extends HCons<?, ?>> extends Lens.Simple<HMap, Maybe<Values>> {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "RedundantTypeArguments"})
     default <A, NewValues extends HCons<A, Values>> Schema<NewValues> add(TypeSafeKey<?, A> key) {
-        return Lens.both(this, valueAt(key))
-                .<Maybe<NewValues>>mapA(into((maybeValues, maybeA) -> maybeValues.zip(maybeA.fmap(a -> values -> (NewValues) values.cons(a)))))
-                .<Maybe<NewValues>>mapB(Both.both(maybeNewValues -> maybeNewValues.fmap(HCons::tail),
-                                                  maybeNewValues -> maybeNewValues.fmap(HCons::head)))
-                ::apply;
+        Lens<HMap, HMap, Maybe<NewValues>, Maybe<NewValues>> lens = Lens.both(this, valueAt(key))
+                .<Maybe<NewValues>>mapA(into((maybeValues, maybeA) -> maybeValues
+                        .zip(maybeA.fmap(a -> values -> (NewValues) values.cons(a)))))
+                .<Maybe<NewValues>>mapB(Both.both(maybeNewValues -> maybeNewValues.fmap(HCons<A, Values>::tail),
+                                                  maybeNewValues -> maybeNewValues.fmap(HCons<A, Values>::head)));
+        return new Schema<NewValues>() {
+            @Override
+            public <F extends Functor<?, F>, FT extends Functor<HMap, F>, FB extends Functor<Maybe<NewValues>, F>>
+            FT apply(Function<? super Maybe<NewValues>, ? extends FB> fn, HMap hmap) {
+                return lens.apply(fn, hmap);
+            }
+        };
     }
 
-    @SuppressWarnings("unchecked")
     static <A> Schema<SingletonHList<A>> schema(TypeSafeKey<?, A> key) {
-        return valueAt(key)
+        Lens<HMap, HMap, Maybe<SingletonHList<A>>, Maybe<SingletonHList<A>>> lens = valueAt(key)
                 .mapA(ma -> ma.fmap(HList::singletonHList))
-                .<Maybe<SingletonHList<A>>>mapB(maybeSingletonA -> maybeSingletonA.fmap(HCons::head))
-                ::apply;
+                .mapB(maybeSingletonA -> maybeSingletonA.fmap(HCons::head));
+        return new Schema<SingletonHList<A>>() {
+            @Override
+            public <F extends Functor<?, F>, FT extends Functor<HMap, F>,
+                    FB extends Functor<Maybe<SingletonHList<A>>, F>> FT apply(
+                    Function<? super Maybe<SingletonHList<A>>, ? extends FB> fn, HMap hmap) {
+                return lens.apply(fn, hmap);
+            }
+        };
     }
 
     static <A, B> Schema<Tuple2<A, B>> schema(TypeSafeKey<?, A> aKey,

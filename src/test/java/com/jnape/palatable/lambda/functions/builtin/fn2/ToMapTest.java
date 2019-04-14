@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class ToMapTest {
 
     @Test
+    @SuppressWarnings("serial")
     public void collectsEntriesIntoMap() {
         Map<String, Integer> expected = new HashMap<String, Integer>() {{
             put("foo", 1);

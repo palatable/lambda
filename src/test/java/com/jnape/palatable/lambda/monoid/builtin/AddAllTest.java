@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class AddAllTest {
 
     @Test
+    @SuppressWarnings("serial")
     public void monoid() {
         Monoid<Set<Integer>> addAll = addAll(HashSet::new);
 

@@ -27,13 +27,13 @@ import static java.util.Collections.emptyMap;
  * @see TypeSafeKey
  * @see com.jnape.palatable.lambda.adt.hlist.HList
  */
-public final class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
+public final class HMap implements Iterable<Tuple2<TypeSafeKey<?, ?>, Object>> {
 
     private static final HMap EMPTY = new HMap(emptyMap());
 
-    private final Map<TypeSafeKey, Object> table;
+    private final Map<TypeSafeKey<?, ?>, Object> table;
 
-    private HMap(Map<TypeSafeKey, Object> table) {
+    private HMap(Map<TypeSafeKey<?, ?>, Object> table) {
         this.table = table;
     }
 
@@ -90,7 +90,7 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * @param key the key
      * @return true if the key is mapped; false otherwise
      */
-    public boolean containsKey(TypeSafeKey key) {
+    public boolean containsKey(TypeSafeKey<?, ?> key) {
         return table.containsKey(key);
     }
 
@@ -100,7 +100,7 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      * @param key the key
      * @return the updated HMap
      */
-    public HMap remove(TypeSafeKey key) {
+    public HMap remove(TypeSafeKey<?, ?> key) {
         return alter(t -> t.remove(key));
     }
 
@@ -122,7 +122,7 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      *
      * @return a {@link Set} of all the mapped keys
      */
-    public Set<TypeSafeKey> keys() {
+    public Set<TypeSafeKey<?, ?>> keys() {
         return new HashSet<>(table.keySet());
     }
 
@@ -141,12 +141,12 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
      *
      * @return the map view
      */
-    public Map<TypeSafeKey, Object> toMap() {
+    public Map<TypeSafeKey<?, ?>, Object> toMap() {
         return new HashMap<>(table);
     }
 
     @Override
-    public Iterator<Tuple2<TypeSafeKey, Object>> iterator() {
+    public Iterator<Tuple2<TypeSafeKey<?, ?>, Object>> iterator() {
         return map(Tuple2::fromEntry, table.entrySet()).iterator();
     }
 
@@ -171,8 +171,8 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey, Object>> {
                 '}';
     }
 
-    private HMap alter(Consumer<Map<TypeSafeKey, Object>> alterFn) {
-        HashMap<TypeSafeKey, Object> copy = new HashMap<>(table);
+    private HMap alter(Consumer<Map<TypeSafeKey<?, ?>, Object>> alterFn) {
+        HashMap<TypeSafeKey<?, ?>, Object> copy = new HashMap<>(table);
         alterFn.accept(copy);
         return new HMap(copy);
     }

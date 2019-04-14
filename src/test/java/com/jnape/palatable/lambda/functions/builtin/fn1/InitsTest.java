@@ -22,7 +22,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class InitsTest {
 
     @TestTraits({Laziness.class, EmptyIterableSupport.class, InfiniteIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
-    public Fn1<? extends Iterable, ? extends Iterable> testSubject() {
+    public Fn1<? extends Iterable<?>, ? extends Iterable<?>> testSubject() {
         return inits();
     }
 

@@ -12,7 +12,7 @@ import testsupport.traits.TraversableLaws;
 public class IdentityTest {
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
-    public Identity testSubject() {
+    public Identity<?> testSubject() {
         return new Identity<>("");
     }
 }

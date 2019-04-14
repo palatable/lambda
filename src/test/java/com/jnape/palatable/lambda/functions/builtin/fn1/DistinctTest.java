@@ -19,7 +19,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class DistinctTest {
 
     @TestTraits({Laziness.class, InfiniteIterableSupport.class, EmptyIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
-    public Distinct testSubject() {
+    public Distinct<?> testSubject() {
         return distinct();
     }
 

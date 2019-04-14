@@ -63,10 +63,13 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
 
     /**
      * {@inheritDoc}
+     *
+     * @param lazyAppFn
      */
     @Override
-    public <B> Lazy<Identity<B>> lazyZip(Lazy<Applicative<Function<? super A, ? extends B>, Identity<?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+    public <B> Lazy<Identity<B>> lazyZip(
+            Lazy<? extends Applicative<Function<? super A, ? extends B>, Identity<?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, Identity<?>>::coerce);
     }
 
     /**

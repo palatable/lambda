@@ -29,6 +29,7 @@ import static org.junit.Assert.assertThat;
 import static testsupport.assertion.LensAssert.assertLensLawfulness;
 import static testsupport.matchers.IterableMatcher.iterates;
 
+@SuppressWarnings("serial")
 public class MapLensTest {
 
     @Test

@@ -25,7 +25,7 @@ public class SingletonHListTest {
     }
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
-    public SingletonHList testSubject() {
+    public SingletonHList<?> testSubject() {
         return singletonHList("one");
     }
 

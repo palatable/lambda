@@ -27,7 +27,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class TailsTest {
 
     @TestTraits({EmptyIterableSupport.class, InfiniteIterableSupport.class, FiniteIteration.class, ImmutableIteration.class, Laziness.class})
-    public Fn1<? extends Iterable, ? extends Iterable> testSubject() {
+    public Fn1<? extends Iterable<?>, ? extends Iterable<?>> testSubject() {
         return tails();
     }
 

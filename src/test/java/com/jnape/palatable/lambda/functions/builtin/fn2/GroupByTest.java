@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("serial")
 public class GroupByTest {
 
     @Test
@@ -25,6 +27,6 @@ public class GroupByTest {
 
     @Test
     public void emptyIterableProducesEmptyMap() {
-        assertEquals(emptyMap(), groupBy(id(), emptyList()));
+        assertEquals(Collections.<Object, List<Object>>emptyMap(), groupBy(id(), emptyList()));
     }
 }

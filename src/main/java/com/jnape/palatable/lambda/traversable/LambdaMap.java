@@ -53,7 +53,7 @@ public final class LambdaMap<A, B> implements Functor<B, LambdaMap<A, ?>>, Trave
         return foldLeft(Fn2.<AppTrav, Map.Entry<A, AppC>, AppTrav>fn2(
                 appTrav -> into((k, appV) -> (AppTrav) appTrav.<TravC>zip(appV.fmap(v -> m -> {
                     ((LambdaMap<A, C>) m).unwrap().put(k, v);
-                    return (TravC) m;
+                    return m;
                 })))).toBiFunction(),
                         pure.apply((TravC) LambdaMap.<A, C>wrap(new HashMap<>())),
                         this.<AppC>fmap(fn).unwrap().entrySet());

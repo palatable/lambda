@@ -256,10 +256,11 @@ public abstract class Either<L, R> implements
 
     /**
      * {@inheritDoc}
+     * @param lazyAppFn
      */
     @Override
     public <R2> Lazy<Either<L, R2>> lazyZip(
-            Lazy<Applicative<Function<? super R, ? extends R2>, Either<L, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Function<? super R, ? extends R2>, Either<L, ?>>> lazyAppFn) {
         return match(l -> lazy(left(l)),
                      r -> lazyAppFn.fmap(eitherLF -> eitherLF.<R2>fmap(f -> f.apply(r)).coerce()));
     }

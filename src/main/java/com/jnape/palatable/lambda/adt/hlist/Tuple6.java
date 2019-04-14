@@ -169,8 +169,8 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
 
     @Override
     public <_6Prime> Lazy<Tuple6<_1, _2, _3, _4, _5, _6Prime>> lazyZip(
-            Lazy<Applicative<Function<? super _6, ? extends _6Prime>, Tuple6<_1, _2, _3, _4, _5, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+            Lazy<? extends Applicative<Function<? super _6, ? extends _6Prime>, Tuple6<_1, _2, _3, _4, _5, ?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>::coerce);
     }
 
     @Override

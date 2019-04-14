@@ -63,9 +63,10 @@ public final class CollectionLens {
      * @param <CX>   the type of the collection
      * @return a lens that focuses on a Collection as a stream.
      */
+    @SuppressWarnings("RedundantTypeArguments")
     public static <X, CX extends Collection<X>> Lens.Simple<CX, Stream<X>> asStream(
             Function<? super CX, ? extends CX> copyFn) {
-        return simpleLens(Collection::stream, (xsL, xsS) -> {
+        return simpleLens(Collection<X>::stream, (xsL, xsS) -> {
             CX updated = copyFn.apply(xsL);
             updated.clear();
             xsS.forEach(updated::add);

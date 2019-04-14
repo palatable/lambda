@@ -17,7 +17,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class CycleTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, InfiniteIteration.class})
-    public Cycle createTestSubject() {
+    public Cycle<?> createTestSubject() {
         return cycle();
     }
 

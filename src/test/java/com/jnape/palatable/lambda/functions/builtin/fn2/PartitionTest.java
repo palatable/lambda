@@ -29,7 +29,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class PartitionTest {
 
     @TestTraits({Laziness.class, EmptyIterableSupport.class, FiniteIteration.class, ImmutableIteration.class})
-    public Subjects<Fn1<? extends Iterable, ?>> createTraitsTestSubject() {
+    public Subjects<Fn1<? extends Iterable<?>, ?>> createTraitsTestSubject() {
         return subjects(partition(constantly(a(1))).andThen(Tuple2::_1),
                         partition(constantly(b(1))).andThen(Tuple2::_2));
     }

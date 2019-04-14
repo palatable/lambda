@@ -9,10 +9,10 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.fail;
 
-public class InfiniteIterableSupport implements Trait<Fn1<Iterable, Iterable>> {
+public class InfiniteIterableSupport implements Trait<Fn1<Iterable<?>, Iterable<?>>> {
 
     @Override
-    public void test(Fn1<Iterable, Iterable> testSubject) {
+    public void test(Fn1<Iterable<?>, Iterable<?>> testSubject) {
         CountDownLatch latch = new CountDownLatch(1);
         new Thread(() -> {
             testSubject.apply(repeat(0)).iterator().next();

@@ -156,11 +156,12 @@ public class HMapTest {
     }
 
     @Test
+    @SuppressWarnings("serial")
     public void toMap() {
         TypeSafeKey<String, String> stringKey = typeSafeKey();
         TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
 
-        assertEquals(new HashMap<TypeSafeKey, Object>() {{
+        assertEquals(new HashMap<TypeSafeKey<?, ?>, Object>() {{
             put(stringKey, "string");
             put(intKey, 1);
         }}, hMap(stringKey, "string",
@@ -263,7 +264,6 @@ public class HMapTest {
     }
 
     @Test
-    @SuppressWarnings("EqualsWithItself")
     public void equality() {
         assertEquals(emptyHMap(), emptyHMap());
 

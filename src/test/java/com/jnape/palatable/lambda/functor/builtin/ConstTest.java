@@ -13,7 +13,7 @@ import testsupport.traits.TraversableLaws;
 public class ConstTest {
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
-    public Const testSubject() {
+    public Const<?, ?> testSubject() {
         return new Const<>(1);
     }
 }

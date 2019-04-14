@@ -32,7 +32,7 @@ public class Tuple5Test {
     }
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
-    public Tuple5 testSubject() {
+    public Tuple5<?, ?, ?, ?, ?> testSubject() {
         return tuple("one", 2, 3d, 4f, '5');
     }
 

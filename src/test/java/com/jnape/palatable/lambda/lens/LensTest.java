@@ -41,7 +41,7 @@ public class LensTest {
             LENS         = lens(xs -> xs.get(0), (xs, i) -> singleton(i));
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<LensLike<Map<String, Integer>, ?, Integer, String, Lens>, ?> testSubject() {
+    public EquatableM<LensLike<Map<String, Integer>, ?, Integer, String, Lens<?, ?, ?, ?>>, ?> testSubject() {
         return new EquatableM<>(lens(m -> m.get("foo"), (m, s) -> singletonList(m.get(s))), l -> view(l, emptyMap()));
     }
 

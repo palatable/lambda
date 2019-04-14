@@ -141,12 +141,13 @@ public abstract class Maybe<A> implements
     /**
      * Terminate early if this is a {@link Nothing}; otherwise, continue the {@link Applicative#zip zip}.
      *
-     * @param lazyAppFn the lazy other applicative instance
      * @param <B>       the result type
+     * @param lazyAppFn the lazy other applicative instance
      * @return the zipped {@link Maybe}
      */
     @Override
-    public <B> Lazy<Maybe<B>> lazyZip(Lazy<Applicative<Function<? super A, ? extends B>, Maybe<?>>> lazyAppFn) {
+    public <B> Lazy<Maybe<B>> lazyZip(
+            Lazy<? extends Applicative<Function<? super A, ? extends B>, Maybe<?>>> lazyAppFn) {
         return match(constantly(lazy(nothing())),
                      a -> lazyAppFn.fmap(maybeF -> maybeF.<B>fmap(f -> f.apply(a)).coerce()));
     }

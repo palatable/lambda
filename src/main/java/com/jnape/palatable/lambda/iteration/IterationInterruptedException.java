@@ -9,6 +9,7 @@ import java.util.Iterator;
  *
  * @see RateLimit
  */
+@SuppressWarnings("serial")
 public final class IterationInterruptedException extends RuntimeException {
 
     public IterationInterruptedException(InterruptedException cause) {

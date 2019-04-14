@@ -66,10 +66,13 @@ public final class Const<A, B> implements
 
     /**
      * {@inheritDoc}
+     *
+     * @param lazyAppFn
      */
     @Override
-    public <C> Lazy<Const<A, C>> lazyZip(Lazy<Applicative<Function<? super B, ? extends C>, Const<A, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative::coerce);
+    public <C> Lazy<Const<A, C>> lazyZip(
+            Lazy<? extends Applicative<Function<? super B, ? extends C>, Const<A, ?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, Const<A, ?>>::coerce);
     }
 
     /**

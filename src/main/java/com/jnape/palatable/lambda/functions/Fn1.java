@@ -97,9 +97,11 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1<?, ?>>,
 
     /**
      * {@inheritDoc}
+     * @param lazyAppFn
      */
     @Override
-    default <C> Lazy<Fn1<A, C>> lazyZip(Lazy<Applicative<Function<? super B, ? extends C>, Fn1<A, ?>>> lazyAppFn) {
+    default <C> Lazy<Fn1<A, C>> lazyZip(
+            Lazy<? extends Applicative<Function<? super B, ? extends C>, Fn1<A, ?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, Fn1<A, ?>>::coerce);
     }
 

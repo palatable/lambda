@@ -24,7 +24,7 @@ import java.util.Objects;
 public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
 
     @Override
-    default <U> TypeSafeKey<A, B> discardR(Applicative<U, LensLike<A, ?, B, B, Iso>> appB) {
+    default <U> TypeSafeKey<A, B> discardR(Applicative<U, LensLike<A, ?, B, B, Iso<?, ?, ?, ?>>> appB) {
         Iso.Simple<A, B> discarded = Iso.Simple.super.discardR(appB);
         return new TypeSafeKey<A, B>() {
             @Override
@@ -94,6 +94,11 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
             @Override
             public boolean equals(Object obj) {
                 return obj instanceof Simple ? this == obj : Objects.equals(obj, this);
+            }
+
+            @Override
+            public int hashCode() {
+                return super.hashCode();
             }
         };
     }

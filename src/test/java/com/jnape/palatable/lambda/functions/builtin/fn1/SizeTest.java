@@ -21,6 +21,7 @@ public class SizeTest {
     }
 
     @Test
+    @SuppressWarnings("serial")
     public void optimizesForCollections() {
         Collection<Integer> collection = spy(new ArrayList<Integer>() {{
             add(1);

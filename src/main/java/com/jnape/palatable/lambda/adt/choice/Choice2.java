@@ -114,10 +114,11 @@ public abstract class Choice2<A, B> implements
 
     /**
      * {@inheritDoc}
+     * @param lazyAppFn
      */
     @Override
     public <C> Lazy<? extends Monad<C, Choice2<A, ?>>> lazyZip(
-            Lazy<Applicative<Function<? super B, ? extends C>, Choice2<A, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Function<? super B, ? extends C>, Choice2<A, ?>>> lazyAppFn) {
         return match(a -> lazy(a(a)),
                      b -> lazyAppFn.fmap(choiceF -> choiceF.<C>fmap(f -> f.apply(b)).coerce()));
     }

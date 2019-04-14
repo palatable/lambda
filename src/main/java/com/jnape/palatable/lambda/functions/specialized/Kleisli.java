@@ -25,6 +25,7 @@ public interface Kleisli<A, B, M extends Monad<?, M>, MB extends Monad<B, M>> ex
      * @param <MC>  the {@link Monad} instance to return
      * @return the composition of the two arrows as a new {@link Kleisli} arrow
      */
+    @SuppressWarnings("overloads")
     default <C, MC extends Monad<C, M>> Kleisli<A, C, M, MC> andThen(Kleisli<B, C, M, MC> after) {
         return a -> apply(a).flatMap(after).coerce();
     }
@@ -37,6 +38,7 @@ public interface Kleisli<A, B, M extends Monad<?, M>, MB extends Monad<B, M>> ex
      * @param <MA>   the {@link Monad} instance to flatMap with this arrow
      * @return the composition of the two arrows as a new {@link Kleisli} arrow
      */
+    @SuppressWarnings("overloads")
     default <Z, MA extends Monad<A, M>> Kleisli<Z, B, M, MB> compose(Kleisli<Z, A, M, MA> before) {
         return z -> before.apply(z).flatMap(this).coerce();
     }

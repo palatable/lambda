@@ -24,7 +24,7 @@ import static testsupport.matchers.IterableMatcher.iterates;
 public class ReverseTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, FiniteIteration.class, EmptyIterableSupport.class})
-    public Reverse createTestSubject() {
+    public Reverse<?> createTestSubject() {
         return reverse();
     }
 
