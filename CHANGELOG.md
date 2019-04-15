@@ -17,6 +17,8 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - `Lazy`, a monad supporting stack-safe lazy evaluation
 - `LazyRec`, a function for writing stack-safe recursive algorithms embedded in `Lazy`
 - `Applicative#lazyZip`, for zipping two applicatives in a way that might not require evaluation of one applicative
+- `MonadT`, a general interface representing monad transformers
+- `MaybeT`, a monad transformer for `Maybe`
 
 ## [3.3.0] - 2019-02-18
 ### Added

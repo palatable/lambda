@@ -62,7 +62,6 @@ public interface Monad<A, M extends Monad<?, M>> extends Applicative<A, M> {
 
     /**
      * {@inheritDoc}
-     * @param lazyAppFn
      */
     @Override
     default <B> Lazy<? extends Monad<B, M>> lazyZip(
