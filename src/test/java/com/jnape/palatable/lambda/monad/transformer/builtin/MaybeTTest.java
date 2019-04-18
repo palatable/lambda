@@ -1,6 +1,7 @@
-package com.jnape.palatable.lambda.monad.transformer;
+package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -15,7 +16,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
-import static com.jnape.palatable.lambda.monad.transformer.MaybeT.maybeT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT.maybeT;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 

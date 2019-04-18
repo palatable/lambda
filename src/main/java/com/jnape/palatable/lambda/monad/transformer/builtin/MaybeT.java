@@ -1,10 +1,11 @@
-package com.jnape.palatable.lambda.monad.transformer;
+package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
 import java.util.Objects;
 import java.util.function.Function;
