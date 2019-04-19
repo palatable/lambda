@@ -23,6 +23,7 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - `IdentityT`, a monad transformer for `Identity`
 - `Endo`, a monoid formed by `Fn1` under composition
 - `State`, the state `Monad`
+- `Downcast`, a function supporting unchecked down-casting
 
 ## [3.3.0] - 2019-02-18
 ### Added
