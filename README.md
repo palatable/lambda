@@ -1,7 +1,7 @@
 λ
 ======
 [![Build Status](https://img.shields.io/travis/palatable/lambda/master.svg)](https://travis-ci.org/palatable/lambda)
-[![Lambda](https://img.shields.io/maven-central/v/com.jnape.palatable/lambda.svg)](http://search.maven.org/#search%7Cga%7C1%7Ccom.jnape.palatable.lambda)
+[![Lambda](https://img.shields.io/maven-central/v/com.jnape.palatable/lambda.svg)](http://search.maven.org/#search%7Cga%7C1%7Ccom.jnape.palatable.lambda) [![Join the chat at https://gitter.im/palatable-lambda/community](https://badges.gitter.im/palatable-lambda/community.svg)](https://gitter.im/palatable-lambda/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Functional patterns for Java
 
