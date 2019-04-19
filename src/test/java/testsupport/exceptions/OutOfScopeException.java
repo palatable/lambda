@@ -1,5 +1,6 @@
 package testsupport.exceptions;
 
+@SuppressWarnings("serial")
 public class OutOfScopeException extends RuntimeException {
 
     public OutOfScopeException(String s) {

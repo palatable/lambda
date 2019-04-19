@@ -37,16 +37,16 @@ public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
             super.describeMismatch(item, description);
     }
 
-    private boolean iterablesIterateSameElementsInOrder(Iterable expected, Iterable actual) {
-        Iterator actualIterator = actual.iterator();
-        Iterator expectedIterator = expected.iterator();
+    private boolean iterablesIterateSameElementsInOrder(Iterable<?> expected, Iterable<?> actual) {
+        Iterator<?> actualIterator = actual.iterator();
+        Iterator<?> expectedIterator = expected.iterator();
 
         while (expectedIterator.hasNext() && actualIterator.hasNext()) {
             Object nextExpected = expectedIterator.next();
             Object nextActual = actualIterator.next();
 
             if (nextExpected instanceof Iterable && nextActual instanceof Iterable) {
-                if (!iterablesIterateSameElementsInOrder((Iterable) nextExpected, (Iterable) nextActual))
+                if (!iterablesIterateSameElementsInOrder((Iterable<?>) nextExpected, (Iterable<?>) nextActual))
                     return false;
             } else if (!reflectionEquals(nextExpected, nextActual))
                 return false;
@@ -55,9 +55,9 @@ public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
         return actualIterator.hasNext() == expectedIterator.hasNext();
     }
 
-    private String stringify(Iterable iterable) {
+    private String stringify(Iterable<?> iterable) {
         StringBuilder stringBuilder = new StringBuilder().append("[");
-        Iterator iterator = iterable.iterator();
+        Iterator<?> iterator = iterable.iterator();
         while (iterator.hasNext()) {
             Object next = iterator.next();
             if (next instanceof Iterable)
@@ -71,6 +71,7 @@ public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
     }
 
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <E> IterableMatcher<E> iterates(E... es) {
         return new IterableMatcher<>(asList(es));
     }

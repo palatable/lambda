@@ -22,7 +22,7 @@ public class ReversingIteratorTest {
 
     @Mock private Iterator<Object> iterator;
 
-    private ReversingIterator reversingIterator;
+    private ReversingIterator<?> reversingIterator;
 
     @Before
     public void setUp() {
@@ -47,6 +47,7 @@ public class ReversingIteratorTest {
     }
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void doesNotReverseUntilNextIsCalled() {
         reversingIterator.hasNext();
         verify(iterator, never()).next();
@@ -63,6 +64,7 @@ public class ReversingIteratorTest {
     }
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void neverInteractsWithIteratorAgainAfterInitialReverse() {
         mockIteratorToHaveValues(iterator, 1, 2, 3);
 

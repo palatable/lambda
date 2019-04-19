@@ -18,8 +18,9 @@ public class Mocking {
     }
 
     @SafeVarargs
-    public static <T> void mockIteratorToHaveValues(Iterator iterator, T... values) {
-        Iterator real = asList(values).iterator();
+    @SuppressWarnings("varargs")
+    public static <T> void mockIteratorToHaveValues(Iterator<?> iterator, T... values) {
+        Iterator<?> real = asList(values).iterator();
 
         when(iterator.hasNext()).then(delegateTo(real));
         when(iterator.next()).then(delegateTo(real));

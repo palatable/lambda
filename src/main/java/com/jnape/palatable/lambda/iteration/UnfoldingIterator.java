@@ -27,7 +27,6 @@ public final class UnfoldingIterator<A, B> extends ImmutableIterator<A> {
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
     public A next() {
         if (!hasNext())
             throw new NoSuchElementException();

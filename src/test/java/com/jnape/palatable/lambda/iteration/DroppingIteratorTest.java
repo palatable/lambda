@@ -17,7 +17,7 @@ public class DroppingIteratorTest {
 
     @Mock private Iterator<Object> iterator;
 
-    private DroppingIterator droppingIterator;
+    private DroppingIterator<?> droppingIterator;
 
     @Before
     public void setUp() {

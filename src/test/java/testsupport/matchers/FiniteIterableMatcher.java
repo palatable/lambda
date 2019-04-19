@@ -3,7 +3,7 @@ package testsupport.matchers;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
-public class FiniteIterableMatcher extends BaseMatcher<Iterable> {
+public class FiniteIterableMatcher extends BaseMatcher<Iterable<?>> {
 
     @Override
     public boolean matches(Object item) {
@@ -21,7 +21,7 @@ public class FiniteIterableMatcher extends BaseMatcher<Iterable> {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    private boolean supportsLessThanInfiniteIterations(Iterable iterable) {
+    private boolean supportsLessThanInfiniteIterations(Iterable<?> iterable) {
         long sufficientlyInfinite = 1000000;
         long elementsIterated = 0;
         for (Object ignored : iterable)

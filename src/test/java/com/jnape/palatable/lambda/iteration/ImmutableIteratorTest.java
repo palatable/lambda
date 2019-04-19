@@ -7,11 +7,11 @@ import static testsupport.exceptions.OutOfScopeException.outOfScope;
 
 public class ImmutableIteratorTest {
 
-    private ImmutableIterator immutableIterator;
+    private ImmutableIterator<?> immutableIterator;
 
     @Before
     public void setUp() {
-        immutableIterator = new ImmutableIterator() {
+        immutableIterator = new ImmutableIterator<Object>() {
             @Override
             public boolean hasNext() {
                 throw outOfScope();

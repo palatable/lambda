@@ -18,7 +18,7 @@ public class RewindableIteratorTest {
 
     @Mock private Iterator<Object> iterator;
 
-    private RewindableIterator rewindableIterator;
+    private RewindableIterator<?> rewindableIterator;
 
     @Before
     public void setUp() {

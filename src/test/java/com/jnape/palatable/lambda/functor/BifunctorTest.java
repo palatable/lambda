@@ -14,7 +14,7 @@ public class BifunctorTest {
 
     @Test
     public void biMapLUsesIdentityForRightBiMapFunction() {
-        AtomicReference<Function> rightInvocation = new AtomicReference<>();
+        AtomicReference<Function<?, ?>> rightInvocation = new AtomicReference<>();
         Bifunctor<String, Integer, InvocationRecordingBifunctor<?, ?>> bifunctor =
                 new InvocationRecordingBifunctor<>(new AtomicReference<>(), rightInvocation);
         bifunctor.biMapL(String::toUpperCase);
@@ -23,7 +23,7 @@ public class BifunctorTest {
 
     @Test
     public void biMapRUsesIdentityForLeftBiMapFunction() {
-        AtomicReference<Function> leftInvocation = new AtomicReference<>();
+        AtomicReference<Function<?, ?>> leftInvocation = new AtomicReference<>();
         Bifunctor<String, Integer, InvocationRecordingBifunctor<?, ?>> bifunctor =
                 new InvocationRecordingBifunctor<>(leftInvocation, new AtomicReference<>());
         bifunctor.biMapR(String::valueOf);

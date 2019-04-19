@@ -9,11 +9,11 @@ import static testsupport.exceptions.OutOfScopeException.outOfScope;
 
 public class InfiniteIteratorTest {
 
-    private InfiniteIterator infiniteIterator;
+    private InfiniteIterator<?> infiniteIterator;
 
     @Before
     public void setUp() {
-        infiniteIterator = new InfiniteIterator() {
+        infiniteIterator = new InfiniteIterator<Object>() {
             @Override
             public Object next() {
                 throw outOfScope();
