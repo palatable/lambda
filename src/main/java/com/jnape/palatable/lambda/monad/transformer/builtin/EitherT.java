@@ -115,6 +115,16 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements MonadT<M, Eit
         return "EitherT{melr=" + melr + '}';
     }
 
+    /**
+     * Static factory method for lifting a <code>{@link Monad}&lt;{@link Either}&lt;L, R&gt;, M&gt;</code> into an
+     * {@link EitherT}.
+     *
+     * @param melr the {@link Monad}&lt;{@link Either}&lt;L, R&gt;, M&gt;
+     * @param <M>  the outer {@link Monad} unification parameter
+     * @param <L>  the left type
+     * @param <R>  the right type
+     * @return the {@link EitherT}
+     */
     public static <M extends Monad<?, M>, L, R> EitherT<M, L, R> eitherT(Monad<Either<L, R>, M> melr) {
         return new EitherT<>(melr);
     }

@@ -116,10 +116,10 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
     }
 
     /**
-     * Static factory method for lifting a <code>{@link Monad}&lt;{@link Maybe}&lt;A&gt;&gt;</code> into a
+     * Static factory method for lifting a <code>{@link Monad}&lt;{@link Maybe}&lt;A&gt;, M&gt;</code> into a
      * {@link MaybeT}.
      *
-     * @param mma the {@link Monad}&lt;{@link Maybe}&lt;A&gt;&gt;
+     * @param mma the {@link Monad}&lt;{@link Maybe}&lt;A&gt;, M&gt;
      * @param <M> the outer {@link Monad} unification parameter
      * @param <A> the carrier type
      * @return the {@link MaybeT}

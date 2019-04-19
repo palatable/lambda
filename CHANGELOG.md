@@ -20,6 +20,7 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - `MonadT`, a general interface representing monad transformers
 - `MaybeT`, a monad transformer for `Maybe`
 - `EitherT`, a monad transformer for `Either`
+- `IdentityT`, a monad transformer for `Identity`
 - `Endo`, a monoid formed by `Fn1` under composition
 - `State`, the state `Monad`
 
