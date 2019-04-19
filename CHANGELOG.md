@@ -21,6 +21,7 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - `MaybeT`, a monad transformer for `Maybe`
 - `EitherT`, a monad transformer for `Either`
 - `Endo`, a monoid formed by `Fn1` under composition
+- `State`, the state `Monad`
 
 ## [3.3.0] - 2019-02-18
 ### Added
