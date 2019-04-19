@@ -4,6 +4,8 @@ import com.jnape.palatable.lambda.functions.Fn1;
 
 import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Downcast.downcast;
+
 /**
  * An interface for the generic covariant functorial operation <code>map</code> over some parameter <code>A</code>.
  * Functors are foundational to many of the classes provided by this library; generally, anything that can be thought of
@@ -31,4 +33,14 @@ public interface Functor<A, F extends Functor<?, F>> {
      * @return a functor over B (the new parameter type)
      */
     <B> Functor<B, F> fmap(Function<? super A, ? extends B> fn);
+
+    /**
+     * Convenience method for coercing this functor instance into another concrete type. Unsafe.
+     *
+     * @param <Concrete> the concrete functor instance to coerce this functor to
+     * @return the coerced functor
+     */
+    default <Concrete extends Functor<A, F>> Concrete coerce() {
+        return downcast(this);
+    }
 }

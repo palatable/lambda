@@ -93,15 +93,4 @@ public interface Applicative<A, App extends Applicative<?, App>> extends Functor
     default <B> Applicative<A, App> discardR(Applicative<B, App> appB) {
         return appB.zip(fmap(constantly()));
     }
-
-    /**
-     * Convenience method for coercing this applicative instance into another concrete type. Unsafe.
-     *
-     * @param <Concrete> the concrete applicative instance to coerce this applicative to
-     * @return the coerced applicative
-     */
-    @SuppressWarnings({"unchecked"})
-    default <Concrete extends Applicative<A, App>> Concrete coerce() {
-        return (Concrete) this;
-    }
 }

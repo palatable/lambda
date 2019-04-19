@@ -119,6 +119,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
 
     /**
      * {@inheritDoc}
+     *
      * @param lazyAppFn
      */
     @Override
@@ -175,7 +176,8 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
                      e -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>e(e)),
                      f -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>f(f)),
                      g -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>g(g)),
-                     h -> fn.apply(h).fmap(Choice8::h).<TravB>fmap(Applicative::coerce).coerce());
+                     h -> fn.apply(h).<Choice8<A, B, C, D, E, F, G, I>>fmap(Choice8::h)
+                             .<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**

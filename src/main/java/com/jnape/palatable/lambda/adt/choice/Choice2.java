@@ -7,6 +7,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
@@ -114,6 +115,7 @@ public abstract class Choice2<A, B> implements
 
     /**
      * {@inheritDoc}
+     *
      * @param lazyAppFn
      */
     @Override
@@ -157,7 +159,7 @@ public abstract class Choice2<A, B> implements
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super B, ? extends AppB> fn,
                                                                       Function<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) a(a)),
-                     b -> fn.apply(b).fmap(Choice2::b).<TravB>fmap(Applicative::coerce).coerce());
+                     b -> fn.apply(b).<Choice2<A, C>>fmap(Choice2::b).<TravB>fmap(Functor::coerce).coerce());
     }
 
     /**

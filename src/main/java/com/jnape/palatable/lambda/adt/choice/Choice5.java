@@ -169,7 +169,8 @@ public abstract class Choice5<A, B, C, D, E> implements
                      b -> pure.apply((TravB) Choice5.<A, B, C, D, F>b(b)).coerce(),
                      c -> pure.apply((TravB) Choice5.<A, B, C, D, F>c(c)),
                      d -> pure.apply((TravB) Choice5.<A, B, C, D, F>d(d)),
-                     e -> fn.apply(e).fmap(Choice5::e).<TravB>fmap(Applicative::coerce).coerce());
+                     e -> fn.apply(e).<Choice5<A, B, C, D, F>>fmap(Choice5::e)
+                             .<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**
