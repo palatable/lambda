@@ -1,7 +1,6 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functor.Profunctor;
-import com.jnape.palatable.lambda.lens.Iso;
 
 import java.util.function.Function;
 

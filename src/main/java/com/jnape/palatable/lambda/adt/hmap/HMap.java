@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 import static com.jnape.palatable.lambda.adt.Maybe.maybe;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
-import static com.jnape.palatable.lambda.lens.functions.View.view;
+import static com.jnape.palatable.lambda.optics.functions.View.view;
 import static java.util.Collections.emptyMap;
 
 /**

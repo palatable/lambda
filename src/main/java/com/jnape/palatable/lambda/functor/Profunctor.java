@@ -1,7 +1,6 @@
 package com.jnape.palatable.lambda.functor;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.lens.Lens;
 
 import java.util.function.Function;
 
@@ -19,7 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * @see Bifunctor
  * @see Contravariant
  * @see Fn1
- * @see Lens
+ * @see com.jnape.palatable.lambda.optics.Optic
  */
 @FunctionalInterface
 public interface Profunctor<A, B, PF extends Profunctor<?, ?, PF>> extends Contravariant<A, Profunctor<?, B, PF>> {

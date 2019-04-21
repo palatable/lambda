@@ -3,8 +3,8 @@ package com.jnape.palatable.lambda.adt.hmap;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
-import com.jnape.palatable.lambda.lens.Iso;
-import com.jnape.palatable.lambda.lens.LensLike;
+import com.jnape.palatable.lambda.optics.Iso;
+import com.jnape.palatable.lambda.optics.Optic;
 
 import java.util.Objects;
 
@@ -23,14 +23,14 @@ import java.util.Objects;
  */
 public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
 
+
     @Override
-    default <U> TypeSafeKey<A, B> discardR(Applicative<U, LensLike<A, ?, B, B, Iso<?, ?, ?, ?>>> appB) {
+    default <U> TypeSafeKey<A, B> discardR(Applicative<U, Iso<A, ?, B, B>> appB) {
         Iso.Simple<A, B> discarded = Iso.Simple.super.discardR(appB);
         return new TypeSafeKey<A, B>() {
             @Override
-            public <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<B, F>,
-                    FT extends Functor<A, F>, PAFB extends Profunctor<B, FB, P>,
-                    PSFT extends Profunctor<A, FT, P>> PSFT apply(PAFB pafb) {
+            public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<B, ? extends CoF>, FT extends Functor<A, ? extends CoF>, PAFB extends Profunctor<B, FB, ? extends CoP>, PSFT extends Profunctor<A, FT, ? extends CoP>> PSFT apply(
+                    PAFB pafb) {
                 return discarded.apply(pafb);
             }
 
@@ -49,7 +49,7 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
     /**
      * Left-to-right composition of this {@link TypeSafeKey} with some other {@link Iso}. Because the first parameter
      * fundamentally represents an already stored value type, this is the only composition that is possible for
-     * {@link TypeSafeKey}, which is why only this (and not {@link Iso#compose(Iso)}) is overridden.
+     * {@link TypeSafeKey}, which is why only this (and not {@link Iso#compose(Optic)}) is overridden.
      * <p>
      * Particularly of note is the fact that values stored at this key are still stored as their original manifest
      * type, and are not duplicated - which is to say, putting a value at a key, yielding a new key via composition,
@@ -61,13 +61,12 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
      * @return the new {@link TypeSafeKey}
      */
     @Override
-    default <C> TypeSafeKey<A, C> andThen(Iso.Simple<B, C> f) {
+    default <C> TypeSafeKey<A, C>andThen(Iso.Simple<B, C> f) {
         Iso.Simple<A, C> composed = Iso.Simple.super.andThen(f);
         return new TypeSafeKey<A, C>() {
             @Override
-            public <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<C, F>,
-                    FT extends Functor<A, F>, PAFB extends Profunctor<C, FB, P>,
-                    PSFT extends Profunctor<A, FT, P>> PSFT apply(PAFB pafb) {
+            public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<C, ? extends CoF>, FT extends Functor<A, ? extends CoF>, PAFB extends Profunctor<C, FB, ? extends CoP>, PSFT extends Profunctor<A, FT, ? extends CoP>> PSFT apply(
+                    PAFB pafb) {
                 return composed.apply(pafb);
             }
 
@@ -112,9 +111,13 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
 
         @Override
         @SuppressWarnings("unchecked")
-        default <P extends Profunctor<?, ?, P>, F extends Functor<?, F>, FB extends Functor<A, F>,
-                FT extends Functor<A, F>, PAFB extends Profunctor<A, FB, P>,
-                PSFT extends Profunctor<A, FT, P>> PSFT apply(PAFB pafb) {
+        default <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>,
+                CoF extends Functor<?, ? extends Functor<?, ?>>,
+                FB extends Functor<A, ? extends CoF>,
+                FT extends Functor<A, ? extends CoF>,
+                PAFB extends Profunctor<A, FB, ? extends CoP>,
+                PSFT extends Profunctor<A, FT, ? extends CoP>> PSFT apply(
+                PAFB pafb) {
             return (PSFT) pafb;
         }
     }

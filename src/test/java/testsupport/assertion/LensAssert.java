@@ -2,10 +2,13 @@ package testsupport.assertion;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Map;
-import com.jnape.palatable.lambda.lens.LensLike;
+import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
+import com.jnape.palatable.lambda.optics.Optic;
 
 import java.util.Objects;
 
@@ -15,15 +18,17 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.CatMaybes.catMayb
 import static com.jnape.palatable.lambda.functions.builtin.fn2.CartesianProduct.cartesianProduct;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduceLeft;
-import static com.jnape.palatable.lambda.lens.functions.Set.set;
-import static com.jnape.palatable.lambda.lens.functions.View.view;
+import static com.jnape.palatable.lambda.optics.functions.Set.set;
+import static com.jnape.palatable.lambda.optics.functions.View.view;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 
 public final class LensAssert {
 
-    public static <S, A> void assertLensLawfulness(LensLike<S, S, A, A, ?> lens, Iterable<S> ss, Iterable<A> bs) {
+    public static <S, A> void assertLensLawfulness(Optic<? super Fn1<?, ?>, Functor<?, ?>, S, S, A, A> lens,
+                                                   Iterable<S> ss,
+                                                   Iterable<A> bs) {
         Iterable<Tuple2<S, A>> cases = cartesianProduct(ss, bs);
         Present.<String>present((x, y) -> join("\n\n", x, y))
                 .reduceLeft(asList(falsify("You get back what you put in", (s, b) -> view(lens, set(lens, b, s)), (s, b) -> b, cases),

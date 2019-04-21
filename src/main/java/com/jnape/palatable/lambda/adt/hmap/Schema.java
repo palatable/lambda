@@ -11,14 +11,14 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple5;
 import com.jnape.palatable.lambda.adt.hlist.Tuple6;
 import com.jnape.palatable.lambda.adt.hlist.Tuple7;
 import com.jnape.palatable.lambda.adt.hlist.Tuple8;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
 import com.jnape.palatable.lambda.functor.Functor;
-import com.jnape.palatable.lambda.lens.Lens;
-
-import java.util.function.Function;
+import com.jnape.palatable.lambda.functor.Profunctor;
+import com.jnape.palatable.lambda.optics.Lens;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
-import static com.jnape.palatable.lambda.lens.lenses.HMapLens.valueAt;
+import static com.jnape.palatable.lambda.optics.lenses.HMapLens.valueAt;
 
 /**
  * A lens that focuses on the {@link HList heterogeneous list} of values pointed at by one or more
@@ -39,9 +39,9 @@ public interface Schema<Values extends HCons<?, ?>> extends Lens.Simple<HMap, Ma
                                                   maybeNewValues -> maybeNewValues.fmap(HCons<A, Values>::head)));
         return new Schema<NewValues>() {
             @Override
-            public <F extends Functor<?, F>, FT extends Functor<HMap, F>, FB extends Functor<Maybe<NewValues>, F>>
-            FT apply(Function<? super Maybe<NewValues>, ? extends FB> fn, HMap hmap) {
-                return lens.apply(fn, hmap);
+            public <CoP extends Profunctor<?, ?, ? extends Fn1<?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<Maybe<NewValues>, ? extends CoF>, FT extends Functor<HMap, ? extends CoF>, PAFB extends Profunctor<Maybe<NewValues>, FB, ? extends CoP>, PSFT extends Profunctor<HMap, FT, ? extends CoP>> PSFT apply(
+                    PAFB pafb) {
+                return lens.apply(pafb);
             }
         };
     }
@@ -52,10 +52,9 @@ public interface Schema<Values extends HCons<?, ?>> extends Lens.Simple<HMap, Ma
                 .mapB(maybeSingletonA -> maybeSingletonA.fmap(HCons::head));
         return new Schema<SingletonHList<A>>() {
             @Override
-            public <F extends Functor<?, F>, FT extends Functor<HMap, F>,
-                    FB extends Functor<Maybe<SingletonHList<A>>, F>> FT apply(
-                    Function<? super Maybe<SingletonHList<A>>, ? extends FB> fn, HMap hmap) {
-                return lens.apply(fn, hmap);
+            public <CoP extends Profunctor<?, ?, ? extends Fn1<?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<Maybe<SingletonHList<A>>, ? extends CoF>, FT extends Functor<HMap, ? extends CoF>, PAFB extends Profunctor<Maybe<SingletonHList<A>>, FB, ? extends CoP>, PSFT extends Profunctor<HMap, FT, ? extends CoP>> PSFT apply(
+                    PAFB pafb) {
+                return lens.apply(pafb);
             }
         };
     }

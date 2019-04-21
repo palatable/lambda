@@ -12,6 +12,8 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - ***Breaking Change***: Eliminated all raw types and java11 warnings. This required using capture in unification 
                          parameters for Functor and friends, so nearly every functor's type-signature changed. 
 - ***Breaking Change***: `Strong` is now called `Cartesian` to better reflect the type of strength
+- ***Breaking Change***: new Optic type hierarchy more faithfully encodes profunctor constraints on optics, new `Optic`
+                         type is now the supertype of `Lens` and `Iso`, and `lens` package has been moved to `optics`
 - `IO` is now stack-safe, regardless of whether the composition nests linearly or recursively
 
 ### Added

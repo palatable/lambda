@@ -6,7 +6,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.hmap.HMap.emptyHMap;
 import static com.jnape.palatable.lambda.adt.hmap.TypeSafeKey.typeSafeKey;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
-import static com.jnape.palatable.lambda.lens.Iso.simpleIso;
+import static com.jnape.palatable.lambda.optics.Iso.simpleIso;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
