@@ -43,6 +43,7 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - `IO#unsafePerformAsyncIO` overloads for running `IO`s asynchronously 
 - `IO`s automatically encode parallelism in composition 
 - `IO#exceptionally` for recovering from failure during `IO` operation
+- `Optic`, a generic supertype for all profunctor optics
 
 ### Fixed
 - issue where certain ways to compose `Effect`s unintentionally nullified the effect 
