@@ -112,8 +112,8 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      * {@inheritDoc}
      */
     @Override
-    default <C> CheckedFn1<T, Tuple2<C, A>, Tuple2<C, B>> strengthen() {
-        return Fn1.super.<C>strengthen()::apply;
+    default <C> CheckedFn1<T, Tuple2<C, A>, Tuple2<C, B>> cartesian() {
+        return Fn1.super.<C>cartesian()::apply;
     }
 
     /**

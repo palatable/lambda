@@ -56,7 +56,7 @@ public class Fn1Test {
     @Test
     public void strengthen() {
         Fn1<Integer, Integer> add1 = x -> x + 1;
-        assertEquals(tuple("a", 2), add1.<String>strengthen().apply(tuple("a", 1)));
+        assertEquals(tuple("a", 2), add1.<String>cartesian().apply(tuple("a", 1)));
     }
 
     @Test

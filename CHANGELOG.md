@@ -11,6 +11,7 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - ***Breaking Change***: `FoldRight` now requires `Lazy` as part of its interface to support short-circuiting operations
 - ***Breaking Change***: Eliminated all raw types and java11 warnings. This required using capture in unification 
                          parameters for Functor and friends, so nearly every functor's type-signature changed. 
+- ***Breaking Change***: `Strong` is now called `Cartesian` to better reflect the type of strength
 - `IO` is now stack-safe, regardless of whether the composition nests linearly or recursively
 
 ### Added

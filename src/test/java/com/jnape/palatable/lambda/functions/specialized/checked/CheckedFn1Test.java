@@ -22,7 +22,7 @@ public class CheckedFn1Test {
         CheckedFn1<Throwable, String, Integer> diMapL = parseInt.diMapL(id());
         CheckedFn1<Throwable, String, Integer> diMapR = parseInt.diMapR(id());
         CheckedFn1<Throwable, String, Integer> diMap = parseInt.diMap(id(), id());
-        CheckedFn1<Throwable, Tuple2<Object, String>, Tuple2<Object, Integer>> strengthen = parseInt.strengthen();
+        CheckedFn1<Throwable, Tuple2<Object, String>, Tuple2<Object, Integer>> strengthen = parseInt.cartesian();
         CheckedFn1<Throwable, String, Tuple2<String, Integer>> carry = parseInt.carry();
         CheckedFn1<Throwable, String, Integer> contraMap = parseInt.contraMap(id());
         CheckedFn1<Throwable, String, Integer> compose = parseInt.compose(id());

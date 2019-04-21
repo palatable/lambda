@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.functor.Strong;
+import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 
@@ -20,7 +20,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @param <B> The result type
  */
 @FunctionalInterface
-public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1<?, ?>>, Function<A, B> {
+public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Cartesian<A, B, Fn1<?, ?>>, Function<A, B> {
 
     /**
      * Invoke this function with the given argument.
@@ -131,7 +131,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1<?, ?>>,
      */
     @Override
     default <Z> Fn1<Z, B> diMapL(Function<? super Z, ? extends A> fn) {
-        return (Fn1<Z, B>) Strong.super.<Z>diMapL(fn);
+        return (Fn1<Z, B>) Cartesian.super.<Z>diMapL(fn);
     }
 
     /**
@@ -144,7 +144,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1<?, ?>>,
      */
     @Override
     default <C> Fn1<A, C> diMapR(Function<? super B, ? extends C> fn) {
-        return (Fn1<A, C>) Strong.super.<C>diMapR(fn);
+        return (Fn1<A, C>) Cartesian.super.<C>diMapR(fn);
     }
 
     /**
@@ -168,7 +168,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1<?, ?>>,
      * @return the strengthened {@link Fn1}
      */
     @Override
-    default <C> Fn1<Tuple2<C, A>, Tuple2<C, B>> strengthen() {
+    default <C> Fn1<Tuple2<C, A>, Tuple2<C, B>> cartesian() {
         return t -> t.fmap(this);
     }
 
@@ -177,12 +177,12 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Strong<A, B, Fn1<?, ?>>,
      */
     @Override
     default Fn1<A, Tuple2<A, B>> carry() {
-        return (Fn1<A, Tuple2<A, B>>) Strong.super.carry();
+        return (Fn1<A, Tuple2<A, B>>) Cartesian.super.carry();
     }
 
     @Override
     default <Z> Fn1<Z, B> contraMap(Function<? super Z, ? extends A> fn) {
-        return (Fn1<Z, B>) Strong.super.<Z>contraMap(fn);
+        return (Fn1<Z, B>) Cartesian.super.<Z>contraMap(fn);
     }
 
     /**
