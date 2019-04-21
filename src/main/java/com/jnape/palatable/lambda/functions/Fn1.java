@@ -1,8 +1,11 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
+import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 
@@ -20,7 +23,11 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @param <B> The result type
  */
 @FunctionalInterface
-public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Cartesian<A, B, Fn1<?, ?>>, Function<A, B> {
+public interface Fn1<A, B> extends
+        Monad<B, Fn1<A, ?>>,
+        Cartesian<A, B, Fn1<?, ?>>,
+        Cocartesian<A, B, Fn1<?, ?>>,
+        Function<A, B> {
 
     /**
      * Invoke this function with the given argument.
@@ -97,6 +104,7 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Cartesian<A, B, Fn1<?, ?
 
     /**
      * {@inheritDoc}
+     *
      * @param lazyAppFn
      */
     @Override
@@ -178,6 +186,27 @@ public interface Fn1<A, B> extends Monad<B, Fn1<A, ?>>, Cartesian<A, B, Fn1<?, ?
     @Override
     default Fn1<A, Tuple2<A, B>> carry() {
         return (Fn1<A, Tuple2<A, B>>) Cartesian.super.carry();
+    }
+
+    /**
+     * Choose between either applying this function or returning back a different result altogether.
+     *
+     * @param <C> the potentially different result
+     * @return teh strengthened {@link Fn1}
+     */
+    @Override
+    default <C> Fn1<Choice2<C, A>, Choice2<C, B>> cocartesian() {
+        return a -> a.fmap(this);
+    }
+
+    /**
+     * Choose between a successful result <code>b</code> or returning back the input, <code>a</code>.
+     *
+     * @return an {@link Fn1} that chooses between its input (in case of failure) or its output.
+     */
+    @Override
+    default Fn1<A, Choice2<A, B>> choose() {
+        return a -> Either.trying(() -> apply(a), constantly(a)).match(Choice2::a, Choice2::b);
     }
 
     @Override

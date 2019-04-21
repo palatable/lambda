@@ -25,6 +25,7 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - `Endo`, a monoid formed by `Fn1` under composition
 - `State`, the state `Monad`
 - `Downcast`, a function supporting unchecked down-casting
+- `Cocartesian`, profunctorial strength in cocartesian coproduct terms
 
 ## [3.3.0] - 2019-02-18
 ### Added

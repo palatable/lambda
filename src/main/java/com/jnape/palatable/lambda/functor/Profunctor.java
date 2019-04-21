@@ -59,6 +59,9 @@ public interface Profunctor<A, B, PF extends Profunctor<?, ?, PF>> extends Contr
         return diMap(id(), fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <Z> Profunctor<Z, B, PF> contraMap(Function<? super Z, ? extends A> fn) {
         return diMapL(fn);

@@ -12,6 +12,8 @@ import testsupport.traits.MonadLaws;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
+import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduceLeft;
@@ -54,7 +56,7 @@ public class Fn1Test {
     }
 
     @Test
-    public void strengthen() {
+    public void cartesian() {
         Fn1<Integer, Integer> add1 = x -> x + 1;
         assertEquals(tuple("a", 2), add1.<String>cartesian().apply(tuple("a", 1)));
     }
@@ -63,5 +65,19 @@ public class Fn1Test {
     public void carry() {
         Fn1<Integer, Integer> add1 = x -> x + 1;
         assertEquals(tuple(1, 2), add1.carry().apply(1));
+    }
+
+    @Test
+    public void cocartesian() {
+        Fn1<Integer, Integer> add1 = x -> x + 1;
+        assertEquals(a("foo"), add1.<String>cocartesian().apply(a("foo")));
+        assertEquals(b(2), add1.<String>cocartesian().apply(b(1)));
+    }
+
+    @Test
+    public void choose() {
+        Fn1<String, Integer> add1 = Integer::parseInt;
+        assertEquals(b(123), add1.choose().apply("123"));
+        assertEquals(a("foo"), add1.choose().apply("foo"));
     }
 }
