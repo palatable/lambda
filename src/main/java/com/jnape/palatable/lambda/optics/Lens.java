@@ -135,6 +135,8 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
  * @param <T> the type of the "larger" value for putting
  * @param <A> the type of the "smaller" value that is read
  * @param <B> the type of the "smaller" update value
+ * @see Optic
+ * @see Iso
  */
 @FunctionalInterface
 public interface Lens<S, T, A, B> extends

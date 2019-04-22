@@ -26,7 +26,7 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
 /**
  * An {@link Iso} (short for "isomorphism") is an invertible {@link Lens}: an {@link Optic} encoding of a
  * bi-directional focusing of two types, and like <code>{@link Lens}es</code>, can be <code>{@link View}ed</code>,
- * {@link Set}, and <code>{@link Over}ed</code>.
+ * {@link Set}, and <code>{@link Over updated}</code>.
  * <p>
  * As an example, consider the isomorphism between valid {@link String}s and {@link Integer}s:
  * <pre>
@@ -36,9 +36,9 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
  * String asString = view(stringIntIso.mirror(), 123); // "123"
  * }
  * </pre>
- * In the previous example, <code>stringIntIso</code> can be viewed as a <code>{@link Lens}&lt;String, String, Integer,
- * Integer&gt;</code>, and can be <code>{@link Iso#mirror}ed</code> and viewed as a <code>{@link Lens}&lt;Integer,
- * Integer, String, String&gt;</code>.
+ * In the previous example, <code>stringIntIso</code> can be viewed as an
+ * <code>{@link Optic}&lt;String, String, Integer, Integer&gt;</code>, and can be <code>{@link Iso#mirror}ed</code> and
+ * viewed as a <code>{@link Optic}&lt;Integer, Integer, String, String&gt;</code>.
  * <p>
  * As with {@link Lens}, variance is supported between <code>S/T</code> and <code>A/B</code>, and where these pairs do
  * not vary, a {@link Simple} iso can be used (for instance, in the previous example, <code>stringIntIso</code> could
@@ -50,6 +50,8 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
  * @param <T> the larger type for mirrored focusing
  * @param <A> the smaller type for focusing
  * @param <B> the smaller type for mirrored focusing
+ * @see Optic
+ * @see Lens
  */
 @FunctionalInterface
 public interface Iso<S, T, A, B> extends

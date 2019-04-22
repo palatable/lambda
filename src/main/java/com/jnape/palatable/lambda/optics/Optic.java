@@ -15,8 +15,8 @@ import java.util.function.Function;
  * <code>(P&lt;A, F&lt;B&gt;&gt; -&gt; P&lt;S, F&lt;T&gt;&gt;)</code> (existentially-quantified allowing for
  * covariance).
  *
- * @param <P> the {@link Profunctor} type
- * @param <F> the {@link Functor} type
+ * @param <P> the {@link Profunctor} bound
+ * @param <F> the {@link Functor} bound
  * @param <S> the left side of the output profunctor
  * @param <T> the right side's functor embedding of the output profunctor
  * @param <A> the left side of the input profunctor
@@ -156,8 +156,8 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
      * Promote a monomorphic function to a compatible {@link Optic}.
      *
      * @param fn     the function
-     * @param <P>    the {@link Profunctor} type
-     * @param <F>    the {@link Functor} type
+     * @param <P>    the {@link Profunctor} bound
+     * @param <F>    the {@link Functor} bound
      * @param <S>    the left side of the output profunctor
      * @param <T>    the right side's functor embedding of the output profunctor
      * @param <A>    the left side of the input profunctor
@@ -187,6 +187,28 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
                 return (CoPSFT) fn.apply((PAFB) pafb);
             }
         };
+    }
+
+    /**
+     * Reframe an {@link Optic} according to covariant bounds.
+     *
+     * @param optic the {@link Optic}
+     * @param <P>   the {@link Profunctor} type
+     * @param <F>   the {@link Functor} type
+     * @param <S>   the left side of the output profunctor
+     * @param <T>   the right side's functor embedding of the output profunctor
+     * @param <A>   the left side of the input profunctor
+     * @param <B>   the right side's functor embedding of the input profunctor
+     * @return the covariantly reframed {@link Optic}
+     */
+    static <P extends Profunctor<?, ?, ? extends P>,
+            F extends Functor<?, ? extends F>,
+            S, T, A, B> Optic<P, F, S, T, A, B> reframe(Optic<? super P, ? super F, S, T, A, B> optic) {
+        return Optic.optic(optic.<P, F,
+                Functor<B, ? extends F>,
+                Functor<T, ? extends F>,
+                Profunctor<A, Functor<B, ? extends F>, ? extends P>,
+                Profunctor<S, Functor<T, ? extends F>, ? extends P>>monomorphize());
     }
 
     interface Simple<P extends Profunctor<?, ?, ? extends P>, F extends Functor<?, ? extends F>, S, A> extends
@@ -230,6 +252,30 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
                         PAFB extends Profunctor<A, FB, ? extends CoP>, PSFT extends Profunctor<R, FT, ? extends CoP>>
                 PSFT apply(PAFB pafb) {
                     return composed.apply(pafb);
+                }
+            };
+        }
+
+        /**
+         * Adapt an {@link Optic} with S/T and A/B unified into a {@link Simple simple optic}.
+         *
+         * @param optic the {@link Optic}
+         * @param <P>   the {@link Profunctor} bound
+         * @param <F>   the {@link Functor} bound
+         * @param <S>   the left side and the right side's functor embedding of the output profunctor
+         * @param <A>   the left side and the right side's functor embedding of the input profunctor
+         * @return the {@link Simple} optic
+         */
+        static <P extends Profunctor<?, ?, ? extends P>,
+                F extends Functor<?, ? extends F>,
+                S, A> Simple<P, F, S, A> adapt(Optic<P, F, S, S, A, A> optic) {
+            return new Simple<P, F, S, A>() {
+                @Override
+                public <CoP extends Profunctor<?, ?, ? extends P>, CoF extends Functor<?, ? extends F>,
+                        FB extends Functor<A, ? extends CoF>, FT extends Functor<S, ? extends CoF>,
+                        PAFB extends Profunctor<A, FB, ? extends CoP>,
+                        PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
+                    return optic.apply(pafb);
                 }
             };
         }

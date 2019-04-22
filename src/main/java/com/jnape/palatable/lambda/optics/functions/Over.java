@@ -9,9 +9,9 @@ import com.jnape.palatable.lambda.optics.Optic;
 import java.util.function.Function;
 
 /**
- * Given a lens, a function from <code>A</code> to <code>B</code>, and a "larger" value <code>S</code>, produce a
- * <code>T</code> by retrieving the <code>A</code> from the <code>S</code>, applying the function, and updating the
- * <code>S</code> with the <code>B</code> resulting from the function.
+ * Given an {@link Optic}, a function from <code>A</code> to <code>B</code>, and a "larger" value <code>S</code>,
+ * produce a <code>T</code> by retrieving the <code>A</code> from the <code>S</code>, applying the function, and
+ * updating the <code>S</code> with the <code>B</code> resulting from the function.
  * <p>
  * This function is similar to {@link Set}, except that it allows the setting value <code>B</code> to be derived from
  * <code>S</code> via function application, rather than provided.
@@ -23,7 +23,8 @@ import java.util.function.Function;
  * @see Set
  * @see View
  */
-public final class Over<S, T, A, B> implements Fn3<Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B>, Function<? super A, ? extends B>, S, T> {
+public final class Over<S, T, A, B> implements
+        Fn3<Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B>, Function<? super A, ? extends B>, S, T> {
 
     private static final Over<?, ?, ?, ?> INSTANCE = new Over<>();
 

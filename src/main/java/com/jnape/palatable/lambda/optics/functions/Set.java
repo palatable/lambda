@@ -10,11 +10,11 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 import static com.jnape.palatable.lambda.optics.functions.Over.over;
 
 /**
- * Given a lens, a "smaller" value <code>B</code>, and a "larger" value <code>S</code>, produce a <code>T</code> by
- * lifting the lens into {@link Identity}.
+ * Given an {@link Optic}, a "smaller" value <code>B</code>, and a "larger" value <code>S</code>, produce a
+ * <code>T</code> by lifting the {@link Optic} into the {@link Identity} functor.
  * <p>
- * More idiomatically, this function can be used to treat a lens as a "setter" of <code>B</code>s on <code>S</code>s,
- * potentially producing a different "larger" value, <code>T</code>.
+ * More idiomatically, this function can be used to treat an {@link Optic} as a "setter" of
+ * < code>B</code>s on <code>S</code>s, potentially producing a different "larger" value, <code>T</code>.
  *
  * @param <S> the type of the larger value
  * @param <T> the type of the larger updated value
