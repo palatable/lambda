@@ -7,8 +7,8 @@ import com.jnape.palatable.lambda.io.IO;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.io.IO.io;
 
 /**
  * A function returning "no result", and therefore only useful as a side-effect.
@@ -78,7 +78,7 @@ public interface Effect<A> extends Fn1<A, IO<Unit>>, Consumer<A> {
      * @param <A> the effect argument type
      * @return the effect
      */
-    static <A> Effect<A> effect(Fn1<A, ? extends IO<?>> fn) {
+    static <A> Effect<A> effect(Fn1<? super A, ? extends IO<?>> fn) {
         return a -> fn.apply(a).unsafePerformIO();
     }
 }
