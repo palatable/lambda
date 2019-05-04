@@ -63,8 +63,6 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
 
     /**
      * {@inheritDoc}
-     *
-     * @param lazyAppFn
      */
     @Override
     public <B> Lazy<Identity<B>> lazyZip(

@@ -26,7 +26,8 @@ public interface Cocartesian<A, B, P extends Cocartesian<?, ?, P>> extends Profu
 
     /**
      * Choose between the covariantly-positioned carrier type and the contravariantly-positioned carrier type. This can
-     * be used to encode partial functions <code>a -> (⊥ v b)</code> as total functions <code>a -> (a v b)</code>.
+     * be used to encode partial functions <code>a -&gt; (_|_ v b)</code> as total functions
+     * <code>a -&gt; (a v b)</code>.
      *
      * @return the profunctor with a choice
      */

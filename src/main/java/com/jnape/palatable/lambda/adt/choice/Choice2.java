@@ -115,8 +115,6 @@ public abstract class Choice2<A, B> implements
 
     /**
      * {@inheritDoc}
-     *
-     * @param lazyAppFn
      */
     @Override
     public <C> Lazy<? extends Monad<C, Choice2<A, ?>>> lazyZip(

@@ -37,6 +37,8 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
      *
      * @param <CoP>  the covariant bound on P
      * @param <CoF>  the covariant bound on F
+     * @param <FB>   fixed functor over B for inference
+     * @param <FT>   fixed functor over T for inference
      * @param <PAFB> the fixed input profunctor type
      * @param <PSFT> the fixed output profunctor type
      * @return the monomorphic {@link Fn1} backed by this {@link Optic}
@@ -52,7 +54,7 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
     }
 
     /**
-     * Left-to-right composition of optics. Requires compatibility between <code>S</code>> and <code>T</code>.
+     * Left-to-right composition of optics. Requires compatibility between <code>S</code> and <code>T</code>.
      *
      * @param f   the other optic
      * @param <Z> the new left side of the input profunctor
@@ -162,6 +164,8 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
      * @param <T>    the right side's functor embedding of the output profunctor
      * @param <A>    the left side of the input profunctor
      * @param <B>    the right side's functor embedding of the input profunctor
+     * @param <FB>   fixed functor over B for inference
+     * @param <FT>   fixed functor over T for inference
      * @param <PAFB> the input
      * @param <PSFT> the output
      * @return the {@link Optic}
@@ -211,8 +215,17 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
                 Profunctor<S, Functor<T, ? extends F>, ? extends P>>monomorphize());
     }
 
-    interface Simple<P extends Profunctor<?, ?, ? extends P>, F extends Functor<?, ? extends F>, S, A> extends
-            Optic<P, F, S, S, A, A> {
+    /**
+     * An convenience type with a simplified signature for {@link Optic optics} with unified <code>S/T</code> and
+     * <code>A/B</code> types.
+     *
+     * @param <P> the {@link Profunctor} bound
+     * @param <F> the {@link Functor} bound
+     * @param <S> the left side and right side's functor embedding of the output profunctor
+     * @param <A> the left side and right side's functor embedding of the input profunctor
+     */
+    interface Simple<P extends Profunctor<?, ?, ? extends P>, F extends Functor<?, ? extends F>, S, A>
+            extends Optic<P, F, S, S, A, A> {
 
         /**
          * Compose two simple optics from left to right.

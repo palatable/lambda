@@ -56,8 +56,6 @@ public final class Compose<F extends Applicative<?, F>, G extends Applicative<?,
 
     /**
      * {@inheritDoc}
-     *
-     * @param lazyAppFn
      */
     @Override
     public <B> Lazy<Compose<F, G, B>> lazyZip(

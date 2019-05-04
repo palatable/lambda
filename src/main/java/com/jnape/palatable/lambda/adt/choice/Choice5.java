@@ -120,7 +120,6 @@ public abstract class Choice5<A, B, C, D, E> implements
 
     /**
      * {@inheritDoc}
-     * @param lazyAppFn
      */
     @Override
     public <F> Lazy<Choice5<A, B, C, D, F>> lazyZip(

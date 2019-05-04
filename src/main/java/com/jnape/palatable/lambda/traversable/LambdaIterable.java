@@ -73,8 +73,6 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
 
     /**
      * {@inheritDoc}
-     *
-     * @param lazyAppFn
      */
     @Override
     public <B> Lazy<LambdaIterable<B>> lazyZip(

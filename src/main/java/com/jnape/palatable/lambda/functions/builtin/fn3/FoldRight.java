@@ -20,15 +20,15 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  * <p>
  * Example:
  * <pre>
- * <code>
+ * {@code
  * Lazy<Iterable<Integer>> lazyCopy = foldRight(
- *     (head, lazyTail) -> lazy(cons(head, () -> lazyTail.value().iterator())),
+ *     (head, lazyTail) -&gt; lazy(cons(head, () -&gt; lazyTail.value().iterator())),
  *     lazy(emptyList()),
- *     iterate(x -> x + 1, 0));
- * Iterable<Integer> copy = () -> lazyCopy.value().iterator();
+ *     iterate(x -&gt; x + 1, 0));
+ * Iterable<Integer> copy = () -&gt; lazyCopy.value().iterator();
  * take(3, copy).forEach(System.out::println); // prints "1, 2, 3"
  * take(3, copy).forEach(System.out::println); // prints "1, 2, 3"
- * </code>
+ * }
  * </pre>
  * <p>
  * For more information, read about <a href="https://en.wikipedia.org/wiki/Catamorphism"

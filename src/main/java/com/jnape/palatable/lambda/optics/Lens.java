@@ -144,73 +144,115 @@ public interface Lens<S, T, A, B> extends
         Monad<T, Lens<S, ?, A, B>>,
         Profunctor<S, T, Lens<?, ?, A, B>> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
         return Monad.super.<U>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Lens<S, U, A, B> pure(U u) {
         return lens(view(this), (s, b) -> u);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Lens<S, U, A, B> discardL(Applicative<U, Lens<S, ?, A, B>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Lens<S, T, A, B> discardR(Applicative<U, Lens<S, ?, A, B>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Lens<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, Lens<S, ?, A, B>>> f) {
 
         return lens(view(this), (s, b) -> set(f.apply(set(this, b, s)).<Lens<S, U, A, B>>coerce(), b, s));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R> Lens<R, T, A, B> diMapL(Function<? super R, ? extends S> fn) {
         return (Lens<R, T, A, B>) Profunctor.super.<R>diMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Lens<S, U, A, B> diMapR(Function<? super T, ? extends U> fn) {
         return (Lens<S, U, A, B>) Profunctor.super.<U>diMapR(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R, U> Lens<R, U, A, B> diMap(Function<? super R, ? extends S> lFn,
                                           Function<? super T, ? extends U> rFn) {
         return this.<R>mapS(lFn).mapT(rFn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R> Lens<R, T, A, B> contraMap(Function<? super R, ? extends S> fn) {
         return (Lens<R, T, A, B>) Profunctor.super.<R>contraMap(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R> Lens<R, T, A, B> mapS(Function<? super R, ? extends S> fn) {
         return lens(Optic.super.mapS(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Lens<S, U, A, B> mapT(Function<? super T, ? extends U> fn) {
         return lens(Optic.super.mapT(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C> Lens<S, T, C, B> mapA(Function<? super A, ? extends C> fn) {
         return lens(Optic.super.mapA(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <Z> Lens<S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
         return lens(Optic.super.mapB(fn));
@@ -226,11 +268,17 @@ public interface Lens<S, T, A, B> extends
         return iso(view(this), set(this).flip().apply(s));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C, D> Lens<S, T, C, D> andThen(Optic<? super Fn1<?, ?>, ? super Functor<?, ?>, A, B, C, D> f) {
         return lens(Optic.super.andThen(f));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R, U> Lens<R, U, A, B> compose(Optic<? super Fn1<?, ?>, ? super Functor<?, ?>, R, U, S, T> g) {
         return lens(Optic.super.compose(g));
@@ -258,11 +306,23 @@ public interface Lens<S, T, A, B> extends
                 .fmap(b -> setter.apply(s, b))));
     }
 
+    /**
+     * Promote an optic with compatible bounds to a {@link Lens}.
+     *
+     * @param optic the {@link Optic}
+     * @param <S>   the type of the "larger" value for reading
+     * @param <T>   the type of the "larger" value for putting
+     * @param <A>   the type of the "smaller" value that is read
+     * @param <B>   the type of the "smaller" update value
+     * @return the {@link Lens}
+     */
     static <S, T, A, B> Lens<S, T, A, B> lens(Optic<? super Fn1<?, ?>, ? super Functor<?, ?>, S, T, A, B> optic) {
         return new Lens<S, T, A, B>() {
             @Override
-            public <CoP extends Profunctor<?, ?, ? extends Fn1<?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<B, ? extends CoF>, FT extends Functor<T, ? extends CoF>, PAFB extends Profunctor<A, FB, ? extends CoP>, PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(
-                    PAFB pafb) {
+            public <CoP extends Profunctor<?, ?, ? extends Fn1<?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>,
+                    FB extends Functor<B, ? extends CoF>, FT extends Functor<T, ? extends CoF>,
+                    PAFB extends Profunctor<A, FB, ? extends CoP>,
+                    PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
                 return optic.apply(pafb);
             }
         };
@@ -323,11 +383,17 @@ public interface Lens<S, T, A, B> extends
     @FunctionalInterface
     interface Simple<S, A> extends Lens<S, S, A, A>, Optic.Simple<Fn1<?, ?>, Functor<?, ?>, S, A> {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         default <B> Lens.Simple<S, B> andThen(Optic.Simple<? super Fn1<?, ?>, ? super Functor<?, ?>, A, B> f) {
             return Lens.Simple.adapt(Lens.super.andThen(f));
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         default <R> Lens.Simple<R, A> compose(Optic.Simple<? super Fn1<?, ?>, ? super Functor<?, ?>, R, S> g) {
             return Lens.Simple.adapt(Lens.super.compose(g));

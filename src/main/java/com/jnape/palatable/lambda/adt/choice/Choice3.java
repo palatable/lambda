@@ -115,8 +115,6 @@ public abstract class Choice3<A, B, C> implements
 
     /**
      * {@inheritDoc}
-     *
-     * @param lazyAppFn
      */
     @Override
     public <D> Lazy<Choice3<A, B, D>> lazyZip(

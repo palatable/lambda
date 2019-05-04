@@ -66,8 +66,6 @@ public final class Const<A, B> implements
 
     /**
      * {@inheritDoc}
-     *
-     * @param lazyAppFn
      */
     @Override
     public <C> Lazy<Const<A, C>> lazyZip(

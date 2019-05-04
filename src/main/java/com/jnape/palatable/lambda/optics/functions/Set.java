@@ -14,7 +14,7 @@ import static com.jnape.palatable.lambda.optics.functions.Over.over;
  * <code>T</code> by lifting the {@link Optic} into the {@link Identity} functor.
  * <p>
  * More idiomatically, this function can be used to treat an {@link Optic} as a "setter" of
- * < code>B</code>s on <code>S</code>s, potentially producing a different "larger" value, <code>T</code>.
+ * <code>B</code>s on <code>S</code>s, potentially producing a different "larger" value, <code>T</code>.
  *
  * @param <S> the type of the larger value
  * @param <T> the type of the larger updated value

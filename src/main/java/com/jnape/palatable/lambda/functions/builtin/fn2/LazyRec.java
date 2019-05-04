@@ -17,13 +17,13 @@ import static com.jnape.palatable.lambda.monad.Monad.join;
  * <p>
  * Example:
  * <pre>
- * <code>
- * Lazy<BigInteger> lazyFactorial = lazyRec((fact, x) -> x.equals(ONE)
- *                                                               ? lazy(x)
- *                                                               : fact.apply(x.subtract(ONE)).fmap(y -> y.multiply(x)),
+ * {@code
+ * Lazy<BigInteger> lazyFactorial = lazyRec((fact, x) -&gt; x.equals(ONE)
+ *                                                       ? lazy(x)
+ *                                                       : fact.apply(x.subtract(ONE)).fmap(y -&gt; y.multiply(x)),
  *                                                  BigInteger.valueOf(50_000));
- * BigInteger value = lazyFactorial.value(); // 3.34732050959714483691547609407148647791277322381045 × 10^213236
- * </code>
+ * BigInteger value = lazyFactorial.value(); // 3.34732050959714483691547609407148647791277322381045 x 10^213236
+ * }
  * </pre>
  *
  * @param <A> the input type

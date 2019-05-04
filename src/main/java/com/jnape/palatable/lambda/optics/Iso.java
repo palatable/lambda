@@ -93,31 +93,49 @@ public interface Iso<S, T, A, B> extends
                 .biMap(e -> fn1(e.sa()), e -> fn1(e.bt()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Iso<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
         return Monad.super.<U>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Iso<S, U, A, B> pure(U u) {
         return iso(view(this), constantly(u));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Iso<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, Iso<S, ?, A, B>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Iso<S, U, A, B> discardL(Applicative<U, Iso<S, ?, A, B>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Iso<S, T, A, B> discardR(Applicative<U, Iso<S, ?, A, B>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Iso<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, Iso<S, ?, A, B>>> fn) {
         //noinspection RedundantTypeArguments
@@ -131,52 +149,82 @@ public interface Iso<S, T, A, B> extends
                 .into(Iso::iso);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R> Iso<R, T, A, B> diMapL(Function<? super R, ? extends S> fn) {
         return (Iso<R, T, A, B>) Profunctor.super.<R>diMapL(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Iso<S, U, A, B> diMapR(Function<? super T, ? extends U> fn) {
         return (Iso<S, U, A, B>) Profunctor.super.<U>diMapR(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R, U> Iso<R, U, A, B> diMap(Function<? super R, ? extends S> lFn,
                                          Function<? super T, ? extends U> rFn) {
         return this.<R>mapS(lFn).mapT(rFn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R> Iso<R, T, A, B> contraMap(Function<? super R, ? extends S> fn) {
         return (Iso<R, T, A, B>) Profunctor.super.<R>contraMap(fn);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R> Iso<R, T, A, B> mapS(Function<? super R, ? extends S> fn) {
         return iso(Optic.super.mapS(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <U> Iso<S, U, A, B> mapT(Function<? super T, ? extends U> fn) {
         return iso(Optic.super.mapT(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C> Iso<S, T, C, B> mapA(Function<? super A, ? extends C> fn) {
         return iso(Optic.super.mapA(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <Z> Iso<S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
         return iso(Optic.super.mapB(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <Z, C> Iso<S, T, Z, C> andThen(Optic<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, A, B, Z, C> f) {
         return iso(Optic.super.andThen(f));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <R, U> Iso<R, U, A, B> compose(Optic<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, R, U, S, T> g) {
         return iso(Optic.super.compose(g));
@@ -198,6 +246,16 @@ public interface Iso<S, T, A, B> extends
         return iso(optic(pafb -> pafb.diMap(f, fb -> fb.fmap(g))));
     }
 
+    /**
+     * Promote an optic with compatible bounds to an {@link Iso}.
+     *
+     * @param optic the {@link Optic}
+     * @param <S>   the larger type for focusing
+     * @param <T>   the larger type for mirrored focusing
+     * @param <A>   the smaller type for focusing
+     * @param <B>   the smaller type for mirrored focusing
+     * @return the {@link Iso}
+     */
     static <S, T, A, B> Iso<S, T, A, B> iso(
             Optic<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, S, T, A, B> optic) {
         return new Iso<S, T, A, B>() {
@@ -258,26 +316,41 @@ public interface Iso<S, T, A, B> extends
             return Iso.Simple.adapt(f.compose(this));
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         default Iso.Simple<A, S> mirror() {
             return Iso.Simple.adapt(Iso.super.mirror());
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         default Lens.Simple<S, A> toLens() {
             return Lens.Simple.adapt(Iso.super.toLens());
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         default <U> Iso.Simple<S, A> discardR(Applicative<U, Iso<S, ?, A, A>> appB) {
             return Iso.Simple.adapt(Iso.super.discardR(appB));
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         default <B> Iso.Simple<S, B> andThen(Optic.Simple<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, A, B> f) {
             return Iso.Simple.adapt(Iso.super.andThen(f));
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         default <R> Iso.Simple<R, A> compose(Optic.Simple<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, R, S> g) {
             return Iso.Simple.adapt(Iso.super.compose(g));

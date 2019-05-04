@@ -122,8 +122,6 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
 
     /**
      * {@inheritDoc}
-     *
-     * @param lazyAppFn
      */
     @Override
     public <B> Lazy<IO<B>> lazyZip(Lazy<? extends Applicative<Function<? super A, ? extends B>, IO<?>>> lazyAppFn) {

@@ -104,8 +104,6 @@ public interface Fn1<A, B> extends
 
     /**
      * {@inheritDoc}
-     *
-     * @param lazyAppFn
      */
     @Override
     default <C> Lazy<Fn1<A, C>> lazyZip(
