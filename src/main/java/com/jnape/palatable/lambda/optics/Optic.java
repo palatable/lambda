@@ -268,7 +268,7 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
          */
         static <P extends Profunctor<?, ?, ? extends P>,
                 F extends Functor<?, ? extends F>,
-                S, A> Simple<P, F, S, A> adapt(Optic<P, F, S, S, A, A> optic) {
+                S, A> Simple<P, F, S, A> adapt(Optic<? super P, ? super F, S, S, A, A> optic) {
             return new Simple<P, F, S, A>() {
                 @Override
                 public <CoP extends Profunctor<?, ?, ? extends P>, CoF extends Functor<?, ? extends F>,
