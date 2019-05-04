@@ -4,8 +4,10 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -21,7 +23,7 @@ import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoli
  *
  * @param <A> the value type
  */
-public abstract class Lazy<A> implements Monad<A, Lazy<?>> {
+public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<?>> {
 
     private Lazy() {
     }
@@ -42,6 +44,18 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>> {
         @SuppressWarnings({"unchecked", "RedundantCast"})
         Function<Object, Lazy<Object>> flatMap = (Function<Object, Lazy<Object>>) (Object) f;
         return new Compose<>(source, flatMap);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Lazy<?>>,
+            AppB extends Applicative<B, App>,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super A, ? extends AppB> fn,
+                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+        return fn.apply(value()).fmap(b -> (TravB) lazy(b)).coerce();
     }
 
     /**
@@ -82,6 +96,21 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>> {
     @Override
     public final <B> Lazy<A> discardR(Applicative<B, Lazy<?>> appB) {
         return Monad.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Lazy<?> && Objects.equals(value(), ((Lazy<?>) other).value());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value());
+    }
+
+    @Override
+    public String toString() {
+        return "Lazy{value=" + value() + "}";
     }
 
     /**

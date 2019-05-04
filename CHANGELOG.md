@@ -24,10 +24,15 @@ might need to be reworked, and subtyping is obviously no longer supported.
 - `MaybeT`, a monad transformer for `Maybe`
 - `EitherT`, a monad transformer for `Either`
 - `IdentityT`, a monad transformer for `Identity`
+- `LazyT`, a monad transformer for `Lazy`
 - `Endo`, a monoid formed by `Fn1` under composition
 - `State`, the state `Monad`
 - `Downcast`, a function supporting unchecked down-casting
 - `Cocartesian`, profunctorial strength in cocartesian coproduct terms
+- `Prism`, an `Optic` that is nearly an `Iso` but can fail in one direction
+- `Market`, `Tagged`, profunctors supporting optics 
+- `Re` for viewing an `Optic` in one direction reliably
+- `Pre` for viewing at most one value from an `Optic` in one direction
 
 ## [3.3.0] - 2019-02-18
 ### Added
