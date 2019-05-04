@@ -44,7 +44,8 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
  * not vary, a {@link Simple} iso can be used (for instance, in the previous example, <code>stringIntIso</code> could
  * have had the simplified <code>Iso.Simple&lt;String, Integer&gt;</code> type).
  * <p>
- * For more information, read about <a href="https://hackage.haskell.org/package/lens-4.16.1/docs/Control-Lens-Iso.html">isos</a>.
+ * For more information, read about
+ * <a href="https://hackage.haskell.org/package/lens-4.16.1/docs/Control-Lens-Iso.html">isos</a>.
  *
  * @param <S> the larger type for focusing
  * @param <T> the larger type for mirrored focusing
@@ -119,10 +120,12 @@ public interface Iso<S, T, A, B> extends
 
     @Override
     default <U> Iso<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, Iso<S, ?, A, B>>> fn) {
-        return unIso().fmap(bt -> Fn2.<B, B, U>fn2(fn1(bt.andThen(fn.<Iso<S, U, A, B>>andThen(Applicative::coerce))
-                                                               .andThen(Iso::unIso)
-                                                               .andThen(Tuple2::_2)
-                                                               .andThen(Fn1::fn1))))
+        //noinspection RedundantTypeArguments
+        return unIso().fmap(bt -> Fn2.<B, B, U>fn2(
+                fn1(bt.andThen(fn.<Iso<S, U, A, B>>andThen(Monad<U, Iso<S, ?, A, B>>::coerce))
+                            .andThen(Iso::unIso)
+                            .andThen(Tuple2::_2)
+                            .andThen(Fn1::fn1))))
                 .fmap(Fn2::uncurry)
                 .fmap(bbu -> bbu.<B>diMapL(Tuple2::fill))
                 .into(Iso::iso);
@@ -199,8 +202,10 @@ public interface Iso<S, T, A, B> extends
             Optic<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, S, T, A, B> optic) {
         return new Iso<S, T, A, B>() {
             @Override
-            public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<B, ? extends CoF>, FT extends Functor<T, ? extends CoF>, PAFB extends Profunctor<A, FB, ? extends CoP>, PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(
-                    PAFB pafb) {
+            public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>,
+                    CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<B, ? extends CoF>,
+                    FT extends Functor<T, ? extends CoF>, PAFB extends Profunctor<A, FB, ? extends CoP>,
+                    PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
                 return optic.apply(pafb);
             }
         };
@@ -250,12 +255,12 @@ public interface Iso<S, T, A, B> extends
          */
         @SuppressWarnings("overloads")
         default <B> Iso.Simple<S, B> andThen(Iso.Simple<A, B> f) {
-            return adapt(f.compose(this));
+            return Iso.Simple.adapt(f.compose(this));
         }
 
         @Override
         default Iso.Simple<A, S> mirror() {
-            return adapt(Iso.super.mirror());
+            return Iso.Simple.adapt(Iso.super.mirror());
         }
 
         @Override
@@ -265,17 +270,17 @@ public interface Iso<S, T, A, B> extends
 
         @Override
         default <U> Iso.Simple<S, A> discardR(Applicative<U, Iso<S, ?, A, A>> appB) {
-            return adapt(Iso.super.discardR(appB));
+            return Iso.Simple.adapt(Iso.super.discardR(appB));
         }
 
         @Override
         default <B> Iso.Simple<S, B> andThen(Optic.Simple<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, A, B> f) {
-            return adapt(Iso.super.andThen(f));
+            return Iso.Simple.adapt(Iso.super.andThen(f));
         }
 
         @Override
         default <R> Iso.Simple<R, A> compose(Optic.Simple<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, R, S> g) {
-            return adapt(Iso.super.compose(g));
+            return Iso.Simple.adapt(Iso.super.compose(g));
         }
 
         /**
@@ -290,8 +295,10 @@ public interface Iso<S, T, A, B> extends
                 Optic<? super Profunctor<?, ?, ?>, ? super Functor<?, ?>, S, S, A, A> optic) {
             return new Iso.Simple<S, A>() {
                 @Override
-                public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<A, ? extends CoF>, FT extends Functor<S, ? extends CoF>, PAFB extends Profunctor<A, FB, ? extends CoP>, PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(
-                        PAFB pafb) {
+                public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>,
+                        CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<A, ? extends CoF>,
+                        FT extends Functor<S, ? extends CoF>, PAFB extends Profunctor<A, FB, ? extends CoP>,
+                        PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
                     return optic.apply(pafb);
                 }
             };
