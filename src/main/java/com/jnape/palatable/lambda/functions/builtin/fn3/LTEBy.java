@@ -28,7 +28,7 @@ public final class LTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends B> compareFn, A y, A x) {
+    public Boolean checkedApply(Function<? super A, ? extends B> compareFn, A y, A x) {
         return LTBy.<A, B>ltBy(compareFn).or(cmpEqBy(compareFn)).apply(y, x);
     }
 

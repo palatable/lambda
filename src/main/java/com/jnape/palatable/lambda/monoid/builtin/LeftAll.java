@@ -35,7 +35,7 @@ public final class LeftAll<L, R> implements MonoidFactory<Monoid<L>, Either<L, R
     }
 
     @Override
-    public Monoid<Either<L, R>> apply(Monoid<L> lMonoid) {
+    public Monoid<Either<L, R>> checkedApply(Monoid<L> lMonoid) {
         Semigroup<Either<L, R>> semigroup = com.jnape.palatable.lambda.semigroup.builtin.LeftAll.leftAll(lMonoid);
         return Monoid.<Either<L, R>>monoid(semigroup, () -> left(lMonoid.identity()));
     }

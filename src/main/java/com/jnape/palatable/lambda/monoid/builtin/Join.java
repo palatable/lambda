@@ -21,7 +21,7 @@ public final class Join implements Monoid<String> {
     }
 
     @Override
-    public String apply(String x, String y) {
+    public String checkedApply(String x, String y) {
         return x + y;
     }
 

@@ -23,7 +23,7 @@ public final class LT<A extends Comparable<A>> implements BiPredicate<A, A> {
     }
 
     @Override
-    public Boolean apply(A y, A x) {
+    public Boolean checkedApply(A y, A x) {
         return ltBy(id(), y, x);
     }
 

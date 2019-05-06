@@ -23,7 +23,8 @@ public final class Span<A> implements Fn2<Function<? super A, ? extends Boolean>
     }
 
     @Override
-    public Tuple2<Iterable<A>, Iterable<A>> apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Tuple2<Iterable<A>, Iterable<A>> checkedApply(Function<? super A, ? extends Boolean> predicate,
+                                                         Iterable<A> as) {
         return Tuple2.fill(as).biMap(takeWhile(predicate), dropWhile(predicate));
     }
 

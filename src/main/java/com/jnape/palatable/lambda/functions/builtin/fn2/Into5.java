@@ -18,11 +18,11 @@ import com.jnape.palatable.lambda.functions.Fn5;
  */
 public final class Into5<A, B, C, D, E, F> implements Fn2<Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F>, Product5<A, B, C, D, E>, F> {
 
-    private static final Into5<?,?,?,?,?,?> INSTANCE = new Into5<>();
+    private static final Into5<?, ?, ?, ?, ?, ?> INSTANCE = new Into5<>();
 
     @Override
-    public F apply(Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F> fn,
-                   Product5<A, B, C, D, E> product) {
+    public F checkedApply(Fn5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends F> fn,
+                          Product5<A, B, C, D, E> product) {
         return product.<F>into(fn);
     }
 

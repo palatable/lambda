@@ -20,7 +20,7 @@ public final class InGroupsOf<A> implements Fn2<Integer, Iterable<A>, Iterable<I
     }
 
     @Override
-    public Iterable<Iterable<A>> apply(Integer k, Iterable<A> as) {
+    public Iterable<Iterable<A>> checkedApply(Integer k, Iterable<A> as) {
         return () -> new GroupingIterator<>(k, as.iterator());
     }
 

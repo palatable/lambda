@@ -18,7 +18,7 @@ public final class Magnetize<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>
     }
 
     @Override
-    public Iterable<Iterable<A>> apply(Iterable<A> as) {
+    public Iterable<Iterable<A>> checkedApply(Iterable<A> as) {
         return magnetizeBy(eq().toBiFunction(), as);
     }
 

@@ -21,7 +21,7 @@ public final class Any<A> implements BiPredicate<Function<? super A, ? extends B
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Boolean checkedApply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         for (A a : as)
             if (predicate.apply(a))
                 return true;

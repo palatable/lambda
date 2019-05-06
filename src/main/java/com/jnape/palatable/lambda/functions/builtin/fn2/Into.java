@@ -16,13 +16,13 @@ import java.util.function.BiFunction;
  */
 public final class Into<A, B, C> implements Fn2<BiFunction<? super A, ? super B, ? extends C>, Map.Entry<A, B>, C> {
 
-    private static final Into<?,?,?> INSTANCE = new Into<>();
+    private static final Into<?, ?, ?> INSTANCE = new Into<>();
 
     private Into() {
     }
 
     @Override
-    public C apply(BiFunction<? super A, ? super B, ? extends C> fn, Map.Entry<A, B> entry) {
+    public C checkedApply(BiFunction<? super A, ? super B, ? extends C> fn, Map.Entry<A, B> entry) {
         return fn.apply(entry.getKey(), entry.getValue());
     }
 

@@ -24,13 +24,13 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.GTBy.gtBy;
  */
 public final class MinBy<A, B extends Comparable<B>> implements SemigroupFactory<Function<? super A, ? extends B>, A> {
 
-    private static final MinBy<?,?> INSTANCE = new MinBy<>();
+    private static final MinBy<?, ?> INSTANCE = new MinBy<>();
 
     private MinBy() {
     }
 
     @Override
-    public Semigroup<A> apply(Function<? super A, ? extends B> compareFn) {
+    public Semigroup<A> checkedApply(Function<? super A, ? extends B> compareFn) {
         return (x, y) -> gtBy(compareFn, y, x) ? y : x;
     }
 

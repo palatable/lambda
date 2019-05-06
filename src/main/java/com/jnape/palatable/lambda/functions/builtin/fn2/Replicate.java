@@ -19,7 +19,7 @@ public final class Replicate<A> implements Fn2<Integer, A, Iterable<A>> {
     }
 
     @Override
-    public Iterable<A> apply(Integer n, A a) {
+    public Iterable<A> checkedApply(Integer n, A a) {
         return take(n, repeat(a));
     }
 

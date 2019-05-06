@@ -30,13 +30,13 @@ import static com.jnape.palatable.lambda.adt.Either.left;
  */
 public final class LeftAll<L, R> implements SemigroupFactory<Semigroup<L>, Either<L, R>> {
 
-    private static final LeftAll<?,?> INSTANCE = new LeftAll<>();
+    private static final LeftAll<?, ?> INSTANCE = new LeftAll<>();
 
     private LeftAll() {
     }
 
     @Override
-    public Semigroup<Either<L, R>> apply(Semigroup<L> lSemigroup) {
+    public Semigroup<Either<L, R>> checkedApply(Semigroup<L> lSemigroup) {
         return (x, y) -> x.match(xL -> y.match(yL -> left(lSemigroup.apply(xL, yL)), Either::right), Either::right);
     }
 

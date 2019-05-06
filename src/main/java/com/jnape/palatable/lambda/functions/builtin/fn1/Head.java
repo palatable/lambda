@@ -22,7 +22,7 @@ public final class Head<A> implements Fn1<Iterable<A>, Maybe<A>> {
     }
 
     @Override
-    public Maybe<A> apply(Iterable<A> as) {
+    public Maybe<A> checkedApply(Iterable<A> as) {
         Iterator<A> iterator = as.iterator();
         return iterator.hasNext() ? just(iterator.next()) : nothing();
     }

@@ -19,17 +19,17 @@ public final class Endo<A> implements Monoid<Fn1<A, A>> {
     private Endo() {
     }
 
-    @Override
-    public Fn1<A, A> identity() {
-        return id();
-    }
-
     public A apply(Fn1<A, A> f, Fn1<A, A> g, A a) {
         return apply(f, g).apply(a);
     }
 
     @Override
-    public Fn1<A, A> apply(Fn1<A, A> f, Fn1<A, A> g) {
+    public Fn1<A, A> identity() {
+        return id();
+    }
+
+    @Override
+    public Fn1<A, A> checkedApply(Fn1<A, A> f, Fn1<A, A> g) {
         return f.fmap(g);
     }
 

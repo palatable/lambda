@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.monoid.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.functions.specialized.MonoidFactory;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monoid.Monoid;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
@@ -23,7 +23,7 @@ public final class RunAll<A> implements MonoidFactory<Monoid<A>, IO<A>> {
     }
 
     @Override
-    public Monoid<IO<A>> apply(Monoid<A> monoid) {
+    public Monoid<IO<A>> checkedApply(Monoid<A> monoid) {
         Semigroup<IO<A>> semigroup = com.jnape.palatable.lambda.semigroup.builtin.RunAll.runAll(monoid);
         return monoid(semigroup, io(monoid.identity()));
     }

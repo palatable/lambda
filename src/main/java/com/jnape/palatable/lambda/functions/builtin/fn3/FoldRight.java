@@ -47,7 +47,8 @@ public final class FoldRight<A, B> implements
     }
 
     @Override
-    public Lazy<B> apply(BiFunction<? super A, ? super Lazy<B>, ? extends Lazy<B>> fn, Lazy<B> acc, Iterable<A> as) {
+    public Lazy<B> checkedApply(BiFunction<? super A, ? super Lazy<B>, ? extends Lazy<B>> fn, Lazy<B> acc,
+                                Iterable<A> as) {
         return lazyRec((f, lazyIt) -> lazyIt.flatMap(it -> it.hasNext()
                                                            ? fn.apply(it.next(), f.apply(lazy(it)))
                                                            : acc),

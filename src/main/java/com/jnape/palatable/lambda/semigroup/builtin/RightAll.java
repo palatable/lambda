@@ -29,13 +29,13 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  */
 public final class RightAll<L, R> implements SemigroupFactory<Semigroup<R>, Either<L, R>> {
 
-    private static final RightAll<?,?> INSTANCE = new RightAll<>();
+    private static final RightAll<?, ?> INSTANCE = new RightAll<>();
 
     private RightAll() {
     }
 
     @Override
-    public Semigroup<Either<L, R>> apply(Semigroup<R> rSemigroup) {
+    public Semigroup<Either<L, R>> checkedApply(Semigroup<R> rSemigroup) {
         return (eitherX, eitherY) -> eitherX.flatMap(xR -> eitherY.flatMap(yR -> right(rSemigroup.apply(xR, yR))));
     }
 

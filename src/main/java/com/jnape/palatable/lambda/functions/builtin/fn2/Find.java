@@ -26,7 +26,7 @@ public final class Find<A> implements Fn2<Function<? super A, ? extends Boolean>
     }
 
     @Override
-    public Maybe<A> apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Maybe<A> checkedApply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return head(dropWhile(not(predicate), as));
     }
 

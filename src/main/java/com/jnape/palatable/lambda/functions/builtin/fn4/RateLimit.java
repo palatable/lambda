@@ -53,7 +53,7 @@ public final class RateLimit<A> implements Fn4<Supplier<Instant>, Long, Duration
     }
 
     @Override
-    public Iterable<A> apply(Supplier<Instant> instantSupplier, Long limit, Duration duration, Iterable<A> as) {
+    public Iterable<A> checkedApply(Supplier<Instant> instantSupplier, Long limit, Duration duration, Iterable<A> as) {
         if (limit < 1)
             throw new IllegalArgumentException("Limit must be greater than 0: " + limit);
 

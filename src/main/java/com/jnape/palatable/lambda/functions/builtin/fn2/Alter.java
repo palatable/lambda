@@ -21,7 +21,7 @@ public final class Alter<A> implements Fn2<Effect<? super A>, A, IO<A>> {
     }
 
     @Override
-    public IO<A> apply(Effect<? super A> effect, A a) {
+    public IO<A> checkedApply(Effect<? super A> effect, A a) {
         return effect.fmap(io -> io.fmap(constantly(a))).apply(a);
     }
 

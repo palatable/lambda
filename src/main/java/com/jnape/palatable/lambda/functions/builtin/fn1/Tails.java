@@ -28,7 +28,7 @@ public final class Tails<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>>> {
     }
 
     @Override
-    public Iterable<Iterable<A>> apply(Iterable<A> as) {
+    public Iterable<Iterable<A>> checkedApply(Iterable<A> as) {
         return snoc(emptyList(), zipWith((a, __) -> a, unfoldr(k -> just(tuple(drop(k, as), k + 1)), 0), as));
     }
 

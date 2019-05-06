@@ -38,7 +38,7 @@ public final class LazyRec<A, B> implements
     }
 
     @Override
-    public Lazy<B> apply(BiFunction<Function<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn, A a) {
+    public Lazy<B> checkedApply(BiFunction<Function<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn, A a) {
         return join(lazy(() -> fn.apply(nextA -> apply(fn, nextA), a)));
     }
 

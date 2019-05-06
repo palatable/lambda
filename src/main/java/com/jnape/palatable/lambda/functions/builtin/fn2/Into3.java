@@ -16,10 +16,10 @@ import com.jnape.palatable.lambda.functions.Fn3;
  */
 public final class Into3<A, B, C, D> implements Fn2<Fn3<? super A, ? super B, ? super C, ? extends D>, Product3<A, B, C>, D> {
 
-    private static final Into3<?,?,?,?> INSTANCE = new Into3<>();
+    private static final Into3<?, ?, ?, ?> INSTANCE = new Into3<>();
 
     @Override
-    public D apply(Fn3<? super A, ? super B, ? super C, ? extends D> fn, Product3<A, B, C> product) {
+    public D checkedApply(Fn3<? super A, ? super B, ? super C, ? extends D> fn, Product3<A, B, C> product) {
         return product.into(fn);
     }
 

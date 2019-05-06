@@ -27,7 +27,7 @@ public final class SortWith<A> implements Fn2<Comparator<? super A>, Iterable<A>
     }
 
     @Override
-    public List<A> apply(Comparator<? super A> comparator, Iterable<A> as) {
+    public List<A> checkedApply(Comparator<? super A> comparator, Iterable<A> as) {
         List<A> result = toCollection(ArrayList::new, as);
         result.sort(comparator);
         return result;

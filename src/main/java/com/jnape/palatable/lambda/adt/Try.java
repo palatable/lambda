@@ -292,7 +292,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
     @SuppressWarnings("try")
     public static <A extends AutoCloseable, B> Try<B> withResources(
             CheckedSupplier<? extends Exception, A> aSupplier,
-            CheckedFn1<? extends Exception, ? super A, ? extends Try<? extends B>> fn) {
+            CheckedFn1<?, ? super A, ? extends Try<? extends B>> fn) {
         return trying(() -> {
             try (A resource = aSupplier.get()) {
                 return fn.apply(resource).<B>fmap(upcast());
@@ -316,7 +316,8 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
             CheckedSupplier<? extends Exception, ? extends A> aSupplier,
             CheckedFn1<? extends Exception, ? super A, ? extends B> bFn,
             CheckedFn1<? extends Exception, ? super B, ? extends Try<? extends C>> fn) {
-        return withResources(aSupplier, a -> withResources(() -> bFn.apply(a), fn::apply));
+        CheckedFn1<Throwable, A, Try<? extends C>> checkedFn = a -> withResources(() -> bFn.apply(a), fn::apply);
+        return withResources(aSupplier, checkedFn);
     }
 
     /**
@@ -339,7 +340,8 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
             CheckedFn1<? extends Exception, ? super A, ? extends B> bFn,
             CheckedFn1<? extends Exception, ? super B, ? extends C> cFn,
             CheckedFn1<? extends Exception, ? super C, ? extends Try<? extends D>> fn) {
-        return withResources(aSupplier, bFn, b -> withResources(() -> cFn.apply(b), fn::apply));
+        CheckedFn1<Exception, B, Try<? extends D>> checkedFn = b -> withResources(() -> cFn.apply(b), fn::apply);
+        return withResources(aSupplier, bFn, checkedFn);
     }
 
     private static final class Failure<A> extends Try<A> {

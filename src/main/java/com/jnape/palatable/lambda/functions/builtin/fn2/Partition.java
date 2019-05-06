@@ -26,14 +26,14 @@ import static java.util.Collections.emptySet;
  */
 public final class Partition<A, B, C> implements Fn2<Function<? super A, ? extends CoProduct2<B, C, ?>>, Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> {
 
-    private static final Partition<?,?,?> INSTANCE = new Partition<>();
+    private static final Partition<?, ?, ?> INSTANCE = new Partition<>();
 
     private Partition() {
     }
 
     @Override
-    public Tuple2<Iterable<B>, Iterable<C>> apply(Function<? super A, ? extends CoProduct2<B, C, ?>> function,
-                                                  Iterable<A> as) {
+    public Tuple2<Iterable<B>, Iterable<C>> checkedApply(Function<? super A, ? extends CoProduct2<B, C, ?>> function,
+                                                         Iterable<A> as) {
         return Tuple2.<Iterable<CoProduct2<B, C, ?>>>fill(map(function, as))
                 .biMap(Map.<CoProduct2<B, C, ?>, Iterable<B>>map(cp -> cp.match(Collections::singleton, __ -> emptySet())),
                        Map.<CoProduct2<B, C, ?>, Iterable<C>>map(cp -> cp.match(__ -> emptySet(), Collections::singleton)))

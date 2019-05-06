@@ -24,7 +24,7 @@ public final class Intersection<A> implements Fn2<Iterable<A>, Iterable<A>, Iter
     }
 
     @Override
-    public Iterable<A> apply(Iterable<A> xs, Iterable<A> ys) {
+    public Iterable<A> checkedApply(Iterable<A> xs, Iterable<A> ys) {
         return filter(x -> find(eq(x), ys).fmap(constantly(true)).orElse(false), distinct(xs));
     }
 

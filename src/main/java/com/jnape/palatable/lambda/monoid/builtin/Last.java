@@ -30,7 +30,7 @@ public final class Last<A> implements Monoid<Maybe<A>> {
     }
 
     @Override
-    public Maybe<A> apply(Maybe<A> x, Maybe<A> y) {
+    public Maybe<A> checkedApply(Maybe<A> x, Maybe<A> y) {
         return first(y, x);
     }
 

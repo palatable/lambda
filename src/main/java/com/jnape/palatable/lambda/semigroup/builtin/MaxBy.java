@@ -24,13 +24,13 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.LTBy.ltBy;
  */
 public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory<Function<? super A, ? extends B>, A> {
 
-    private static final MaxBy<?,?> INSTANCE = new MaxBy<>();
+    private static final MaxBy<?, ?> INSTANCE = new MaxBy<>();
 
     private MaxBy() {
     }
 
     @Override
-    public Semigroup<A> apply(Function<? super A, ? extends B> compareFn) {
+    public Semigroup<A> checkedApply(Function<? super A, ? extends B> compareFn) {
         return (x, y) -> ltBy(compareFn, y, x) ? y : x;
     }
 

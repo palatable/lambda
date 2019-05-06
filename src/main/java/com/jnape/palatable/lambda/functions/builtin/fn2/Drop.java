@@ -21,7 +21,7 @@ public final class Drop<A> implements Fn2<Integer, Iterable<A>, Iterable<A>> {
     }
 
     @Override
-    public Iterable<A> apply(Integer n, Iterable<A> as) {
+    public Iterable<A> checkedApply(Integer n, Iterable<A> as) {
         return new DroppingIterable<>(n, as);
     }
 

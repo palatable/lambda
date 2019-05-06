@@ -42,7 +42,7 @@ public final class Sequence<A, App extends Applicative<?, App>, Trav extends Tra
     }
 
     @Override
-    public AppTrav apply(TravApp traversable, Function<TravA, ? extends AppTrav> pure) {
+    public AppTrav checkedApply(TravApp traversable, Function<TravA, ? extends AppTrav> pure) {
         return traversable.traverse(id(), pure);
     }
 

@@ -15,14 +15,14 @@ import java.util.function.Function;
  * @param <FA> the functor type
  */
 public final class Peek<A, FA extends Functor<A, ?>> implements Fn2<Consumer<? super A>, FA, FA> {
-    private static final Peek<?,?> INSTANCE = new Peek<>();
+    private static final Peek<?, ?> INSTANCE = new Peek<>();
 
     private Peek() {
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public FA apply(Consumer<? super A> consumer, FA fa) {
+    public FA checkedApply(Consumer<? super A> consumer, FA fa) {
         return (FA) fa.fmap(a -> {
             consumer.accept(a);
             return a;

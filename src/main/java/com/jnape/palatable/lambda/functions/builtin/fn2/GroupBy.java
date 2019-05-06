@@ -22,13 +22,13 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  */
 public final class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>, Iterable<V>, Map<K, List<V>>> {
 
-    private static final GroupBy<?,?> INSTANCE = new GroupBy<>();
+    private static final GroupBy<?, ?> INSTANCE = new GroupBy<>();
 
     private GroupBy() {
     }
 
     @Override
-    public Map<K, List<V>> apply(Function<? super V, ? extends K> keyFn, Iterable<V> vs) {
+    public Map<K, List<V>> checkedApply(Function<? super V, ? extends K> keyFn, Iterable<V> vs) {
         return foldLeft((m, v) -> {
             m.computeIfAbsent(keyFn.apply(v), __ -> new ArrayList<>()).add(v);
             return m;

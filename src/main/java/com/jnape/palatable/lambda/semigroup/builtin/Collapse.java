@@ -21,13 +21,13 @@ import com.jnape.palatable.lambda.semigroup.Semigroup;
  */
 public final class Collapse<_1, _2> implements BiSemigroupFactory<Semigroup<_1>, Semigroup<_2>, Tuple2<_1, _2>> {
 
-    private static final Collapse<?,?> INSTANCE = new Collapse<>();
+    private static final Collapse<?, ?> INSTANCE = new Collapse<>();
 
     private Collapse() {
     }
 
     @Override
-    public Semigroup<Tuple2<_1, _2>> apply(Semigroup<_1> _1Semigroup, Semigroup<_2> _2Semigroup) {
+    public Semigroup<Tuple2<_1, _2>> checkedApply(Semigroup<_1> _1Semigroup, Semigroup<_2> _2Semigroup) {
         return (x, y) -> x.biMap(_1Semigroup.flip().apply(y._1()),
                                  _2Semigroup.flip().apply(y._2()));
     }

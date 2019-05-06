@@ -14,7 +14,7 @@ public final class Noop<A> implements Effect<A> {
     }
 
     @Override
-    public void accept(A a) {
+    public void checkedAccept(A a) {
     }
 
     /**

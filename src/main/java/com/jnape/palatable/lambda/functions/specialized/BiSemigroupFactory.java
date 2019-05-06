@@ -8,7 +8,17 @@ import com.jnape.palatable.lambda.semigroup.Semigroup;
 public interface BiSemigroupFactory<A, B, C> extends Fn4<A, B, C, C, C> {
 
     @Override
-    Semigroup<C> apply(A a, B b);
+    Semigroup<C> checkedApply(A a, B b) throws Throwable;
+
+    @Override
+    default C checkedApply(A a, B b, C c, C d) throws Throwable {
+        return checkedApply(a, b).checkedApply(c, d);
+    }
+
+    @Override
+    default Semigroup<C> apply(A a, B b) {
+        return Fn4.super.apply(a, b)::apply;
+    }
 
     @Override
     default SemigroupFactory<B, C> apply(A a) {
@@ -23,10 +33,5 @@ public interface BiSemigroupFactory<A, B, C> extends Fn4<A, B, C, C, C> {
     @Override
     default SemigroupFactory<? super Product2<? extends A, ? extends B>, C> uncurry() {
         return ab -> apply(ab._1(), ab._2());
-    }
-
-    @Override
-    default C apply(A a, B b, C c, C d) {
-        return apply(a).apply(b).apply(c, d);
     }
 }

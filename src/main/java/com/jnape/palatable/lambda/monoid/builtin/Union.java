@@ -26,7 +26,7 @@ public final class Union<A> implements Monoid<Iterable<A>> {
     }
 
     @Override
-    public Iterable<A> apply(Iterable<A> xs, Iterable<A> ys) {
+    public Iterable<A> checkedApply(Iterable<A> xs, Iterable<A> ys) {
         return new UnioningIterable<>(xs, ys);
     }
 

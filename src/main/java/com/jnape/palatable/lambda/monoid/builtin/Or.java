@@ -28,7 +28,7 @@ public final class Or implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> 
     }
 
     @Override
-    public Boolean apply(Boolean x, Boolean y) {
+    public Boolean checkedApply(Boolean x, Boolean y) {
         return x || y;
     }
 
@@ -39,7 +39,7 @@ public final class Or implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> 
 
     @Override
     public <B> Boolean foldMap(Function<? super B, ? extends Boolean> fn, Iterable<B> bs) {
-        return find(fn::apply, bs).fmap(constantly(true)).orElse(false);
+        return find(fn, bs).fmap(constantly(true)).orElse(false);
     }
 
     @Override

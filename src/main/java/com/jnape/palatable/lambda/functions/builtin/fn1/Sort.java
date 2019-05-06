@@ -25,7 +25,7 @@ public final class Sort<A extends Comparable<A>> implements Fn1<Iterable<A>, Lis
     }
 
     @Override
-    public List<A> apply(Iterable<A> as) {
+    public List<A> checkedApply(Iterable<A> as) {
         return sortBy(id(), as);
     }
 

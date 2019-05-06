@@ -19,13 +19,13 @@ import java.util.function.Function;
  */
 public final class GTBy<A, B extends Comparable<B>> implements Fn3<Function<? super A, ? extends B>, A, A, Boolean> {
 
-    private static final GTBy<?,?> INSTANCE = new GTBy<>();
+    private static final GTBy<?, ?> INSTANCE = new GTBy<>();
 
     private GTBy() {
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends B> compareFn, A y, A x) {
+    public Boolean checkedApply(Function<? super A, ? extends B> compareFn, A y, A x) {
         return compareFn.apply(x).compareTo(compareFn.apply(y)) > 0;
     }
 

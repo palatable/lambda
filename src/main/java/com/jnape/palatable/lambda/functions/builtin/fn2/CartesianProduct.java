@@ -21,13 +21,13 @@ import com.jnape.palatable.lambda.iteration.CombinatorialIterator;
  */
 public final class CartesianProduct<A, B> implements Fn2<Iterable<A>, Iterable<B>, Iterable<Tuple2<A, B>>> {
 
-    private static final CartesianProduct<?,?> INSTANCE = new CartesianProduct<>();
+    private static final CartesianProduct<?, ?> INSTANCE = new CartesianProduct<>();
 
     private CartesianProduct() {
     }
 
     @Override
-    public Iterable<Tuple2<A, B>> apply(Iterable<A> as, Iterable<B> bs) {
+    public Iterable<Tuple2<A, B>> checkedApply(Iterable<A> as, Iterable<B> bs) {
         return () -> new CombinatorialIterator<>(as.iterator(), bs.iterator());
     }
 

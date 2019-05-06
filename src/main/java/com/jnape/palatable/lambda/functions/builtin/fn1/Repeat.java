@@ -16,7 +16,7 @@ public final class Repeat<A> implements Fn1<A, Iterable<A>> {
     }
 
     @Override
-    public Iterable<A> apply(A a) {
+    public Iterable<A> checkedApply(A a) {
         return () -> new RepetitiousIterator<>(a);
     }
 

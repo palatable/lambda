@@ -27,7 +27,7 @@ public final class MergeMaps<K, V> implements BiMonoidFactory<Supplier<Map<K, V>
     }
 
     @Override
-    public Monoid<Map<K, V>> apply(Supplier<Map<K, V>> mSupplier, Semigroup<V> semigroup) {
+    public Monoid<Map<K, V>> checkedApply(Supplier<Map<K, V>> mSupplier, Semigroup<V> semigroup) {
         return Monoid.<Map<K, V>>monoid((x, y) -> {
             Map<K, V> copy = mSupplier.get();
             copy.putAll(x);

@@ -32,7 +32,7 @@ public final class LiftA2<A, B, C, App extends Applicative<?, App>,
     }
 
     @Override
-    public AppC apply(BiFunction<? super A, ? super B, ? extends C> fn, AppA appA, AppB appB) {
+    public AppC checkedApply(BiFunction<? super A, ? super B, ? extends C> fn, AppA appA, AppB appB) {
         return appB.zip(appA.fmap(Fn2.<A, B, C>fn2(fn))).coerce();
     }
 

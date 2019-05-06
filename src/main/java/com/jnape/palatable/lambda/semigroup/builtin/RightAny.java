@@ -30,13 +30,13 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  */
 public final class RightAny<L, R> implements SemigroupFactory<Semigroup<R>, Either<L, R>> {
 
-    private static final RightAny<?,?> INSTANCE = new RightAny<>();
+    private static final RightAny<?, ?> INSTANCE = new RightAny<>();
 
     private RightAny() {
     }
 
     @Override
-    public Semigroup<Either<L, R>> apply(Semigroup<R> rSemigroup) {
+    public Semigroup<Either<L, R>> checkedApply(Semigroup<R> rSemigroup) {
         return (x, y) -> x.match(constantly(y),
                                  xR -> y.match(constantly(right(xR)),
                                                rSemigroup.apply(xR).andThen(Either::right)));

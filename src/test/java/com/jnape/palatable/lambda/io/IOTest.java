@@ -142,7 +142,7 @@ public class IOTest {
         assertEquals(STACK_EXPLODING_NUMBER,
                      new Fn1<IO<Integer>, IO<Integer>>() {
                          @Override
-                         public IO<Integer> apply(IO<Integer> a) {
+                         public IO<Integer> checkedApply(IO<Integer> a) {
                              return a.flatMap(x -> x < STACK_EXPLODING_NUMBER ? apply(io(x + 1)) : io(x));
                          }
                      }.apply(io(0)).unsafePerformIO());
@@ -172,7 +172,7 @@ public class IOTest {
         assertEquals(STACK_EXPLODING_NUMBER,
                      new Fn1<IO<Integer>, IO<Integer>>() {
                          @Override
-                         public IO<Integer> apply(IO<Integer> a) {
+                         public IO<Integer> checkedApply(IO<Integer> a) {
                              return a.flatMap(x -> x < STACK_EXPLODING_NUMBER ? apply(io(x + 1)) : io(x));
                          }
                      }.apply(io(0)).unsafePerformAsyncIO().join());

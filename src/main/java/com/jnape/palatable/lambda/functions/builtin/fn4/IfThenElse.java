@@ -15,8 +15,8 @@ public final class IfThenElse<A, B> implements Fn4<Function<? super A, ? extends
     }
 
     @Override
-    public B apply(Function<? super A, ? extends Boolean> predicate, Function<? super A, ? extends B> thenCase,
-                   Function<? super A, ? extends B> elseCase, A a) {
+    public B checkedApply(Function<? super A, ? extends Boolean> predicate, Function<? super A, ? extends B> thenCase,
+                          Function<? super A, ? extends B> elseCase, A a) {
         return predicate.apply(a) ? thenCase.apply(a) : elseCase.apply(a);
     }
 

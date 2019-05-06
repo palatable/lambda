@@ -27,7 +27,7 @@ public final class Slide<A> implements Fn2<Integer, Iterable<A>, Iterable<Iterab
     }
 
     @Override
-    public Iterable<Iterable<A>> apply(Integer k, Iterable<A> as) {
+    public Iterable<Iterable<A>> checkedApply(Integer k, Iterable<A> as) {
         if (k == 0)
             throw new IllegalArgumentException("k must be greater than 0");
 

@@ -16,15 +16,15 @@ import java.util.function.Function;
  */
 public final class Both<A, B, C> implements Fn3<Function<? super A, ? extends B>, Function<? super A, ? extends C>, A, Tuple2<B, C>> {
 
-    private static final Both<?,?,?> INSTANCE = new Both<>();
+    private static final Both<?, ?, ?> INSTANCE = new Both<>();
 
     private Both() {
     }
 
     @Override
-    public Tuple2<B, C> apply(Function<? super A, ? extends B> f,
-                              Function<? super A, ? extends C> g,
-                              A a) {
+    public Tuple2<B, C> checkedApply(Function<? super A, ? extends B> f,
+                                     Function<? super A, ? extends C> g,
+                                     A a) {
         return Tuple2.fill(a).biMap(f, g);
     }
 

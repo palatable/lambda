@@ -15,10 +15,10 @@ import java.util.function.Function;
  */
 public final class Into1<A, B> implements Fn2<Function<? super A, ? extends B>, SingletonHList<A>, B> {
 
-    private static final Into1<?,?> INSTANCE = new Into1<>();
+    private static final Into1<?, ?> INSTANCE = new Into1<>();
 
     @Override
-    public B apply(Function<? super A, ? extends B> fn, SingletonHList<A> singletonHList) {
+    public B checkedApply(Function<? super A, ? extends B> fn, SingletonHList<A> singletonHList) {
         return fn.apply(singletonHList.head());
     }
 

@@ -21,7 +21,7 @@ public final class Tupler2<A, B> implements Fn2<A, B, Tuple2<A, B>> {
     }
 
     @Override
-    public Tuple2<A, B> apply(A a, B b) {
+    public Tuple2<A, B> checkedApply(A a, B b) {
         return tuple(a, b);
     }
 

@@ -23,7 +23,7 @@ public final class TakeWhile<A> implements Fn2<Function<? super A, ? extends Boo
     }
 
     @Override
-    public Iterable<A> apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Iterable<A> checkedApply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return new PredicatedTakingIterable<>(predicate, as);
     }
 

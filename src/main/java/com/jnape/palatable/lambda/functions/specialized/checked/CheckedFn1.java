@@ -40,13 +40,14 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      */
     @Override
     default <C> CheckedFn1<T, A, C> fmap(Function<? super B, ? extends C> f) {
-        return Fn1.super.<C>fmap(f)::apply;
+        return Fn1.super.<C>fmap(f)::checkedApply;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("overrides")
     default <C> CheckedFn1<T, A, C> flatMap(Function<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
         return Fn1.super.flatMap(f).<Fn1<A, C>>coerce()::apply;
     }
@@ -56,7 +57,7 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      */
     @Override
     default <C> CheckedFn1<T, A, C> discardL(Applicative<C, Fn1<A, ?>> appB) {
-        return Fn1.super.discardL(appB)::apply;
+        return Fn1.super.discardL(appB)::checkedApply;
     }
 
     /**
@@ -64,7 +65,7 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      */
     @Override
     default <C> CheckedFn1<T, A, B> discardR(Applicative<C, Fn1<A, ?>> appB) {
-        return Fn1.super.discardR(appB)::apply;
+        return Fn1.super.discardR(appB)::checkedApply;
     }
 
     /**
@@ -72,7 +73,7 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      */
     @Override
     default <C> CheckedFn1<T, A, C> zip(Applicative<Function<? super B, ? extends C>, Fn1<A, ?>> appFn) {
-        return Fn1.super.zip(appFn)::apply;
+        return Fn1.super.zip(appFn)::checkedApply;
     }
 
     /**
@@ -105,7 +106,7 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
     @Override
     default <Z, C> CheckedFn1<T, Z, C> diMap(Function<? super Z, ? extends A> lFn,
                                              Function<? super B, ? extends C> rFn) {
-        return Fn1.super.diMap(lFn, rFn)::apply;
+        return Fn1.super.diMap(lFn, rFn)::checkedApply;
     }
 
     /**
@@ -113,7 +114,7 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      */
     @Override
     default <C> CheckedFn1<T, Tuple2<C, A>, Tuple2<C, B>> cartesian() {
-        return Fn1.super.<C>cartesian()::apply;
+        return Fn1.super.<C>cartesian()::checkedApply;
     }
 
     /**
@@ -121,7 +122,7 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      */
     @Override
     default CheckedFn1<T, A, Tuple2<A, B>> carry() {
-        return Fn1.super.carry()::apply;
+        return Fn1.super.carry()::checkedApply;
     }
 
     /**
@@ -137,7 +138,7 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      */
     @Override
     default <Z> CheckedFn1<T, Z, B> compose(Function<? super Z, ? extends A> before) {
-        return Fn1.super.<Z>compose(before)::apply;
+        return Fn1.super.<Z>compose(before)::checkedApply;
     }
 
     /**
@@ -145,17 +146,8 @@ public interface CheckedFn1<T extends Throwable, A, B> extends Fn1<A, B> {
      */
     @Override
     default <C> CheckedFn1<T, A, C> andThen(Function<? super B, ? extends C> after) {
-        return Fn1.super.<C>andThen(after)::apply;
+        return Fn1.super.<C>andThen(after)::checkedApply;
     }
-
-    /**
-     * A version of {@link Fn1#apply} that can throw checked exceptions.
-     *
-     * @param a the function argument
-     * @return the application of the argument to the function
-     * @throws T any exception that can be thrown by this method
-     */
-    B checkedApply(A a) throws T;
 
     /**
      * Convenience static factory method for constructing a {@link CheckedFn1} without an explicit cast or type

@@ -25,7 +25,7 @@ public final class PutAll implements Monoid<HMap> {
     }
 
     @Override
-    public HMap apply(HMap x, HMap y) {
+    public HMap checkedApply(HMap x, HMap y) {
         return x.putAll(y);
     }
 

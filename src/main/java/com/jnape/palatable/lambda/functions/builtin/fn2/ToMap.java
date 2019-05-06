@@ -25,7 +25,7 @@ public final class ToMap<K, V, M extends Map<K, V>> implements Fn2<Supplier<M>, 
     }
 
     @Override
-    public M apply(Supplier<M> mSupplier, Iterable<? extends Map.Entry<K, V>> entries) {
+    public M checkedApply(Supplier<M> mSupplier, Iterable<? extends Map.Entry<K, V>> entries) {
         return foldLeft((m, kv) -> {
             m.put(kv.getKey(), kv.getValue());
             return m;

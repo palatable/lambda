@@ -22,7 +22,7 @@ public final class Uncons<A> implements Fn1<Iterable<A>, Maybe<Tuple2<A, Iterabl
     }
 
     @Override
-    public Maybe<Tuple2<A, Iterable<A>>> apply(Iterable<A> as) {
+    public Maybe<Tuple2<A, Iterable<A>>> checkedApply(Iterable<A> as) {
         return head(as).fmap(a -> tuple(a, tail(as)));
     }
 

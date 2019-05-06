@@ -21,11 +21,12 @@ import com.jnape.palatable.lambda.functions.Fn7;
  */
 public final class Into7<A, B, C, D, E, F, G, H> implements Fn2<Fn7<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? extends H>, Product7<A, B, C, D, E, F, G>, H> {
 
-    private static final Into7<?,?,?,?,?,?,?,?> INSTANCE = new Into7<>();
+    private static final Into7<?, ?, ?, ?, ?, ?, ?, ?> INSTANCE = new Into7<>();
 
     @Override
-    public H apply(Fn7<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? extends H> fn,
-                   Product7<A, B, C, D, E, F, G> product) {
+    public H checkedApply(
+            Fn7<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? extends H> fn,
+            Product7<A, B, C, D, E, F, G> product) {
         return product.<H>into(fn);
     }
 

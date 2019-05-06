@@ -25,7 +25,7 @@ public final class Into8<A, B, C, D, E, F, G, H, I> implements Fn2<Fn8<? super A
     private static final Into8<?, ?, ?, ?, ?, ?, ?, ?, ?> INSTANCE = new Into8<>();
 
     @Override
-    public I apply(
+    public I checkedApply(
             Fn8<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? super G, ? super H, ? extends I> fn,
             Product8<A, B, C, D, E, F, G, H> product) {
         return product.<I>into(fn);

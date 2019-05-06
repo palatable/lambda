@@ -27,7 +27,7 @@ public final class View<S, T, A, B> implements Fn2<Optic<? super Fn1<?, ?>, ? su
     }
 
     @Override
-    public A apply(Optic<? super Fn1<?, ?>, ? super Const<A, ?>, S, T, A, B> optic, S s) {
+    public A checkedApply(Optic<? super Fn1<?, ?>, ? super Const<A, ?>, S, T, A, B> optic, S s) {
         return optic.<Fn1<?, ?>, Const<A, ?>, Const<A, B>, Const<A, T>, Fn1<A, Const<A, B>>, Fn1<S, Const<A, T>>>apply(
                 Const::new).apply(s).runConst();
     }

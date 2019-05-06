@@ -30,7 +30,7 @@ public final class Compose<A> implements MonoidFactory<Monoid<A>, CompletableFut
     }
 
     @Override
-    public Monoid<CompletableFuture<A>> apply(Monoid<A> aMonoid) {
+    public Monoid<CompletableFuture<A>> checkedApply(Monoid<A> aMonoid) {
         return monoid(com.jnape.palatable.lambda.semigroup.builtin.Compose.compose(aMonoid),
                       (Supplier<CompletableFuture<A>>) () -> completedFuture(aMonoid.identity()));
     }

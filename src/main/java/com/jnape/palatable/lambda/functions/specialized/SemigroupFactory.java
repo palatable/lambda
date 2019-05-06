@@ -7,10 +7,15 @@ import com.jnape.palatable.lambda.semigroup.Semigroup;
 public interface SemigroupFactory<A, B> extends Fn3<A, B, B, B> {
 
     @Override
-    Semigroup<B> apply(A a);
+    Semigroup<B> checkedApply(A a) throws Throwable;
 
     @Override
-    default B apply(A a, B b, B c) {
-        return apply(a).apply(b, c);
+    default Semigroup<B> apply(A a) {
+        return Fn3.super.apply(a)::apply;
+    }
+
+    @Override
+    default B checkedApply(A a, B b, B c) throws Throwable {
+        return checkedApply(a).checkedApply(b, c);
     }
 }

@@ -28,7 +28,7 @@ public final class Upcast<A extends B, B> implements Fn1<A, B> {
     }
 
     @Override
-    public B apply(A a) {
+    public B checkedApply(A a) {
         return a;
     }
 

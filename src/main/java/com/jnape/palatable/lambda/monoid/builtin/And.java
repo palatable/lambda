@@ -29,7 +29,7 @@ public final class And implements Monoid<Boolean>, BiPredicate<Boolean, Boolean>
     }
 
     @Override
-    public Boolean apply(Boolean x, Boolean y) {
+    public Boolean checkedApply(Boolean x, Boolean y) {
         return x && y;
     }
 

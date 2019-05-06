@@ -28,7 +28,7 @@ public final class Pre<S, T, A, B> implements Fn1<Optic<? super Fn1<?, ?>, ? sup
     }
 
     @Override
-    public Optic<Fn1<?, ?>, Const<Maybe<A>, ?>, S, T, Maybe<A>, B> apply(
+    public Optic<Fn1<?, ?>, Const<Maybe<A>, ?>, S, T, Maybe<A>, B> checkedApply(
             Optic<? super Fn1<?, ?>, ? super Const<Maybe<A>, ?>, S, T, A, B> optic) {
         Optic<? super Fn1<?, ?>, ? super Const<Maybe<A>, ?>, S, T, Maybe<A>, B> mappedOptic = optic.mapA(Maybe::just);
         return reframe(mappedOptic);
@@ -51,7 +51,7 @@ public final class Pre<S, T, A, B> implements Fn1<Optic<? super Fn1<?, ?>, ? sup
         Optic<? super Fn1<?, ?>, Const<Maybe<A>, ?>, S, T, A, B> optic = protoOptic
                 .toOptic(new Pure<Const<Maybe<A>, ?>>() {
                     @Override
-                    public <X> Const<Maybe<A>, X> apply(X x) {
+                    public <X> Const<Maybe<A>, X> checkedApply(X x) {
                         return new Const<>(nothing());
                     }
                 });

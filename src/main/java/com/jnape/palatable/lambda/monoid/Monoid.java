@@ -110,7 +110,7 @@ public interface Monoid<A> extends Semigroup<A> {
             }
 
             @Override
-            public A apply(A x, A y) {
+            public A checkedApply(A x, A y) {
                 return semigroup.apply(x, y);
             }
         };
@@ -124,7 +124,7 @@ public interface Monoid<A> extends Semigroup<A> {
             }
 
             @Override
-            public A apply(A x, A y) {
+            public A checkedApply(A x, A y) {
                 return semigroup.apply(x, y);
             }
         };

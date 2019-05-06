@@ -26,7 +26,7 @@ public final class Compose<A> implements SemigroupFactory<Semigroup<A>, Completa
     }
 
     @Override
-    public Semigroup<CompletableFuture<A>> apply(Semigroup<A> aSemigroup) {
+    public Semigroup<CompletableFuture<A>> checkedApply(Semigroup<A> aSemigroup) {
         return (futureX, futureY) -> futureX.thenCompose(x -> futureY.thenApply(y -> aSemigroup.apply(x, y)));
     }
 

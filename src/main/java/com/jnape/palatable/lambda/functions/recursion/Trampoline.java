@@ -25,7 +25,7 @@ public final class Trampoline<A, B> implements Fn2<Function<? super A, ? extends
     private static final Trampoline<?, ?> INSTANCE = new Trampoline<>();
 
     @Override
-    public B apply(Function<? super A, ? extends RecursiveResult<A, B>> fn, A a) {
+    public B checkedApply(Function<? super A, ? extends RecursiveResult<A, B>> fn, A a) {
         RecursiveResult<A, B> next = fn.apply(a);
         while (next instanceof Recurse)
             next = fn.apply(((Recurse<A, B>) next).a);

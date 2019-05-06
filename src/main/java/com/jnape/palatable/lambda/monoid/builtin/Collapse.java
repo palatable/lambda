@@ -29,9 +29,10 @@ public final class Collapse<_1, _2> implements BiMonoidFactory<Monoid<_1>, Monoi
     }
 
     @Override
-    public Monoid<Tuple2<_1, _2>> apply(Monoid<_1> _1Monoid, Monoid<_2> _2Monoid) {
-        Semigroup<Tuple2<_1, _2>> semigroup = com.jnape.palatable.lambda.semigroup.builtin.Collapse.collapse(_1Monoid, _2Monoid);
-        return Monoid.<Tuple2<_1, _2>>monoid(semigroup, () -> tuple(_1Monoid.identity(), _2Monoid.identity()));
+    public Monoid<Tuple2<_1, _2>> checkedApply(Monoid<_1> _1Monoid, Monoid<_2> _2Monoid) {
+        return Monoid.<Tuple2<_1, _2>>monoid(
+                com.jnape.palatable.lambda.semigroup.builtin.Collapse.collapse(_1Monoid, _2Monoid),
+                () -> tuple(_1Monoid.identity(), _2Monoid.identity()));
     }
 
     @SuppressWarnings("unchecked")

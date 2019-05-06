@@ -26,7 +26,7 @@ public final class CmpEqBy<A, B extends Comparable<B>> implements Fn3<Function<?
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends B> compareFn, A x, A y) {
+    public Boolean checkedApply(Function<? super A, ? extends B> compareFn, A x, A y) {
         return compareFn.apply(x).compareTo(compareFn.apply(y)) == 0;
     }
 

@@ -30,9 +30,9 @@ public final class Under<S, T, A, B> implements Fn3<Optic<? super Exchange<A, B,
     }
 
     @Override
-    public A apply(Optic<? super Exchange<A, B, ?, ?>, ? super Identity<?>, S, T, A, B> optic,
-                   Function<? super T, ? extends S> fn,
-                   B b) {
+    public A checkedApply(Optic<? super Exchange<A, B, ?, ?>, ? super Identity<?>, S, T, A, B> optic,
+                          Function<? super T, ? extends S> fn,
+                          B b) {
         Exchange<A, B, S, Identity<T>> exchange = optic.apply(new Exchange<>(id(), Identity::new));
         return exchange.sa().apply(fn.apply(exchange.bt().apply(b).runIdentity()));
     }

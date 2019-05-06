@@ -23,7 +23,7 @@ public final class ToArray<A> implements Fn2<Class<A[]>, Iterable<? extends A>, 
 
     @Override
     @SuppressWarnings("unchecked")
-    public A[] apply(Class<A[]> arrayType, Iterable<? extends A> as) {
+    public A[] checkedApply(Class<A[]> arrayType, Iterable<? extends A> as) {
         A[] array = (A[]) Array.newInstance(arrayType.getComponentType(), size(as).intValue());
         if (as instanceof Collection)
             return ((Collection<A>) as).toArray(array);

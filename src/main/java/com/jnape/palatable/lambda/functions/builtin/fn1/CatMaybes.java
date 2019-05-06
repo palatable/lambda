@@ -21,7 +21,7 @@ public final class CatMaybes<A> implements Fn1<Iterable<Maybe<A>>, Iterable<A>> 
     }
 
     @Override
-    public Iterable<A> apply(Iterable<Maybe<A>> maybes) {
+    public Iterable<A> checkedApply(Iterable<Maybe<A>> maybes) {
         return flatten(map(m -> m.<Iterable<A>>fmap(Collections::singletonList)
                 .orElse(Collections::emptyIterator), maybes));
     }

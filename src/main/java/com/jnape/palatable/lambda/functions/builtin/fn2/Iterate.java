@@ -24,7 +24,7 @@ public final class Iterate<A> implements Fn2<Function<? super A, ? extends A>, A
     }
 
     @Override
-    public Iterable<A> apply(Function<? super A, ? extends A> fn, A seed) {
+    public Iterable<A> checkedApply(Function<? super A, ? extends A> fn, A seed) {
         return unfoldr(a -> just(tuple(a, fn.apply(a))), seed);
     }
 

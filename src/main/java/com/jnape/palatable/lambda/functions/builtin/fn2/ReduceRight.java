@@ -31,7 +31,7 @@ public final class ReduceRight<A> implements Fn2<BiFunction<? super A, ? super A
     }
 
     @Override
-    public final Maybe<A> apply(BiFunction<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
+    public final Maybe<A> checkedApply(BiFunction<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
         return reduceLeft((b, a) -> fn.apply(a, b), reverse(as));
     }
 

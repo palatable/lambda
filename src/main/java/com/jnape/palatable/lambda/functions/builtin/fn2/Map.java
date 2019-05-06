@@ -21,7 +21,7 @@ public final class Map<A, B> implements Fn2<Function<? super A, ? extends B>, It
     }
 
     @Override
-    public Iterable<B> apply(Function<? super A, ? extends B> fn, Iterable<A> as) {
+    public Iterable<B> checkedApply(Function<? super A, ? extends B> fn, Iterable<A> as) {
         return new MappingIterable<>(fn, as);
     }
 

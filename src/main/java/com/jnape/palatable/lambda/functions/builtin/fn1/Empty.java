@@ -15,7 +15,7 @@ public final class Empty<A> implements Predicate<Iterable<A>> {
     }
 
     @Override
-    public Boolean apply(Iterable<A> as) {
+    public Boolean checkedApply(Iterable<A> as) {
         return !as.iterator().hasNext();
     }
 

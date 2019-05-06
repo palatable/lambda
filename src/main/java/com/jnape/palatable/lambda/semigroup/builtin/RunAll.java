@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 /**
@@ -19,7 +19,7 @@ public final class RunAll<A> implements SemigroupFactory<Semigroup<A>, IO<A>> {
     }
 
     @Override
-    public Semigroup<IO<A>> apply(Semigroup<A> semigroup) {
+    public Semigroup<IO<A>> checkedApply(Semigroup<A> semigroup) {
         return (ioX, ioY) -> ioY.zip(ioX.fmap(semigroup));
     }
 

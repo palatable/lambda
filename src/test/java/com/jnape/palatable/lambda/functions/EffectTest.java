@@ -19,12 +19,12 @@ public class EffectTest {
     public void covariantReturns() {
         List<Object> results = new ArrayList<>();
 
-        Effect<String> effect = results::add;
-        Effect<Object> diMapL = effect.diMapL(Object::toString);
-        Effect<Object> contraMap = effect.contraMap(Object::toString);
-        Effect<Object> compose = effect.compose(Object::toString);
+        Effect<String> effect       = results::add;
+        Effect<Object> diMapL       = effect.diMapL(Object::toString);
+        Effect<Object> contraMap    = effect.contraMap(Object::toString);
+        Effect<Object> compose      = effect.compose(Object::toString);
         Effect<String> stringEffect = effect.discardR(constantly("1"));
-        Effect<String> andThen = effect.andThen(effect);
+        Effect<String> andThen      = effect.andThen(effect);
 
         effect.accept("1");
         diMapL.accept("2");

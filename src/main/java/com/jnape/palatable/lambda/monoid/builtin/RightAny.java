@@ -29,13 +29,13 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  */
 public final class RightAny<L, R> implements MonoidFactory<Monoid<R>, Either<L, R>> {
 
-    private static final RightAny<?,?> INSTANCE = new RightAny<>();
+    private static final RightAny<?, ?> INSTANCE = new RightAny<>();
 
     private RightAny() {
     }
 
     @Override
-    public Monoid<Either<L, R>> apply(Monoid<R> rMonoid) {
+    public Monoid<Either<L, R>> checkedApply(Monoid<R> rMonoid) {
         Semigroup<Either<L, R>> semigroup = com.jnape.palatable.lambda.semigroup.builtin.RightAny.rightAny(rMonoid);
         return Monoid.<Either<L, R>>monoid(semigroup, () -> right(rMonoid.identity()));
     }

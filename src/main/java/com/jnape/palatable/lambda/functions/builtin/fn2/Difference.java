@@ -29,7 +29,7 @@ public final class Difference<A> implements Fn2<Iterable<A>, Iterable<A>, Iterab
     }
 
     @Override
-    public Iterable<A> apply(Iterable<A> xs, Iterable<A> ys) {
+    public Iterable<A> checkedApply(Iterable<A> xs, Iterable<A> ys) {
         return () -> {
             if (empty(xs))
                 return xs.iterator();

@@ -16,7 +16,7 @@ public final class Flatten<A> implements Fn1<Iterable<? extends Iterable<? exten
     }
 
     @Override
-    public Iterable<A> apply(Iterable<? extends Iterable<? extends A>> iterables) {
+    public Iterable<A> checkedApply(Iterable<? extends Iterable<? extends A>> iterables) {
         return () -> new FlatteningIterator<>(iterables.iterator());
     }
 

@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.Unit;
+import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.io.IO;
 
@@ -20,8 +21,24 @@ import static com.jnape.palatable.lambda.io.IO.io;
 @FunctionalInterface
 public interface Effect<A> extends Fn1<A, IO<Unit>>, Consumer<A> {
 
+    void checkedAccept(A a) throws Throwable;
+
+    @Override
+    default void accept(A a) {
+        try {
+            checkedAccept(a);
+        } catch (Throwable t) {
+            throw Runtime.throwChecked(t);
+        }
+    }
+
     @Override
     default IO<Unit> apply(A a) {
+        return io(() -> accept(a));
+    }
+
+    @Override
+    default IO<Unit> checkedApply(A a) throws Throwable {
         return io(() -> accept(a));
     }
 

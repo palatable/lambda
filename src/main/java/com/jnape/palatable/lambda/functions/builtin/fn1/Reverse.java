@@ -17,7 +17,7 @@ public final class Reverse<A> implements Fn1<Iterable<A>, Iterable<A>> {
     }
 
     @Override
-    public Iterable<A> apply(Iterable<A> as) {
+    public Iterable<A> checkedApply(Iterable<A> as) {
         return new ReversingIterable<>(as);
     }
 

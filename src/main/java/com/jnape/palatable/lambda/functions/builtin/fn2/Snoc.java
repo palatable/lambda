@@ -21,7 +21,7 @@ public final class Snoc<A> implements Fn2<A, Iterable<A>, Iterable<A>> {
     }
 
     @Override
-    public Iterable<A> apply(A a, Iterable<A> as) {
+    public Iterable<A> checkedApply(A a, Iterable<A> as) {
         return new SnocIterable<>(a, as);
     }
 

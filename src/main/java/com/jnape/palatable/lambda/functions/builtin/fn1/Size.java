@@ -12,7 +12,7 @@ public final class Size implements Fn1<Iterable<?>, Long> {
     }
 
     @Override
-    public Long apply(Iterable<?> iterable) {
+    public Long checkedApply(Iterable<?> iterable) {
         if (iterable instanceof Collection)
             return (long) ((Collection) iterable).size();
 

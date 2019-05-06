@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.functions;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.Cocartesian;
@@ -30,12 +31,26 @@ public interface Fn1<A, B> extends
         Function<A, B> {
 
     /**
-     * Invoke this function with the given argument.
+     * Invoke this function explosively with the given argument.
      *
      * @param a the argument
      * @return the result of the function application
      */
-    B apply(A a);
+    default B apply(A a) {
+        try {
+            return checkedApply(a);
+        } catch (Throwable t) {
+            throw Runtime.throwChecked(t);
+        }
+    }
+
+    /**
+     * Invoke this function with the given argument, potentially throwing any {@link Throwable}.
+     *
+     * @param a the argument
+     * @return the result of the function application
+     */
+    B checkedApply(A a) throws Throwable;
 
     /**
      * Convert this {@link Fn1} to an {@link Fn0} by supplying an argument to this function. Useful for fixing an

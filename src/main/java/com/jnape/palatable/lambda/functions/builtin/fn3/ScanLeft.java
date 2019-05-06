@@ -26,7 +26,7 @@ public final class ScanLeft<A, B> implements Fn3<BiFunction<? super B, ? super A
     }
 
     @Override
-    public Iterable<B> apply(BiFunction<? super B, ? super A, ? extends B> fn, B b, Iterable<A> as) {
+    public Iterable<B> checkedApply(BiFunction<? super B, ? super A, ? extends B> fn, B b, Iterable<A> as) {
         return () -> new ScanningIterator<>(fn, b, as.iterator());
     }
 

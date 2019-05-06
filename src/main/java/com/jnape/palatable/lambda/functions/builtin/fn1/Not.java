@@ -17,7 +17,7 @@ public final class Not<A> implements BiPredicate<Function<? super A, ? extends B
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends Boolean> pred, A a) {
+    public Boolean checkedApply(Function<? super A, ? extends Boolean> pred, A a) {
         return !pred.apply(a);
     }
 

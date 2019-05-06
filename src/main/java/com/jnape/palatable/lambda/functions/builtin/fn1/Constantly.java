@@ -17,7 +17,7 @@ public final class Constantly<A, B> implements Fn2<A, B, A> {
     }
 
     @Override
-    public A apply(A a, B b) {
+    public A checkedApply(A a, B b) {
         return a;
     }
 

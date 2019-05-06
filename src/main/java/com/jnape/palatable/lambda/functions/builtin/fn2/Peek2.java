@@ -26,7 +26,7 @@ public final class Peek2<A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? s
 
     @Override
     @SuppressWarnings("unchecked")
-    public FAB apply(Consumer<? super A> aConsumer, Consumer<? super B> bConsumer, FAB fab) {
+    public FAB checkedApply(Consumer<? super A> aConsumer, Consumer<? super B> bConsumer, FAB fab) {
         return (FAB) fab.biMap(a -> {
             aConsumer.accept(a);
             return a;

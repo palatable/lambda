@@ -16,13 +16,13 @@ import java.util.function.BiFunction;
  */
 public final class Partial2<A, B, C> implements Fn2<BiFunction<A, B, C>, A, Fn1<B, C>> {
 
-    private static final Partial2<?,?,?> INSTANCE = new Partial2<>();
+    private static final Partial2<?, ?, ?> INSTANCE = new Partial2<>();
 
     private Partial2() {
     }
 
     @Override
-    public Fn1<B, C> apply(BiFunction<A, B, C> fn, A a) {
+    public Fn1<B, C> checkedApply(BiFunction<A, B, C> fn, A a) {
         return b -> fn.apply(a, b);
     }
 

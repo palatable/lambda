@@ -21,17 +21,23 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 @FunctionalInterface
 public interface Fn0<A> extends Fn1<Unit, A>, Supplier<A>, Callable<A> {
 
-    A apply();
+    A checkedApply() throws Throwable;
 
     /**
-     * Invoke this function with {@link Unit}.
+     * Convenience method for applying this {@link Fn0} without providing an explicit {@link Unit}.
      *
-     * @param unit the only allowed input
-     * @return the result value
+     * @return the result
+     */
+    default A apply() {
+        return apply(UNIT);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
-    default A apply(Unit unit) {
-        return apply();
+    default A checkedApply(Unit unit) throws Throwable {
+        return checkedApply();
     }
 
     @Override

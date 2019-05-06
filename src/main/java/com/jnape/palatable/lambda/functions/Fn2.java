@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.product.Product2;
+import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.BiFunction;
@@ -23,6 +24,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 @FunctionalInterface
 public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
 
+    C checkedApply(A a, B b) throws Throwable;
+
     /**
      * Invoke this function with the given arguments.
      *
@@ -30,7 +33,21 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      * @param b the second argument
      * @return the result of the function application
      */
-    C apply(A a, B b);
+    default C apply(A a, B b) {
+        try {
+            return checkedApply(a, b);
+        } catch (Throwable t) {
+            throw Runtime.throwChecked(t);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default Fn1<B, C> checkedApply(A a) throws Throwable {
+        return b -> checkedApply(a, b);
+    }
 
     /**
      * {@inheritDoc}

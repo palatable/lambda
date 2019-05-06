@@ -42,7 +42,7 @@ public final class LiftA5<A, B, C, D, E, F,
     }
 
     @Override
-    public AppF apply(Fn5<A, B, C, D, E, F> fn, AppA appA, AppB appB, AppC appC, AppD appD, AppE appE) {
+    public AppF checkedApply(Fn5<A, B, C, D, E, F> fn, AppA appA, AppB appB, AppC appC, AppD appD, AppE appE) {
         return appE.zip(appD.zip(appC.zip(appB.zip(appA.fmap(fn))))).coerce();
     }
 

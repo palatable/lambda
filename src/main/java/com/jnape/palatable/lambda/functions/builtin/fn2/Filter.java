@@ -22,7 +22,7 @@ public final class Filter<A> implements Fn2<Function<? super A, ? extends Boolea
     }
 
     @Override
-    public Iterable<A> apply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Iterable<A> checkedApply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return new FilteringIterable<>(predicate, as);
     }
 

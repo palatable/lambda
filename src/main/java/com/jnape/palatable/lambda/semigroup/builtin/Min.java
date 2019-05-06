@@ -26,7 +26,7 @@ public final class Min<A extends Comparable<A>> implements Semigroup<A> {
     }
 
     @Override
-    public A apply(A x, A y) {
+    public A checkedApply(A x, A y) {
         return minBy(id(), x, y);
     }
 

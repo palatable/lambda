@@ -22,13 +22,13 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  */
 public final class Merge<L, R> implements BiMonoidFactory<Semigroup<L>, Monoid<R>, Either<L, R>> {
 
-    private static final Merge<?,?> INSTANCE = new Merge<>();
+    private static final Merge<?, ?> INSTANCE = new Merge<>();
 
     private Merge() {
     }
 
     @Override
-    public Monoid<Either<L, R>> apply(Semigroup<L> lSemigroup, Monoid<R> rMonoid) {
+    public Monoid<Either<L, R>> checkedApply(Semigroup<L> lSemigroup, Monoid<R> rMonoid) {
         Semigroup<Either<L, R>> semigroup = com.jnape.palatable.lambda.semigroup.builtin.Merge.merge(lSemigroup, rMonoid);
         return Monoid.<Either<L, R>>monoid(semigroup, () -> right(rMonoid.identity()));
     }

@@ -20,11 +20,11 @@ import com.jnape.palatable.lambda.functions.Fn6;
  */
 public final class Into6<A, B, C, D, E, F, G> implements Fn2<Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends G>, Product6<A, B, C, D, E, F>, G> {
 
-    private static final Into6<?,?,?,?,?,?,?> INSTANCE = new Into6<>();
+    private static final Into6<?, ?, ?, ?, ?, ?, ?> INSTANCE = new Into6<>();
 
     @Override
-    public G apply(Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends G> fn,
-                   Product6<A, B, C, D, E, F> product) {
+    public G checkedApply(Fn6<? super A, ? super B, ? super C, ? super D, ? super E, ? super F, ? extends G> fn,
+                          Product6<A, B, C, D, E, F> product) {
         return product.<G>into(fn);
     }
 

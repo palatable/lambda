@@ -2,9 +2,9 @@ package com.jnape.palatable.lambda.adt;
 
 import com.jnape.palatable.lambda.adt.choice.Choice3;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek2;
-import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
@@ -83,7 +83,7 @@ public abstract class Either<L, R> implements
      * @throws T the result of applying the wrapped left value to throwableFn, if this is a left
      */
     public final <T extends Throwable> R orThrow(Function<? super L, ? extends T> throwableFn) throws T {
-        return match((CheckedFn1<T, L, R>) l -> {
+        return match((Fn1<L, R>) l -> {
             throw throwableFn.apply(l);
         }, id());
     }

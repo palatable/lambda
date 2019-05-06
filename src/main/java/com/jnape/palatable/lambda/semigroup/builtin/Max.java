@@ -26,7 +26,7 @@ public final class Max<A extends Comparable<A>> implements Semigroup<A> {
     }
 
     @Override
-    public A apply(A x, A y) {
+    public A checkedApply(A x, A y) {
         return maxBy(id(), x, y);
     }
 

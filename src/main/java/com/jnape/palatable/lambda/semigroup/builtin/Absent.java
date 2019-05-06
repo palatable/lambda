@@ -31,7 +31,7 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
     }
 
     @Override
-    public Semigroup<Maybe<A>> apply(Semigroup<A> aSemigroup) {
+    public Semigroup<Maybe<A>> checkedApply(Semigroup<A> aSemigroup) {
         return LiftA2.<A, A, A, Maybe<?>, Maybe<A>, Maybe<A>, Maybe<A>>liftA2(aSemigroup.toBiFunction())::apply;
     }
 

@@ -35,7 +35,7 @@ public final class Present<A> implements MonoidFactory<Semigroup<A>, Maybe<A>> {
     }
 
     @Override
-    public Monoid<Maybe<A>> apply(Semigroup<A> aSemigroup) {
+    public Monoid<Maybe<A>> checkedApply(Semigroup<A> aSemigroup) {
         return monoid((maybeX, maybeY) -> first(maybeX.fmap(x -> maybeY.fmap(aSemigroup.apply(x)).orElse(x)), maybeY),
                       nothing());
     }

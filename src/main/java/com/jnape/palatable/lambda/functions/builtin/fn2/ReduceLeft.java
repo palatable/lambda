@@ -33,7 +33,7 @@ public final class ReduceLeft<A> implements Fn2<BiFunction<? super A, ? super A,
     }
 
     @Override
-    public Maybe<A> apply(BiFunction<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
+    public Maybe<A> checkedApply(BiFunction<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
         Iterator<A> iterator = as.iterator();
         return !iterator.hasNext() ? nothing() : just(foldLeft(fn, iterator.next(), () -> iterator));
     }

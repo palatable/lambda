@@ -28,7 +28,7 @@ public final class Times<A> implements Fn3<Integer, Function<? super A, ? extend
     }
 
     @Override
-    public A apply(Integer n, Function<? super A, ? extends A> fn, A a) {
+    public A checkedApply(Integer n, Function<? super A, ? extends A> fn, A a) {
         if (n < 0)
             throw new IllegalStateException("n must not be less than 0");
 

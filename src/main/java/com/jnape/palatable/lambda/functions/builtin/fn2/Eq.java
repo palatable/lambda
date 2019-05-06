@@ -16,7 +16,7 @@ public final class Eq<A> implements BiPredicate<A, A> {
     }
 
     @Override
-    public Boolean apply(A x, A y) {
+    public Boolean checkedApply(A x, A y) {
         return x == null ? y == null : x.equals(y);
     }
 

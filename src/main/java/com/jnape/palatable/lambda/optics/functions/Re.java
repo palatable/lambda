@@ -26,7 +26,7 @@ public final class Re<S, T, A, B> implements
     }
 
     @Override
-    public Optic<Fn1<?, ?>, Const<T, ?>, B, B, T, T> apply(
+    public Optic<Fn1<?, ?>, Const<T, ?>, B, B, T, T> checkedApply(
             Optic<? super Tagged<?, ?>, ? super Identity<?>, S, T, A, B> optic) {
         return Optic.<Fn1<?, ?>, Const<T, ?>, B, B, T, T,
                 Const<T, T>, Const<T, B>,

@@ -25,7 +25,7 @@ public final class Inits<A> implements Fn1<Iterable<A>, Iterable<Iterable<A>>> {
     }
 
     @Override
-    public Iterable<Iterable<A>> apply(Iterable<A> as) {
+    public Iterable<Iterable<A>> checkedApply(Iterable<A> as) {
         return scanLeft(Snoc.<A>snoc().flip().toBiFunction(), Collections::emptyIterator, as);
     }
 

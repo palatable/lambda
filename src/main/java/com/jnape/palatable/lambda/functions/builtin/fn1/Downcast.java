@@ -17,7 +17,7 @@ public final class Downcast<A extends B, B> implements Fn1<B, A> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public A apply(B b) {
+    public A checkedApply(B b) {
         return (A) b;
     }
 

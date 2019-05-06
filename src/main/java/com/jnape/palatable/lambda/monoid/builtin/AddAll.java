@@ -21,13 +21,13 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
  */
 public final class AddAll<A, C extends Collection<A>> implements MonoidFactory<Supplier<C>, C> {
 
-    private static final AddAll<?,?> INSTANCE = new AddAll<>();
+    private static final AddAll<?, ?> INSTANCE = new AddAll<>();
 
     private AddAll() {
     }
 
     @Override
-    public Monoid<C> apply(Supplier<C> cSupplier) {
+    public Monoid<C> checkedApply(Supplier<C> cSupplier) {
         return new Monoid<C>() {
             @Override
             public C identity() {
@@ -35,7 +35,7 @@ public final class AddAll<A, C extends Collection<A>> implements MonoidFactory<S
             }
 
             @Override
-            public C apply(C xs, C ys) {
+            public C checkedApply(C xs, C ys) {
                 C c = identity();
                 c.addAll(xs);
                 c.addAll(ys);

@@ -26,7 +26,7 @@ public final class Merge<L, R> implements BiSemigroupFactory<Semigroup<L>, Semig
     }
 
     @Override
-    public Semigroup<Either<L, R>> apply(Semigroup<L> lSemigroup, Semigroup<R> rSemigroup) {
+    public Semigroup<Either<L, R>> checkedApply(Semigroup<L> lSemigroup, Semigroup<R> rSemigroup) {
         return (x, y) -> x.merge(lSemigroup::apply, rSemigroup::apply, y);
     }
 

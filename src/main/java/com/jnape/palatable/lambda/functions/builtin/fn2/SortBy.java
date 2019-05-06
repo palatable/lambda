@@ -22,13 +22,13 @@ import static java.util.Comparator.comparing;
  */
 public final class SortBy<A, B extends Comparable<B>> implements Fn2<Function<? super A, ? extends B>, Iterable<A>, List<A>> {
 
-    private static final SortBy<?,?> INSTANCE = new SortBy<>();
+    private static final SortBy<?, ?> INSTANCE = new SortBy<>();
 
     private SortBy() {
     }
 
     @Override
-    public List<A> apply(Function<? super A, ? extends B> fn, Iterable<A> as) {
+    public List<A> checkedApply(Function<? super A, ? extends B> fn, Iterable<A> as) {
         return sortWith(comparing(fn), as);
     }
 

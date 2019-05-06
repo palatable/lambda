@@ -16,7 +16,10 @@ might need to be reworked, and subtyping is obviously no longer supported.
                          type is now the supertype of `Lens` and `Iso`, and `lens` package has been moved to `optics`
 - ***Breaking Change***: `Try` and `Either` no longer preserve `Throwable` type since it was inherently not type-safe 
                          anyway; Try is therefore no longer a `Bifunctor`, and `orThrow` can be used to declare checked
-                         exceptions that could be caught by corresponding catch blocks 
+                         exceptions that could be caught by corresponding catch blocks
+- ***Breaking Change***: All `Fn*` types target methods now support throwing `Throwable`; `apply` is now defaulted and 
+                         will simply bypass javac to throw checked exceptions as if they were unchecked. This allows all 
+                         checked variants to be eliminated  
 - `IO` is now stack-safe, regardless of whether the composition nests linearly or recursively
 
 ### Added

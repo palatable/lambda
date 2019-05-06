@@ -25,7 +25,8 @@ public final class ZipWith<A, B, C> implements Fn3<BiFunction<? super A, ? super
     }
 
     @Override
-    public Iterable<C> apply(BiFunction<? super A, ? super B, ? extends C> zipper, Iterable<A> as, Iterable<B> bs) {
+    public Iterable<C> checkedApply(BiFunction<? super A, ? super B, ? extends C> zipper, Iterable<A> as,
+                                    Iterable<B> bs) {
         return () -> new ZippingIterator<>(zipper, as.iterator(), bs.iterator());
     }
 

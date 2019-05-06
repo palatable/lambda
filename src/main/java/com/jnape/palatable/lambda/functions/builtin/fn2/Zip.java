@@ -23,7 +23,7 @@ public final class Zip<A, B> implements Fn2<Iterable<A>, Iterable<B>, Iterable<T
     }
 
     @Override
-    public Iterable<Tuple2<A, B>> apply(Iterable<A> as, Iterable<B> bs) {
+    public Iterable<Tuple2<A, B>> checkedApply(Iterable<A> as, Iterable<B> bs) {
         return zipWith(Tupler2.<A, B>tupler().toBiFunction(), as, bs);
     }
 

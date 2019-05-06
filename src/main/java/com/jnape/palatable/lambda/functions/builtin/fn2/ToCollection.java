@@ -22,7 +22,7 @@ public final class ToCollection<A, C extends Collection<A>> implements Fn2<Suppl
     }
 
     @Override
-    public C apply(Supplier<C> cSupplier, Iterable<A> as) {
+    public C checkedApply(Supplier<C> cSupplier, Iterable<A> as) {
         C c = cSupplier.get();
         as.forEach(c::add);
         return c;

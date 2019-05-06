@@ -33,7 +33,8 @@ public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A
     }
 
     @Override
-    public Iterable<Iterable<A>> apply(BiFunction<? super A, ? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Iterable<Iterable<A>> checkedApply(BiFunction<? super A, ? super A, ? extends Boolean> predicate,
+                                              Iterable<A> as) {
         return () -> uncons(as).fmap(into((A head, Iterable<A> tail) -> {
             Iterable<A> group = cons(head, unfoldr(into((pivot, ys) -> uncons(ys)
                     .flatMap(into((y, recurse) -> predicate.apply(pivot, y)

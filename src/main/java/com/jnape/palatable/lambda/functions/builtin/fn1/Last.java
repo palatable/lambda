@@ -19,7 +19,7 @@ public final class Last<A> implements Fn1<Iterable<A>, Maybe<A>> {
     }
 
     @Override
-    public Maybe<A> apply(Iterable<A> as) {
+    public Maybe<A> checkedApply(Iterable<A> as) {
         A last = null;
         for (A a : as) {
             last = a;

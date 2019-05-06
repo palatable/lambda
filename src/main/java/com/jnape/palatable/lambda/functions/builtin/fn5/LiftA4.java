@@ -38,7 +38,7 @@ public final class LiftA4<A, B, C, D, E,
     }
 
     @Override
-    public AppE apply(Fn4<A, B, C, D, E> fn, AppA appA, AppB appB, AppC appC, AppD appD) {
+    public AppE checkedApply(Fn4<A, B, C, D, E> fn, AppA appA, AppB appB, AppC appC, AppD appD) {
         return appD.zip(appC.zip(appB.zip(appA.fmap(fn)))).coerce();
     }
 

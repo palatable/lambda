@@ -37,7 +37,7 @@ public final class Unfoldr<A, B> implements Fn2<Function<? super B, Maybe<Tuple2
     }
 
     @Override
-    public Iterable<A> apply(Function<? super B, Maybe<Tuple2<A, B>>> fn, B b) {
+    public Iterable<A> checkedApply(Function<? super B, Maybe<Tuple2<A, B>>> fn, B b) {
         return () -> new UnfoldingIterator<>(fn, b);
     }
 

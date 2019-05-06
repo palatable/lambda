@@ -20,7 +20,7 @@ public final class Occurrences<A> implements Fn1<Iterable<A>, Map<A, Long>> {
     }
 
     @Override
-    public Map<A, Long> apply(Iterable<A> as) {
+    public Map<A, Long> checkedApply(Iterable<A> as) {
         return foldLeft((occurrences, a) -> {
             occurrences.put(a, occurrences.getOrDefault(a, 0L) + 1);
             return occurrences;

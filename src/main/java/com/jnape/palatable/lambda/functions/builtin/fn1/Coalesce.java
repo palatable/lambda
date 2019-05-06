@@ -31,7 +31,7 @@ public final class Coalesce<L, R> implements Fn1<Iterable<Either<L, R>>, Either<
     }
 
     @Override
-    public Either<Iterable<L>, Iterable<R>> apply(Iterable<Either<L, R>> eithers) {
+    public Either<Iterable<L>, Iterable<R>> checkedApply(Iterable<Either<L, R>> eithers) {
         return foldLeft((acc, e) -> acc
                                 .biMapL(ls -> e.match(Snoc.<L>snoc().flip().apply(ls), constantly(ls)))
                                 .flatMap(rs -> e.biMap(Collections::singletonList,

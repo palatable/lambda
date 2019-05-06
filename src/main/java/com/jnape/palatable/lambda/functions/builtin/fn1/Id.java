@@ -15,7 +15,7 @@ public final class Id<A> implements Fn1<A, A> {
     }
 
     @Override
-    public A apply(A a) {
+    public A checkedApply(A a) {
         return a;
     }
 

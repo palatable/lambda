@@ -16,7 +16,7 @@ public final class Matching<S, T, A, B> implements
     }
 
     @Override
-    public Either<T, A> apply(Optic<? super Market<A, B, ?, ?>, ? super Identity<?>, S, T, A, B> optic, S s) {
+    public Either<T, A> checkedApply(Optic<? super Market<A, B, ?, ?>, ? super Identity<?>, S, T, A, B> optic, S s) {
         Market<A, B, A, Identity<B>> market = new Market<>(Identity::new, Either::right);
         return optic.<Market<A, B, ?, ?>,
                 Identity<?>,

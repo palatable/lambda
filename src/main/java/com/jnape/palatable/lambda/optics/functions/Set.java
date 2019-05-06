@@ -31,7 +31,7 @@ public final class Set<S, T, A, B> implements Fn3<Optic<? super Fn1<?, ?>, ? sup
     }
 
     @Override
-    public T apply(Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B> optic, B b, S s) {
+    public T checkedApply(Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B> optic, B b, S s) {
         return over(optic, constantly(b), s);
     }
 

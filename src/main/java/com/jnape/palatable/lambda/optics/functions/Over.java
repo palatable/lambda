@@ -32,9 +32,9 @@ public final class Over<S, T, A, B> implements
     }
 
     @Override
-    public T apply(Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B> optic,
-                   Function<? super A, ? extends B> fn,
-                   S s) {
+    public T checkedApply(Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B> optic,
+                          Function<? super A, ? extends B> fn,
+                          S s) {
         return optic.<Fn1<?, ?>, Identity<?>, Identity<B>, Identity<T>, Fn1<A, Identity<B>>, Fn1<S, Identity<T>>>apply(
                 a -> new Identity<>(fn.apply(a))).apply(s).runIdentity();
     }

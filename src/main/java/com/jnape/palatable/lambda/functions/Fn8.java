@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.product.Product2;
+import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.function.BiFunction;
@@ -23,6 +24,8 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface Fn8<A, B, C, D, E, F, G, H, I> extends Fn7<A, B, C, D, E, F, G, Fn1<H, I>> {
 
+    I checkedApply(A a, B b, C c, D d, E e, F f, G g, H h) throws Throwable;
+
     /**
      * Invoke this function with the given arguments.
      *
@@ -36,7 +39,21 @@ public interface Fn8<A, B, C, D, E, F, G, H, I> extends Fn7<A, B, C, D, E, F, G,
      * @param h the eighth argument
      * @return the result of the function application
      */
-    I apply(A a, B b, C c, D d, E e, F f, G g, H h);
+    default I apply(A a, B b, C c, D d, E e, F f, G g, H h) {
+        try {
+            return checkedApply(a, b, c, d, e, f, g, h);
+        } catch (Throwable t) {
+            throw Runtime.throwChecked(t);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default Fn1<H, I> checkedApply(A a, B b, C c, D d, E e, F f, G g) throws Throwable {
+        return h -> checkedApply(a, b, c, d, e, f, g, h);
+    }
 
     /**
      * Partially apply this function by taking its first argument.

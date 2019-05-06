@@ -16,13 +16,13 @@ import com.jnape.palatable.lambda.functions.Fn3;
  */
 public final class Partial3<A, B, C, D> implements Fn2<Fn3<A, B, C, D>, A, Fn2<B, C, D>> {
 
-    private static final Partial3<?,?,?,?> INSTANCE = new Partial3<>();
+    private static final Partial3<?, ?, ?, ?> INSTANCE = new Partial3<>();
 
     private Partial3() {
     }
 
     @Override
-    public Fn2<B, C, D> apply(Fn3<A, B, C, D> fn, A a) {
+    public Fn2<B, C, D> checkedApply(Fn3<A, B, C, D> fn, A a) {
         return fn.apply(a);
     }
 

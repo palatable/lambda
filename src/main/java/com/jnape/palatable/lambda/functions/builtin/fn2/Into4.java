@@ -17,10 +17,11 @@ import com.jnape.palatable.lambda.functions.Fn4;
  */
 public final class Into4<A, B, C, D, E> implements Fn2<Fn4<? super A, ? super B, ? super C, ? super D, ? extends E>, Product4<A, B, C, D>, E> {
 
-    private static final Into4<?,?,?,?,?> INSTANCE = new Into4<>();
+    private static final Into4<?, ?, ?, ?, ?> INSTANCE = new Into4<>();
 
     @Override
-    public E apply(Fn4<? super A, ? super B, ? super C, ? super D, ? extends E> fn, Product4<A, B, C, D> product) {
+    public E checkedApply(Fn4<? super A, ? super B, ? super C, ? super D, ? extends E> fn,
+                          Product4<A, B, C, D> product) {
         return product.<E>into(fn);
     }
 

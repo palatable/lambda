@@ -25,7 +25,7 @@ public final class LTBy<A, B extends Comparable<B>> implements Fn3<Function<? su
     }
 
     @Override
-    public Boolean apply(Function<? super A, ? extends B> compareFn, A y, A x) {
+    public Boolean checkedApply(Function<? super A, ? extends B> compareFn, A y, A x) {
         return compareFn.apply(x).compareTo(compareFn.apply(y)) < 0;
     }
 

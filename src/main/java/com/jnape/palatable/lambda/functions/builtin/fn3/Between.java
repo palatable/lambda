@@ -20,7 +20,7 @@ public final class Between<A extends Comparable<A>> implements Fn3<A, A, A, Bool
     }
 
     @Override
-    public Boolean apply(A lower, A upper, A a) {
+    public Boolean checkedApply(A lower, A upper, A a) {
         return clamp(lower, upper, a).equals(a);
     }
 

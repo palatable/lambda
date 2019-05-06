@@ -56,7 +56,7 @@ public class LazyTest {
         assertEquals(STACK_EXPLODING_NUMBER,
                      new Fn1<Lazy<Integer>, Lazy<Integer>>() {
                          @Override
-                         public Lazy<Integer> apply(Lazy<Integer> lazyX) {
+                         public Lazy<Integer> checkedApply(Lazy<Integer> lazyX) {
                              return lazyX.flatMap(x -> x < STACK_EXPLODING_NUMBER
                                                        ? apply(lazy(x + 1))
                                                        : lazy(x));

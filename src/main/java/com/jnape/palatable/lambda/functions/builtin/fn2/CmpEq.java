@@ -24,7 +24,7 @@ public final class CmpEq<A extends Comparable<A>> implements BiPredicate<A, A> {
     }
 
     @Override
-    public Boolean apply(A x, A y) {
+    public Boolean checkedApply(A x, A y) {
         return cmpEqBy(id(), x, y);
     }
 

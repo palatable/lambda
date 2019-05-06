@@ -28,7 +28,7 @@ public final class FoldLeft<A, B> implements Fn3<BiFunction<? super B, ? super A
     }
 
     @Override
-    public B apply(BiFunction<? super B, ? super A, ? extends B> fn, B acc, Iterable<A> as) {
+    public B checkedApply(BiFunction<? super B, ? super A, ? extends B> fn, B acc, Iterable<A> as) {
         B accumulation = acc;
         for (A a : as)
             accumulation = fn.apply(accumulation, a);

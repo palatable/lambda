@@ -23,7 +23,7 @@ public final class Clamp<A extends Comparable<A>> implements Fn3<A, A, A, A> {
     }
 
     @Override
-    public A apply(A lower, A upper, A a) {
+    public A checkedApply(A lower, A upper, A a) {
         return max(min(lower, upper)).fmap(min(max(lower, upper))).apply(a);
     }
 

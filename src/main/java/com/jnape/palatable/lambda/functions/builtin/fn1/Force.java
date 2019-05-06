@@ -17,7 +17,7 @@ public final class Force<A> implements Fn1<Iterable<A>, Iterable<A>> {
 
     @Override
     @SuppressWarnings("StatementWithEmptyBody")
-    public Iterable<A> apply(Iterable<A> as) {
+    public Iterable<A> checkedApply(Iterable<A> as) {
         for (A ignored : as) {
         }
         return as;
