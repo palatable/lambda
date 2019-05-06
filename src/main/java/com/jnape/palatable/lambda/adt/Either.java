@@ -323,14 +323,13 @@ public abstract class Either<L, R> implements
      *
      * @param supplier the supplier of the right value
      * @param leftFn   a function mapping E to L
-     * @param <T>      the most contravariant exception that the supplier might throw
      * @param <L>      the left parameter type
      * @param <R>      the right parameter type
      * @return the supplier result as a right value, or leftFn's mapping result as a left value
      */
-    public static <T extends Throwable, L, R> Either<L, R> trying(CheckedSupplier<T, ? extends R> supplier,
-                                                                  Function<? super T, ? extends L> leftFn) {
-        return Try.<T, R>trying(supplier::get).toEither(leftFn);
+    public static <L, R> Either<L, R> trying(CheckedSupplier<?, ? extends R> supplier,
+                                             Function<? super Throwable, ? extends L> leftFn) {
+        return Try.<Throwable, R>trying(supplier::get).toEither(leftFn);
     }
 
     /**
@@ -338,11 +337,10 @@ public abstract class Either<L, R> implements
      * exception, wrap it in a left value and return it.
      *
      * @param supplier the supplier of the right value
-     * @param <T>      the left parameter type (the most contravariant exception that supplier might throw)
      * @param <R>      the right parameter type
      * @return the supplier result as a right value, or a left value of the thrown exception
      */
-    public static <T extends Throwable, R> Either<T, R> trying(CheckedSupplier<T, R> supplier) {
+    public static <R> Either<Throwable, R> trying(CheckedSupplier<?, R> supplier) {
         return trying(supplier, id());
     }
 
@@ -352,12 +350,11 @@ public abstract class Either<L, R> implements
      *
      * @param runnable the runnable
      * @param leftFn   a function mapping E to L
-     * @param <T>      the most contravariant exception that the runnable might throw
      * @param <L>      the left parameter type
      * @return {@link Unit} as a right value, or leftFn's mapping result as a left value
      */
-    public static <T extends Throwable, L> Either<L, Unit> trying(CheckedRunnable<T> runnable,
-                                                                  Function<? super T, ? extends L> leftFn) {
+    public static <L> Either<L, Unit> trying(CheckedRunnable<?> runnable,
+                                             Function<? super Throwable, ? extends L> leftFn) {
         return Try.trying(runnable).toEither(leftFn);
     }
 
@@ -366,10 +363,9 @@ public abstract class Either<L, R> implements
      * exception, wrap it in a left value and return it.
      *
      * @param runnable the runnable
-     * @param <T>      the left parameter type (the most contravariant exception that runnable might throw)
      * @return {@link Unit} as a right value, or a left value of the thrown exception
      */
-    public static <T extends Throwable> Either<T, Unit> trying(CheckedRunnable<T> runnable) {
+    public static Either<Throwable, Unit> trying(CheckedRunnable<?> runnable) {
         return trying(runnable, id());
     }
 

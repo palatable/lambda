@@ -4,8 +4,8 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
+import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.functor.BoundedBifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
@@ -18,18 +18,16 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Peek2.peek2;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * A {@link Monad} of the evaluation outcome of an expression that might throw. Try/catch/finally semantics map to
  * <code>trying</code>/<code>catching</code>/<code>ensuring</code>, respectively.
  *
- * @param <T> the {@link Throwable} type that may have been thrown by the expression
  * @param <A> the possibly successful expression result
  * @see Either
  */
-public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>, Traversable<A, Try<T, ?>>, BoundedBifunctor<T, A, Throwable, Object, Try<?, ?>>, CoProduct2<T, A, Try<T, A>> {
+public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>, CoProduct2<Throwable, A, Try<A>> {
 
     private Try() {
     }
@@ -43,7 +41,8 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @return a new {@link Try} instance around either the original successful result or the mapped result
      */
     @SuppressWarnings("unchecked")
-    public final <S extends T> Try<T, A> catching(Class<S> throwableType, Function<? super S, ? extends A> recoveryFn) {
+    public final <S extends Throwable> Try<A> catching(Class<S> throwableType,
+                                                       Function<? super S, ? extends A> recoveryFn) {
         return catching(throwableType::isInstance, t -> recoveryFn.apply((S) t));
     }
 
@@ -54,8 +53,8 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param recoveryFn the function mapping the {@link Throwable} to the result
      * @return a new {@link Try} instance around either the original successful result or the mapped result
      */
-    public final Try<T, A> catching(Function<? super T, ? extends Boolean> predicate,
-                                    Function<? super T, ? extends A> recoveryFn) {
+    public final Try<A> catching(Function<? super Throwable, ? extends Boolean> predicate,
+                                 Function<? super Throwable, ? extends A> recoveryFn) {
         return match(t -> predicate.apply(t) ? success(recoveryFn.apply(t)) : failure(t), Try::success);
     }
 
@@ -72,10 +71,13 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @return the same {@link Try} instance if runnable completes successfully; otherwise, a {@link Try} conforming to
      * rules above
      */
-    public final Try<T, A> ensuring(CheckedRunnable<T> runnable) {
-        return match(t -> peek2(t::addSuppressed, __ -> {}, trying(runnable))
-                             .biMapL(constantly(t))
-                             .flatMap(constantly(failure(t))),
+    public final Try<A> ensuring(CheckedRunnable<?> runnable) {
+        return match(t -> trying(runnable)
+                             .<Try<A>>fmap(constantly(failure(t)))
+                             .recover(t2 -> {
+                                 t.addSuppressed(t2);
+                                 return failure(t);
+                             }),
                      a -> trying(runnable).fmap(constantly(a)));
     }
 
@@ -86,7 +88,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param fn the function mapping the potential {@link Throwable} <code>T</code> to <code>A</code>
      * @return a success value
      */
-    public final A recover(Function<? super T, ? extends A> fn) {
+    public final A recover(Function<? super Throwable, ? extends A> fn) {
         return match(fn, id());
     }
 
@@ -97,7 +99,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param fn the function mapping the potential <code>A</code> to <code>T</code>
      * @return a failure value
      */
-    public final T forfeit(Function<? super A, ? extends T> fn) {
+    public final Throwable forfeit(Function<? super A, ? extends Throwable> fn) {
         return match(id(), fn);
     }
 
@@ -105,9 +107,8 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * If this is a success value, return it. Otherwise, rethrow the captured failure.
      *
      * @return possibly the success value
-     * @throws T the possible failure
      */
-    public abstract A orThrow() throws T;
+    public abstract A orThrow();
 
     /**
      * If this is a success, wrap the value in a {@link Maybe#just} and return it. Otherwise, return {@link
@@ -125,7 +126,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      *
      * @return {@link Either} the success value or the {@link Throwable}
      */
-    public final Either<T, A> toEither() {
+    public final Either<Throwable, A> toEither() {
         return toEither(id());
     }
 
@@ -137,7 +138,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param <L> the {@link Either} left parameter type
      * @return {@link Either} the success value or the mapped left value
      */
-    public final <L> Either<L, A> toEither(Function<? super T, ? extends L> fn) {
+    public final <L> Either<L, A> toEither(Function<? super Throwable, ? extends L> fn) {
         return match(fn.andThen(Either::left), Either::right);
     }
 
@@ -145,7 +146,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<T, B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> Try<B> fmap(Function<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -153,7 +154,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<T, B> flatMap(Function<? super A, ? extends Monad<B, Try<T, ?>>> f) {
+    public <B> Try<B> flatMap(Function<? super A, ? extends Monad<B, Try<?>>> f) {
         return match(Try::failure, a -> f.apply(a).coerce());
     }
 
@@ -161,7 +162,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<T, B> pure(B b) {
+    public <B> Try<B> pure(B b) {
         return success(b);
     }
 
@@ -169,13 +170,13 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<T, B> zip(Applicative<Function<? super A, ? extends B>, Try<T, ?>> appFn) {
+    public <B> Try<B> zip(Applicative<Function<? super A, ? extends B>, Try<?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
     @Override
-    public <B> Lazy<Try<T, B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, Try<T, ?>>> lazyAppFn) {
+    public <B> Lazy<Try<B>> lazyZip(
+            Lazy<? extends Applicative<Function<? super A, ? extends B>, Try<?>>> lazyAppFn) {
         return match(f -> lazy(failure(f)),
                      s -> lazyAppFn.fmap(tryF -> tryF.<B>fmap(f -> f.apply(s)).coerce()));
     }
@@ -184,7 +185,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<T, B> discardL(Applicative<B, Try<T, ?>> appB) {
+    public <B> Try<B> discardL(Applicative<B, Try<?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
@@ -192,7 +193,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<T, A> discardR(Applicative<B, Try<T, ?>> appB) {
+    public <B> Try<A> discardR(Applicative<B, Try<?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
@@ -201,48 +202,22 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Try<T, ?>>,
+    public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Try<?>>,
             AppB extends Applicative<B, App>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super A, ? extends AppB> fn,
                                                                       Function<? super TravB, ? extends AppTrav> pure) {
         return match(t -> pure.apply((TravB) failure(t)),
-                     a -> fn.apply(a).<Try<T, B>>fmap(Try::success).<TravB>fmap(Applicative::coerce).coerce());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <U extends Throwable, D> Try<U, D> biMap(Function<? super T, ? extends U> lFn,
-                                                    Function<? super A, ? extends D> rFn) {
-        return match(t -> failure(lFn.apply(t)), a -> success(rFn.apply(a)));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <U extends Throwable> Try<U, A> biMapL(Function<? super T, ? extends U> fn) {
-        return (Try<U, A>) BoundedBifunctor.super.<U>biMapL(fn);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <B> Try<T, B> biMapR(Function<? super A, ? extends B> fn) {
-        return (Try<T, B>) BoundedBifunctor.super.<B>biMapR(fn);
+                     a -> fn.apply(a).fmap(Try::success).<TravB>fmap(Applicative::coerce).coerce());
     }
 
     /**
      * Static factory method for creating a success value.
      *
      * @param a   the wrapped value
-     * @param <T> the failure parameter type
      * @param <A> the success parameter type
      * @return a success value of a
      */
-    public static <T extends Throwable, A> Try<T, A> success(A a) {
+    public static <A> Try<A> success(A a) {
         return new Success<>(a);
     }
 
@@ -254,7 +229,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param <A> the success parameter type
      * @return a failure value of t
      */
-    public static <T extends Throwable, A> Try<T, A> failure(T t) {
+    public static <T extends Throwable, A> Try<A> failure(T t) {
         return new Failure<>(t);
     }
 
@@ -266,12 +241,11 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param <A>      the possible success type
      * @return a new {@link Try} around either a successful A result or the thrown {@link Throwable}
      */
-    @SuppressWarnings("unchecked")
-    public static <T extends Throwable, A> Try<T, A> trying(CheckedSupplier<T, A> supplier) {
+    public static <T extends Throwable, A> Try<A> trying(CheckedSupplier<T, A> supplier) {
         try {
             return success(supplier.get());
         } catch (Throwable t) {
-            return failure((T) t);
+            return failure(t);
         }
     }
 
@@ -279,10 +253,9 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * Execute <code>runnable</code>, returning a success {@link Unit} or a failure of the thrown {@link Throwable}.
      *
      * @param runnable the runnable
-     * @param <T>      the possible {@link Throwable} type
      * @return a new {@link Try} around either a successful {@link Unit} result or the thrown {@link Throwable}
      */
-    public static <T extends Throwable> Try<T, Unit> trying(CheckedRunnable<T> runnable) {
+    public static Try<Unit> trying(CheckedRunnable<?> runnable) {
         return trying(() -> {
             runnable.run();
             return UNIT;
@@ -317,12 +290,12 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @return a {@link Try} representing the result of the function's application to the resource
      */
     @SuppressWarnings("try")
-    public static <A extends AutoCloseable, B> Try<Exception, B> withResources(
+    public static <A extends AutoCloseable, B> Try<B> withResources(
             CheckedSupplier<? extends Exception, A> aSupplier,
-            CheckedFn1<? extends Exception, ? super A, ? extends Try<? extends Exception, ? extends B>> fn) {
+            CheckedFn1<? extends Exception, ? super A, ? extends Try<? extends B>> fn) {
         return trying(() -> {
             try (A resource = aSupplier.get()) {
-                return fn.apply(resource).<Exception, B>biMap(upcast(), upcast());
+                return fn.apply(resource).<B>fmap(upcast());
             }
         }).flatMap(id());
     }
@@ -339,10 +312,10 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param <C>       the function return type
      * @return a {@link Try} representing the result of the function's application to the dependent resource
      */
-    public static <A extends AutoCloseable, B extends AutoCloseable, C> Try<Exception, C> withResources(
+    public static <A extends AutoCloseable, B extends AutoCloseable, C> Try<C> withResources(
             CheckedSupplier<? extends Exception, ? extends A> aSupplier,
             CheckedFn1<? extends Exception, ? super A, ? extends B> bFn,
-            CheckedFn1<? extends Exception, ? super B, ? extends Try<? extends Exception, ? extends C>> fn) {
+            CheckedFn1<? extends Exception, ? super B, ? extends Try<? extends C>> fn) {
         return withResources(aSupplier, a -> withResources(() -> bFn.apply(a), fn::apply));
     }
 
@@ -361,28 +334,28 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
      * @param <D>       the function return type
      * @return a {@link Try} representing the result of the function's application to the final dependent resource
      */
-    public static <A extends AutoCloseable, B extends AutoCloseable, C extends AutoCloseable, D> Try<Exception, D> withResources(
+    public static <A extends AutoCloseable, B extends AutoCloseable, C extends AutoCloseable, D> Try<D> withResources(
             CheckedSupplier<? extends Exception, ? extends A> aSupplier,
             CheckedFn1<? extends Exception, ? super A, ? extends B> bFn,
             CheckedFn1<? extends Exception, ? super B, ? extends C> cFn,
-            CheckedFn1<? extends Exception, ? super C, ? extends Try<? extends Exception, ? extends D>> fn) {
+            CheckedFn1<? extends Exception, ? super C, ? extends Try<? extends D>> fn) {
         return withResources(aSupplier, bFn, b -> withResources(() -> cFn.apply(b), fn::apply));
     }
 
-    private static final class Failure<T extends Throwable, A> extends Try<T, A> {
-        private final T t;
+    private static final class Failure<A> extends Try<A> {
+        private final Throwable t;
 
-        private Failure(T t) {
+        private Failure(Throwable t) {
             this.t = t;
         }
 
         @Override
-        public A orThrow() throws T {
-            throw t;
+        public A orThrow() {
+            throw Runtime.throwChecked(t);
         }
 
         @Override
-        public <R> R match(Function<? super T, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
+        public <R> R match(Function<? super Throwable, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
             return aFn.apply(t);
         }
 
@@ -404,7 +377,7 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
         }
     }
 
-    private static final class Success<T extends Throwable, A> extends Try<T, A> {
+    private static final class Success<A> extends Try<A> {
         private final A a;
 
         private Success(A a) {
@@ -412,12 +385,12 @@ public abstract class Try<T extends Throwable, A> implements Monad<A, Try<T, ?>>
         }
 
         @Override
-        public A orThrow() throws T {
+        public A orThrow() {
             return a;
         }
 
         @Override
-        public <R> R match(Function<? super T, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
+        public <R> R match(Function<? super Throwable, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
             return bFn.apply(a);
         }
 

@@ -44,13 +44,13 @@ public class TryTest {
     @Rule public ExpectedException thrown = ExpectedException.none();
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
-    public Subjects<Try<Throwable, Integer>> testSubject() {
+    public Subjects<Try<Integer>> testSubject() {
         return subjects(failure(new IllegalStateException()), success(1));
     }
 
     @Test
     public void catchingWithGenericPredicate() {
-        Try<RuntimeException, String> caught = Try.<RuntimeException, String>failure(new RuntimeException())
+        Try<String> caught = Try.<RuntimeException, String>failure(new RuntimeException())
                 .catching(__ -> false, r -> "caught first")
                 .catching(__ -> true, r -> "caught second");
 
@@ -59,7 +59,7 @@ public class TryTest {
 
     @Test
     public void catchingIsANoOpForSuccess() {
-        Try<RuntimeException, String> caught = Try.<RuntimeException, String>success("success")
+        Try<String> caught = success("success")
                 .catching(__ -> true, __ -> "caught");
 
         assertEquals(success("success"), caught);
@@ -67,7 +67,7 @@ public class TryTest {
 
     @Test
     public void firstMatchingCatchBlockWins() {
-        Try<RuntimeException, String> caught = Try.<RuntimeException, String>failure(new IllegalStateException())
+        Try<String> caught = Try.<RuntimeException, String>failure(new IllegalStateException())
                 .catching(__ -> true, __ -> "first")
                 .catching(__ -> true, __ -> "second");
 
@@ -76,7 +76,7 @@ public class TryTest {
 
     @Test
     public void catchBasedOnExceptionType() {
-        Try<RuntimeException, String> caught = Try.<RuntimeException, String>failure(new IllegalStateException())
+        Try<String> caught = Try.<RuntimeException, String>failure(new IllegalStateException())
                 .catching(IllegalArgumentException.class, __ -> "illegal argument exception")
                 .catching(IllegalStateException.class, __ -> "illegal state exception")
                 .catching(RuntimeException.class, __ -> "runtime exception");
@@ -87,7 +87,7 @@ public class TryTest {
     @Test
     public void ensureIfSuccess() {
         AtomicInteger invocations = new AtomicInteger(0);
-        Try.success(1).ensuring((invocations::incrementAndGet));
+        success(1).ensuring((invocations::incrementAndGet));
         assertEquals(1, invocations.get());
     }
 
@@ -101,9 +101,9 @@ public class TryTest {
     @Test
     public void exceptionThrownInEnsuringBlockIsCaught() {
         IllegalStateException expected = new IllegalStateException();
-        assertEquals(Try.failure(expected), Try.success(1).ensuring(() -> {throw expected;}));
+        assertEquals(Try.failure(expected), success(1).ensuring(() -> {throw expected;}));
 
-        Either<IllegalArgumentException, Object> actual = Try.failure(new IllegalArgumentException())
+        Either<Throwable, Object> actual = Try.failure(new IllegalArgumentException())
                 .ensuring(() -> { throw expected;})
                 .toEither();
         assertThat(actual, isLeftThat(instanceOf(IllegalArgumentException.class)));
@@ -114,12 +114,12 @@ public class TryTest {
     public void forfeitEnsuresFailure() {
         IllegalStateException expected = new IllegalStateException();
         assertEquals(expected, Try.<RuntimeException, Object>failure(expected).forfeit(__ -> new IllegalArgumentException()));
-        assertEquals(expected, Try.<RuntimeException, Object>success(1).forfeit(__ -> expected));
+        assertEquals(expected, Try.<Object>success(1).forfeit(__ -> expected));
     }
 
     @Test
     public void recoverEnsuresSuccess() {
-        assertEquals((Integer) 1, Try.<RuntimeException, Integer>success(1).recover(constantly(1)));
+        assertEquals((Integer) 1, Try.success(1).recover(constantly(1)));
         assertEquals((Integer) 1, Try.<RuntimeException, Integer>failure(new IllegalArgumentException()).recover(constantly(1)));
     }
 
@@ -134,13 +134,13 @@ public class TryTest {
 
     @Test
     public void toMaybe() {
-        assertEquals(just("foo"), Try.success("foo").toMaybe());
+        assertEquals(just("foo"), success("foo").toMaybe());
         assertEquals(nothing(), Try.failure(new IllegalStateException()).toMaybe());
     }
 
     @Test
     public void toEither() {
-        assertEquals(right("foo"), Try.success("foo").toEither());
+        assertEquals(right("foo"), success("foo").toEither());
 
         IllegalStateException exception = new IllegalStateException();
         assertEquals(left(exception), Try.failure(exception).toEither());
@@ -148,7 +148,7 @@ public class TryTest {
 
     @Test
     public void toEitherWithLeftMappingFunction() {
-        assertEquals(right(1), Try.success(1).toEither(__ -> "fail"));
+        assertEquals(right(1), success(1).toEither(__ -> "fail"));
         assertEquals(left("fail"), Try.failure(new IllegalStateException("fail")).toEither(Throwable::getMessage));
     }
 
@@ -163,13 +163,13 @@ public class TryTest {
     @Test
     public void withResourcesCleansUpAutoCloseableInSuccessCase() {
         AtomicBoolean closed = new AtomicBoolean(false);
-        assertEquals(Try.success(1), Try.withResources(() -> () -> closed.set(true), resource -> success(1)));
+        assertEquals(success(1), Try.withResources(() -> () -> closed.set(true), resource -> success(1)));
         assertTrue(closed.get());
     }
 
     @Test
     public void withResourcesCleansUpAutoCloseableInFailureCase() {
-        AtomicBoolean closed = new AtomicBoolean(false);
+        AtomicBoolean    closed    = new AtomicBoolean(false);
         RuntimeException exception = new RuntimeException();
         assertEquals(Try.failure(exception), Try.withResources(() -> () -> closed.set(true),
                                                                resource -> { throw exception; }));
@@ -191,11 +191,11 @@ public class TryTest {
 
     @Test
     public void withResourcesPreservesSuppressedExceptionThrownDuringClose() {
-        RuntimeException rootException = new RuntimeException();
-        IOException nestedIOException = new IOException();
-        Try<Exception, Exception> failure = Try.withResources(() -> () -> { throw nestedIOException; },
-                                                              resource -> { throw rootException; });
-        Exception thrown = failure.recover(id());
+        RuntimeException rootException     = new RuntimeException();
+        IOException      nestedIOException = new IOException();
+        Try<Throwable> failure = Try.withResources(() -> () -> { throw nestedIOException; },
+                                                   resource -> { throw rootException; });
+        Throwable thrown = failure.recover(id());
 
         assertEquals(thrown, rootException);
         assertArrayEquals(new Throwable[]{nestedIOException}, thrown.getSuppressed());

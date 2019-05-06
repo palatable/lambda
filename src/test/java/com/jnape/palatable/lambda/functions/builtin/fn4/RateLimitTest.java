@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.functions.builtin.fn4;
 
-import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.iteration.IterationInterruptedException;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -17,8 +16,10 @@ import testsupport.traits.Laziness;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 
+import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static com.jnape.palatable.lambda.functions.builtin.fn4.RateLimit.rateLimit;
+import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable.checked;
 import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static java.util.Arrays.asList;
@@ -55,18 +56,17 @@ public class RateLimitTest {
     @Test
     public void limitPerDurationIsHonoredAccordingToClock() {
         Duration duration = Duration.ofMillis(10);
-        long limit = 2L;
+        long     limit    = 2L;
         assertThat(rateLimit(clock::instant, limit, duration, asList(1, 2, 3, 4)),
                    iteratesAccordingToRateLimit(limit, duration, asList(1, 2, 3, 4), clock));
     }
 
     @Test(timeout = 100, expected = IterationInterruptedException.class)
     public void rateLimitingDelayIsInterruptible() throws InterruptedException {
-        Thread testThread = Thread.currentThread();
-        CountDownLatch latch = new CountDownLatch(1);
+        Thread         testThread = Thread.currentThread();
+        CountDownLatch latch      = new CountDownLatch(1);
         new Thread(() -> {
-            Try.<InterruptedException>trying(latch::await).biMapL(AssertionError::new)
-                    .orThrow();
+            trying(checked(latch::await)).orThrow();
             testThread.interrupt();
         }) {{
             start();

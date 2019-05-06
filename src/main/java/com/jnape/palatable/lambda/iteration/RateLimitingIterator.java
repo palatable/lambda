@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.iteration;
 
+import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.hlist.Tuple3;
 
 import java.time.Duration;
@@ -13,12 +14,14 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static com.jnape.palatable.lambda.adt.Try.failure;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Filter.filter;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.GTE.gte;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.LT.lt;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.LTE.lte;
+import static com.jnape.palatable.lambda.monad.Monad.join;
 import static com.jnape.palatable.lambda.semigroup.builtin.Max.max;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.emptyList;
@@ -58,14 +61,17 @@ public final class RateLimitingIterator<A> implements Iterator<A> {
 
     private void awaitNextTimeSliceForRateLimit(Tuple3<Long, Duration, Supplier<Instant>> rateLimit) {
         while (rateLimitExhaustedInTimeSlice(rateLimit)) {
-            trying(() -> sleep(0)).biMapL(IterationInterruptedException::new).orThrow();
+            join(trying(() -> sleep(0))
+                         .fmap(Try::success)
+                         .catching(InterruptedException.class, t -> failure(new IterationInterruptedException(t))))
+                    .orThrow();
         }
     }
 
     private boolean rateLimitExhaustedInTimeSlice(Tuple3<Long, Duration, Supplier<Instant>> rateLimit) {
         List<Instant> timeSlicesForRateLimit = timeSlicesByRateLimit.getOrDefault(rateLimit, emptyList());
         return rateLimit.into((limit, duration, instantSupplier) -> {
-            Instant timeSliceEnd = instantSupplier.get();
+            Instant timeSliceEnd         = instantSupplier.get();
             Instant previousTimeSliceEnd = timeSliceEnd.minus(duration);
             timeSlicesForRateLimit.removeIf(lt(previousTimeSliceEnd));
             return max(0L, limit - size(filter(mark -> lte(mark, previousTimeSliceEnd) && gte(mark, timeSliceEnd), timeSlicesForRateLimit))) == 0;
