@@ -108,7 +108,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      *
      * @return possibly the success value
      */
-    public abstract A orThrow();
+    public abstract <T extends Throwable> A orThrow() throws T;
 
     /**
      * If this is a success, wrap the value in a {@link Maybe#just} and return it. Otherwise, return {@link

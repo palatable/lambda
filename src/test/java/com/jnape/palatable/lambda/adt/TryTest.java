@@ -36,6 +36,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static testsupport.matchers.LeftMatcher.isLeftThat;
 
 @RunWith(Traits.class)
@@ -218,5 +219,18 @@ public class TryTest {
         assertEquals(failure(e), failure(e).lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void orThrowCanStillThrowCheckedExceptions() {
+        try {
+            Try.trying(() -> {
+                throw new RuntimeException();
+            }).<IOException>orThrow();
+            fail("Expected RuntimeException to be thrown, but nothing was");
+        } catch (IOException ioException) {
+            fail("Expected thrown exception to not be IOException, but merely proving it can still be caught");
+        } catch (Exception expected) {
+        }
     }
 }
