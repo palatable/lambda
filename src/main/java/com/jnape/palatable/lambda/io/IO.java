@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -12,7 +13,6 @@ import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -22,7 +22,6 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
-import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier.checked;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.concurrent.ForkJoinPool.commonPool;
@@ -180,20 +179,20 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
     /**
      * Static factory method for coercing a lambda to an {@link IO}.
      *
-     * @param supplier the lambda to coerce
-     * @param <A>      the result type
+     * @param fn0 the lambda to coerce
+     * @param <A> the result type
      * @return the {@link IO}
      */
-    public static <A> IO<A> io(Supplier<A> supplier) {
+    public static <A> IO<A> io(Fn0<? extends A> fn0) {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
-                return supplier.get();
+                return fn0.get();
             }
 
             @Override
             public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
-                return supplyAsync(supplier, executor);
+                return supplyAsync(fn0::apply, executor);
             }
         };
     }
@@ -220,11 +219,11 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * @param <A>      the result type
      * @return the {@link IO}
      */
-    public static <A> IO<A> externallyManaged(Supplier<CompletableFuture<A>> supplier) {
+    public static <A> IO<A> externallyManaged(Fn0<CompletableFuture<A>> supplier) {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
-                return checked(() -> unsafePerformAsyncIO().get()).get();
+                return fn0(() -> unsafePerformAsyncIO().get()).apply();
             }
 
             @Override

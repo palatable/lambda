@@ -1,9 +1,9 @@
 package com.jnape.palatable.lambda.adt;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
-import com.jnape.palatable.lambda.functions.specialized.checked.CheckedFn1;
+import com.jnape.palatable.lambda.functions.Fn0;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
-import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -237,11 +237,10 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * Execute <code>supplier</code>, returning a success <code>A</code> or a failure of the thrown {@link Throwable}.
      *
      * @param supplier the supplier
-     * @param <T>      the possible {@link Throwable} type
      * @param <A>      the possible success type
      * @return a new {@link Try} around either a successful A result or the thrown {@link Throwable}
      */
-    public static <T extends Throwable, A> Try<A> trying(CheckedSupplier<T, A> supplier) {
+    public static <A> Try<A> trying(Fn0<? extends A> supplier) {
         try {
             return success(supplier.get());
         } catch (Throwable t) {
@@ -263,7 +262,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
     }
 
     /**
-     * Given a <code>{@link CheckedSupplier}&lt;{@link AutoCloseable}&gt;</code> <code>aSupplier</code> and a
+     * Given a <code>{@link Fn0}&lt;{@link AutoCloseable}&gt;</code> <code>aSupplier</code> and a
      * {@link Function} <code>fn</code>, apply <code>fn</code> to the result of <code>aSupplier</code>, ensuring
      * that the result has its {@link AutoCloseable#close() close} method invoked, regardless of the outcome.
      * <p>
@@ -283,65 +282,63 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html" target="_top">
      * try-with-resources</a>, introduced in Java 7.
      *
-     * @param aSupplier the resource supplier
-     * @param fn        the function body
-     * @param <A>       the resource type
-     * @param <B>       the function return type
+     * @param fn0 the resource supplier
+     * @param fn  the function body
+     * @param <A> the resource type
+     * @param <B> the function return type
      * @return a {@link Try} representing the result of the function's application to the resource
      */
     @SuppressWarnings("try")
     public static <A extends AutoCloseable, B> Try<B> withResources(
-            CheckedSupplier<? extends Exception, A> aSupplier,
-            CheckedFn1<?, ? super A, ? extends Try<? extends B>> fn) {
+            Fn0<? extends A> fn0,
+            Fn1<? super A, ? extends Try<? extends B>> fn) {
         return trying(() -> {
-            try (A resource = aSupplier.get()) {
+            try (A resource = fn0.apply()) {
                 return fn.apply(resource).<B>fmap(upcast());
             }
         }).flatMap(id());
     }
 
     /**
-     * Convenience overload of {@link Try#withResources(CheckedSupplier, CheckedFn1) withResources} that cascades
-     * dependent resource creation via nested calls.
+     * Convenience overload of {@link Try#withResources(Fn0, Fn1) withResources} that cascades dependent resource
+     * creation via nested calls.
      *
-     * @param aSupplier the first resource supplier
-     * @param bFn       the dependent resource function
-     * @param fn        the function body
-     * @param <A>       the first resource type
-     * @param <B>       the second resource type
-     * @param <C>       the function return type
+     * @param fn0 the first resource supplier
+     * @param bFn the dependent resource function
+     * @param fn  the function body
+     * @param <A> the first resource type
+     * @param <B> the second resource type
+     * @param <C> the function return type
      * @return a {@link Try} representing the result of the function's application to the dependent resource
      */
     public static <A extends AutoCloseable, B extends AutoCloseable, C> Try<C> withResources(
-            CheckedSupplier<? extends Exception, ? extends A> aSupplier,
-            CheckedFn1<? extends Exception, ? super A, ? extends B> bFn,
-            CheckedFn1<? extends Exception, ? super B, ? extends Try<? extends C>> fn) {
-        CheckedFn1<Throwable, A, Try<? extends C>> checkedFn = a -> withResources(() -> bFn.apply(a), fn::apply);
-        return withResources(aSupplier, checkedFn);
+            Fn0<? extends A> fn0,
+            Fn1<? super A, ? extends B> bFn,
+            Fn1<? super B, ? extends Try<? extends C>> fn) {
+        return withResources(fn0, a -> withResources(() -> bFn.apply(a), fn::apply));
     }
 
     /**
-     * Convenience overload of {@link Try#withResources(CheckedSupplier, CheckedFn1, CheckedFn1) withResources} that
+     * Convenience overload of {@link Try#withResources(Fn0, Fn1, Fn1) withResources} that
      * cascades
      * two dependent resource creations via nested calls.
      *
-     * @param aSupplier the first resource supplier
-     * @param bFn       the second resource function
-     * @param cFn       the final resource function
-     * @param fn        the function body
-     * @param <A>       the first resource type
-     * @param <B>       the second resource type
-     * @param <C>       the final resource type
-     * @param <D>       the function return type
+     * @param fn0 the first resource supplier
+     * @param bFn the second resource function
+     * @param cFn the final resource function
+     * @param fn  the function body
+     * @param <A> the first resource type
+     * @param <B> the second resource type
+     * @param <C> the final resource type
+     * @param <D> the function return type
      * @return a {@link Try} representing the result of the function's application to the final dependent resource
      */
     public static <A extends AutoCloseable, B extends AutoCloseable, C extends AutoCloseable, D> Try<D> withResources(
-            CheckedSupplier<? extends Exception, ? extends A> aSupplier,
-            CheckedFn1<? extends Exception, ? super A, ? extends B> bFn,
-            CheckedFn1<? extends Exception, ? super B, ? extends C> cFn,
-            CheckedFn1<? extends Exception, ? super C, ? extends Try<? extends D>> fn) {
-        CheckedFn1<Exception, B, Try<? extends D>> checkedFn = b -> withResources(() -> cFn.apply(b), fn::apply);
-        return withResources(aSupplier, bFn, checkedFn);
+            Fn0<? extends A> fn0,
+            Fn1<? super A, ? extends B> bFn,
+            Fn1<? super B, ? extends C> cFn,
+            Fn1<? super C, ? extends Try<? extends D>> fn) {
+        return withResources(fn0, bFn, b -> withResources(() -> cFn.apply(b), fn::apply));
     }
 
     private static final class Failure<A> extends Try<A> {

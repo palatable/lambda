@@ -3,10 +3,11 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.lambda.adt.choice.Choice3;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn0;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek2;
 import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
-import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -318,7 +319,7 @@ public abstract class Either<L, R> implements
     }
 
     /**
-     * Attempt to execute the {@link CheckedSupplier}, returning its result in a right value. If the supplier throws an
+     * Attempt to execute the {@link Fn0}, returning its result in a right value. If the supplier throws an
      * exception, apply leftFn to it, wrap it in a left value and return it.
      *
      * @param supplier the supplier of the right value
@@ -327,20 +328,20 @@ public abstract class Either<L, R> implements
      * @param <R>      the right parameter type
      * @return the supplier result as a right value, or leftFn's mapping result as a left value
      */
-    public static <L, R> Either<L, R> trying(CheckedSupplier<?, ? extends R> supplier,
+    public static <L, R> Either<L, R> trying(Fn0<? extends R> supplier,
                                              Function<? super Throwable, ? extends L> leftFn) {
-        return Try.<Throwable, R>trying(supplier::get).toEither(leftFn);
+        return Try.<R>trying(supplier::get).toEither(leftFn);
     }
 
     /**
-     * Attempt to execute the {@link CheckedSupplier}, returning its result in a right value. If the supplier throws an
+     * Attempt to execute the {@link Fn0}, returning its result in a right value. If the supplier throws an
      * exception, wrap it in a left value and return it.
      *
      * @param supplier the supplier of the right value
      * @param <R>      the right parameter type
      * @return the supplier result as a right value, or a left value of the thrown exception
      */
-    public static <R> Either<Throwable, R> trying(CheckedSupplier<?, R> supplier) {
+    public static <R> Either<Throwable, R> trying(Fn0<? extends R> supplier) {
         return trying(supplier, id());
     }
 

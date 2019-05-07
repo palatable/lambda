@@ -1,16 +1,11 @@
 package com.jnape.palatable.lambda.functions.specialized.checked;
 
-import com.jnape.palatable.lambda.adt.Unit;
-
-import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.specialized.checked.Runtime.throwChecked;
 
 /**
  * Specialized {@link Runnable} that can throw any {@link Throwable}.
  *
  * @param <T> The {@link Throwable} type
- * @see CheckedSupplier
- * @see CheckedFn1
  */
 @FunctionalInterface
 public interface CheckedRunnable<T extends Throwable> extends Runnable {
@@ -29,18 +24,6 @@ public interface CheckedRunnable<T extends Throwable> extends Runnable {
         } catch (Throwable t) {
             throw throwChecked(t);
         }
-    }
-
-    /**
-     * Convert this {@link CheckedRunnable} to a {@link CheckedSupplier} that returns {@link Unit}.
-     *
-     * @return the checked supplier
-     */
-    default CheckedSupplier<T, Unit> toSupplier() {
-        return () -> {
-            run();
-            return UNIT;
-        };
     }
 
     /**

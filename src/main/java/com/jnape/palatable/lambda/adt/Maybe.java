@@ -5,8 +5,8 @@ import com.jnape.palatable.lambda.adt.choice.Choice3;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
-import com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
@@ -69,10 +70,10 @@ public abstract class Maybe<A> implements
      * @return the value, if present
      * @throws E the throwable, if the value is absent
      */
-    public final <E extends Throwable> A orElseThrow(Supplier<E> throwableSupplier) throws E {
-        return orElseGet((CheckedSupplier<E, A>) () -> {
+    public final <E extends Throwable> A orElseThrow(Fn0<? extends E> throwableSupplier) throws E {
+        return orElseGet(fn0(() -> {
             throw throwableSupplier.get();
-        });
+        }));
     }
 
     /**

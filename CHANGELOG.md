@@ -6,8 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Changed
 - ***Breaking Change***: `IO` is now sealed and moved to its own package. Most previous constructions using the static 
-factory methods should continue to work (by simply targeting `Supplier` now instead of an anonymous `IO`), but some 
-might need to be reworked, and subtyping is obviously no longer supported.
+                         factory methods should continue to work (by simply targeting `Supplier` now instead of an 
+                         anonymous `IO`), but some might need to be reworked, and subtyping is obviously no longer 
+                         supported.
 - ***Breaking Change***: `FoldRight` now requires `Lazy` as part of its interface to support short-circuiting operations
 - ***Breaking Change***: Eliminated all raw types and java11 warnings. This required using capture in unification 
                          parameters for Functor and friends, so nearly every functor's type-signature changed. 
@@ -19,7 +20,8 @@ might need to be reworked, and subtyping is obviously no longer supported.
                          exceptions that could be caught by corresponding catch blocks
 - ***Breaking Change***: All `Fn*` types target methods now support throwing `Throwable`; `apply` is now defaulted and 
                          will simply bypass javac to throw checked exceptions as if they were unchecked. This allows all 
-                         checked variants to be eliminated  
+                         checked variants to be eliminated
+- ***Breaking Change***: All `Checked` variants have been eliminated
 - `IO` is now stack-safe, regardless of whether the composition nests linearly or recursively
 
 ### Added

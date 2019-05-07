@@ -19,7 +19,6 @@ import java.util.function.Function;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
-import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedSupplier.checked;
 import static com.jnape.palatable.lambda.io.IO.externallyManaged;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -55,23 +54,23 @@ public class IOTest {
 
     @Test
     public void zipAndDerivativesComposesInParallel() {
-        String a = "foo";
+        String                               a = "foo";
         Fn1<String, Tuple2<Integer, String>> f = tupler(1);
 
-        ExecutorService executor = newFixedThreadPool(2);
-        CountDownLatch advanceFirst = new CountDownLatch(1);
-        CountDownLatch advanceSecond = new CountDownLatch(1);
+        ExecutorService executor      = newFixedThreadPool(2);
+        CountDownLatch  advanceFirst  = new CountDownLatch(1);
+        CountDownLatch  advanceSecond = new CountDownLatch(1);
 
-        IO<String> ioA = io(checked(() -> {
+        IO<String> ioA = io(() -> {
             advanceFirst.countDown();
             advanceSecond.await();
             return a;
-        }));
-        IO<Function<? super String, ? extends Tuple2<Integer, String>>> ioF = io(checked(() -> {
+        });
+        IO<Function<? super String, ? extends Tuple2<Integer, String>>> ioF = io(() -> {
             advanceFirst.await();
             advanceSecond.countDown();
             return f;
-        }));
+        });
 
         IO<Tuple2<Integer, String>> zip = ioA.zip(ioF);
         assertEquals(f.apply(a), zip.unsafePerformAsyncIO().join());
@@ -90,7 +89,7 @@ public class IOTest {
     @Test
     public void delegatesToExternallyManagedFuture() {
         CompletableFuture<Integer> future = completedFuture(1);
-        IO<Integer> io = externallyManaged(() -> future);
+        IO<Integer>                io     = externallyManaged(() -> future);
         assertEquals((Integer) 1, io.unsafePerformIO());
         assertEquals((Integer) 1, io.unsafePerformAsyncIO().join());
         assertEquals((Integer) 1, io.unsafePerformAsyncIO(commonPool()).join());
