@@ -3,10 +3,9 @@ package com.jnape.palatable.lambda.adt.coproduct;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.choice.Choice3;
+import com.jnape.palatable.lambda.functions.Fn1;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -24,22 +23,22 @@ public class CoProduct3Test {
     public void setUp() {
         a = new CoProduct3<Integer, String, Boolean, CoProduct3<Integer, String, Boolean, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn) {
                 return aFn.apply(1);
             }
         };
         b = new CoProduct3<Integer, String, Boolean, CoProduct3<Integer, String, Boolean, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn) {
                 return bFn.apply("two");
             }
         };
         c = new CoProduct3<Integer, String, Boolean, CoProduct3<Integer, String, Boolean, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn) {
                 return cFn.apply(true);
             }
         };
@@ -61,7 +60,7 @@ public class CoProduct3Test {
 
     @Test
     public void converge() {
-        Function<Boolean, CoProduct2<Integer, String, ?>> convergenceFn = x -> x ? Choice2.a(-1) : Choice2.b("false");
+        Fn1<Boolean, CoProduct2<Integer, String, ?>> convergenceFn = x -> x ? Choice2.a(-1) : Choice2.b("false");
         assertEquals(1, a.converge(convergenceFn).match(id(), id()));
         assertEquals("two", b.converge(convergenceFn).match(id(), id()));
         assertEquals(-1, c.converge(convergenceFn).match(id(), id()));

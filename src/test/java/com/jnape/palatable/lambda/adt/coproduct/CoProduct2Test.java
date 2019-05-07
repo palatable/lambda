@@ -1,10 +1,9 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.functions.Fn1;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -21,13 +20,13 @@ public class CoProduct2Test {
     public void setUp() {
         a = new CoProduct2<Integer, Boolean, CoProduct2<Integer, Boolean, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super Boolean, ? extends R> bFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super Boolean, ? extends R> bFn) {
                 return aFn.apply(1);
             }
         };
         b = new CoProduct2<Integer, Boolean, CoProduct2<Integer, Boolean, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super Boolean, ? extends R> bFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super Boolean, ? extends R> bFn) {
                 return bFn.apply(true);
             }
         };

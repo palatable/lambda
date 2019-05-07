@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
@@ -62,7 +63,7 @@ public class Tuple2Test {
     @Test
     public void randomAccess() {
         SingletonHList<String> spiedTail = spy(singletonHList("second"));
-        Tuple2<String, String> tuple2 = new Tuple2<>("first", spiedTail);
+        Tuple2<String, String> tuple2    = new Tuple2<>("first", spiedTail);
 
         verify(spiedTail, only()).head();
         tuple2._1();
@@ -104,15 +105,15 @@ public class Tuple2Test {
 
     @Test
     public void zipPrecedence() {
-        Tuple2<String, Integer> a = tuple("foo", 1);
-        Tuple2<String, Function<? super Integer, ? extends Integer>> b = tuple("bar", x -> x + 1);
+        Tuple2<String, Integer>                                 a = tuple("foo", 1);
+        Tuple2<String, Fn1<? super Integer, ? extends Integer>> b = tuple("bar", x -> x + 1);
         assertEquals(tuple("bar", 2), a.zip(b));
     }
 
     @Test
     public void flatMapPrecedence() {
-        Tuple2<String, Integer> a = tuple("foo", 1);
-        Function<Integer, Tuple2<String, Integer>> b = x -> tuple("bar", x + 1);
+        Tuple2<String, Integer>               a = tuple("foo", 1);
+        Fn1<Integer, Tuple2<String, Integer>> b = x -> tuple("bar", x + 1);
         assertEquals(tuple("foo", 2), a.flatMap(b));
     }
 }

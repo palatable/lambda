@@ -1,9 +1,9 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
 
@@ -33,7 +33,7 @@ public final class Compose<F extends Applicative<?, F>, G extends Applicative<?,
      * {@inheritDoc}
      */
     @Override
-    public <B> Compose<F, G, B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> Compose<F, G, B> fmap(Fn1<? super A, ? extends B> fn) {
         return new Compose<>(fga.fmap(g -> g.fmap(fn)));
     }
 
@@ -49,8 +49,8 @@ public final class Compose<F extends Applicative<?, F>, G extends Applicative<?,
      * {@inheritDoc}
      */
     @Override
-    public <B> Compose<F, G, B> zip(Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>> appFn) {
-        return new Compose<>(fga.zip(appFn.<Compose<F, G, Function<? super A, ? extends B>>>coerce()
+    public <B> Compose<F, G, B> zip(Applicative<Fn1<? super A, ? extends B>, Compose<F, G, ?>> appFn) {
+        return new Compose<>(fga.zip(appFn.<Compose<F, G, Fn1<? super A, ? extends B>>>coerce()
                                              .getCompose().fmap(gFn -> g -> g.zip(gFn))));
     }
 
@@ -59,13 +59,13 @@ public final class Compose<F extends Applicative<?, F>, G extends Applicative<?,
      */
     @Override
     public <B> Lazy<Compose<F, G, B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, Compose<F, G, ?>>> lazyAppFn) {
         @SuppressWarnings("RedundantTypeArguments")
-        Lazy<Applicative<Applicative<Function<? super A, ? extends B>, G>, F>> lazyAppFnCoerced =
+        Lazy<Applicative<Applicative<Fn1<? super A, ? extends B>, G>, F>> lazyAppFnCoerced =
                 lazyAppFn
-                        .<Compose<F, G, Function<? super A, ? extends B>>>fmap(
-                                Applicative<Function<? super A, ? extends B>, Compose<F, G, ?>>::coerce)
-                        .fmap(Compose<F, G, Function<? super A, ? extends B>>::getCompose);
+                        .<Compose<F, G, Fn1<? super A, ? extends B>>>fmap(
+                                Applicative<Fn1<? super A, ? extends B>, Compose<F, G, ?>>::coerce)
+                        .fmap(Compose<F, G, Fn1<? super A, ? extends B>>::getCompose);
 
         return fga.<Applicative<A, G>>fmap(upcast())
                 .<Applicative<B, G>>lazyZip(lazyAppFnCoerced.fmap(fgf -> fgf.fmap(gf -> ga -> ga.zip(gf))))

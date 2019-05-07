@@ -1,16 +1,17 @@
 package com.jnape.palatable.lambda.iteration;
 
+import com.jnape.palatable.lambda.functions.Fn2;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
 
 public final class ScanningIterator<A, B> extends ImmutableIterator<B> {
 
-    private final BiFunction<? super B, ? super A, ? extends B> scanner;
-    private final Iterator<A>                                   asIterator;
-    private       B                                             b;
+    private final Fn2<? super B, ? super A, ? extends B> scanner;
+    private final Iterator<A>                            asIterator;
+    private       B                                      b;
 
-    public ScanningIterator(BiFunction<? super B, ? super A, ? extends B> scanner, B b,
+    public ScanningIterator(Fn2<? super B, ? super A, ? extends B> scanner, B b,
                             Iterator<A> asIterator) {
         this.scanner = scanner;
         this.b = b;

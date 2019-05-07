@@ -40,9 +40,9 @@ public class PrismTest {
 
     @Test
     public void unPrismExtractsMappings() {
-        Prism<String, String, Integer, Integer>                     prism = prism(PARSE_INT.choose(), Object::toString);
-        Function<? super Integer, ? extends String>                 is    = prism.unPrism()._1();
-        Function<? super String, ? extends Either<String, Integer>> sis   = prism.unPrism()._2();
+        Prism<String, String, Integer, Integer>                prism = prism(PARSE_INT.choose(), Object::toString);
+        Fn1<? super Integer, ? extends String>                 is    = prism.unPrism()._1();
+        Fn1<? super String, ? extends Either<String, Integer>> sis   = prism.unPrism()._2();
 
         assertEquals("123", is.apply(123));
         assertEquals(right(123), sis.apply("123"));

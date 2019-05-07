@@ -31,11 +31,6 @@ public final class Xor implements Monoid<Boolean>, BiPredicate<Boolean, Boolean>
     }
 
     @Override
-    public boolean test(Boolean x, Boolean y) {
-        return apply(x, y);
-    }
-
-    @Override
     public Xor flip() {
         return this;
     }

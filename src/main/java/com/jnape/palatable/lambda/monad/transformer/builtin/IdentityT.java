@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
@@ -36,7 +37,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      * {@inheritDoc}
      */
     @Override
-    public <B> IdentityT<M, B> flatMap(Function<? super A, ? extends Monad<B, MonadT<M, Identity<?>, ?>>> f) {
+    public <B> IdentityT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, MonadT<M, Identity<?>, ?>>> f) {
         return identityT(mia.flatMap(identityA -> f.apply(identityA.runIdentity()).<IdentityT<M, B>>coerce().run()));
     }
 
@@ -52,7 +53,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      * {@inheritDoc}
      */
     @Override
-    public <B> IdentityT<M, B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> IdentityT<M, B> fmap(Fn1<? super A, ? extends B> fn) {
         return MonadT.super.<B>fmap(fn).coerce();
     }
 
@@ -60,7 +61,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      * {@inheritDoc}
      */
     @Override
-    public <B> IdentityT<M, B> zip(Applicative<Function<? super A, ? extends B>, MonadT<M, Identity<?>, ?>> appFn) {
+    public <B> IdentityT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, MonadT<M, Identity<?>, ?>> appFn) {
         return MonadT.super.zip(appFn).coerce();
     }
 
@@ -69,12 +70,12 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      */
     @Override
     public <B> Lazy<IdentityT<M, B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, MonadT<M, Identity<?>, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MonadT<M, Identity<?>, ?>>> lazyAppFn) {
         return new Compose<>(mia)
                 .lazyZip(lazyAppFn.fmap(maybeT -> new Compose<>(
-                        maybeT.<IdentityT<M, Function<? super A, ? extends B>>>coerce()
-                                .<Identity<Function<? super A, ? extends B>>,
-                                        Monad<Identity<Function<? super A, ? extends B>>, M>>run())))
+                        maybeT.<IdentityT<M, Fn1<? super A, ? extends B>>>coerce()
+                                .<Identity<Fn1<? super A, ? extends B>>,
+                                        Monad<Identity<Fn1<? super A, ? extends B>>, M>>run())))
                 .fmap(compose -> identityT(compose.getCompose()));
     }
 

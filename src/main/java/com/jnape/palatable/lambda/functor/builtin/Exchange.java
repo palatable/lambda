@@ -1,9 +1,8 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.optics.Iso;
-
-import java.util.function.Function;
 
 /**
  * A profunctor used to extract the isomorphic functions an {@link Iso} is composed of.
@@ -14,10 +13,10 @@ import java.util.function.Function;
  * @param <T> the larger viewed value of an {@link Iso}
  */
 public final class Exchange<A, B, S, T> implements Profunctor<S, T, Exchange<A, B, ?, ?>> {
-    private final Function<? super S, ? extends A> sa;
-    private final Function<? super B, ? extends T> bt;
+    private final Fn1<? super S, ? extends A> sa;
+    private final Fn1<? super B, ? extends T> bt;
 
-    public Exchange(Function<? super S, ? extends A> sa, Function<? super B, ? extends T> bt) {
+    public Exchange(Fn1<? super S, ? extends A> sa, Fn1<? super B, ? extends T> bt) {
         this.sa = sa;
         this.bt = bt;
     }
@@ -25,18 +24,18 @@ public final class Exchange<A, B, S, T> implements Profunctor<S, T, Exchange<A, 
     /**
      * Extract the mapping <code>S -&gt; A</code>.
      *
-     * @return a <code>{@link Function}&lt;S, A&gt;</code>
+     * @return an <code>{@link Fn1}&lt;S, A&gt;</code>
      */
-    public Function<? super S, ? extends A> sa() {
+    public Fn1<? super S, ? extends A> sa() {
         return sa;
     }
 
     /**
      * Extract the mapping <code>B -&gt; T</code>.
      *
-     * @return a <code>{@link Function}&lt;B, T&gt;</code>
+     * @return an <code>{@link Fn1}&lt;B, T&gt;</code>
      */
-    public Function<? super B, ? extends T> bt() {
+    public Fn1<? super B, ? extends T> bt() {
         return bt;
     }
 
@@ -44,16 +43,16 @@ public final class Exchange<A, B, S, T> implements Profunctor<S, T, Exchange<A, 
      * {@inheritDoc}
      */
     @Override
-    public <Z, C> Exchange<A, B, Z, C> diMap(Function<? super Z, ? extends S> lFn,
-                                             Function<? super T, ? extends C> rFn) {
-        return new Exchange<>(lFn.andThen(sa), bt.andThen(rFn));
+    public <Z, C> Exchange<A, B, Z, C> diMap(Fn1<? super Z, ? extends S> lFn,
+                                             Fn1<? super T, ? extends C> rFn) {
+        return new Exchange<>(lFn.fmap(sa), bt.fmap(rFn));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <Z> Exchange<A, B, Z, T> diMapL(Function<? super Z, ? extends S> fn) {
+    public <Z> Exchange<A, B, Z, T> diMapL(Fn1<? super Z, ? extends S> fn) {
         return (Exchange<A, B, Z, T>) Profunctor.super.<Z>diMapL(fn);
     }
 
@@ -61,7 +60,7 @@ public final class Exchange<A, B, S, T> implements Profunctor<S, T, Exchange<A, 
      * {@inheritDoc}
      */
     @Override
-    public <C> Exchange<A, B, S, C> diMapR(Function<? super T, ? extends C> fn) {
+    public <C> Exchange<A, B, S, C> diMapR(Fn1<? super T, ? extends C> fn) {
         return (Exchange<A, B, S, C>) Profunctor.super.<C>diMapR(fn);
     }
 
@@ -69,7 +68,7 @@ public final class Exchange<A, B, S, T> implements Profunctor<S, T, Exchange<A, 
      * {@inheritDoc}
      */
     @Override
-    public <Z> Exchange<A, B, Z, T> contraMap(Function<? super Z, ? extends S> fn) {
+    public <Z> Exchange<A, B, Z, T> contraMap(Fn1<? super Z, ? extends S> fn) {
         return (Exchange<A, B, Z, T>) Profunctor.super.<Z>contraMap(fn);
     }
 }

@@ -1,8 +1,7 @@
 package com.jnape.palatable.lambda.functor;
 
 import com.jnape.palatable.lambda.adt.choice.Choice2;
-
-import java.util.function.Function;
+import com.jnape.palatable.lambda.functions.Fn1;
 
 /**
  * {@link Profunctor} strength in the cocartesian coproduct sense: <code>p a b -&gt; p (c v a) (c v b)</code> for any
@@ -39,13 +38,13 @@ public interface Cocartesian<A, B, P extends Cocartesian<?, ?, P>> extends Profu
      * {@inheritDoc}
      */
     @Override
-    <Z, C> Cocartesian<Z, C, P> diMap(Function<? super Z, ? extends A> lFn, Function<? super B, ? extends C> rFn);
+    <Z, C> Cocartesian<Z, C, P> diMap(Fn1<? super Z, ? extends A> lFn, Fn1<? super B, ? extends C> rFn);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <Z> Cocartesian<Z, B, P> diMapL(Function<? super Z, ? extends A> fn) {
+    default <Z> Cocartesian<Z, B, P> diMapL(Fn1<? super Z, ? extends A> fn) {
         return (Cocartesian<Z, B, P>) Profunctor.super.<Z>diMapL(fn);
     }
 
@@ -53,7 +52,7 @@ public interface Cocartesian<A, B, P extends Cocartesian<?, ?, P>> extends Profu
      * {@inheritDoc}
      */
     @Override
-    default <C> Cocartesian<A, C, P> diMapR(Function<? super B, ? extends C> fn) {
+    default <C> Cocartesian<A, C, P> diMapR(Fn1<? super B, ? extends C> fn) {
         return (Cocartesian<A, C, P>) Profunctor.super.<C>diMapR(fn);
     }
 
@@ -61,7 +60,7 @@ public interface Cocartesian<A, B, P extends Cocartesian<?, ?, P>> extends Profu
      * {@inheritDoc}
      */
     @Override
-    default <Z> Cocartesian<Z, B, P> contraMap(Function<? super Z, ? extends A> fn) {
+    default <Z> Cocartesian<Z, B, P> contraMap(Fn1<? super Z, ? extends A> fn) {
         return (Cocartesian<Z, B, P>) Profunctor.super.<Z>contraMap(fn);
     }
 }

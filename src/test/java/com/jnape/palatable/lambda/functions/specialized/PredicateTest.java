@@ -8,47 +8,61 @@ import static org.junit.Assert.assertTrue;
 public class PredicateTest {
 
     @Test
-    public void jufPredicateTest() {
+    public void happyPath() {
         Predicate<String> notEmpty = s -> !(s == null || s.length() == 0);
 
-        assertTrue(notEmpty.test("foo"));
-        assertFalse(notEmpty.test(""));
-        assertFalse(notEmpty.test(null));
+        assertTrue(notEmpty.apply("foo"));
+        assertFalse(notEmpty.apply(""));
+        assertFalse(notEmpty.apply(null));
     }
 
     @Test
-    public void jufPredicateAnd() {
-        Predicate<String> notEmpty = s -> !(s == null || s.length() == 0);
+    public void and() {
+        Predicate<String> notEmpty  = s -> !(s == null || s.length() == 0);
         Predicate<String> lengthGt1 = s -> s.length() > 1;
 
         Predicate<String> conjunction = notEmpty.and(lengthGt1);
 
-        assertTrue(conjunction.test("fo"));
-        assertFalse(conjunction.test("f"));
-        assertFalse(conjunction.test(""));
-        assertFalse(conjunction.test(null));
+        assertTrue(conjunction.apply("fo"));
+        assertFalse(conjunction.apply("f"));
+        assertFalse(conjunction.apply(""));
+        assertFalse(conjunction.apply(null));
     }
 
     @Test
-    public void jufPredicateOr() {
-        Predicate<String> notEmpty = s -> !(s == null || s.length() == 0);
+    public void or() {
+        Predicate<String> notEmpty  = s -> !(s == null || s.length() == 0);
         Predicate<String> lengthGt1 = s -> s != null && s.length() > 1;
 
         Predicate<String> disjunction = lengthGt1.or(notEmpty);
 
-        assertTrue(disjunction.test("fo"));
-        assertTrue(disjunction.test("f"));
-        assertFalse(disjunction.test(""));
-        assertFalse(disjunction.test(null));
+        assertTrue(disjunction.apply("fo"));
+        assertTrue(disjunction.apply("f"));
+        assertFalse(disjunction.apply(""));
+        assertFalse(disjunction.apply(null));
     }
 
     @Test
-    public void jufPredicateNegate() {
+    public void negate() {
         Predicate<Boolean> isTrue = x -> x;
 
-        assertTrue(isTrue.test(true));
-        assertFalse(isTrue.test(false));
-        assertFalse(isTrue.negate().test(true));
-        assertTrue(isTrue.negate().test(false));
+        assertTrue(isTrue.apply(true));
+        assertFalse(isTrue.apply(false));
+        assertFalse(isTrue.negate().apply(true));
+        assertTrue(isTrue.negate().apply(false));
+    }
+
+    @Test
+    public void fromPredicate() {
+        java.util.function.Predicate<String> jufPredicate = String::isEmpty;
+        Predicate<String>                    predicate    = Predicate.fromPredicate(jufPredicate);
+        assertFalse(predicate.apply("123"));
+    }
+
+    @Test
+    public void toPredicate() {
+        Predicate<String>                    predicate    = String::isEmpty;
+        java.util.function.Predicate<String> jufPredicate = predicate.toPredicate();
+        assertFalse(jufPredicate.test("123"));
     }
 }

@@ -1,13 +1,14 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.Unit;
+import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.io.IO;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.io.IO.io;
 
@@ -16,76 +17,77 @@ import static com.jnape.palatable.lambda.io.IO.io;
  *
  * @param <A> the argument type
  * @see Fn0
- * @see Consumer
  */
 @FunctionalInterface
-public interface Effect<A> extends Fn1<A, IO<Unit>>, Consumer<A> {
-
-    void checkedAccept(A a) throws Throwable;
+public interface Effect<A> extends Fn1<A, IO<Unit>> {
 
     @Override
-    default void accept(A a) {
+    IO<Unit> checkedApply(A a) throws Throwable;
+
+    /**
+     * Convert this {@link Effect} to a java {@link Consumer}
+     *
+     * @return the {@link Consumer}
+     */
+    default Consumer<A> toConsumer() {
+        return a -> apply(a).unsafePerformIO();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default IO<Unit> apply(A a) {
         try {
-            checkedAccept(a);
+            return checkedApply(a);
         } catch (Throwable t) {
             throw Runtime.throwChecked(t);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    default IO<Unit> apply(A a) {
-        return io(() -> accept(a));
-    }
-
-    @Override
-    default IO<Unit> checkedApply(A a) throws Throwable {
-        return io(() -> accept(a));
-    }
-
-    @Override
-    default <Z> Effect<Z> diMapL(Function<? super Z, ? extends A> fn) {
+    default <Z> Effect<Z> diMapL(Fn1<? super Z, ? extends A> fn) {
         return effect(Fn1.super.diMapL(fn));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    default <Z> Effect<Z> contraMap(Function<? super Z, ? extends A> fn) {
+    default <Z> Effect<Z> contraMap(Fn1<? super Z, ? extends A> fn) {
         return effect(Fn1.super.contraMap(fn));
     }
 
-    @Override
-    default <Z> Effect<Z> compose(Function<? super Z, ? extends A> before) {
-        return effect(Fn1.super.compose(before));
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <C> Effect<A> discardR(Applicative<C, Fn1<A, ?>> appB) {
         return effect(Fn1.super.discardR(appB));
     }
 
-    @Override
-    default Effect<A> andThen(Consumer<? super A> after) {
-        return Consumer.super.andThen(after)::accept;
+    /**
+     * Static factory method to create an {@link Effect} from a java {@link Consumer}.
+     *
+     * @param consumer the {@link Consumer}
+     * @param <A>      the input type
+     * @return the {@link Effect}
+     */
+    static <A> Effect<A> fromConsumer(Consumer<A> consumer) {
+        return a -> io(() -> consumer.accept(a));
     }
 
     /**
-     * Static factory method to aid in inference.
+     * Create an {@link Effect} from a {@link SideEffect};
      *
-     * @param effect the effect
-     * @param <A>    the effect argument type
-     * @return the effect
+     * @param sideEffect the {@link SideEffect}
+     * @return the {@link Effect}
      */
-    static <A> Effect<A> effect(Consumer<A> effect) {
-        return effect::accept;
-    }
-
-    /**
-     * Create an {@link Effect} from a {@link Runnable};
-     *
-     * @param runnable the runnable
-     * @return the effect
-     */
-    static Effect<Unit> effect(Runnable runnable) {
-        return effect(constantly(io(runnable)));
+    static Effect<Unit> effect(SideEffect sideEffect) {
+        return effect(constantly(io(sideEffect)));
     }
 
     /**
@@ -96,6 +98,6 @@ public interface Effect<A> extends Fn1<A, IO<Unit>>, Consumer<A> {
      * @return the effect
      */
     static <A> Effect<A> effect(Fn1<? super A, ? extends IO<?>> fn) {
-        return a -> fn.apply(a).unsafePerformIO();
+        return fn.fmap(io -> io.fmap(constantly(UNIT)))::apply;
     }
 }

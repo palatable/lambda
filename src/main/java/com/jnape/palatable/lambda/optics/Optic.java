@@ -4,8 +4,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
 
-import java.util.function.Function;
-
 /**
  * A generic supertype representation for profunctor optics.
  * <p>
@@ -107,7 +105,7 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
      * @param <R> the new left side of the output profunctor
      * @return the new optic
      */
-    default <R> Optic<P, F, R, T, A, B> mapS(Function<? super R, ? extends S> fn) {
+    default <R> Optic<P, F, R, T, A, B> mapS(Fn1<? super R, ? extends S> fn) {
         return optic(pafb -> {
             Profunctor<S, Functor<T, ? extends F>, ? extends P> psft = apply(pafb);
             return psft.diMapL(fn);
@@ -121,7 +119,7 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
      * @param <U> the new right side's functor embedding of the output profunctor
      * @return the new optic
      */
-    default <U> Optic<P, F, S, U, A, B> mapT(Function<? super T, ? extends U> fn) {
+    default <U> Optic<P, F, S, U, A, B> mapT(Fn1<? super T, ? extends U> fn) {
         return optic(pafb -> {
             Profunctor<S, Functor<T, ? extends F>, ? extends P> psft = apply(pafb);
             return psft.diMapR(ft -> ft.fmap(fn));
@@ -135,7 +133,7 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
      * @param <C> the new left side of the input profunctor
      * @return the new optic
      */
-    default <C> Optic<P, F, S, T, C, B> mapA(Function<? super A, ? extends C> fn) {
+    default <C> Optic<P, F, S, T, C, B> mapA(Fn1<? super A, ? extends C> fn) {
         return optic(pcfb -> {
             @SuppressWarnings("UnnecessaryLocalVariable")
             Profunctor<S, Functor<T, ? extends F>, ? extends P> psft = apply(pcfb.diMapL(fn));
@@ -146,11 +144,11 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
     /**
      * Contravariantly map <code>B</code> to <code>Z</code>, yielding a new optic.
      *
-     * @param fn  the mapping function
      * @param <Z> the new right side's functor embedding of the input profunctor
+     * @param fn  the mapping function
      * @return the new optic
      */
-    default <Z> Optic<P, F, S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
+    default <Z> Optic<P, F, S, T, A, Z> mapB(Fn1<? super Z, ? extends B> fn) {
         return optic(pafz -> apply(pafz.diMapR(fz -> fz.fmap(fn))));
     }
 
@@ -176,8 +174,7 @@ public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functo
             FB extends Functor<B, ? extends F>,
             FT extends Functor<T, ? extends F>,
             PAFB extends Profunctor<A, FB, ? extends P>,
-            PSFT extends Profunctor<S, FT, ? extends P>> Optic<P, F, S, T, A, B> optic(
-            Function<PAFB, PSFT> fn) {
+            PSFT extends Profunctor<S, FT, ? extends P>> Optic<P, F, S, T, A, B> optic(Fn1<PAFB, PSFT> fn) {
         return new Optic<P, F, S, T, A, B>() {
             @Override
             @SuppressWarnings("unchecked")

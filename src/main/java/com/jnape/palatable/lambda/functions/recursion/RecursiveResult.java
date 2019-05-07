@@ -1,13 +1,13 @@
 package com.jnape.palatable.lambda.functions.recursion;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Specialized {@link CoProduct2} representing the possible results of a primitive recursive function.
@@ -30,25 +30,24 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C> RecursiveResult<C, B> biMapL(Function<? super A, ? extends C> fn) {
+    public <C> RecursiveResult<C, B> biMapL(Fn1<? super A, ? extends C> fn) {
         return (RecursiveResult<C, B>) Bifunctor.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C> RecursiveResult<A, C> biMapR(Function<? super B, ? extends C> fn) {
+    public <C> RecursiveResult<A, C> biMapR(Fn1<? super B, ? extends C> fn) {
         return (RecursiveResult<A, C>) Bifunctor.super.biMapR(fn);
     }
 
     @Override
-    public <C, D> RecursiveResult<C, D> biMap(Function<? super A, ? extends C> lFn,
-                                              Function<? super B, ? extends D> rFn) {
+    public <C, D> RecursiveResult<C, D> biMap(Fn1<? super A, ? extends C> lFn,
+                                              Fn1<? super B, ? extends D> rFn) {
         return match(a -> recurse(lFn.apply(a)), b -> terminate(rFn.apply(b)));
     }
 
     @Override
-    public <C> RecursiveResult<A, C> flatMap(
-            Function<? super B, ? extends Monad<C, RecursiveResult<A, ?>>> f) {
+    public <C> RecursiveResult<A, C> flatMap(Fn1<? super B, ? extends Monad<C, RecursiveResult<A, ?>>> f) {
         return match(RecursiveResult::recurse, b -> f.apply(b).coerce());
     }
 
@@ -58,13 +57,12 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
     }
 
     @Override
-    public <C> RecursiveResult<A, C> fmap(Function<? super B, ? extends C> fn) {
+    public <C> RecursiveResult<A, C> fmap(Fn1<? super B, ? extends C> fn) {
         return Monad.super.<C>fmap(fn).coerce();
     }
 
     @Override
-    public <C> RecursiveResult<A, C> zip(
-            Applicative<Function<? super B, ? extends C>, RecursiveResult<A, ?>> appFn) {
+    public <C> RecursiveResult<A, C> zip(Applicative<Fn1<? super B, ? extends C>, RecursiveResult<A, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -79,11 +77,10 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <C, App extends Applicative<?, App>, TravB extends Traversable<C, RecursiveResult<A, ?>>,
             AppB extends Applicative<C, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super B, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super B, ? extends AppB> fn,
+                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(__ -> pure.apply(coerce()),
                      b -> fn.apply(b).fmap(this::pure).<TravB>fmap(RecursiveResult::coerce).coerce());
     }
@@ -104,7 +101,7 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn) {
             return aFn.apply(a);
         }
 
@@ -134,7 +131,7 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn) {
             return bFn.apply(b);
         }
 

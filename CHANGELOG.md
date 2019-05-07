@@ -9,6 +9,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
                          factory methods should continue to work (by simply targeting `Supplier` now instead of an 
                          anonymous `IO`), but some might need to be reworked, and subtyping is obviously no longer 
                          supported.
+- ***Breaking Change***: Breaking all dependency on `java.util.function` types across the board. All `Fn*` types target 
+                         methods now support throwing `Throwable`; `apply` is now defaulted and will simply bypass javac 
+                         to throw checked exceptions as if they were unchecked. All `Checked` variants have been 
+                         eliminated as a consequence, as they are no longer necessary. Also, straggler functions like 
+                         `Partial2/3` that only existed to aid in partial application of non-curried functions are now
+                         superfluous, and have also been eliminated.
 - ***Breaking Change***: `FoldRight` now requires `Lazy` as part of its interface to support short-circuiting operations
 - ***Breaking Change***: Eliminated all raw types and java11 warnings. This required using capture in unification 
                          parameters for Functor and friends, so nearly every functor's type-signature changed. 
@@ -17,11 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
                          type is now the supertype of `Lens` and `Iso`, and `lens` package has been moved to `optics`
 - ***Breaking Change***: `Try` and `Either` no longer preserve `Throwable` type since it was inherently not type-safe 
                          anyway; Try is therefore no longer a `Bifunctor`, and `orThrow` can be used to declare checked
-                         exceptions that could be caught by corresponding catch blocks
-- ***Breaking Change***: All `Fn*` types target methods now support throwing `Throwable`; `apply` is now defaulted and 
-                         will simply bypass javac to throw checked exceptions as if they were unchecked. This allows all 
-                         checked variants to be eliminated
-- ***Breaking Change***: All `Checked` variants have been eliminated
+                         exceptions that could be caught by corresponding catch blocks  
 - `IO` is now stack-safe, regardless of whether the composition nests linearly or recursively
 
 ### Added

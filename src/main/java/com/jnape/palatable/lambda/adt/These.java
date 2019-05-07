@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -10,7 +11,6 @@ import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -25,7 +25,11 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  * @param <A> the first possible type
  * @param <B> the second possible type
  */
-public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, These<A, B>>, Monad<B, These<A, ?>>, Bifunctor<A, B, These<?, ?>>, Traversable<B, These<A, ?>> {
+public abstract class These<A, B> implements
+        CoProduct3<A, B, Tuple2<A, B>, These<A, B>>,
+        Monad<B, These<A, ?>>,
+        Bifunctor<A, B, These<?, ?>>,
+        Traversable<B, These<A, ?>> {
 
     private These() {
     }
@@ -34,8 +38,8 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
      * {@inheritDoc}
      */
     @Override
-    public final <C, D> These<C, D> biMap(Function<? super A, ? extends C> lFn,
-                                          Function<? super B, ? extends D> rFn) {
+    public final <C, D> These<C, D> biMap(Fn1<? super A, ? extends C> lFn,
+                                          Fn1<? super B, ? extends D> rFn) {
         return match(a -> a(lFn.apply(a)), b -> b(rFn.apply(b)), into((a, b) -> both(lFn.apply(a), rFn.apply(b))));
     }
 
@@ -43,7 +47,7 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
      * {@inheritDoc}
      */
     @Override
-    public final <C> These<A, C> flatMap(Function<? super B, ? extends Monad<C, These<A, ?>>> f) {
+    public final <C> These<A, C> flatMap(Fn1<? super B, ? extends Monad<C, These<A, ?>>> f) {
         return match(These::a, b -> f.apply(b).coerce(), into((a, b) -> f.apply(b).<These<A, C>>coerce().biMapL(constantly(a))));
     }
 
@@ -58,9 +62,8 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
     @Override
     @SuppressWarnings("unchecked")
     public <C, App extends Applicative<?, App>, TravB extends Traversable<C, These<A, ?>>,
-            AppB extends Applicative<C, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super B, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>>
+    AppTrav traverse(Fn1<? super B, ? extends AppB> fn, Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) a(a)),
                      b -> fn.apply(b).fmap(this::pure).<TravB>fmap(Applicative::coerce).coerce(),
                      into((a, b) -> fn.apply(b).fmap(c -> both(a, c)).<TravB>fmap(Applicative::coerce).coerce()));
@@ -71,7 +74,7 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
      */
     @Override
     @SuppressWarnings("unchecked")
-    public final <Z> These<Z, B> biMapL(Function<? super A, ? extends Z> fn) {
+    public final <Z> These<Z, B> biMapL(Fn1<? super A, ? extends Z> fn) {
         return (These<Z, B>) Bifunctor.super.biMapL(fn);
     }
 
@@ -80,7 +83,7 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
      */
     @Override
     @SuppressWarnings("unchecked")
-    public final <C> These<A, C> biMapR(Function<? super B, ? extends C> fn) {
+    public final <C> These<A, C> biMapR(Fn1<? super B, ? extends C> fn) {
         return (These<A, C>) Bifunctor.super.biMapR(fn);
     }
 
@@ -88,7 +91,7 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
      * {@inheritDoc}
      */
     @Override
-    public final <C> These<A, C> fmap(Function<? super B, ? extends C> fn) {
+    public final <C> These<A, C> fmap(Fn1<? super B, ? extends C> fn) {
         return Monad.super.<C>fmap(fn).coerce();
     }
 
@@ -96,13 +99,13 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
      * {@inheritDoc}
      */
     @Override
-    public final <C> These<A, C> zip(Applicative<Function<? super B, ? extends C>, These<A, ?>> appFn) {
+    public final <C> These<A, C> zip(Applicative<Fn1<? super B, ? extends C>, These<A, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
     @Override
     public <C> Lazy<These<A, C>> lazyZip(
-            Lazy<? extends Applicative<Function<? super B, ? extends C>, These<A, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super B, ? extends C>, These<A, ?>>> lazyAppFn) {
         return projectA().<Lazy<These<A, C>>>fmap(a -> lazy(a(a)))
                 .orElseGet(() -> Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, These<A, ?>>::coerce));
     }
@@ -170,8 +173,8 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                           Function<? super Tuple2<A, B>, ? extends R> cFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                           Fn1<? super Tuple2<A, B>, ? extends R> cFn) {
             return aFn.apply(a);
         }
 
@@ -199,8 +202,8 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                           Function<? super Tuple2<A, B>, ? extends R> cFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                           Fn1<? super Tuple2<A, B>, ? extends R> cFn) {
             return bFn.apply(b);
         }
 
@@ -228,8 +231,8 @@ public abstract class These<A, B> implements CoProduct3<A, B, Tuple2<A, B>, Thes
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                           Function<? super Tuple2<A, B>, ? extends R> cFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                           Fn1<? super Tuple2<A, B>, ? extends R> cFn) {
             return cFn.apply(both);
         }
 

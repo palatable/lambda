@@ -1,15 +1,16 @@
 package com.jnape.palatable.lambda.iteration;
 
+import com.jnape.palatable.lambda.functions.Fn0;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Supplier;
 
 public final class ConsingIterator<A> implements Iterator<A> {
 
-    private final A                     head;
-    private final Supplier<Iterator<A>> asSupplier;
-    private       Iterator<A>           asIterator;
-    private       boolean               iteratedHead;
+    private final A                head;
+    private final Fn0<Iterator<A>> asSupplier;
+    private       Iterator<A>      asIterator;
+    private       boolean          iteratedHead;
 
     public ConsingIterator(A head, Iterable<A> as) {
         this.head = head;
@@ -23,7 +24,7 @@ public final class ConsingIterator<A> implements Iterator<A> {
             return true;
 
         if (asIterator == null)
-            asIterator = asSupplier.get();
+            asIterator = asSupplier.apply();
 
         return asIterator.hasNext();
     }

@@ -26,7 +26,7 @@ public interface Semigroup<A> extends Fn2<A, A, A> {
      * @see FoldLeft
      */
     default A foldLeft(A a, Iterable<A> as) {
-        return FoldLeft.foldLeft(toBiFunction(), a, as);
+        return FoldLeft.foldLeft(this, a, as);
     }
 
     /**

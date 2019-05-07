@@ -3,10 +3,9 @@ package com.jnape.palatable.lambda.adt.coproduct;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.choice.Choice7;
 import com.jnape.palatable.lambda.adt.choice.Choice8;
+import com.jnape.palatable.lambda.functions.Fn1;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -29,73 +28,73 @@ public class CoProduct8Test {
     public void setUp() {
         a = new CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
-                               Function<? super Character, ? extends R> eFn, Function<? super Long, ? extends R> fFn,
-                               Function<? super Float, ? extends R> gFn, Function<? super Short, ? extends R> hFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn, Fn1<? super Double, ? extends R> dFn,
+                               Fn1<? super Character, ? extends R> eFn, Fn1<? super Long, ? extends R> fFn,
+                               Fn1<? super Float, ? extends R> gFn, Fn1<? super Short, ? extends R> hFn) {
                 return aFn.apply(1);
             }
         };
         b = new CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
-                               Function<? super Character, ? extends R> eFn, Function<? super Long, ? extends R> fFn,
-                               Function<? super Float, ? extends R> gFn, Function<? super Short, ? extends R> hFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn, Fn1<? super Double, ? extends R> dFn,
+                               Fn1<? super Character, ? extends R> eFn, Fn1<? super Long, ? extends R> fFn,
+                               Fn1<? super Float, ? extends R> gFn, Fn1<? super Short, ? extends R> hFn) {
                 return bFn.apply("two");
             }
         };
         c = new CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
-                               Function<? super Character, ? extends R> eFn, Function<? super Long, ? extends R> fFn,
-                               Function<? super Float, ? extends R> gFn, Function<? super Short, ? extends R> hFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn, Fn1<? super Double, ? extends R> dFn,
+                               Fn1<? super Character, ? extends R> eFn, Fn1<? super Long, ? extends R> fFn,
+                               Fn1<? super Float, ? extends R> gFn, Fn1<? super Short, ? extends R> hFn) {
                 return cFn.apply(true);
             }
         };
         d = new CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
-                               Function<? super Character, ? extends R> eFn, Function<? super Long, ? extends R> fFn,
-                               Function<? super Float, ? extends R> gFn, Function<? super Short, ? extends R> hFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn, Fn1<? super Double, ? extends R> dFn,
+                               Fn1<? super Character, ? extends R> eFn, Fn1<? super Long, ? extends R> fFn,
+                               Fn1<? super Float, ? extends R> gFn, Fn1<? super Short, ? extends R> hFn) {
                 return dFn.apply(4D);
             }
         };
         e = new CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
-                               Function<? super Character, ? extends R> eFn, Function<? super Long, ? extends R> fFn,
-                               Function<? super Float, ? extends R> gFn, Function<? super Short, ? extends R> hFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn, Fn1<? super Double, ? extends R> dFn,
+                               Fn1<? super Character, ? extends R> eFn, Fn1<? super Long, ? extends R> fFn,
+                               Fn1<? super Float, ? extends R> gFn, Fn1<? super Short, ? extends R> hFn) {
                 return eFn.apply('z');
             }
         };
         f = new CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
-                               Function<? super Character, ? extends R> eFn, Function<? super Long, ? extends R> fFn,
-                               Function<? super Float, ? extends R> gFn, Function<? super Short, ? extends R> hFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn, Fn1<? super Double, ? extends R> dFn,
+                               Fn1<? super Character, ? extends R> eFn, Fn1<? super Long, ? extends R> fFn,
+                               Fn1<? super Float, ? extends R> gFn, Fn1<? super Short, ? extends R> hFn) {
                 return fFn.apply(5L);
             }
         };
         g = new CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
-                               Function<? super Character, ? extends R> eFn, Function<? super Long, ? extends R> fFn,
-                               Function<? super Float, ? extends R> gFn, Function<? super Short, ? extends R> hFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn, Fn1<? super Double, ? extends R> dFn,
+                               Fn1<? super Character, ? extends R> eFn, Fn1<? super Long, ? extends R> fFn,
+                               Fn1<? super Float, ? extends R> gFn, Fn1<? super Short, ? extends R> hFn) {
                 return gFn.apply(6f);
             }
         };
         h = new CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, CoProduct8<Integer, String, Boolean, Double, Character, Long, Float, Short, ?>>() {
             @Override
-            public <R> R match(Function<? super Integer, ? extends R> aFn, Function<? super String, ? extends R> bFn,
-                               Function<? super Boolean, ? extends R> cFn, Function<? super Double, ? extends R> dFn,
-                               Function<? super Character, ? extends R> eFn, Function<? super Long, ? extends R> fFn,
-                               Function<? super Float, ? extends R> gFn, Function<? super Short, ? extends R> hFn) {
+            public <R> R match(Fn1<? super Integer, ? extends R> aFn, Fn1<? super String, ? extends R> bFn,
+                               Fn1<? super Boolean, ? extends R> cFn, Fn1<? super Double, ? extends R> dFn,
+                               Fn1<? super Character, ? extends R> eFn, Fn1<? super Long, ? extends R> fFn,
+                               Fn1<? super Float, ? extends R> gFn, Fn1<? super Short, ? extends R> hFn) {
                 return hFn.apply((short) 7);
             }
         };
@@ -115,7 +114,7 @@ public class CoProduct8Test {
 
     @Test
     public void converge() {
-        Function<Short, CoProduct7<Integer, String, Boolean, Double, Character, Long, Float, ?>> convergenceFn = x ->
+        Fn1<Short, CoProduct7<Integer, String, Boolean, Double, Character, Long, Float, ?>> convergenceFn = x ->
                 x.equals((short) 1)
                 ? Choice7.a(1)
                 : x.equals((short) 2)

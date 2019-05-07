@@ -1,9 +1,9 @@
 package com.jnape.palatable.lambda.adt.product;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn2;
 
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * The minimal shape of the combination of two potentially distinctly typed values, supporting destructuring via
@@ -35,11 +35,11 @@ public interface Product2<_1, _2> extends Map.Entry<_1, _2> {
      * Destructure and apply this product to a function accepting the same number of arguments as this product's
      * slots. This can be thought of as a kind of dual to uncurrying a function and applying a product to it.
      *
-     * @param fn  the function to apply
      * @param <R> the return type of the function
+     * @param fn  the function to apply
      * @return the result of applying the destructured product to the function
      */
-    default <R> R into(BiFunction<? super _1, ? super _2, ? extends R> fn) {
+    default <R> R into(Fn2<? super _1, ? super _2, ? extends R> fn) {
         return fn.apply(_1(), _2());
     }
 

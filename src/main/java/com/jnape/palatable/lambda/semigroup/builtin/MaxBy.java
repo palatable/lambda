@@ -4,8 +4,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.functions.builtin.fn3.LTBy.ltBy;
 
 /**
@@ -22,7 +20,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.LTBy.ltBy;
  * @see Max
  * @see MinBy
  */
-public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory<Function<? super A, ? extends B>, A> {
+public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory<Fn1<? super A, ? extends B>, A> {
 
     private static final MaxBy<?, ?> INSTANCE = new MaxBy<>();
 
@@ -30,7 +28,7 @@ public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory
     }
 
     @Override
-    public Semigroup<A> checkedApply(Function<? super A, ? extends B> compareFn) {
+    public Semigroup<A> checkedApply(Fn1<? super A, ? extends B> compareFn) {
         return (x, y) -> ltBy(compareFn, y, x) ? y : x;
     }
 
@@ -39,16 +37,15 @@ public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory
         return (MaxBy<A, B>) INSTANCE;
     }
 
-    public static <A, B extends Comparable<B>> Semigroup<A> maxBy(
-            Function<? super A, ? extends B> compareFn) {
+    public static <A, B extends Comparable<B>> Semigroup<A> maxBy(Fn1<? super A, ? extends B> compareFn) {
         return MaxBy.<A, B>maxBy().apply(compareFn);
     }
 
-    public static <A, B extends Comparable<B>> Fn1<A, A> maxBy(Function<? super A, ? extends B> compareFn, A x) {
+    public static <A, B extends Comparable<B>> Fn1<A, A> maxBy(Fn1<? super A, ? extends B> compareFn, A x) {
         return MaxBy.<A, B>maxBy(compareFn).apply(x);
     }
 
-    public static <A, B extends Comparable<B>> A maxBy(Function<? super A, ? extends B> compareFn, A x, A y) {
+    public static <A, B extends Comparable<B>> A maxBy(Fn1<? super A, ? extends B> compareFn, A x, A y) {
         return maxBy(compareFn, x).apply(y);
     }
 }

@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt;
 
+import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -15,7 +16,6 @@ import testsupport.traits.TraversableLaws;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
 
 import static com.jnape.palatable.lambda.adt.Either.fromMaybe;
 import static com.jnape.palatable.lambda.adt.Either.left;
@@ -23,6 +23,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functions.Effect.fromConsumer;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.hamcrest.core.Is.is;
@@ -42,7 +43,7 @@ public class EitherTest {
 
     @Test
     public void recoverLiftsLeftAndFlattensRight() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(left.recover(l -> -1), is(-1));
@@ -51,7 +52,7 @@ public class EitherTest {
 
     @Test
     public void forfeitLiftsRightAndFlattensLeft() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(left.forfeit(r -> "bar"), is("foo"));
@@ -60,7 +61,7 @@ public class EitherTest {
 
     @Test
     public void orReplacesLeftAndFlattensRight() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(left.or(-1), is(-1));
@@ -69,7 +70,7 @@ public class EitherTest {
 
     @Test
     public void orThrowFlattensRightOrThrowsException() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(right.orThrow(IllegalStateException::new), is(1));
@@ -82,7 +83,7 @@ public class EitherTest {
 
     @Test
     public void filterLiftsRight() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(left.filter(x -> true, () -> "bar"), is(left));
@@ -93,7 +94,7 @@ public class EitherTest {
 
     @Test
     public void filterSupportsFunctionFromRToL() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(left.filter(x -> true, Object::toString), is(left));
@@ -104,7 +105,7 @@ public class EitherTest {
 
     @Test
     public void monadicFlatMapLiftsRightAndFlattensBackToEither() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(left.flatMap(r -> right(r + 1)), is(left("foo")));
@@ -113,14 +114,14 @@ public class EitherTest {
 
     @Test
     public void mergeDuallyLiftsAndCombinesBiasingLeft() {
-        Either<String, Integer> left1 = left("foo");
+        Either<String, Integer> left1  = left("foo");
         Either<String, Integer> right1 = right(1);
 
-        Either<String, Integer> left2 = left("bar");
+        Either<String, Integer> left2  = left("bar");
         Either<String, Integer> right2 = right(2);
 
-        BiFunction<String, String, String> concat = String::concat;
-        BiFunction<Integer, Integer, Integer> add = (r1, r2) -> r1 + r2;
+        Fn2<String, String, String>    concat = String::concat;
+        Fn2<Integer, Integer, Integer> add    = Integer::sum;
 
         assertThat(left1.merge(concat, add, left2), is(left("foobar")));
         assertThat(left1.merge(concat, add, right2), is(left1));
@@ -130,7 +131,7 @@ public class EitherTest {
 
     @Test
     public void matchDuallyLiftsAndFlattens() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         assertThat(left.match(l -> l + "bar", r -> r + 1), is("foobar"));
@@ -145,7 +146,7 @@ public class EitherTest {
 
     @Test
     public void fromMaybeMapsMaybeToEither() {
-        Maybe<Integer> just = just(1);
+        Maybe<Integer> just    = just(1);
         Maybe<Integer> nothing = nothing();
 
         assertThat(fromMaybe(just, () -> "fail"), is(right(1)));
@@ -154,8 +155,8 @@ public class EitherTest {
 
     @Test
     public void fromMaybeDoesNotEvaluateLeftFnForRight() {
-        Maybe<Integer> just = just(1);
-        AtomicInteger atomicInteger = new AtomicInteger(0);
+        Maybe<Integer> just          = just(1);
+        AtomicInteger  atomicInteger = new AtomicInteger(0);
         fromMaybe(just, atomicInteger::incrementAndGet);
 
         assertThat(atomicInteger.get(), is(0));
@@ -196,31 +197,31 @@ public class EitherTest {
 
     @Test
     public void monadicPeekLiftsIOToTheRight() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         AtomicInteger intRef = new AtomicInteger();
 
-        left.peek(intRef::set);
+        left.peek(fromConsumer(intRef::set));
         assertEquals(0, intRef.get());
 
-        right.peek(intRef::set);
+        right.peek(fromConsumer(intRef::set));
         assertEquals(1, intRef.get());
     }
 
     @Test
     public void dyadicPeekDuallyLiftsIO() {
-        Either<String, Integer> left = left("foo");
+        Either<String, Integer> left  = left("foo");
         Either<String, Integer> right = right(1);
 
         AtomicReference<String> stringRef = new AtomicReference<>();
-        AtomicInteger intRef = new AtomicInteger();
+        AtomicInteger           intRef    = new AtomicInteger();
 
-        left.peek(stringRef::set, intRef::set);
+        left.peek(fromConsumer(stringRef::set), fromConsumer(intRef::set));
         assertEquals("foo", stringRef.get());
         assertEquals(0, intRef.get());
 
-        right.peek(stringRef::set, intRef::set);
+        right.peek(fromConsumer(stringRef::set), fromConsumer(intRef::set));
         assertEquals("foo", stringRef.get());
         assertEquals(1, intRef.get());
     }

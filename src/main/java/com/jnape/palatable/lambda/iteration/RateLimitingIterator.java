@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.iteration;
 
 import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.hlist.Tuple3;
+import com.jnape.palatable.lambda.functions.Fn0;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.Try.failure;
 import static com.jnape.palatable.lambda.adt.Try.trying;
@@ -27,11 +27,11 @@ import static java.lang.Thread.sleep;
 import static java.util.Collections.emptyList;
 
 public final class RateLimitingIterator<A> implements Iterator<A> {
-    private final Iterator<A>                                                   asIterator;
-    private final Set<Tuple3<Long, Duration, Supplier<Instant>>>                rateLimits;
-    private final Map<Tuple3<Long, Duration, Supplier<Instant>>, List<Instant>> timeSlicesByRateLimit;
+    private final Iterator<A>                                              asIterator;
+    private final Set<Tuple3<Long, Duration, Fn0<Instant>>>                rateLimits;
+    private final Map<Tuple3<Long, Duration, Fn0<Instant>>, List<Instant>> timeSlicesByRateLimit;
 
-    public RateLimitingIterator(Iterator<A> asIterator, Set<Tuple3<Long, Duration, Supplier<Instant>>> rateLimits) {
+    public RateLimitingIterator(Iterator<A> asIterator, Set<Tuple3<Long, Duration, Fn0<Instant>>> rateLimits) {
         this.asIterator = asIterator;
         this.rateLimits = rateLimits;
         timeSlicesByRateLimit = new HashMap<>();
@@ -54,12 +54,12 @@ public final class RateLimitingIterator<A> implements Iterator<A> {
         rateLimits.forEach(rateLimit -> {
             awaitNextTimeSliceForRateLimit(rateLimit);
             List<Instant> timeSlicesForRateLimit = timeSlicesByRateLimit.getOrDefault(rateLimit, new ArrayList<>());
-            timeSlicesForRateLimit.add(rateLimit._3().get());
+            timeSlicesForRateLimit.add(rateLimit._3().apply());
             timeSlicesByRateLimit.put(rateLimit, timeSlicesForRateLimit);
         });
     }
 
-    private void awaitNextTimeSliceForRateLimit(Tuple3<Long, Duration, Supplier<Instant>> rateLimit) {
+    private void awaitNextTimeSliceForRateLimit(Tuple3<Long, Duration, Fn0<Instant>> rateLimit) {
         while (rateLimitExhaustedInTimeSlice(rateLimit)) {
             join(trying(() -> sleep(0))
                          .fmap(Try::success)
@@ -68,12 +68,12 @@ public final class RateLimitingIterator<A> implements Iterator<A> {
         }
     }
 
-    private boolean rateLimitExhaustedInTimeSlice(Tuple3<Long, Duration, Supplier<Instant>> rateLimit) {
+    private boolean rateLimitExhaustedInTimeSlice(Tuple3<Long, Duration, Fn0<Instant>> rateLimit) {
         List<Instant> timeSlicesForRateLimit = timeSlicesByRateLimit.getOrDefault(rateLimit, emptyList());
         return rateLimit.into((limit, duration, instantSupplier) -> {
-            Instant timeSliceEnd         = instantSupplier.get();
+            Instant timeSliceEnd         = instantSupplier.apply();
             Instant previousTimeSliceEnd = timeSliceEnd.minus(duration);
-            timeSlicesForRateLimit.removeIf(lt(previousTimeSliceEnd));
+            timeSlicesForRateLimit.removeIf(lt(previousTimeSliceEnd).toPredicate());
             return max(0L, limit - size(filter(mark -> lte(mark, previousTimeSliceEnd) && gte(mark, timeSliceEnd), timeSlicesForRateLimit))) == 0;
         });
     }

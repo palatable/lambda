@@ -28,7 +28,7 @@ public class FlattenTest {
 
     @TestTraits({Laziness.class, InfiniteIterableSupport.class, EmptyIterableSupport.class, FiniteIteration.class})
     public Fn1<Iterable<Integer>, Iterable<Integer>> testSubject() {
-        return Flatten.<Integer>flatten().compose(Map.<Integer, Collection<Integer>>map(Collections::singletonList));
+        return Flatten.<Integer>flatten().contraMap(Map.<Integer, Collection<Integer>>map(Collections::singletonList));
     }
 
     @Test

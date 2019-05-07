@@ -6,7 +6,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 
 import java.util.Collections;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Flatten.flatten;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
@@ -24,7 +23,7 @@ import static java.util.Collections.emptySet;
  * @param <C> The output right Iterable element type, as well as the CoProduct2 B type
  * @see CoProduct2
  */
-public final class Partition<A, B, C> implements Fn2<Function<? super A, ? extends CoProduct2<B, C, ?>>, Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> {
+public final class Partition<A, B, C> implements Fn2<Fn1<? super A, ? extends CoProduct2<B, C, ?>>, Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> {
 
     private static final Partition<?, ?, ?> INSTANCE = new Partition<>();
 
@@ -32,7 +31,7 @@ public final class Partition<A, B, C> implements Fn2<Function<? super A, ? exten
     }
 
     @Override
-    public Tuple2<Iterable<B>, Iterable<C>> checkedApply(Function<? super A, ? extends CoProduct2<B, C, ?>> function,
+    public Tuple2<Iterable<B>, Iterable<C>> checkedApply(Fn1<? super A, ? extends CoProduct2<B, C, ?>> function,
                                                          Iterable<A> as) {
         return Tuple2.<Iterable<CoProduct2<B, C, ?>>>fill(map(function, as))
                 .biMap(Map.<CoProduct2<B, C, ?>, Iterable<B>>map(cp -> cp.match(Collections::singleton, __ -> emptySet())),
@@ -46,12 +45,12 @@ public final class Partition<A, B, C> implements Fn2<Function<? super A, ? exten
     }
 
     public static <A, B, C> Fn1<Iterable<A>, Tuple2<Iterable<B>, Iterable<C>>> partition(
-            Function<? super A, ? extends CoProduct2<B, C, ?>> function) {
+            Fn1<? super A, ? extends CoProduct2<B, C, ?>> function) {
         return Partition.<A, B, C>partition().apply(function);
     }
 
     public static <A, B, C> Tuple2<Iterable<B>, Iterable<C>> partition(
-            Function<? super A, ? extends CoProduct2<B, C, ?>> function,
+            Fn1<? super A, ? extends CoProduct2<B, C, ?>> function,
             Iterable<A> as) {
         return Partition.<A, B, C>partition(function).apply(as);
     }

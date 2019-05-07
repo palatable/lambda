@@ -4,8 +4,6 @@ import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Head.head;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Not.not;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.DropWhile.dropWhile;
@@ -18,7 +16,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.DropWhile.dropWhi
  *
  * @param <A> the Iterable element type
  */
-public final class Find<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Maybe<A>> {
+public final class Find<A> implements Fn2<Fn1<? super A, ? extends Boolean>, Iterable<A>, Maybe<A>> {
 
     private static final Find<?> INSTANCE = new Find<>();
 
@@ -26,7 +24,7 @@ public final class Find<A> implements Fn2<Function<? super A, ? extends Boolean>
     }
 
     @Override
-    public Maybe<A> checkedApply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Maybe<A> checkedApply(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return head(dropWhile(not(predicate), as));
     }
 
@@ -35,11 +33,11 @@ public final class Find<A> implements Fn2<Function<? super A, ? extends Boolean>
         return (Find<A>) INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Maybe<A>> find(Function<? super A, ? extends Boolean> predicate) {
+    public static <A> Fn1<Iterable<A>, Maybe<A>> find(Fn1<? super A, ? extends Boolean> predicate) {
         return Find.<A>find().apply(predicate);
     }
 
-    public static <A> Maybe<A> find(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public static <A> Maybe<A> find(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return Find.<A>find(predicate).apply(as);
     }
 }

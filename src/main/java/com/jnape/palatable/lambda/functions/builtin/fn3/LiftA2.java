@@ -5,10 +5,8 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.Applicative;
 
-import java.util.function.BiFunction;
-
 /**
- * Lift into and apply a {@link BiFunction} to two {@link Applicative} values, returning the result inside the same
+ * Lift into and apply an {@link Fn2} to two {@link Applicative} values, returning the result inside the same
  * {@link Applicative} context. Functionally equivalent to <code>appB.zip(appA.fmap(fn))</code>.
  *
  * @param <A>    the function's first argument type
@@ -24,7 +22,7 @@ public final class LiftA2<A, B, C, App extends Applicative<?, App>,
         AppA extends Applicative<A, App>,
         AppB extends Applicative<B, App>,
         AppC extends Applicative<C, App>> implements
-        Fn3<BiFunction<? super A, ? super B, ? extends C>, AppA, AppB, AppC> {
+        Fn3<Fn2<? super A, ? super B, ? extends C>, AppA, AppB, AppC> {
 
     private static final LiftA2<?, ?, ?, ?, ?, ?, ?> INSTANCE = new LiftA2<>();
 
@@ -32,8 +30,8 @@ public final class LiftA2<A, B, C, App extends Applicative<?, App>,
     }
 
     @Override
-    public AppC checkedApply(BiFunction<? super A, ? super B, ? extends C> fn, AppA appA, AppB appB) {
-        return appB.zip(appA.fmap(Fn2.<A, B, C>fn2(fn))).coerce();
+    public AppC checkedApply(Fn2<? super A, ? super B, ? extends C> fn, AppA appA, AppB appB) {
+        return appB.<C>zip(appA.fmap(fn)).coerce();
     }
 
     @SuppressWarnings("unchecked")
@@ -46,20 +44,20 @@ public final class LiftA2<A, B, C, App extends Applicative<?, App>,
     public static <A, B, C, App extends Applicative<?, App>, AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
             AppC extends Applicative<C, App>> Fn2<AppA, AppB, AppC> liftA2(
-            BiFunction<? super A, ? super B, ? extends C> fn) {
+            Fn2<? super A, ? super B, ? extends C> fn) {
         return LiftA2.<A, B, C, App, AppA, AppB, AppC>liftA2().apply(fn);
     }
 
     public static <A, B, C, App extends Applicative<?, App>, AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
-            AppC extends Applicative<C, App>> Fn1<AppB, AppC> liftA2(BiFunction<? super A, ? super B, ? extends C> fn,
+            AppC extends Applicative<C, App>> Fn1<AppB, AppC> liftA2(Fn2<? super A, ? super B, ? extends C> fn,
                                                                      AppA appA) {
         return LiftA2.<A, B, C, App, AppA, AppB, AppC>liftA2(fn).apply(appA);
     }
 
     public static <A, B, C, App extends Applicative<?, App>, AppA extends Applicative<A, App>,
             AppB extends Applicative<B, App>,
-            AppC extends Applicative<C, App>> AppC liftA2(BiFunction<? super A, ? super B, ? extends C> fn,
+            AppC extends Applicative<C, App>> AppC liftA2(Fn2<? super A, ? super B, ? extends C> fn,
                                                           AppA appA,
                                                           AppB appB) {
         return LiftA2.<A, B, C, App, AppA, AppB, AppC>liftA2(fn, appA).apply(appB);

@@ -4,17 +4,16 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
- * Given a <code>{@link BiFunction}&lt;A, B, C&gt;</code> and a <code>{@link Map.Entry}&lt;A, B&gt;</code>, destructure
- * the entry and apply the key and value as arguments to the function, returning the result.
+ * Given an <code>{@link Fn2}&lt;A, B, C&gt;</code> and a <code>{@link Map.Entry}&lt;A, B&gt;</code>, destructure the
+ * entry and apply the key and value as arguments to the function, returning the result.
  *
  * @param <A> the first argument type
  * @param <B> the second argument type
  * @param <C> the result type
  */
-public final class Into<A, B, C> implements Fn2<BiFunction<? super A, ? super B, ? extends C>, Map.Entry<A, B>, C> {
+public final class Into<A, B, C> implements Fn2<Fn2<? super A, ? super B, ? extends C>, Map.Entry<A, B>, C> {
 
     private static final Into<?, ?, ?> INSTANCE = new Into<>();
 
@@ -22,7 +21,7 @@ public final class Into<A, B, C> implements Fn2<BiFunction<? super A, ? super B,
     }
 
     @Override
-    public C checkedApply(BiFunction<? super A, ? super B, ? extends C> fn, Map.Entry<A, B> entry) {
+    public C checkedApply(Fn2<? super A, ? super B, ? extends C> fn, Map.Entry<A, B> entry) {
         return fn.apply(entry.getKey(), entry.getValue());
     }
 
@@ -32,11 +31,11 @@ public final class Into<A, B, C> implements Fn2<BiFunction<? super A, ? super B,
     }
 
     public static <A, B, C> Fn1<Map.Entry<A, B>, C> into(
-            BiFunction<? super A, ? super B, ? extends C> fn) {
+            Fn2<? super A, ? super B, ? extends C> fn) {
         return Into.<A, B, C>into().apply(fn);
     }
 
-    public static <A, B, C> C into(BiFunction<? super A, ? super B, ? extends C> fn,
+    public static <A, B, C> C into(Fn2<? super A, ? super B, ? extends C> fn,
                                    Map.Entry<A, B> entry) {
         return Into.<A, B, C>into(fn).apply(entry);
     }

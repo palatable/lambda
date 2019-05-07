@@ -16,6 +16,7 @@ import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
+import static com.jnape.palatable.lambda.functions.Fn1.fromFunction;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduceLeft;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -38,9 +39,11 @@ public class Fn1Test {
     }
 
     @Test
-    public void staticFactoryMethods() {
-        Function<String, Integer> parseInt = Integer::parseInt;
-        assertEquals((Integer) 1, fn1(parseInt).apply("1"));
+    public void staticFactoryMethod() {
+        assertEquals((Integer) 1, Fn1.<String, Integer>fn1(Integer::parseInt).apply("1"));
+        Function<String, Integer> function = Integer::parseInt;
+        Fn1<String, Integer>      fn1      = fromFunction(function);
+        assertEquals((Integer) 1, fn1.apply("1"));
     }
 
     @Test
@@ -52,7 +55,7 @@ public class Fn1Test {
     @Test
     public void widen() {
         Fn1<Integer, Integer> addOne = x -> x + 1;
-        assertEquals(just(4), reduceLeft(addOne.widen().toBiFunction(), asList(1, 2, 3)));
+        assertEquals(just(4), reduceLeft(addOne.widen(), asList(1, 2, 3)));
     }
 
     @Test
@@ -79,5 +82,12 @@ public class Fn1Test {
         Fn1<String, Integer> add1 = Integer::parseInt;
         assertEquals(b(123), add1.choose().apply("123"));
         assertEquals(a("foo"), add1.choose().apply("foo"));
+    }
+
+    @Test
+    public void toFunction() {
+        Fn1<Integer, Integer>      add1     = x -> x + 1;
+        Function<Integer, Integer> function = add1.toFunction();
+        assertEquals((Integer) 2, function.apply(1));
     }
 }

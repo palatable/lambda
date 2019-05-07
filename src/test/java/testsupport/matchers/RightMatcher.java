@@ -5,6 +5,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import static com.jnape.palatable.lambda.functions.Effect.fromConsumer;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 public final class RightMatcher<L, R> extends TypeSafeMatcher<Either<L, R>> {
@@ -29,11 +30,11 @@ public final class RightMatcher<L, R> extends TypeSafeMatcher<Either<L, R>> {
     @Override
     protected void describeMismatchSafely(Either<L, R> item, Description mismatchDescription) {
         mismatchDescription.appendText("was ");
-        item.peek(l -> mismatchDescription.appendValue(item),
-                  r -> {
+        item.peek(fromConsumer(l -> mismatchDescription.appendValue(item)),
+                  fromConsumer(r -> {
                       mismatchDescription.appendText("Right value of ");
                       rMatcher.describeMismatch(r, mismatchDescription);
-                  });
+                  }));
     }
 
     public static <L, R> RightMatcher<L, R> isRightThat(Matcher<R> rMatcher) {

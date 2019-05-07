@@ -1,9 +1,8 @@
 package com.jnape.palatable.lambda.functions.builtin.fn2;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.functions.specialized.Predicate;
-
-import java.util.function.Function;
 
 /**
  * Eagerly apply a predicate to each element in an <code>Iterable</code>, returning <code>true</code> if any element
@@ -13,7 +12,7 @@ import java.util.function.Function;
  * @param <A> The input Iterable element type
  * @see All
  */
-public final class Any<A> implements BiPredicate<Function<? super A, ? extends Boolean>, Iterable<A>> {
+public final class Any<A> implements BiPredicate<Fn1<? super A, ? extends Boolean>, Iterable<A>> {
 
     private static final Any<?> INSTANCE = new Any<>();
 
@@ -21,7 +20,7 @@ public final class Any<A> implements BiPredicate<Function<? super A, ? extends B
     }
 
     @Override
-    public Boolean checkedApply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Boolean checkedApply(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         for (A a : as)
             if (predicate.apply(a))
                 return true;
@@ -34,11 +33,11 @@ public final class Any<A> implements BiPredicate<Function<? super A, ? extends B
         return (Any<A>) INSTANCE;
     }
 
-    public static <A> Predicate<Iterable<A>> any(Function<? super A, ? extends Boolean> predicate) {
+    public static <A> Predicate<Iterable<A>> any(Fn1<? super A, ? extends Boolean> predicate) {
         return Any.<A>any().apply(predicate);
     }
 
-    public static <A> Boolean any(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public static <A> Boolean any(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return Any.<A>any(predicate).apply(as);
     }
 }

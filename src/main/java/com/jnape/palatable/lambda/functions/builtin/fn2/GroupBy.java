@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 
@@ -20,7 +19,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  * @param <V> the Map value type
  * @see InGroupsOf
  */
-public final class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>, Iterable<V>, Map<K, List<V>>> {
+public final class GroupBy<K, V> implements Fn2<Fn1<? super V, ? extends K>, Iterable<V>, Map<K, List<V>>> {
 
     private static final GroupBy<?, ?> INSTANCE = new GroupBy<>();
 
@@ -28,7 +27,7 @@ public final class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>
     }
 
     @Override
-    public Map<K, List<V>> checkedApply(Function<? super V, ? extends K> keyFn, Iterable<V> vs) {
+    public Map<K, List<V>> checkedApply(Fn1<? super V, ? extends K> keyFn, Iterable<V> vs) {
         return foldLeft((m, v) -> {
             m.computeIfAbsent(keyFn.apply(v), __ -> new ArrayList<>()).add(v);
             return m;
@@ -40,11 +39,11 @@ public final class GroupBy<K, V> implements Fn2<Function<? super V, ? extends K>
         return (GroupBy<K, V>) INSTANCE;
     }
 
-    public static <K, V> Fn1<Iterable<V>, Map<K, List<V>>> groupBy(Function<? super V, ? extends K> keyFn) {
+    public static <K, V> Fn1<Iterable<V>, Map<K, List<V>>> groupBy(Fn1<? super V, ? extends K> keyFn) {
         return GroupBy.<K, V>groupBy().apply(keyFn);
     }
 
-    public static <K, V> Map<K, List<V>> groupBy(Function<? super V, ? extends K> keyFn, Iterable<V> vs) {
+    public static <K, V> Map<K, List<V>> groupBy(Fn1<? super V, ? extends K> keyFn, Iterable<V> vs) {
         return GroupBy.<K, V>groupBy(keyFn).apply(vs);
     }
 }

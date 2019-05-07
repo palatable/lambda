@@ -4,8 +4,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.iteration.PredicatedTakingIterable;
 
-import java.util.function.Function;
-
 /**
  * Lazily limit the <code>Iterable</code> to the first group of contiguous elements that satisfy the predicate by
  * iterating up to, but not including, the first element for which the predicate evaluates to <code>false</code>.
@@ -15,7 +13,7 @@ import java.util.function.Function;
  * @see Filter
  * @see DropWhile
  */
-public final class TakeWhile<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Iterable<A>> {
+public final class TakeWhile<A> implements Fn2<Fn1<? super A, ? extends Boolean>, Iterable<A>, Iterable<A>> {
 
     private static final TakeWhile<?> INSTANCE = new TakeWhile<>();
 
@@ -23,7 +21,7 @@ public final class TakeWhile<A> implements Fn2<Function<? super A, ? extends Boo
     }
 
     @Override
-    public Iterable<A> checkedApply(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public Iterable<A> checkedApply(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return new PredicatedTakingIterable<>(predicate, as);
     }
 
@@ -32,11 +30,11 @@ public final class TakeWhile<A> implements Fn2<Function<? super A, ? extends Boo
         return (TakeWhile<A>) INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Iterable<A>> takeWhile(Function<? super A, ? extends Boolean> predicate) {
+    public static <A> Fn1<Iterable<A>, Iterable<A>> takeWhile(Fn1<? super A, ? extends Boolean> predicate) {
         return TakeWhile.<A>takeWhile().apply(predicate);
     }
 
-    public static <A> Iterable<A> takeWhile(Function<? super A, ? extends Boolean> predicate, Iterable<A> as) {
+    public static <A> Iterable<A> takeWhile(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return TakeWhile.<A>takeWhile(predicate).apply(as);
     }
 }

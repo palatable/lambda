@@ -14,13 +14,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.maybe;
+import static com.jnape.palatable.lambda.functions.Effect.effect;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Alter.alter;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToCollection.toCollection;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ToMap.toMap;
+import static com.jnape.palatable.lambda.functions.specialized.SideEffect.sideEffect;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.optics.Lens.Simple.adapt;
 import static com.jnape.palatable.lambda.optics.Lens.lens;
 import static com.jnape.palatable.lambda.optics.Lens.simpleLens;
@@ -47,7 +49,7 @@ public final class MapLens {
      * @return a lens that focuses on copies of maps as a specific subtype
      */
     public static <M extends Map<K, V>, K, V> Lens<Map<K, V>, M, M, M> asCopy(
-            Function<? super Map<K, V>, ? extends M> copyFn) {
+            Fn1<? super Map<K, V>, ? extends M> copyFn) {
         return lens(copyFn, (__, copy) -> copy);
     }
 
@@ -74,10 +76,10 @@ public final class MapLens {
      * @return a lens that focuses on the value at key, as a {@link Maybe}
      */
     public static <M extends Map<K, V>, K, V> Lens<Map<K, V>, M, Maybe<V>, Maybe<V>> valueAt(
-            Function<? super Map<K, V>, ? extends M> copyFn, K k) {
+            Fn1<? super Map<K, V>, ? extends M> copyFn, K k) {
         return lens(m -> maybe(m.get(k)), (m, maybeV) -> maybeV
-                .<Fn1<M, IO<M>>>fmap(v -> alter(updated -> updated.put(k, v)))
-                .orElse(alter(updated -> updated.remove(k)))
+                .<Fn1<M, IO<M>>>fmap(v -> alter(effect(updated -> io(() -> updated.put(k, v)))))
+                .orElse(alter(updated -> io(sideEffect(() -> updated.remove(k)))))
                 .apply(copyFn.apply(m))
                 .unsafePerformIO());
     }
@@ -119,9 +121,9 @@ public final class MapLens {
      */
     public static <K, V> Lens.Simple<Map<K, V>, Set<K>> keys() {
         return simpleLens(m -> new HashSet<>(m.keySet()), (m, ks) -> {
-            HashSet<K> ksCopy = new HashSet<>(ks);
-            Map<K, V> updated = new HashMap<>(m);
-            Set<K> keys = updated.keySet();
+            HashSet<K> ksCopy  = new HashSet<>(ks);
+            Map<K, V>  updated = new HashMap<>(m);
+            Set<K>     keys    = updated.keySet();
             keys.retainAll(ksCopy);
             ksCopy.removeAll(keys);
             ksCopy.forEach(k -> updated.put(k, null));
@@ -142,11 +144,11 @@ public final class MapLens {
      */
     public static <K, V> Lens.Simple<Map<K, V>, Collection<V>> values() {
         return simpleLens(m -> new ArrayList<>(m.values()), (m, vs) -> {
-            Map<K, V> updated = new HashMap<>(m);
-            Set<V> valueSet = new HashSet<>(vs);
+            Map<K, V> updated  = new HashMap<>(m);
+            Set<V>    valueSet = new HashSet<>(vs);
             Set<K> matchingKeys = Filter.<Map.Entry<K, V>>filter(kv -> valueSet.contains(kv.getValue()))
-                    .andThen(map(Map.Entry::getKey))
-                    .andThen(toCollection(HashSet::new))
+                    .fmap(map(Map.Entry::getKey))
+                    .fmap(toCollection(HashSet::new))
                     .apply(updated.entrySet());
             updated.keySet().retainAll(matchingKeys);
             return updated;

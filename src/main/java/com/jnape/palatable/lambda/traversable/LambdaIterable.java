@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.traversable;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Empty;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
 import com.jnape.palatable.lambda.functor.Applicative;
@@ -8,7 +9,6 @@ import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Flatten.flatten;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
@@ -44,7 +44,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
      * {@inheritDoc}
      */
     @Override
-    public <B> LambdaIterable<B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> LambdaIterable<B> fmap(Fn1<? super A, ? extends B> fn) {
         return wrap(map(fn, as));
     }
 
@@ -67,7 +67,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
      * @return the zipped LambdaIterable
      */
     @Override
-    public <B> LambdaIterable<B> zip(Applicative<Function<? super A, ? extends B>, LambdaIterable<?>> appFn) {
+    public <B> LambdaIterable<B> zip(Applicative<Fn1<? super A, ? extends B>, LambdaIterable<?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -76,7 +76,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
      */
     @Override
     public <B> Lazy<LambdaIterable<B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, LambdaIterable<?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, LambdaIterable<?>>> lazyAppFn) {
         return Empty.empty(as)
                ? lazy(LambdaIterable.empty())
                : Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, LambdaIterable<?>>::coerce);
@@ -102,7 +102,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
      * {@inheritDoc}
      */
     @Override
-    public <B> LambdaIterable<B> flatMap(Function<? super A, ? extends Monad<B, LambdaIterable<?>>> f) {
+    public <B> LambdaIterable<B> flatMap(Fn1<? super A, ? extends Monad<B, LambdaIterable<?>>> f) {
         return wrap(flatten(map(a -> f.apply(a).<LambdaIterable<B>>coerce().unwrap(), as)));
     }
 
@@ -113,11 +113,11 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, LambdaIterable<?>>,
             AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super A, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends AppB> fn,
+                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
         return FoldRight.<A, AppTrav>foldRight(
                 (a, lglb) -> fn.apply(a)
-                        .lazyZip(lglb.<Applicative<Function<? super B, ? extends TravB>, App>>fmap(appTrav -> appTrav
+                        .lazyZip(lglb.<Applicative<Fn1<? super B, ? extends TravB>, App>>fmap(appTrav -> appTrav
                                 .fmap(travB -> b -> (TravB) wrap(cons(b, ((LambdaIterable<B>) travB).unwrap())))))
                         .fmap(appTrav -> (AppTrav) appTrav),
                 lazy(pure.apply((TravB) empty())),

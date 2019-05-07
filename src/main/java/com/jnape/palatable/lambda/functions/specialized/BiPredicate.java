@@ -1,27 +1,18 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
 import com.jnape.palatable.lambda.adt.product.Product2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-
-import java.util.function.Function;
+import com.jnape.palatable.lambda.functor.Applicative;
 
 /**
- * A specialized {@link Fn2} that returns a Boolean when fully applied,
- * or a {@link Predicate} when partially applied.
+ * A specialized {@link Fn2} that returns a Boolean when fully applied, or a {@link Predicate} when partially applied.
  *
  * @param <A> the first argument type
  * @param <B> the second argument type
  */
 @FunctionalInterface
-public interface BiPredicate<A, B> extends Fn2<A, B, Boolean>, java.util.function.BiPredicate<A, B> {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default boolean test(A a, B b) {
-        return apply(a, b);
-    }
+public interface BiPredicate<A, B> extends Fn2<A, B, Boolean> {
 
     /**
      * {@inheritDoc}
@@ -43,6 +34,14 @@ public interface BiPredicate<A, B> extends Fn2<A, B, Boolean>, java.util.functio
      * {@inheritDoc}
      */
     @Override
+    default <D> BiPredicate<A, B> discardR(Applicative<D, Fn1<A, ?>> appB) {
+        return Fn2.super.discardR(appB)::apply;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     default Predicate<? super Product2<? extends A, ? extends B>> uncurry() {
         return Fn2.super.uncurry()::apply;
     }
@@ -51,7 +50,7 @@ public interface BiPredicate<A, B> extends Fn2<A, B, Boolean>, java.util.functio
      * {@inheritDoc}
      */
     @Override
-    default <Z> BiPredicate<Z, B> diMapL(Function<? super Z, ? extends A> fn) {
+    default <Z> BiPredicate<Z, B> diMapL(Fn1<? super Z, ? extends A> fn) {
         return Fn2.super.diMapL(fn)::apply;
     }
 
@@ -59,42 +58,57 @@ public interface BiPredicate<A, B> extends Fn2<A, B, Boolean>, java.util.functio
      * {@inheritDoc}
      */
     @Override
-    default <Z> Fn2<Z, B, Boolean> contraMap(Function<? super Z, ? extends A> fn) {
+    default <Z> Fn2<Z, B, Boolean> contraMap(Fn1<? super Z, ? extends A> fn) {
         return Fn2.super.contraMap(fn)::apply;
     }
 
     /**
-     * Override of {@link java.util.function.BiPredicate#and(java.util.function.BiPredicate)}, returning an instance of
-     * <code>BiPredicate</code> for compatibility. Left-to-right composition.
+     * Left-to-right short-circuiting logical conjunction.
      *
      * @param other the biPredicate to test if this one succeeds
      * @return a biPredicate representing the conjunction of this biPredicate and other
      */
-    @Override
-    default BiPredicate<A, B> and(java.util.function.BiPredicate<? super A, ? super B> other) {
-        return (a, b) -> apply(a, b) && other.test(a, b);
+    default BiPredicate<A, B> and(BiPredicate<? super A, ? super B> other) {
+        return (a, b) -> apply(a, b) && other.apply(a, b);
     }
 
     /**
-     * Override of {@link java.util.function.BiPredicate#or(java.util.function.BiPredicate)}, returning an instance of
-     * <code>BiPredicate</code> for compatibility. Left-to-right composition.
+     * Left-to-right short-circuiting logical disjunction.
      *
      * @param other the biPredicate to test if this one fails
      * @return a biPredicate representing the disjunction of this biPredicate and other
      */
-    @Override
-    default BiPredicate<A, B> or(java.util.function.BiPredicate<? super A, ? super B> other) {
-        return (a, b) -> apply(a, b) || other.test(a, b);
+    default BiPredicate<A, B> or(BiPredicate<? super A, ? super B> other) {
+        return (a, b) -> apply(a, b) || other.apply(a, b);
     }
 
     /**
-     * Override of {@link java.util.function.BiPredicate#negate()}, returning an instance of <code>BiPredicate</code>
-     * for compatibility.
+     * Logical negation.
      *
      * @return the negation of this biPredicate
      */
-    @Override
     default BiPredicate<A, B> negate() {
         return (a, b) -> !apply(a, b);
+    }
+
+    /**
+     * Convert this {@link BiPredicate} to a java {@link java.util.function.BiPredicate}.
+     *
+     * @return {@link java.util.function.BiPredicate}
+     */
+    default java.util.function.BiPredicate<A, B> toBiPredicate() {
+        return this::apply;
+    }
+
+    /**
+     * Create a {@link BiPredicate} from a java {@link java.util.function.BiPredicate}.
+     *
+     * @param biPredicate the {@link java.util.function.BiPredicate}
+     * @param <A>         the first input type
+     * @param <B>         the second input type
+     * @return the {@link BiPredicate}
+     */
+    static <A, B> BiPredicate<A, B> fromBiPredicate(java.util.function.BiPredicate<A, B> biPredicate) {
+        return biPredicate::test;
     }
 }

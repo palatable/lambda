@@ -30,7 +30,7 @@ public interface Product3<_1, _2, _3> extends Product2<_1, _2> {
      * @return the result of applying the destructured product to the function
      */
     default <R> R into(Fn3<? super _1, ? super _2, ? super _3, ? extends R> fn) {
-        return Product2.super.into(fn.toBiFunction()).apply(_3());
+        return Product2.super.into(fn).apply(_3());
     }
 
     /**

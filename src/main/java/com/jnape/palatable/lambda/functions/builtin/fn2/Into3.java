@@ -20,7 +20,7 @@ public final class Into3<A, B, C, D> implements Fn2<Fn3<? super A, ? super B, ? 
 
     @Override
     public D checkedApply(Fn3<? super A, ? super B, ? super C, ? extends D> fn, Product3<A, B, C> product) {
-        return product.into(fn);
+        return product.<D>into(fn);
     }
 
     @SuppressWarnings("unchecked")

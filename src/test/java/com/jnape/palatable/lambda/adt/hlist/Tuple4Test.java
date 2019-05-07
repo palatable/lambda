@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
@@ -60,8 +61,8 @@ public class Tuple4Test {
 
     @Test
     public void randomAccess() {
-        Tuple3<String, String, String> spiedTail = spy(tuple("second", "third", "fourth"));
-        Tuple4<String, String, String, String> tuple4 = new Tuple4<>("first", spiedTail);
+        Tuple3<String, String, String>         spiedTail = spy(tuple("second", "third", "fourth"));
+        Tuple4<String, String, String, String> tuple4    = new Tuple4<>("first", spiedTail);
 
         verify(spiedTail, times(1))._1();
         verify(spiedTail, times(1))._2();
@@ -86,15 +87,15 @@ public class Tuple4Test {
 
     @Test
     public void zipPrecedence() {
-        Tuple4<String, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3);
-        Tuple4<String, Integer, Integer, Function<? super Integer, ? extends Integer>> b = tuple("foo", 1, 2, x -> x + 1);
+        Tuple4<String, Integer, Integer, Integer>                                 a = tuple("foo", 1, 2, 3);
+        Tuple4<String, Integer, Integer, Fn1<? super Integer, ? extends Integer>> b = tuple("foo", 1, 2, x -> x + 1);
         assertEquals(tuple("foo", 1, 2, 4), a.zip(b));
     }
 
     @Test
     public void flatMapPrecedence() {
-        Tuple4<String, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3);
-        Function<Integer, Tuple4<String, Integer, Integer, Integer>> b = x -> tuple("bar", 2, 3, x + 1);
+        Tuple4<String, Integer, Integer, Integer>               a = tuple("foo", 1, 2, 3);
+        Fn1<Integer, Tuple4<String, Integer, Integer, Integer>> b = x -> tuple("bar", 2, 3, x + 1);
         assertEquals(tuple("foo", 1, 2, 4), a.flatMap(b));
     }
 }

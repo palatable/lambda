@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.adt.choice;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct7;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -12,8 +13,6 @@ import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice8.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice8.b;
@@ -58,7 +57,8 @@ public class Choice8Test {
 
     @Test
     public void convergeStaysInChoice() {
-        Function<Short, CoProduct7<Integer, String, Boolean, Double, Character, Long, Float, ?>> convergenceFn = h -> Choice7.b(h.toString());
+        Fn1<Short, CoProduct7<Integer, String, Boolean, Double, Character, Long, Float, ?>> convergenceFn =
+                h -> Choice7.b(h.toString());
 
         assertEquals(Choice7.a(1), a.converge(convergenceFn));
         assertEquals(Choice7.b("two"), b.converge(convergenceFn));

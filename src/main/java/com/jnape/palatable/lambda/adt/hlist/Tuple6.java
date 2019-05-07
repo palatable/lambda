@@ -2,13 +2,12 @@ package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product6;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
@@ -133,26 +132,26 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
     }
 
     @Override
-    public <_6Prime> Tuple6<_1, _2, _3, _4, _5, _6Prime> fmap(Function<? super _6, ? extends _6Prime> fn) {
+    public <_6Prime> Tuple6<_1, _2, _3, _4, _5, _6Prime> fmap(Fn1<? super _6, ? extends _6Prime> fn) {
         return Monad.super.<_6Prime>fmap(fn).coerce();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_5Prime> Tuple6<_1, _2, _3, _4, _5Prime, _6> biMapL(Function<? super _5, ? extends _5Prime> fn) {
+    public <_5Prime> Tuple6<_1, _2, _3, _4, _5Prime, _6> biMapL(Fn1<? super _5, ? extends _5Prime> fn) {
         return (Tuple6<_1, _2, _3, _4, _5Prime, _6>) Bifunctor.super.biMapL(fn);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <_6Prime> Tuple6<_1, _2, _3, _4, _5, _6Prime> biMapR(Function<? super _6, ? extends _6Prime> fn) {
+    public <_6Prime> Tuple6<_1, _2, _3, _4, _5, _6Prime> biMapR(Fn1<? super _6, ? extends _6Prime> fn) {
         return (Tuple6<_1, _2, _3, _4, _5, _6Prime>) Bifunctor.super.biMapR(fn);
     }
 
     @Override
     public <_5Prime, _6Prime> Tuple6<_1, _2, _3, _4, _5Prime, _6Prime> biMap(
-            Function<? super _5, ? extends _5Prime> lFn,
-            Function<? super _6, ? extends _6Prime> rFn) {
+            Fn1<? super _5, ? extends _5Prime> lFn,
+            Fn1<? super _6, ? extends _6Prime> rFn) {
         return new Tuple6<>(_1(), tail().biMap(lFn, rFn));
     }
 
@@ -163,13 +162,13 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
 
     @Override
     public <_6Prime> Tuple6<_1, _2, _3, _4, _5, _6Prime> zip(
-            Applicative<Function<? super _6, ? extends _6Prime>, Tuple6<_1, _2, _3, _4, _5, ?>> appFn) {
+            Applicative<Fn1<? super _6, ? extends _6Prime>, Tuple6<_1, _2, _3, _4, _5, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
     @Override
     public <_6Prime> Lazy<Tuple6<_1, _2, _3, _4, _5, _6Prime>> lazyZip(
-            Lazy<? extends Applicative<Function<? super _6, ? extends _6Prime>, Tuple6<_1, _2, _3, _4, _5, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super _6, ? extends _6Prime>, Tuple6<_1, _2, _3, _4, _5, ?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>::coerce);
     }
 
@@ -186,16 +185,15 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
 
     @Override
     public <_6Prime> Tuple6<_1, _2, _3, _4, _5, _6Prime> flatMap(
-            Function<? super _6, ? extends Monad<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>> f) {
+            Fn1<? super _6, ? extends Monad<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>> f) {
         return pure(f.apply(_6).<Tuple6<_1, _2, _3, _4, _5, _6Prime>>coerce()._6());
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <_6Prime, App extends Applicative<?, App>, TravB extends Traversable<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>,
             AppB extends Applicative<_6Prime, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super _6, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _6, ? extends AppB> fn,
+                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_6).fmap(_6Prime -> fmap(constantly(_6Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

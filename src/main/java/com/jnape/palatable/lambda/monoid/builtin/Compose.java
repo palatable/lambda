@@ -6,8 +6,8 @@ import com.jnape.palatable.lambda.monoid.Monoid;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
+import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.monoid.Monoid.monoid;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -32,7 +32,7 @@ public final class Compose<A> implements MonoidFactory<Monoid<A>, CompletableFut
     @Override
     public Monoid<CompletableFuture<A>> checkedApply(Monoid<A> aMonoid) {
         return monoid(com.jnape.palatable.lambda.semigroup.builtin.Compose.compose(aMonoid),
-                      (Supplier<CompletableFuture<A>>) () -> completedFuture(aMonoid.identity()));
+                      fn0(() -> completedFuture(aMonoid.identity())));
     }
 
     @SuppressWarnings("unchecked")

@@ -1,9 +1,9 @@
 package com.jnape.palatable.lambda.iteration;
 
+import com.jnape.palatable.lambda.functions.Fn2;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyIterator;
@@ -12,7 +12,7 @@ import static org.hamcrest.core.Is.is;
 
 public class ScanningIteratorTest {
 
-    public static final BiFunction<Integer, Integer, Integer> ADD = (x, y) -> x + y;
+    public static final Fn2<Integer, Integer, Integer> ADD = Integer::sum;
 
     @Test
     public void hasNextAtLeastForB() {

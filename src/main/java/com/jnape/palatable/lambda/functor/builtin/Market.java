@@ -8,8 +8,6 @@ import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.optics.Prism;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
@@ -31,7 +29,7 @@ public final class Market<A, B, S, T> implements
     private final Fn1<? super B, ? extends T>            bt;
     private final Fn1<? super S, ? extends Either<T, A>> sta;
 
-    public Market(Function<? super B, ? extends T> bt, Function<? super S, ? extends Either<T, A>> sta) {
+    public Market(Fn1<? super B, ? extends T> bt, Fn1<? super S, ? extends Either<T, A>> sta) {
         this.bt = fn1(bt);
         this.sta = fn1(sta);
     }
@@ -39,7 +37,7 @@ public final class Market<A, B, S, T> implements
     /**
      * Extract the mapping <code>B -&gt; T</code>.
      *
-     * @return a <code>{@link Function}&lt;B, T&gt;</code>
+     * @return a <code>{@link Fn1}&lt;B, T&gt;</code>
      */
     public Fn1<? super B, ? extends T> bt() {
         return bt;
@@ -48,7 +46,7 @@ public final class Market<A, B, S, T> implements
     /**
      * Extract the mapping <code>S -&gt; {@link Either}&lt;T, A&gt;</code>.
      *
-     * @return a <code>{@link Function}&lt;S, {@link Either}&lt;T, A&gt;&gt;</code>
+     * @return a <code>{@link Fn1}&lt;S, {@link Either}&lt;T, A&gt;&gt;</code>
      */
     public Fn1<? super S, ? extends Either<T, A>> sta() {
         return sta;
@@ -66,7 +64,7 @@ public final class Market<A, B, S, T> implements
      * {@inheritDoc}
      */
     @Override
-    public <U> Market<A, B, S, U> flatMap(Function<? super T, ? extends Monad<U, Market<A, B, S, ?>>> f) {
+    public <U> Market<A, B, S, U> flatMap(Fn1<? super T, ? extends Monad<U, Market<A, B, S, ?>>> f) {
         return new Market<>(b -> f.apply(bt().apply(b)).<Market<A, B, S, U>>coerce().bt().apply(b),
                             s -> sta().apply(s).invert()
                                     .flatMap(t -> f.apply(t).<Market<A, B, S, U>>coerce().sta()
@@ -77,8 +75,8 @@ public final class Market<A, B, S, T> implements
      * {@inheritDoc}
      */
     @Override
-    public <U> Market<A, B, S, U> zip(Applicative<Function<? super T, ? extends U>, Market<A, B, S, ?>> appFn) {
-        Market<A, B, S, Function<? super T, ? extends U>> marketF = appFn.coerce();
+    public <U> Market<A, B, S, U> zip(Applicative<Fn1<? super T, ? extends U>, Market<A, B, S, ?>> appFn) {
+        Market<A, B, S, Fn1<? super T, ? extends U>> marketF = appFn.coerce();
         return new Market<>(b -> marketF.bt().apply(b).apply(bt().apply(b)),
                             s -> sta().apply(s).invert().zip(marketF.sta().apply(s).invert()).invert());
     }
@@ -87,8 +85,8 @@ public final class Market<A, B, S, T> implements
      * {@inheritDoc}
      */
     @Override
-    public <U> Market<A, B, S, U> fmap(Function<? super T, ? extends U> fn) {
-        return diMapR(fn);
+    public <U> Market<A, B, S, U> fmap(Fn1<? super T, ? extends U> fn) {
+        return diMapR(fn::apply);
     }
 
     /**
@@ -105,8 +103,8 @@ public final class Market<A, B, S, T> implements
      * {@inheritDoc}
      */
     @Override
-    public <R, U> Market<A, B, R, U> diMap(Function<? super R, ? extends S> lFn,
-                                           Function<? super T, ? extends U> rFn) {
+    public <R, U> Market<A, B, R, U> diMap(Fn1<? super R, ? extends S> lFn,
+                                           Fn1<? super T, ? extends U> rFn) {
         return new Market<>(bt.fmap(rFn), sta.diMapL(lFn).diMapR(c -> c.biMapL(rFn)));
     }
 
@@ -114,7 +112,7 @@ public final class Market<A, B, S, T> implements
      * {@inheritDoc}
      */
     @Override
-    public <R> Market<A, B, R, T> diMapL(Function<? super R, ? extends S> fn) {
+    public <R> Market<A, B, R, T> diMapL(Fn1<? super R, ? extends S> fn) {
         return (Market<A, B, R, T>) Cocartesian.super.<R>diMapL(fn);
     }
 
@@ -122,7 +120,7 @@ public final class Market<A, B, S, T> implements
      * {@inheritDoc}
      */
     @Override
-    public <U> Market<A, B, S, U> diMapR(Function<? super T, ? extends U> fn) {
+    public <U> Market<A, B, S, U> diMapR(Fn1<? super T, ? extends U> fn) {
         return (Market<A, B, S, U>) Cocartesian.super.<U>diMapR(fn);
     }
 
@@ -130,7 +128,7 @@ public final class Market<A, B, S, T> implements
      * {@inheritDoc}
      */
     @Override
-    public <R> Market<A, B, R, T> contraMap(Function<? super R, ? extends S> fn) {
+    public <R> Market<A, B, R, T> contraMap(Fn1<? super R, ? extends S> fn) {
         return (Market<A, B, R, T>) Cocartesian.super.<R>contraMap(fn);
     }
 }

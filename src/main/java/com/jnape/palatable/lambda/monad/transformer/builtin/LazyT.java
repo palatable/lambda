@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
@@ -8,12 +9,11 @@ import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
- * A {@link MonadT monad transformer} for {@link Lazy}. Note that {@link LazyT#flatMap(Function)} must force its value.
+ * A {@link MonadT monad transformer} for {@link Lazy}. Note that {@link LazyT#flatMap(Fn1)} must force its value.
  *
  * @param <M> the outer {@link Monad}
  * @param <A> the carrier type
@@ -38,7 +38,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      * {@inheritDoc}
      */
     @Override
-    public <B> LazyT<M, B> flatMap(Function<? super A, ? extends Monad<B, MonadT<M, Lazy<?>, ?>>> f) {
+    public <B> LazyT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, MonadT<M, Lazy<?>, ?>>> f) {
         return new LazyT<>(mla.flatMap(lazyA -> f.apply(lazyA.value()).<MonadT<M, Lazy<?>, B>>coerce().run()));
     }
 
@@ -54,7 +54,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      * {@inheritDoc}
      */
     @Override
-    public <B> LazyT<M, B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> LazyT<M, B> fmap(Fn1<? super A, ? extends B> fn) {
         return MonadT.super.<B>fmap(fn).coerce();
     }
 
@@ -62,7 +62,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      * {@inheritDoc}
      */
     @Override
-    public <B> LazyT<M, B> zip(Applicative<Function<? super A, ? extends B>, MonadT<M, Lazy<?>, ?>> appFn) {
+    public <B> LazyT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, MonadT<M, Lazy<?>, ?>> appFn) {
         return MonadT.super.zip(appFn).coerce();
     }
 
@@ -71,12 +71,12 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      */
     @Override
     public <B> Lazy<LazyT<M, B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, MonadT<M, Lazy<?>, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MonadT<M, Lazy<?>, ?>>> lazyAppFn) {
         return new Compose<>(mla)
                 .lazyZip(lazyAppFn.fmap(lazyT -> new Compose<>(
-                        lazyT.<LazyT<M, Function<? super A, ? extends B>>>coerce()
-                                .<Lazy<Function<? super A, ? extends B>>,
-                                        Monad<Lazy<Function<? super A, ? extends B>>, M>>run())))
+                        lazyT.<LazyT<M, Fn1<? super A, ? extends B>>>coerce()
+                                .<Lazy<Fn1<? super A, ? extends B>>,
+                                        Monad<Lazy<Fn1<? super A, ? extends B>>, M>>run())))
                 .fmap(compose -> lazyT(compose.getCompose()));
     }
 

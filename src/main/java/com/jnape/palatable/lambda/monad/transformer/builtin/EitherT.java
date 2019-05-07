@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -8,7 +9,6 @@ import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
@@ -40,7 +40,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements MonadT<M, Eit
      * {@inheritDoc}
      */
     @Override
-    public <R2> EitherT<M, L, R2> flatMap(Function<? super R, ? extends Monad<R2, MonadT<M, Either<L, ?>, ?>>> f) {
+    public <R2> EitherT<M, L, R2> flatMap(Fn1<? super R, ? extends Monad<R2, MonadT<M, Either<L, ?>, ?>>> f) {
         return eitherT(melr.flatMap(lr -> lr.match(l -> melr.pure(left(l)),
                                                    r -> f.apply(r).<EitherT<M, L, R2>>coerce().run())));
     }
@@ -57,7 +57,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements MonadT<M, Eit
      * {@inheritDoc}
      */
     @Override
-    public <R2> EitherT<M, L, R2> fmap(Function<? super R, ? extends R2> fn) {
+    public <R2> EitherT<M, L, R2> fmap(Fn1<? super R, ? extends R2> fn) {
         return MonadT.super.<R2>fmap(fn).coerce();
     }
 
@@ -66,7 +66,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements MonadT<M, Eit
      */
     @Override
     public <R2> EitherT<M, L, R2> zip(
-            Applicative<Function<? super R, ? extends R2>, MonadT<M, Either<L, ?>, ?>> appFn) {
+            Applicative<Fn1<? super R, ? extends R2>, MonadT<M, Either<L, ?>, ?>> appFn) {
         return MonadT.super.zip(appFn).coerce();
     }
 
@@ -75,12 +75,12 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements MonadT<M, Eit
      */
     @Override
     public <R2> Lazy<EitherT<M, L, R2>> lazyZip(
-            Lazy<? extends Applicative<Function<? super R, ? extends R2>, MonadT<M, Either<L, ?>, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super R, ? extends R2>, MonadT<M, Either<L, ?>, ?>>> lazyAppFn) {
         return new Compose<>(melr)
                 .lazyZip(lazyAppFn.fmap(maybeT -> new Compose<>(
-                        maybeT.<EitherT<M, L, Function<? super R, ? extends R2>>>coerce()
-                                .<Either<L, Function<? super R, ? extends R2>>,
-                                        Monad<Either<L, Function<? super R, ? extends R2>>, M>>run())))
+                        maybeT.<EitherT<M, L, Fn1<? super R, ? extends R2>>>coerce()
+                                .<Either<L, Fn1<? super R, ? extends R2>>,
+                                        Monad<Either<L, Fn1<? super R, ? extends R2>>, M>>run())))
                 .fmap(compose -> eitherT(compose.getCompose()));
     }
 

@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
@@ -62,8 +63,8 @@ public class Tuple5Test {
 
     @Test
     public void randomAccess() {
-        Tuple4<String, String, String, String> spiedTail = spy(tuple("second", "third", "fourth", "fifth"));
-        Tuple5<String, String, String, String, String> tuple5 = new Tuple5<>("first", spiedTail);
+        Tuple4<String, String, String, String>         spiedTail = spy(tuple("second", "third", "fourth", "fifth"));
+        Tuple5<String, String, String, String, String> tuple5    = new Tuple5<>("first", spiedTail);
 
         verify(spiedTail, times(1))._1();
         verify(spiedTail, times(1))._2();
@@ -90,15 +91,17 @@ public class Tuple5Test {
 
     @Test
     public void zipPrecedence() {
-        Tuple5<String, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4);
-        Tuple5<String, Integer, Integer, Integer, Function<? super Integer, ? extends Integer>> b = tuple("bar", 2, 3, 4, x -> x + 1);
+        Tuple5<String, Integer, Integer, Integer, Integer> a =
+                tuple("foo", 1, 2, 3, 4);
+        Tuple5<String, Integer, Integer, Integer, Fn1<? super Integer, ? extends Integer>> b =
+                tuple("bar", 2, 3, 4, x -> x + 1);
         assertEquals(tuple("bar", 2, 3, 4, 5), a.zip(b));
     }
 
     @Test
     public void flatMapPrecedence() {
-        Tuple5<String, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4);
-        Function<Integer, Tuple5<String, Integer, Integer, Integer, Integer>> b = x -> tuple("bar", 2, 3, 4, x + 1);
+        Tuple5<String, Integer, Integer, Integer, Integer>               a = tuple("foo", 1, 2, 3, 4);
+        Fn1<Integer, Tuple5<String, Integer, Integer, Integer, Integer>> b = x -> tuple("bar", 2, 3, 4, x + 1);
         assertEquals(tuple("foo", 1, 2, 3, 5), a.flatMap(b));
     }
 }

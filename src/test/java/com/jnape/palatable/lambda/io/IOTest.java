@@ -14,7 +14,6 @@ import testsupport.traits.MonadLaws;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
@@ -66,7 +65,7 @@ public class IOTest {
             advanceSecond.await();
             return a;
         });
-        IO<Function<? super String, ? extends Tuple2<Integer, String>>> ioF = io(() -> {
+        IO<Fn1<? super String, ? extends Tuple2<Integer, String>>> ioF = io(() -> {
             advanceFirst.await();
             advanceSecond.countDown();
             return f;
@@ -77,7 +76,7 @@ public class IOTest {
         assertEquals(f.apply(a), zip.unsafePerformAsyncIO(executor).join());
         assertEquals(f.apply(a), zip.unsafePerformAsyncIO(executor).join());
 
-        IO<Function<? super String, ? extends Tuple2<Integer, String>>> discardL = ioA.discardL(ioF);
+        IO<Fn1<? super String, ? extends Tuple2<Integer, String>>> discardL = ioA.discardL(ioF);
         assertEquals(f, discardL.unsafePerformAsyncIO().join());
         assertEquals(f, discardL.unsafePerformAsyncIO(executor).join());
 

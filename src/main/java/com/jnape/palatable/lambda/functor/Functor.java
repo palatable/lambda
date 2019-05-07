@@ -2,8 +2,6 @@ package com.jnape.palatable.lambda.functor;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Downcast.downcast;
 
 /**
@@ -32,7 +30,7 @@ public interface Functor<A, F extends Functor<?, F>> {
      * @param fn  the mapping function
      * @return a functor over B (the new parameter type)
      */
-    <B> Functor<B, F> fmap(Function<? super A, ? extends B> fn);
+    <B> Functor<B, F> fmap(Fn1<? super A, ? extends B> fn);
 
     /**
      * Convenience method for coercing this functor instance into another concrete type. Unsafe.

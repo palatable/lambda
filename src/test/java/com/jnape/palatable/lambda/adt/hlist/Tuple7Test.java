@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
@@ -65,8 +66,8 @@ public class Tuple7Test {
 
     @Test
     public void randomAccess() {
-        Tuple6<String, String, String, String, String, String> spiedTail = spy(tuple("second", "third", "fourth", "fifth", "sixth", "seventh"));
-        Tuple7<String, String, String, String, String, String, String> tuple7 = new Tuple7<>("first", spiedTail);
+        Tuple6<String, String, String, String, String, String>         spiedTail = spy(tuple("second", "third", "fourth", "fifth", "sixth", "seventh"));
+        Tuple7<String, String, String, String, String, String, String> tuple7    = new Tuple7<>("first", spiedTail);
 
         verify(spiedTail, times(1))._1();
         verify(spiedTail, times(1))._2();
@@ -97,15 +98,17 @@ public class Tuple7Test {
 
     @Test
     public void zipPrecedence() {
-        Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4, 5, 6);
-        Tuple7<String, Integer, Integer, Integer, Integer, Integer, Function<? super Integer, ? extends Integer>> b = tuple("bar", 2, 3, 4, 5, 6, x -> x + 1);
+        Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer> a =
+                tuple("foo", 1, 2, 3, 4, 5, 6);
+        Tuple7<String, Integer, Integer, Integer, Integer, Integer, Fn1<? super Integer, ? extends Integer>> b =
+                tuple("bar", 2, 3, 4, 5, 6, x -> x + 1);
         assertEquals(tuple("bar", 2, 3, 4, 5, 6, 7), a.zip(b));
     }
 
     @Test
     public void flatMapPrecedence() {
-        Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer> a = tuple("foo", 1, 2, 3, 4, 5, 6);
-        Function<Integer, Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer>> b = x -> tuple("bar", 2, 3, 4, 5, 6, x + 1);
+        Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer>               a = tuple("foo", 1, 2, 3, 4, 5, 6);
+        Fn1<Integer, Tuple7<String, Integer, Integer, Integer, Integer, Integer, Integer>> b = x -> tuple("bar", 2, 3, 4, 5, 6, x + 1);
         assertEquals(tuple("foo", 1, 2, 3, 4, 5, 7), a.flatMap(b));
     }
 }

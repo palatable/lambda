@@ -5,13 +5,11 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
 
-import java.util.function.BiFunction;
-
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Reverse.reverse;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduceLeft;
 
 /**
- * Given an <code>{@link Iterable}&lt;A&gt;</code> and a <code>{@link BiFunction}&lt;A, A, A&gt;</code>, iteratively
+ * Given an <code>{@link Iterable}&lt;A&gt;</code> and a <code>{@link Fn2}&lt;A, A, A&gt;</code>, iteratively
  * accumulate over the {@link Iterable}, returning <code>{@link Maybe}&lt;A&gt;</code>. If the {@link Iterable} is
  * empty, the result is {@link Maybe#nothing()}; otherwise, the result is wrapped in {@link Maybe#just}. For this
  * reason, <code>null</code> accumulation results are considered erroneous and will throw.
@@ -23,7 +21,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduce
  * @see ReduceLeft
  * @see FoldRight
  */
-public final class ReduceRight<A> implements Fn2<BiFunction<? super A, ? super A, ? extends A>, Iterable<A>, Maybe<A>> {
+public final class ReduceRight<A> implements Fn2<Fn2<? super A, ? super A, ? extends A>, Iterable<A>, Maybe<A>> {
 
     private static final ReduceRight<?> INSTANCE = new ReduceRight<>();
 
@@ -31,7 +29,7 @@ public final class ReduceRight<A> implements Fn2<BiFunction<? super A, ? super A
     }
 
     @Override
-    public final Maybe<A> checkedApply(BiFunction<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
+    public final Maybe<A> checkedApply(Fn2<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
         return reduceLeft((b, a) -> fn.apply(a, b), reverse(as));
     }
 
@@ -40,11 +38,11 @@ public final class ReduceRight<A> implements Fn2<BiFunction<? super A, ? super A
         return (ReduceRight<A>) INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Maybe<A>> reduceRight(BiFunction<? super A, ? super A, ? extends A> fn) {
+    public static <A> Fn1<Iterable<A>, Maybe<A>> reduceRight(Fn2<? super A, ? super A, ? extends A> fn) {
         return ReduceRight.<A>reduceRight().apply(fn);
     }
 
-    public static <A> Maybe<A> reduceRight(BiFunction<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
+    public static <A> Maybe<A> reduceRight(Fn2<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
         return ReduceRight.<A>reduceRight(fn).apply(as);
     }
 }

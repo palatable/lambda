@@ -5,8 +5,6 @@ import com.jnape.palatable.lambda.adt.choice.Choice6;
 import com.jnape.palatable.lambda.adt.product.Product7;
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -32,6 +30,7 @@ public interface CoProduct7<A, B, C, D, E, F, G, CP7 extends CoProduct7<A, B, C,
     /**
      * Type-safe convergence requiring a match against all potential types.
      *
+     * @param <R> result type
      * @param aFn morphism <code>A -&gt; R</code>
      * @param bFn morphism <code>B -&gt; R</code>
      * @param cFn morphism <code>C -&gt; R</code>
@@ -39,17 +38,16 @@ public interface CoProduct7<A, B, C, D, E, F, G, CP7 extends CoProduct7<A, B, C,
      * @param eFn morphism <code>E -&gt; R</code>
      * @param fFn morphism <code>F -&gt; R</code>
      * @param gFn morphism <code>G -&gt; R</code>
-     * @param <R> result type
      * @return the result of applying the appropriate morphism from whichever type is represented by this coproduct to R
-     * @see CoProduct2#match(Function, Function)
+     * @see CoProduct2#match(Fn1, Fn1)
      */
-    <R> R match(Function<? super A, ? extends R> aFn,
-                Function<? super B, ? extends R> bFn,
-                Function<? super C, ? extends R> cFn,
-                Function<? super D, ? extends R> dFn,
-                Function<? super E, ? extends R> eFn,
-                Function<? super F, ? extends R> fFn,
-                Function<? super G, ? extends R> gFn);
+    <R> R match(Fn1<? super A, ? extends R> aFn,
+                Fn1<? super B, ? extends R> bFn,
+                Fn1<? super C, ? extends R> cFn,
+                Fn1<? super D, ? extends R> dFn,
+                Fn1<? super E, ? extends R> eFn,
+                Fn1<? super F, ? extends R> fFn,
+                Fn1<? super G, ? extends R> gFn);
 
     /**
      * Diverge this coproduct by introducing another possible type that it could represent.
@@ -61,10 +59,10 @@ public interface CoProduct7<A, B, C, D, E, F, G, CP7 extends CoProduct7<A, B, C,
     default <H> CoProduct8<A, B, C, D, E, F, G, H, ? extends CoProduct8<A, B, C, D, E, F, G, H, ?>> diverge() {
         return new CoProduct8<A, B, C, D, E, F, G, H, CoProduct8<A, B, C, D, E, F, G, H, ?>>() {
             @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                               Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn,
-                               Function<? super E, ? extends R> eFn, Function<? super F, ? extends R> fFn,
-                               Function<? super G, ? extends R> gFn, Function<? super H, ? extends R> hFn) {
+            public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                               Fn1<? super C, ? extends R> cFn, Fn1<? super D, ? extends R> dFn,
+                               Fn1<? super E, ? extends R> eFn, Fn1<? super F, ? extends R> fFn,
+                               Fn1<? super G, ? extends R> gFn, Fn1<? super H, ? extends R> hFn) {
                 return CoProduct7.this.match(aFn, bFn, cFn, dFn, eFn, fFn, gFn);
             }
         };
@@ -78,7 +76,7 @@ public interface CoProduct7<A, B, C, D, E, F, G, CP7 extends CoProduct7<A, B, C,
      * @return a {@link CoProduct6}&lt;A, B, C, D, E, F&gt;
      */
     default CoProduct6<A, B, C, D, E, F, ? extends CoProduct6<A, B, C, D, E, F, ?>> converge(
-            Function<? super G, ? extends CoProduct6<A, B, C, D, E, F, ?>> convergenceFn) {
+            Fn1<? super G, ? extends CoProduct6<A, B, C, D, E, F, ?>> convergenceFn) {
         return match(Choice6::a, Choice6::b, Choice6::c, Choice6::d, Choice6::e, Choice6::f, convergenceFn::apply);
     }
 
@@ -166,6 +164,7 @@ public interface CoProduct7<A, B, C, D, E, F, G, CP7 extends CoProduct7<A, B, C,
      * the appropriate morphism to this coproduct as a whole. Like {@link CoProduct7#match}, but without unwrapping the
      * value.
      *
+     * @param <R> result type
      * @param aFn morphism <code>A v B v C v D v E v F v G -&gt; R</code>, applied in the <code>A</code> case
      * @param bFn morphism <code>A v B v C v D v E v F v G -&gt; R</code>, applied in the <code>B</code> case
      * @param cFn morphism <code>A v B v C v D v E v F v G -&gt; R</code>, applied in the <code>C</code> case
@@ -173,17 +172,16 @@ public interface CoProduct7<A, B, C, D, E, F, G, CP7 extends CoProduct7<A, B, C,
      * @param eFn morphism <code>A v B v C v D v E v F v G -&gt; R</code>, applied in the <code>E</code> case
      * @param fFn morphism <code>A v B v C v D v E v F v G -&gt; R</code>, applied in the <code>F</code> case
      * @param gFn morphism <code>A v B v C v D v E v F v G -&gt; R</code>, applied in the <code>G</code> case
-     * @param <R> result type
      * @return the result of applying the appropriate morphism to this coproduct
      */
     @SuppressWarnings("unchecked")
-    default <R> R embed(Function<? super CP7, ? extends R> aFn,
-                        Function<? super CP7, ? extends R> bFn,
-                        Function<? super CP7, ? extends R> cFn,
-                        Function<? super CP7, ? extends R> dFn,
-                        Function<? super CP7, ? extends R> eFn,
-                        Function<? super CP7, ? extends R> fFn,
-                        Function<? super CP7, ? extends R> gFn) {
+    default <R> R embed(Fn1<? super CP7, ? extends R> aFn,
+                        Fn1<? super CP7, ? extends R> bFn,
+                        Fn1<? super CP7, ? extends R> cFn,
+                        Fn1<? super CP7, ? extends R> dFn,
+                        Fn1<? super CP7, ? extends R> eFn,
+                        Fn1<? super CP7, ? extends R> fFn,
+                        Fn1<? super CP7, ? extends R> gFn) {
         return this.<Fn1<CP7, R>>match(constantly(fn1(aFn)),
                                        constantly(fn1(bFn)),
                                        constantly(fn1(cFn)),

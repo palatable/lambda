@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn4;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.iteration.IterationInterruptedException;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -19,7 +20,7 @@ import java.util.concurrent.CountDownLatch;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static com.jnape.palatable.lambda.functions.builtin.fn4.RateLimit.rateLimit;
-import static com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable.checked;
+import static com.jnape.palatable.lambda.functions.specialized.SideEffect.sideEffect;
 import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static java.util.Arrays.asList;
@@ -66,7 +67,7 @@ public class RateLimitTest {
         Thread         testThread = Thread.currentThread();
         CountDownLatch latch      = new CountDownLatch(1);
         new Thread(() -> {
-            trying(checked(latch::await)).orThrow();
+            trying(sideEffect(latch::await)).orThrow();
             testThread.interrupt();
         }) {{
             start();

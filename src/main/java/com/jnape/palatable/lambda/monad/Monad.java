@@ -1,17 +1,16 @@
 package com.jnape.palatable.lambda.monad;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Id;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
  * Monads are {@link Applicative} functors that support a flattening operation to unwrap <code>M&lt;M&lt;A&gt;&gt;
  * -&gt; M&lt;A&gt;</code>. This flattening operation, coupled with {@link Applicative#zip(Applicative)}, gives rise to
- * {@link Monad#flatMap(Function)}, a binding operation that maps the carrier value to a new monad instance in the same
+ * {@link Monad#flatMap(Fn1)}, a binding operation that maps the carrier value to a new monad instance in the same
  * category, and then unwraps the outer layer.
  * <p>
  * In addition to the applicative laws, there are 3 specific monad laws that monads should obey:
@@ -36,7 +35,7 @@ public interface Monad<A, M extends Monad<?, M>> extends Applicative<A, M> {
      * @param <B> the resulting monad parameter type
      * @return the new monad instance
      */
-    <B> Monad<B, M> flatMap(Function<? super A, ? extends Monad<B, M>> f);
+    <B> Monad<B, M> flatMap(Fn1<? super A, ? extends Monad<B, M>> f);
 
     /**
      * {@inheritDoc}
@@ -48,16 +47,16 @@ public interface Monad<A, M extends Monad<?, M>> extends Applicative<A, M> {
      * {@inheritDoc}
      */
     @Override
-    default <B> Monad<B, M> fmap(Function<? super A, ? extends B> fn) {
-        return flatMap(fn.andThen(this::pure));
+    default <B> Monad<B, M> fmap(Fn1<? super A, ? extends B> fn) {
+        return flatMap(fn.fmap(this::pure));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <B> Monad<B, M> zip(Applicative<Function<? super A, ? extends B>, M> appFn) {
-        return appFn.<Monad<Function<? super A, ? extends B>, M>>coerce().flatMap(this::fmap);
+    default <B> Monad<B, M> zip(Applicative<Fn1<? super A, ? extends B>, M> appFn) {
+        return appFn.<Monad<Fn1<? super A, ? extends B>, M>>coerce().flatMap(this::fmap);
     }
 
     /**
@@ -65,7 +64,7 @@ public interface Monad<A, M extends Monad<?, M>> extends Applicative<A, M> {
      */
     @Override
     default <B> Lazy<? extends Monad<B, M>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, M>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, M>> lazyAppFn) {
         return Applicative.super.lazyZip(lazyAppFn).fmap(Applicative<B, M>::coerce);
     }
 
@@ -86,7 +85,7 @@ public interface Monad<A, M extends Monad<?, M>> extends Applicative<A, M> {
     }
 
     /**
-     * Convenience static method equivalent to {@link Monad#flatMap(Function) flatMap}{@link Id#id() (id())};
+     * Convenience static method equivalent to {@link Monad#flatMap(Fn1) flatMap}{@link Id#id() (id())};
      *
      * @param mma  the outer monad
      * @param <M>  the monad type

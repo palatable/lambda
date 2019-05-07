@@ -1,11 +1,11 @@
 package com.jnape.palatable.lambda.optics.lenses;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.optics.Lens;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static com.jnape.palatable.lambda.optics.Lens.simpleLens;
@@ -27,7 +27,7 @@ public final class CollectionLens {
      * @param <CX>   the type of the collection
      * @return a lens that focuses on a copy of CX
      */
-    public static <X, CX extends Collection<X>> Lens.Simple<CX, CX> asCopy(Function<? super CX, ? extends CX> copyFn) {
+    public static <X, CX extends Collection<X>> Lens.Simple<CX, CX> asCopy(Fn1<? super CX, ? extends CX> copyFn) {
         return simpleLens(copyFn, (__, copy) -> copy);
     }
 
@@ -40,8 +40,7 @@ public final class CollectionLens {
      * @param <CX>   the type of the collection
      * @return a lens that focuses on a Collection as a Set
      */
-    public static <X, CX extends Collection<X>> Lens.Simple<CX, Set<X>> asSet(
-            Function<? super CX, ? extends CX> copyFn) {
+    public static <X, CX extends Collection<X>> Lens.Simple<CX, Set<X>> asSet(Fn1<? super CX, ? extends CX> copyFn) {
         return simpleLens(HashSet::new, (xsL, xsS) -> {
             Set<X> missing = new HashSet<>(xsS);
             missing.removeAll(xsL);
@@ -65,7 +64,7 @@ public final class CollectionLens {
      */
     @SuppressWarnings("RedundantTypeArguments")
     public static <X, CX extends Collection<X>> Lens.Simple<CX, Stream<X>> asStream(
-            Function<? super CX, ? extends CX> copyFn) {
+            Fn1<? super CX, ? extends CX> copyFn) {
         return simpleLens(Collection<X>::stream, (xsL, xsS) -> {
             CX updated = copyFn.apply(xsL);
             updated.clear();

@@ -1,11 +1,10 @@
 package testsupport.traits;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.traitor.traits.Trait;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -17,7 +16,7 @@ public class BifunctorLaws<BF extends Bifunctor<?, ?, BF>> implements Trait<Bifu
     @Override
     public void test(Bifunctor<?, ?, BF> bifunctor) {
         Present.<String>present((x, y) -> x + "\n\t - " + y)
-                .<Function<Bifunctor<?, ?, BF>, Maybe<String>>>foldMap(
+                .<Fn1<Bifunctor<?, ?, BF>, Maybe<String>>>foldMap(
                         f -> f.apply(bifunctor),
                         asList(this::testLeftIdentity,
                                this::testRightIdentity,

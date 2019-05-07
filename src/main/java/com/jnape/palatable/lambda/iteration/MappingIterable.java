@@ -1,20 +1,21 @@
 package com.jnape.palatable.lambda.iteration;
 
+import com.jnape.palatable.lambda.functions.Fn1;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 import static java.util.Collections.singletonList;
 
 public final class MappingIterable<A, B> implements Iterable<B> {
-    private final Iterable<A>          as;
-    private final List<Function<?, ?>> mappers;
+    private final Iterable<A>     as;
+    private final List<Fn1<?, ?>> mappers;
 
     @SuppressWarnings("unchecked")
-    public MappingIterable(Function<? super A, ? extends B> fn, Iterable<A> as) {
-        List<Function<?, ?>> mappers = new ArrayList<>(singletonList(fn));
+    public MappingIterable(Fn1<? super A, ? extends B> fn, Iterable<A> as) {
+        List<Fn1<?, ?>> mappers = new ArrayList<>(singletonList(fn));
         while (as instanceof MappingIterable<?, ?>) {
             MappingIterable<?, ?> nested = (MappingIterable<?, ?>) as;
             as = (Iterable<A>) nested.as;
@@ -27,8 +28,8 @@ public final class MappingIterable<A, B> implements Iterable<B> {
     @Override
     @SuppressWarnings("unchecked")
     public Iterator<B> iterator() {
-        Function<Object, Object> fnComposedOnTheHeap = a -> foldLeft((x, fn) -> ((Function<Object, Object>) fn).apply(x),
-                                                                     a, mappers);
-        return new MappingIterator<>((Function<? super A, ? extends B>) fnComposedOnTheHeap, as.iterator());
+        Fn1<Object, Object> fnComposedOnTheHeap = a -> foldLeft((x, fn) -> ((Fn1<Object, Object>) fn).apply(x),
+                                                                a, mappers);
+        return new MappingIterator<>((Fn1<? super A, ? extends B>) fnComposedOnTheHeap, as.iterator());
     }
 }

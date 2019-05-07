@@ -1,10 +1,9 @@
 package com.jnape.palatable.lambda.adt.coproduct;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.product.Product3;
 import com.jnape.palatable.lambda.functions.Fn1;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -27,15 +26,14 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
     /**
      * Type-safe convergence requiring a match against all potential types.
      *
+     * @param <R> result type
      * @param aFn morphism <code>A -&gt; R</code>
      * @param bFn morphism <code>B -&gt; R</code>
      * @param cFn morphism <code>C -&gt; R</code>
-     * @param <R> result type
      * @return the result of applying the appropriate morphism to this coproduct's unwrapped value
-     * @see CoProduct2#match(Function, Function)
+     * @see CoProduct2#match(Fn1, Fn1)
      */
-    <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                Function<? super C, ? extends R> cFn);
+    <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn, Fn1<? super C, ? extends R> cFn);
 
     /**
      * Diverge this coproduct by introducing another possible type that it could represent.
@@ -47,8 +45,8 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
     default <D> CoProduct4<A, B, C, D, ? extends CoProduct4<A, B, C, D, ?>> diverge() {
         return new CoProduct4<A, B, C, D, CoProduct4<A, B, C, D, ?>>() {
             @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                               Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn) {
+            public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                               Fn1<? super C, ? extends R> cFn, Fn1<? super D, ? extends R> dFn) {
                 return CoProduct3.this.match(aFn, bFn, cFn);
             }
         };
@@ -68,18 +66,8 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      * @return a {@link CoProduct2}&lt;A, B&gt;
      */
     default CoProduct2<A, B, ? extends CoProduct2<A, B, ?>> converge(
-            Function<? super C, ? extends CoProduct2<A, B, ?>> convergenceFn) {
-        return match(a -> new CoProduct2<A, B, CoProduct2<A, B, ?>>() {
-            @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
-                return aFn.apply(a);
-            }
-        }, b -> new CoProduct2<A, B, CoProduct2<A, B, ?>>() {
-            @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn) {
-                return bFn.apply(b);
-            }
-        }, convergenceFn);
+            Fn1<? super C, ? extends CoProduct2<A, B, ?>> convergenceFn) {
+        return match(Choice2::a, Choice2::b, convergenceFn::apply);
     }
 
     /**
@@ -126,16 +114,15 @@ public interface CoProduct3<A, B, C, CP3 extends CoProduct3<A, B, C, ?>> {
      * the appropriate morphism to this coproduct as a whole. Like {@link CoProduct3#match}, but without unwrapping the
      * value.
      *
+     * @param <R> result type
      * @param aFn morphism <code>A v B v C -&gt; R</code>, applied in the <code>A</code> case
      * @param bFn morphism <code>A v B v C -&gt; R</code>, applied in the <code>B</code> case
      * @param cFn morphism <code>A v B v C -&gt; R</code>, applied in the <code>C</code> case
-     * @param <R> result type
      * @return the result of applying the appropriate morphism to this coproduct
      */
     @SuppressWarnings("unchecked")
-    default <R> R embed(Function<? super CP3, ? extends R> aFn,
-                        Function<? super CP3, ? extends R> bFn,
-                        Function<? super CP3, ? extends R> cFn) {
+    default <R> R embed(Fn1<? super CP3, ? extends R> aFn, Fn1<? super CP3, ? extends R> bFn,
+                        Fn1<? super CP3, ? extends R> cFn) {
         return this.<Fn1<CP3, R>>match(constantly(fn1(aFn)),
                                        constantly(fn1(bFn)),
                                        constantly(fn1(cFn)))

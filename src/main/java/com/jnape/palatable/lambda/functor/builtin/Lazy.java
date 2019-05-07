@@ -2,17 +2,15 @@ package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
@@ -39,10 +37,10 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
      * {@inheritDoc}
      */
     @Override
-    public <B> Lazy<B> flatMap(Function<? super A, ? extends Monad<B, Lazy<?>>> f) {
+    public <B> Lazy<B> flatMap(Fn1<? super A, ? extends Monad<B, Lazy<?>>> f) {
         @SuppressWarnings("unchecked") Lazy<Object> source = (Lazy<Object>) this;
         @SuppressWarnings({"unchecked", "RedundantCast"})
-        Function<Object, Lazy<Object>> flatMap = (Function<Object, Lazy<Object>>) (Object) f;
+        Fn1<Object, Lazy<Object>> flatMap = (Fn1<Object, Lazy<Object>>) (Object) f;
         return new Compose<>(source, flatMap);
     }
 
@@ -53,8 +51,8 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Lazy<?>>,
             AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super A, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends AppB> fn,
+                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(value()).fmap(b -> (TravB) lazy(b)).coerce();
     }
 
@@ -70,7 +68,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
      * {@inheritDoc}
      */
     @Override
-    public final <B> Lazy<B> fmap(Function<? super A, ? extends B> fn) {
+    public final <B> Lazy<B> fmap(Fn1<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -78,7 +76,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
      * {@inheritDoc}
      */
     @Override
-    public <B> Lazy<B> zip(Applicative<Function<? super A, ? extends B>, Lazy<?>> appFn) {
+    public <B> Lazy<B> zip(Applicative<Fn1<? super A, ? extends B>, Lazy<?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -127,12 +125,12 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
     /**
      * Wrap a computation in a lazy computation.
      *
-     * @param supplier the computation
-     * @param <A>      the value type
+     * @param <A> the value type
+     * @param fn0 the computation
      * @return the new {@link Lazy}
      */
-    public static <A> Lazy<A> lazy(Supplier<A> supplier) {
-        return new Later<>(fn0(supplier));
+    public static <A> Lazy<A> lazy(Fn0<A> fn0) {
+        return new Later<>(fn0);
     }
 
     private static final class Later<A> extends Lazy<A> {
@@ -149,18 +147,18 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
     }
 
     private static final class Compose<A> extends Lazy<A> {
-        private final Lazy<Object>                   source;
-        private final Function<Object, Lazy<Object>> flatMap;
+        private final Lazy<Object>              source;
+        private final Fn1<Object, Lazy<Object>> flatMap;
 
         private Compose(Lazy<Object> source,
-                        Function<Object, Lazy<Object>> flatMap) {
+                        Fn1<Object, Lazy<Object>> flatMap) {
             this.source = source;
             this.flatMap = flatMap;
         }
 
         @Override
         public A value() {
-            @SuppressWarnings("unchecked") Tuple2<Lazy<Object>, LinkedList<Function<Object, Lazy<Object>>>> tuple =
+            @SuppressWarnings("unchecked") Tuple2<Lazy<Object>, LinkedList<Fn1<Object, Lazy<Object>>>> tuple =
                     tuple((Lazy<Object>) this, new LinkedList<>());
             @SuppressWarnings("unchecked")
             A a = (A) trampoline(into((source, flatMaps) -> {

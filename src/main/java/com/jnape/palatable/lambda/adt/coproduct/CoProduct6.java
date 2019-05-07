@@ -31,22 +31,22 @@ public interface CoProduct6<A, B, C, D, E, F, CP6 extends CoProduct6<A, B, C, D,
     /**
      * Type-safe convergence requiring a match against all potential types.
      *
+     * @param <R> result type
      * @param aFn morphism <code>A -&gt; R</code>
      * @param bFn morphism <code>B -&gt; R</code>
      * @param cFn morphism <code>C -&gt; R</code>
      * @param dFn morphism <code>D -&gt; R</code>
      * @param eFn morphism <code>E -&gt; R</code>
      * @param fFn morphism <code>F -&gt; R</code>
-     * @param <R> result type
      * @return the result of applying the appropriate morphism from whichever type is represented by this coproduct to R
-     * @see CoProduct2#match(Function, Function)
+     * @see CoProduct2#match(Fn1, Fn1)
      */
-    <R> R match(Function<? super A, ? extends R> aFn,
-                Function<? super B, ? extends R> bFn,
-                Function<? super C, ? extends R> cFn,
-                Function<? super D, ? extends R> dFn,
-                Function<? super E, ? extends R> eFn,
-                Function<? super F, ? extends R> fFn);
+    <R> R match(Fn1<? super A, ? extends R> aFn,
+                Fn1<? super B, ? extends R> bFn,
+                Fn1<? super C, ? extends R> cFn,
+                Fn1<? super D, ? extends R> dFn,
+                Fn1<? super E, ? extends R> eFn,
+                Fn1<? super F, ? extends R> fFn);
 
     /**
      * Diverge this coproduct by introducing another possible type that it could represent.
@@ -58,10 +58,10 @@ public interface CoProduct6<A, B, C, D, E, F, CP6 extends CoProduct6<A, B, C, D,
     default <G> CoProduct7<A, B, C, D, E, F, G, ? extends CoProduct7<A, B, C, D, E, F, G, ?>> diverge() {
         return new CoProduct7<A, B, C, D, E, F, G, CoProduct7<A, B, C, D, E, F, G, ?>>() {
             @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                               Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn,
-                               Function<? super E, ? extends R> eFn, Function<? super F, ? extends R> fFn,
-                               Function<? super G, ? extends R> gFn) {
+            public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                               Fn1<? super C, ? extends R> cFn, Fn1<? super D, ? extends R> dFn,
+                               Fn1<? super E, ? extends R> eFn, Fn1<? super F, ? extends R> fFn,
+                               Fn1<? super G, ? extends R> gFn) {
                 return CoProduct6.this.match(aFn, bFn, cFn, dFn, eFn, fFn);
             }
         };
@@ -75,7 +75,7 @@ public interface CoProduct6<A, B, C, D, E, F, CP6 extends CoProduct6<A, B, C, D,
      * @return a {@link CoProduct5}&lt;A, B, C, D, E&gt;
      */
     default CoProduct5<A, B, C, D, E, ? extends CoProduct5<A, B, C, D, E, ?>> converge(
-            Function<? super F, ? extends CoProduct5<A, B, C, D, E, ?>> convergenceFn) {
+            Fn1<? super F, ? extends CoProduct5<A, B, C, D, E, ?>> convergenceFn) {
         return match(Choice5::a, Choice5::b, Choice5::c, Choice5::d, Choice5::e, convergenceFn::apply);
     }
 
@@ -153,22 +153,22 @@ public interface CoProduct6<A, B, C, D, E, F, CP6 extends CoProduct6<A, B, C, D,
      * the appropriate morphism to this coproduct as a whole. Like {@link CoProduct6#match}, but without unwrapping the
      * value.
      *
+     * @param <R> result type
      * @param aFn morphism <code>A v B v C v D v E v F -&gt; R</code>, applied in the <code>A</code> case
      * @param bFn morphism <code>A v B v C v D v E v F -&gt; R</code>, applied in the <code>B</code> case
      * @param cFn morphism <code>A v B v C v D v E v F -&gt; R</code>, applied in the <code>C</code> case
      * @param dFn morphism <code>A v B v C v D v E v F -&gt; R</code>, applied in the <code>D</code> case
      * @param eFn morphism <code>A v B v C v D v E v F -&gt; R</code>, applied in the <code>E</code> case
      * @param fFn morphism <code>A v B v C v D v E v F -&gt; R</code>, applied in the <code>F</code> case
-     * @param <R> result type
      * @return the result of applying the appropriate morphism to this coproduct
      */
     @SuppressWarnings("unchecked")
-    default <R> R embed(Function<? super CP6, ? extends R> aFn,
-                        Function<? super CP6, ? extends R> bFn,
-                        Function<? super CP6, ? extends R> cFn,
-                        Function<? super CP6, ? extends R> dFn,
-                        Function<? super CP6, ? extends R> eFn,
-                        Function<? super CP6, ? extends R> fFn) {
+    default <R> R embed(Fn1<? super CP6, ? extends R> aFn,
+                        Fn1<? super CP6, ? extends R> bFn,
+                        Fn1<? super CP6, ? extends R> cFn,
+                        Fn1<? super CP6, ? extends R> dFn,
+                        Fn1<? super CP6, ? extends R> eFn,
+                        Fn1<? super CP6, ? extends R> fFn) {
         return this.<Fn1<CP6, R>>match(constantly(fn1(aFn)),
                                        constantly(fn1(bFn)),
                                        constantly(fn1(cFn)),

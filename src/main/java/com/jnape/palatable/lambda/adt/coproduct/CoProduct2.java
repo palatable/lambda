@@ -6,8 +6,6 @@ import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -32,12 +30,12 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
     /**
      * Type-safe convergence requiring a match against all potential types.
      *
+     * @param <R> result type
      * @param aFn morphism <code>A -&gt; R</code>
      * @param bFn morphism <code>B -&gt; R</code>
-     * @param <R> result type
      * @return the result of applying the appropriate morphism to this coproduct's unwrapped value
      */
-    <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn);
+    <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn);
 
     /**
      * Diverge this coproduct by introducing another possible type that it could represent. As no morphisms can be
@@ -63,8 +61,8 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
     default <C> CoProduct3<A, B, C, ? extends CoProduct3<A, B, C, ?>> diverge() {
         return new CoProduct3<A, B, C, CoProduct3<A, B, C, ?>>() {
             @Override
-            public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                               Function<? super C, ? extends R> cFn) {
+            public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                               Fn1<? super C, ? extends R> cFn) {
                 return CoProduct2.this.match(aFn, bFn);
             }
         };
@@ -107,7 +105,7 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
     default CoProduct2<B, A, ? extends CoProduct2<B, A, ?>> invert() {
         return new CoProduct2<B, A, CoProduct2<B, A, ?>>() {
             @Override
-            public <R> R match(Function<? super B, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
+            public <R> R match(Fn1<? super B, ? extends R> aFn, Fn1<? super A, ? extends R> bFn) {
                 return CoProduct2.this.match(bFn, aFn);
             }
         };
@@ -118,14 +116,13 @@ public interface CoProduct2<A, B, CP2 extends CoProduct2<A, B, ?>> {
      * the appropriate morphism to this coproduct as a whole. Like {@link CoProduct2#match}, but without unwrapping the
      * value.
      *
+     * @param <R> result type
      * @param aFn morphism <code>A v B -&gt; R</code>, applied in the <code>A</code> case
      * @param bFn morphism <code>A v B -&gt; R</code>, applied in the <code>B</code> case
-     * @param <R> result type
      * @return the result of applying the appropriate morphism to this coproduct
      */
     @SuppressWarnings("unchecked")
-    default <R> R embed(Function<? super CP2, ? extends R> aFn,
-                        Function<? super CP2, ? extends R> bFn) {
+    default <R> R embed(Fn1<? super CP2, ? extends R> aFn, Fn1<? super CP2, ? extends R> bFn) {
         return this.<Fn1<CP2, R>>match(constantly(fn1(aFn)),
                                        constantly(fn1(bFn)))
                 .apply((CP2) this);

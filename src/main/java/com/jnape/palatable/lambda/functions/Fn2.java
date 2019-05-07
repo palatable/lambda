@@ -58,18 +58,6 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
     }
 
     /**
-     * Same as normal composition, except that the result is an instance of {@link Fn2} for convenience.
-     *
-     * @param before the function who's return value is this function's argument
-     * @param <Z>    the new argument type
-     * @return an {@link Fn2}&lt;Z, B, C&gt;
-     */
-    @Override
-    default <Z> Fn2<Z, B, C> compose(Function<? super Z, ? extends A> before) {
-        return fn2(Fn1.super.compose(before));
-    }
-
-    /**
      * Partially apply this function by passing its first argument.
      *
      * @param a the first argument
@@ -120,7 +108,7 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      * {@inheritDoc}
      */
     @Override
-    default <Z> Fn2<Z, B, C> diMapL(Function<? super Z, ? extends A> fn) {
+    default <Z> Fn2<Z, B, C> diMapL(Fn1<? super Z, ? extends A> fn) {
         return fn2(Fn1.super.diMapL(fn));
     }
 
@@ -128,16 +116,8 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      * {@inheritDoc}
      */
     @Override
-    default <Z> Fn2<Z, B, C> contraMap(Function<? super Z, ? extends A> fn) {
+    default <Z> Fn2<Z, B, C> contraMap(Fn1<? super Z, ? extends A> fn) {
         return fn2(Fn1.super.contraMap(fn));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default <Y, Z> Fn3<Y, Z, B, C> compose(BiFunction<? super Y, ? super Z, ? extends A> before) {
-        return fn3(Fn1.super.compose(before));
     }
 
     /**
@@ -149,8 +129,7 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
     }
 
     /**
-     * Static factory method for wrapping a {@link BiFunction} in an {@link Fn2}. Useful for avoid explicit casting when
-     * using method references as {@link Fn2}s.
+     * Static factory method for wrapping a {@link BiFunction} in an {@link Fn2}.
      *
      * @param biFunction the biFunction to adapt
      * @param <A>        the first input argument type
@@ -158,7 +137,7 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      * @param <C>        the output type
      * @return the {@link Fn2}
      */
-    static <A, B, C> Fn2<A, B, C> fn2(BiFunction<? super A, ? super B, ? extends C> biFunction) {
+    static <A, B, C> Fn2<A, B, C> fromBiFunction(BiFunction<? super A, ? super B, ? extends C> biFunction) {
         return biFunction::apply;
     }
 

@@ -2,11 +2,10 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import org.junit.Test;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
@@ -22,8 +21,8 @@ public class SequenceTest {
 
     @Test
     public void naturality() {
-        Function<Identity<?>, Either<String, Object>> t = id -> right(id.runIdentity());
-        Either<String, Identity<Integer>> traversable = right(new Identity<>(1));
+        Fn1<Identity<?>, Either<String, Object>> t           = id -> right(id.runIdentity());
+        Either<String, Identity<Integer>>        traversable = right(new Identity<>(1));
 
         assertEquals(t.apply(sequence(traversable, Identity::new).fmap(id())),
                      sequence(traversable.fmap(t), Either::right));

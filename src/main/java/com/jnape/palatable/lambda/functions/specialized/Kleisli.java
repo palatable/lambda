@@ -4,11 +4,9 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 
-import java.util.function.Function;
-
 /**
  * The Kleisli arrow of a {@link Monad}, manifest as simply an <code>{@link Fn1}&lt;A, MB&gt;</code>. This can be
- * thought of as a fixed, portable {@link Monad#flatMap(Function)}.
+ * thought of as a fixed, portable {@link Monad#flatMap(Fn1)}.
  *
  * @param <A>  the input argument type
  * @param <M>  the {@link Monad} unification parameter
@@ -47,14 +45,6 @@ public interface Kleisli<A, B, M extends Monad<?, M>, MB extends Monad<B, M>> ex
      * {@inheritDoc}
      */
     @Override
-    default <Z> Kleisli<Z, B, M, MB> compose(Function<? super Z, ? extends A> before) {
-        return Fn1.super.compose(before)::apply;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     default <C> Kleisli<A, B, M, MB> discardR(Applicative<C, Fn1<A, ?>> appB) {
         return Fn1.super.discardR(appB)::apply;
     }
@@ -63,7 +53,7 @@ public interface Kleisli<A, B, M extends Monad<?, M>, MB extends Monad<B, M>> ex
      * {@inheritDoc}
      */
     @Override
-    default <Z> Kleisli<Z, B, M, MB> contraMap(Function<? super Z, ? extends A> fn) {
+    default <Z> Kleisli<Z, B, M, MB> contraMap(Fn1<? super Z, ? extends A> fn) {
         return Fn1.super.contraMap(fn)::apply;
     }
 
@@ -71,7 +61,7 @@ public interface Kleisli<A, B, M extends Monad<?, M>, MB extends Monad<B, M>> ex
      * {@inheritDoc}
      */
     @Override
-    default <Z> Kleisli<Z, B, M, MB> diMapL(Function<? super Z, ? extends A> fn) {
+    default <Z> Kleisli<Z, B, M, MB> diMapL(Fn1<? super Z, ? extends A> fn) {
         return Fn1.super.diMapL(fn)::apply;
     }
 
@@ -86,7 +76,7 @@ public interface Kleisli<A, B, M extends Monad<?, M>, MB extends Monad<B, M>> ex
      * @return the function adapted as a {@link Kleisli} arrow
      */
     static <A, B, M extends Monad<?, M>, MB extends Monad<B, M>> Kleisli<A, B, M, MB> kleisli(
-            Function<? super A, ? extends MB> fn) {
+            Fn1<? super A, ? extends MB> fn) {
         return fn::apply;
     }
 }

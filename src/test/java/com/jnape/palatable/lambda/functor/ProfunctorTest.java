@@ -1,10 +1,10 @@
 package com.jnape.palatable.lambda.functor;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import org.junit.Test;
 import testsupport.applicatives.InvocationRecordingProfunctor;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.hamcrest.CoreMatchers.is;
@@ -14,7 +14,7 @@ public class ProfunctorTest {
 
     @Test
     public void diMapLUsesIdentityForRightDiMapFunction() {
-        AtomicReference<Function<?, ?>> rightInvocation = new AtomicReference<>();
+        AtomicReference<Fn1<?, ?>> rightInvocation = new AtomicReference<>();
         Profunctor<String, Integer, InvocationRecordingProfunctor<?, ?>> profunctor =
                 new InvocationRecordingProfunctor<>(new AtomicReference<>(), rightInvocation);
         profunctor.diMapL(Object::toString);
@@ -23,7 +23,7 @@ public class ProfunctorTest {
 
     @Test
     public void diMapRUsesIdentityForLeftDiMapFunction() {
-        AtomicReference<Function<?, ?>> leftInvocation = new AtomicReference<>();
+        AtomicReference<Fn1<?, ?>> leftInvocation = new AtomicReference<>();
         Profunctor<String, Integer, InvocationRecordingProfunctor<?, ?>> profunctor =
                 new InvocationRecordingProfunctor<>(leftInvocation, new AtomicReference<>());
         profunctor.diMapR(String::valueOf);

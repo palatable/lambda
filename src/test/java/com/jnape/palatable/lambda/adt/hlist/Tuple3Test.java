@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
@@ -83,15 +84,15 @@ public class Tuple3Test {
 
     @Test
     public void zipPrecedence() {
-        Tuple3<String, Integer, Integer> a = tuple("foo", 1, 2);
-        Tuple3<String, Integer, Function<? super Integer, ? extends Integer>> b = tuple("bar", 2, x -> x + 1);
+        Tuple3<String, Integer, Integer>                                 a = tuple("foo", 1, 2);
+        Tuple3<String, Integer, Fn1<? super Integer, ? extends Integer>> b = tuple("bar", 2, x -> x + 1);
         assertEquals(tuple("foo", 1, 3), a.zip(b));
     }
 
     @Test
     public void flatMapPrecedence() {
-        Tuple3<String, Integer, Integer> a = tuple("foo", 1, 2);
-        Function<Integer, Tuple3<String, Integer, Integer>> b = x -> tuple("bar", 2, x + 1);
+        Tuple3<String, Integer, Integer>               a = tuple("foo", 1, 2);
+        Fn1<Integer, Tuple3<String, Integer, Integer>> b = x -> tuple("bar", 2, x + 1);
         assertEquals(tuple("foo", 1, 3), a.flatMap(b));
     }
 }

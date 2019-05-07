@@ -10,7 +10,6 @@ import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.Fn2.fn2;
@@ -27,8 +26,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
 public interface Fn1<A, B> extends
         Monad<B, Fn1<A, ?>>,
         Cartesian<A, B, Fn1<?, ?>>,
-        Cocartesian<A, B, Fn1<?, ?>>,
-        Function<A, B> {
+        Cocartesian<A, B, Fn1<?, ?>> {
 
     /**
      * Invoke this function explosively with the given argument.
@@ -49,6 +47,7 @@ public interface Fn1<A, B> extends
      *
      * @param a the argument
      * @return the result of the function application
+     * @throws Throwable anything possibly thrown by the function
      */
     B checkedApply(A a) throws Throwable;
 
@@ -74,10 +73,19 @@ public interface Fn1<A, B> extends
     }
 
     /**
+     * Convert this {@link Fn1} to a java {@link Function}.
+     *
+     * @return the {@link Function}
+     */
+    default Function<A, B> toFunction() {
+        return this::apply;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    default <C> Fn1<A, C> flatMap(Function<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
+    default <C> Fn1<A, C> flatMap(Fn1<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
         return a -> f.apply(apply(a)).<Fn1<A, C>>coerce().apply(a);
     }
 
@@ -89,8 +97,8 @@ public interface Fn1<A, B> extends
      * @return a function representing the composition of this function and f
      */
     @Override
-    default <C> Fn1<A, C> fmap(Function<? super B, ? extends C> f) {
-        return Monad.super.<C>fmap(f).coerce();
+    default <C> Fn1<A, C> fmap(Fn1<? super B, ? extends C> f) {
+        return a -> f.apply(apply(a));
     }
 
     /**
@@ -105,7 +113,7 @@ public interface Fn1<A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <C> Fn1<A, C> zip(Applicative<Function<? super B, ? extends C>, Fn1<A, ?>> appFn) {
+    default <C> Fn1<A, C> zip(Applicative<Fn1<? super B, ? extends C>, Fn1<A, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -114,15 +122,14 @@ public interface Fn1<A, B> extends
      */
     @SuppressWarnings("unchecked")
     default <C> Fn1<A, C> zip(Fn2<A, B, C> appFn) {
-        return zip((Fn1<A, Function<? super B, ? extends C>>) (Object) appFn);
+        return zip((Fn1<A, Fn1<? super B, ? extends C>>) (Object) appFn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <C> Lazy<Fn1<A, C>> lazyZip(
-            Lazy<? extends Applicative<Function<? super B, ? extends C>, Fn1<A, ?>>> lazyAppFn) {
+    default <C> Lazy<Fn1<A, C>> lazyZip(Lazy<? extends Applicative<Fn1<? super B, ? extends C>, Fn1<A, ?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, Fn1<A, ?>>::coerce);
     }
 
@@ -151,7 +158,7 @@ public interface Fn1<A, B> extends
      * @return an {@link Fn1}&lt;Z, B&gt;
      */
     @Override
-    default <Z> Fn1<Z, B> diMapL(Function<? super Z, ? extends A> fn) {
+    default <Z> Fn1<Z, B> diMapL(Fn1<? super Z, ? extends A> fn) {
         return (Fn1<Z, B>) Cartesian.super.<Z>diMapL(fn);
     }
 
@@ -164,7 +171,7 @@ public interface Fn1<A, B> extends
      * @return an {@link Fn1}&lt;A, C&gt;
      */
     @Override
-    default <C> Fn1<A, C> diMapR(Function<? super B, ? extends C> fn) {
+    default <C> Fn1<A, C> diMapR(Fn1<? super B, ? extends C> fn) {
         return (Fn1<A, C>) Cartesian.super.<C>diMapR(fn);
     }
 
@@ -178,8 +185,8 @@ public interface Fn1<A, B> extends
      * @return an {@link Fn1}&lt;Z, C&gt;
      */
     @Override
-    default <Z, C> Fn1<Z, C> diMap(Function<? super Z, ? extends A> lFn, Function<? super B, ? extends C> rFn) {
-        return lFn.andThen(this).andThen(rFn)::apply;
+    default <Z, C> Fn1<Z, C> diMap(Fn1<? super Z, ? extends A> lFn, Fn1<? super B, ? extends C> rFn) {
+        return lFn.fmap(this).fmap(rFn)::apply;
     }
 
     /**
@@ -222,36 +229,12 @@ public interface Fn1<A, B> extends
         return a -> Either.trying(() -> apply(a), constantly(a)).match(Choice2::a, Choice2::b);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    default <Z> Fn1<Z, B> contraMap(Function<? super Z, ? extends A> fn) {
+    default <Z> Fn1<Z, B> contraMap(Fn1<? super Z, ? extends A> fn) {
         return (Fn1<Z, B>) Cartesian.super.<Z>contraMap(fn);
-    }
-
-    /**
-     * Override of {@link Function#compose(Function)}, returning an instance of {@link Fn1} for compatibility.
-     * Right-to-left composition.
-     *
-     * @param before the function who's return value is this function's argument
-     * @param <Z>    the new argument type
-     * @return an {@link Fn1}&lt;Z, B&gt;
-     */
-    @Override
-    default <Z> Fn1<Z, B> compose(Function<? super Z, ? extends A> before) {
-        return z -> apply(before.apply(z));
-    }
-
-    /**
-     * Right-to-left composition between different arity functions. Preserves highest arity in the return type,
-     * specialized to lambda types (in this case, {@link BiFunction} -&gt; {@link Fn2}).
-     *
-     * @param before the function to pass its return value to this function's input
-     * @param <Y>    the resulting function's first argument type
-     * @param <Z>    the resulting function's second argument type
-     * @return an {@link Fn2}&lt;Y, Z, B&gt;
-     */
-    @SuppressWarnings({"overloads"})
-    default <Y, Z> Fn2<Y, Z, B> compose(BiFunction<? super Y, ? super Z, ? extends A> before) {
-        return compose(fn2(before));
     }
 
     /**
@@ -262,47 +245,43 @@ public interface Fn1<A, B> extends
      * @param <Z>    the resulting function's second argument type
      * @return an {@link Fn2}&lt;Y, Z, B&gt;
      */
-    @SuppressWarnings({"overloads"})
     default <Y, Z> Fn2<Y, Z, B> compose(Fn2<? super Y, ? super Z, ? extends A> before) {
-        return fn2(before.fmap(this::compose))::apply;
+        return fn2(before.fmap(this::contraMap))::apply;
     }
 
     /**
-     * Left-to-right composition between different arity functions. Preserves highest arity in the return type,
-     * specialized to lambda types (in this case, {@link BiFunction} -&gt; {@link Fn2}).
+     * Left-to-right composition between different arity functions. Preserves highest arity in the return type.
      *
      * @param after the function to invoke on this function's return value
      * @param <C>   the resulting function's second argument type
      * @param <D>   the resulting function's return type
      * @return an {@link Fn2}&lt;A, C, D&gt;
      */
-    default <C, D> Fn2<A, C, D> andThen(BiFunction<? super B, ? super C, ? extends D> after) {
+    default <C, D> Fn2<A, C, D> andThen(Fn2<? super B, ? super C, ? extends D> after) {
         return (a, c) -> after.apply(apply(a), c);
     }
 
     /**
-     * Override of {@link Function#andThen(Function)}, returning an instance of {@link Fn1} for compatibility.
-     * Left-to-right composition.
+     * Static factory method for avoid explicit casting when using method references as {@link Fn1}s.
      *
-     * @param after the function to invoke on this function's return value
-     * @param <C>   the new result type
-     * @return an <code>{@link Fn1}&lt;A, C&gt;</code>
+     * @param fn  the function to adapt
+     * @param <A> the input type
+     * @param <B> the output type
+     * @return the {@link Fn1}
      */
-    @Override
-    default <C> Fn1<A, C> andThen(Function<? super B, ? extends C> after) {
-        return a -> after.apply(apply(a));
+    static <A, B> Fn1<A, B> fn1(Fn1<? super A, ? extends B> fn) {
+        return fn::apply;
     }
 
     /**
-     * Static factory method for wrapping a {@link Function} in an {@link Fn1}. Useful for avoid explicit casting when
-     * using method references as {@link Fn1}s.
+     * Static factory method for wrapping a java {@link Function} in an {@link Fn1}.
      *
-     * @param function the function to adapt
-     * @param <A>      the input argument type
+     * @param function the function
+     * @param <A>      the input type
      * @param <B>      the output type
      * @return the {@link Fn1}
      */
-    static <A, B> Fn1<A, B> fn1(Function<? super A, ? extends B> function) {
+    static <A, B> Fn1<A, B> fromFunction(Function<? super A, ? extends B> function) {
         return function::apply;
     }
 }

@@ -4,8 +4,6 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.functions.builtin.fn2.DropWhile.dropWhile;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.TakeWhile.takeWhile;
 
@@ -15,7 +13,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.TakeWhile.takeWhi
  *
  * @param <A> the {@link Iterable} element type
  */
-public final class Span<A> implements Fn2<Function<? super A, ? extends Boolean>, Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> {
+public final class Span<A> implements
+        Fn2<Fn1<? super A, ? extends Boolean>, Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> {
 
     private static final Span<?> INSTANCE = new Span<>();
 
@@ -23,8 +22,7 @@ public final class Span<A> implements Fn2<Function<? super A, ? extends Boolean>
     }
 
     @Override
-    public Tuple2<Iterable<A>, Iterable<A>> checkedApply(Function<? super A, ? extends Boolean> predicate,
-                                                         Iterable<A> as) {
+    public Tuple2<Iterable<A>, Iterable<A>> checkedApply(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         return Tuple2.fill(as).biMap(takeWhile(predicate), dropWhile(predicate));
     }
 
@@ -34,11 +32,11 @@ public final class Span<A> implements Fn2<Function<? super A, ? extends Boolean>
     }
 
     public static <A> Fn1<Iterable<A>, Tuple2<Iterable<A>, Iterable<A>>> span(
-            Function<? super A, ? extends Boolean> predicate) {
+            Fn1<? super A, ? extends Boolean> predicate) {
         return Span.<A>span().apply(predicate);
     }
 
-    public static <A> Tuple2<Iterable<A>, Iterable<A>> span(Function<? super A, ? extends Boolean> predicate,
+    public static <A> Tuple2<Iterable<A>, Iterable<A>> span(Fn1<? super A, ? extends Boolean> predicate,
                                                             Iterable<A> as) {
         return Span.<A>span(predicate).apply(as);
     }

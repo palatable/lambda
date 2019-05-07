@@ -1,11 +1,12 @@
 package com.jnape.palatable.lambda.functions.builtin.fn3;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functions.builtin.fn2.CmpEq;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.functions.specialized.Predicate;
 
-import java.util.function.Function;
+import static com.jnape.palatable.lambda.functions.specialized.Predicate.predicate;
 
 /**
  * Given a mapping function from some type <code>A</code> to some {@link Comparable} type <code>B</code> and two values
@@ -18,7 +19,7 @@ import java.util.function.Function;
  * @see LTBy
  * @see GTBy
  */
-public final class CmpEqBy<A, B extends Comparable<B>> implements Fn3<Function<? super A, ? extends B>, A, A, Boolean> {
+public final class CmpEqBy<A, B extends Comparable<B>> implements Fn3<Fn1<? super A, ? extends B>, A, A, Boolean> {
 
     private static final CmpEqBy<?, ?> INSTANCE = new CmpEqBy<>();
 
@@ -26,18 +27,18 @@ public final class CmpEqBy<A, B extends Comparable<B>> implements Fn3<Function<?
     }
 
     @Override
-    public Boolean checkedApply(Function<? super A, ? extends B> compareFn, A x, A y) {
+    public Boolean checkedApply(Fn1<? super A, ? extends B> compareFn, A x, A y) {
         return compareFn.apply(x).compareTo(compareFn.apply(y)) == 0;
     }
 
     @Override
-    public BiPredicate<A, A> apply(Function<? super A, ? extends B> compareFn) {
+    public BiPredicate<A, A> apply(Fn1<? super A, ? extends B> compareFn) {
         return Fn3.super.apply(compareFn)::apply;
     }
 
     @Override
-    public Predicate<A> apply(Function<? super A, ? extends B> compareFn, A x) {
-        return Fn3.super.apply(compareFn, x)::apply;
+    public Predicate<A> apply(Fn1<? super A, ? extends B> compareFn, A x) {
+        return predicate(Fn3.super.apply(compareFn, x));
     }
 
     @SuppressWarnings("unchecked")
@@ -45,15 +46,15 @@ public final class CmpEqBy<A, B extends Comparable<B>> implements Fn3<Function<?
         return (CmpEqBy<A, B>) INSTANCE;
     }
 
-    public static <A, B extends Comparable<B>> BiPredicate<A, A> cmpEqBy(Function<? super A, ? extends B> compareFn) {
+    public static <A, B extends Comparable<B>> BiPredicate<A, A> cmpEqBy(Fn1<? super A, ? extends B> compareFn) {
         return CmpEqBy.<A, B>cmpEqBy().apply(compareFn);
     }
 
-    public static <A, B extends Comparable<B>> Predicate<A> cmpEqBy(Function<? super A, ? extends B> compareFn, A x) {
+    public static <A, B extends Comparable<B>> Predicate<A> cmpEqBy(Fn1<? super A, ? extends B> compareFn, A x) {
         return CmpEqBy.<A, B>cmpEqBy(compareFn).apply(x);
     }
 
-    public static <A, B extends Comparable<B>> Boolean cmpEqBy(Function<? super A, ? extends B> compareFn, A x, A y) {
+    public static <A, B extends Comparable<B>> Boolean cmpEqBy(Fn1<? super A, ? extends B> compareFn, A x, A y) {
         return cmpEqBy(compareFn, x).apply(y);
     }
 }

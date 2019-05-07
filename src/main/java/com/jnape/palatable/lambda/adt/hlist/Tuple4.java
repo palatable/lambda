@@ -2,13 +2,12 @@ package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product4;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
@@ -96,23 +95,23 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     }
 
     @Override
-    public <_4Prime> Tuple4<_1, _2, _3, _4Prime> fmap(Function<? super _4, ? extends _4Prime> fn) {
+    public <_4Prime> Tuple4<_1, _2, _3, _4Prime> fmap(Fn1<? super _4, ? extends _4Prime> fn) {
         return (Tuple4<_1, _2, _3, _4Prime>) Monad.super.<_4Prime>fmap(fn);
     }
 
     @Override
-    public <_3Prime> Tuple4<_1, _2, _3Prime, _4> biMapL(Function<? super _3, ? extends _3Prime> fn) {
+    public <_3Prime> Tuple4<_1, _2, _3Prime, _4> biMapL(Fn1<? super _3, ? extends _3Prime> fn) {
         return (Tuple4<_1, _2, _3Prime, _4>) Bifunctor.super.<_3Prime>biMapL(fn);
     }
 
     @Override
-    public <_4Prime> Tuple4<_1, _2, _3, _4Prime> biMapR(Function<? super _4, ? extends _4Prime> fn) {
+    public <_4Prime> Tuple4<_1, _2, _3, _4Prime> biMapR(Fn1<? super _4, ? extends _4Prime> fn) {
         return (Tuple4<_1, _2, _3, _4Prime>) Bifunctor.super.<_4Prime>biMapR(fn);
     }
 
     @Override
-    public <_3Prime, _4Prime> Tuple4<_1, _2, _3Prime, _4Prime> biMap(Function<? super _3, ? extends _3Prime> lFn,
-                                                                     Function<? super _4, ? extends _4Prime> rFn) {
+    public <_3Prime, _4Prime> Tuple4<_1, _2, _3Prime, _4Prime> biMap(Fn1<? super _3, ? extends _3Prime> lFn,
+                                                                     Fn1<? super _4, ? extends _4Prime> rFn) {
         return new Tuple4<>(_1(), tail().biMap(lFn, rFn));
     }
 
@@ -123,13 +122,13 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
 
     @Override
     public <_4Prime> Tuple4<_1, _2, _3, _4Prime> zip(
-            Applicative<Function<? super _4, ? extends _4Prime>, Tuple4<_1, _2, _3, ?>> appFn) {
-        return biMapR(appFn.<Tuple4<_1, _2, _3, Function<? super _4, ? extends _4Prime>>>coerce()._4());
+            Applicative<Fn1<? super _4, ? extends _4Prime>, Tuple4<_1, _2, _3, ?>> appFn) {
+        return biMapR(appFn.<Tuple4<_1, _2, _3, Fn1<? super _4, ? extends _4Prime>>>coerce()._4()::apply);
     }
 
     @Override
     public <_4Prime> Lazy<Tuple4<_1, _2, _3, _4Prime>> lazyZip(
-            Lazy<? extends Applicative<Function<? super _4, ? extends _4Prime>, Tuple4<_1, _2, _3, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super _4, ? extends _4Prime>, Tuple4<_1, _2, _3, ?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_4Prime, Tuple4<_1, _2, _3, ?>>::coerce);
     }
 
@@ -145,16 +144,15 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
 
     @Override
     public <_4Prime> Tuple4<_1, _2, _3, _4Prime> flatMap(
-            Function<? super _4, ? extends Monad<_4Prime, Tuple4<_1, _2, _3, ?>>> f) {
+            Fn1<? super _4, ? extends Monad<_4Prime, Tuple4<_1, _2, _3, ?>>> f) {
         return pure(f.apply(_4).<Tuple4<_1, _2, _3, _4Prime>>coerce()._4);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <_4Prime, App extends Applicative<?, App>, TravB extends Traversable<_4Prime, Tuple4<_1, _2, _3, ?>>,
             AppB extends Applicative<_4Prime, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super _4, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _4, ? extends AppB> fn,
+                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_4).fmap(_4Prime -> fmap(constantly(_4Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

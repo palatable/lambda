@@ -6,14 +6,13 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft;
 
 import java.util.Iterator;
-import java.util.function.BiFunction;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 
 /**
- * Given an <code>{@link Iterable}&lt;A&gt;</code> and a <code>{@link BiFunction}&lt;A, A, A&gt;</code>, iteratively
+ * Given an <code>{@link Iterable}&lt;A&gt;</code> and a <code>{@link Fn2}&lt;A, A, A&gt;</code>, iteratively
  * accumulate over the {@link Iterable}, returning <code>{@link Maybe}&lt;A&gt;</code>. If the {@link Iterable} is
  * empty, the result is {@link Maybe#nothing()}; otherwise, the result is wrapped in {@link Maybe#just}. For this
  * reason, <code>null</code> accumulation results are considered erroneous and will throw.
@@ -25,7 +24,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft
  * @see ReduceRight
  * @see FoldLeft
  */
-public final class ReduceLeft<A> implements Fn2<BiFunction<? super A, ? super A, ? extends A>, Iterable<A>, Maybe<A>> {
+public final class ReduceLeft<A> implements Fn2<Fn2<? super A, ? super A, ? extends A>, Iterable<A>, Maybe<A>> {
 
     private static final ReduceLeft<?> INSTANCE = new ReduceLeft<>();
 
@@ -33,7 +32,7 @@ public final class ReduceLeft<A> implements Fn2<BiFunction<? super A, ? super A,
     }
 
     @Override
-    public Maybe<A> checkedApply(BiFunction<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
+    public Maybe<A> checkedApply(Fn2<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
         Iterator<A> iterator = as.iterator();
         return !iterator.hasNext() ? nothing() : just(foldLeft(fn, iterator.next(), () -> iterator));
     }
@@ -43,11 +42,11 @@ public final class ReduceLeft<A> implements Fn2<BiFunction<? super A, ? super A,
         return (ReduceLeft<A>) INSTANCE;
     }
 
-    public static <A> Fn1<Iterable<A>, Maybe<A>> reduceLeft(BiFunction<? super A, ? super A, ? extends A> fn) {
+    public static <A> Fn1<Iterable<A>, Maybe<A>> reduceLeft(Fn2<? super A, ? super A, ? extends A> fn) {
         return ReduceLeft.<A>reduceLeft().apply(fn);
     }
 
-    public static <A> Maybe<A> reduceLeft(BiFunction<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
+    public static <A> Maybe<A> reduceLeft(Fn2<? super A, ? super A, ? extends A> fn, Iterable<A> as) {
         return ReduceLeft.<A>reduceLeft(fn).apply(as);
     }
 }

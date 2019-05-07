@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -8,7 +9,6 @@ import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -40,7 +40,7 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      * {@inheritDoc}
      */
     @Override
-    public <B> MaybeT<M, B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> MaybeT<M, B> fmap(Fn1<? super A, ? extends B> fn) {
         return MonadT.super.<B>fmap(fn).coerce();
     }
 
@@ -56,7 +56,7 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      * {@inheritDoc}
      */
     @Override
-    public <B> MaybeT<M, B> zip(Applicative<Function<? super A, ? extends B>, MonadT<M, Maybe<?>, ?>> appFn) {
+    public <B> MaybeT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, MonadT<M, Maybe<?>, ?>> appFn) {
         return MonadT.super.zip(appFn).coerce();
     }
 
@@ -65,10 +65,11 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      */
     @Override
     public <B> Lazy<MaybeT<M, B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, MonadT<M, Maybe<?>, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MonadT<M, Maybe<?>, ?>>> lazyAppFn) {
         return new Compose<>(mma)
                 .lazyZip(lazyAppFn.fmap(maybeT -> new Compose<>(
-                        maybeT.<MaybeT<M, Function<? super A, ? extends B>>>coerce().<Maybe<Function<? super A, ? extends B>>, Monad<Maybe<Function<? super A, ? extends B>>, M>>run())))
+                        maybeT.<MaybeT<M, Fn1<? super A, ? extends B>>>coerce()
+                                .<Maybe<Fn1<? super A, ? extends B>>, Monad<Maybe<Fn1<? super A, ? extends B>>, M>>run())))
                 .fmap(compose -> maybeT(compose.getCompose()));
     }
 
@@ -76,7 +77,7 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      * {@inheritDoc}
      */
     @Override
-    public <B> MaybeT<M, B> flatMap(Function<? super A, ? extends Monad<B, MonadT<M, Maybe<?>, ?>>> f) {
+    public <B> MaybeT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, MonadT<M, Maybe<?>, ?>>> f) {
         return maybeT(mma.flatMap(ma -> ma
                 .match(constantly(mma.pure(nothing())),
                        a -> f.apply(a).<MaybeT<M, B>>coerce().run())));

@@ -10,8 +10,6 @@ import testsupport.traits.FiniteIteration;
 import testsupport.traits.ImmutableIteration;
 import testsupport.traits.Laziness;
 
-import java.util.function.BiFunction;
-
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Zip.zip;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.ZipWith.zipWith;
@@ -30,18 +28,16 @@ public class ZipWithTest {
     @Test
     public void zipsTwoIterablesTogetherWithFunction() {
         Iterable<Integer> oneThroughFive = asList(1, 2, 3, 4, 5);
-        Iterable<Integer> sixThroughTen = asList(6, 7, 8, 9, 10);
+        Iterable<Integer> sixThroughTen  = asList(6, 7, 8, 9, 10);
 
-        BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
-        Iterable<Integer> sums = ZipWith.zipWith(add, oneThroughFive, sixThroughTen);
+        Iterable<Integer> sums = zipWith(Integer::sum, oneThroughFive, sixThroughTen);
 
         assertThat(sums, iterates(7, 9, 11, 13, 15));
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void zipsAsymmetricallySizedIterables() {
-        Iterable<String> men = asList("Jack", "Sonny");
+        Iterable<String> men   = asList("Jack", "Sonny");
         Iterable<String> women = asList("Jill", "Cher", "Madonna");
 
         Iterable<Tuple2<String, String>> couples = zip(men, women);

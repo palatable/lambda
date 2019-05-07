@@ -1,24 +1,24 @@
 package testsupport;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 public final class EquatableM<M extends Monad<?, M>, A> implements Monad<A, EquatableM<M, ?>> {
 
-    private final Monad<A, M>            ma;
-    private final Function<? super M, ?> equatable;
+    private final Monad<A, M>       ma;
+    private final Fn1<? super M, ?> equatable;
 
-    public EquatableM(Monad<A, M> ma, Function<? super M, ?> equatable) {
+    public EquatableM(Monad<A, M> ma, Fn1<? super M, ?> equatable) {
         this.ma = ma;
         this.equatable = equatable;
     }
 
     @Override
-    public <B> EquatableM<M, B> flatMap(Function<? super A, ? extends Monad<B, EquatableM<M, ?>>> f) {
-        return new EquatableM<>(ma.flatMap(f.andThen(x -> x.<EquatableM<M, B>>coerce().ma)), equatable);
+    public <B> EquatableM<M, B> flatMap(Fn1<? super A, ? extends Monad<B, EquatableM<M, ?>>> f) {
+        return new EquatableM<>(ma.flatMap(f.fmap(x -> x.<EquatableM<M, B>>coerce().ma)), equatable);
     }
 
     @Override
@@ -27,13 +27,13 @@ public final class EquatableM<M extends Monad<?, M>, A> implements Monad<A, Equa
     }
 
     @Override
-    public <B> EquatableM<M, B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> EquatableM<M, B> fmap(Fn1<? super A, ? extends B> fn) {
         return new EquatableM<>(ma.fmap(fn), equatable);
     }
 
     @Override
-    public <B> EquatableM<M, B> zip(Applicative<Function<? super A, ? extends B>, EquatableM<M, ?>> appFn) {
-        return new EquatableM<>(ma.zip(appFn.<EquatableM<M, Function<? super A, ? extends B>>>coerce().ma), equatable);
+    public <B> EquatableM<M, B> zip(Applicative<Fn1<? super A, ? extends B>, EquatableM<M, ?>> appFn) {
+        return new EquatableM<>(ma.zip(appFn.<EquatableM<M, Fn1<? super A, ? extends B>>>coerce().ma), equatable);
     }
 
     @Override

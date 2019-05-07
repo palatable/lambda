@@ -1,11 +1,11 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * A functor over some value of type <code>A</code> that can be mapped over and retrieved later.
@@ -33,7 +33,7 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
      * {@inheritDoc}
      */
     @Override
-    public <B> Identity<B> flatMap(Function<? super A, ? extends Monad<B, Identity<?>>> f) {
+    public <B> Identity<B> flatMap(Fn1<? super A, ? extends Monad<B, Identity<?>>> f) {
         return f.apply(runIdentity()).coerce();
     }
 
@@ -41,7 +41,7 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
      * {@inheritDoc}
      */
     @Override
-    public <B> Identity<B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> Identity<B> fmap(Fn1<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -57,8 +57,8 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
      * {@inheritDoc}
      */
     @Override
-    public <B> Identity<B> zip(Applicative<Function<? super A, ? extends B>, Identity<?>> appFn) {
-        return new Identity<>(appFn.<Identity<Function<? super A, ? extends B>>>coerce().runIdentity().apply(a));
+    public <B> Identity<B> zip(Applicative<Fn1<? super A, ? extends B>, Identity<?>> appFn) {
+        return new Identity<>(appFn.<Identity<Fn1<? super A, ? extends B>>>coerce().runIdentity().apply(a));
     }
 
     /**
@@ -66,7 +66,7 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
      */
     @Override
     public <B> Lazy<Identity<B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, Identity<?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, Identity<?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, Identity<?>>::coerce);
     }
 
@@ -93,8 +93,8 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Identity<?>>,
             AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super A, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends AppB> fn,
+                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
         return (AppTrav) fn.apply(runIdentity()).fmap(Identity::new);
     }
 

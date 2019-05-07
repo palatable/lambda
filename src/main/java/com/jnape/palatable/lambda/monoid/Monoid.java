@@ -1,14 +1,13 @@
 package com.jnape.palatable.lambda.monoid;
 
+import com.jnape.palatable.lambda.functions.Fn0;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Map;
 import com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft;
 import com.jnape.palatable.lambda.functions.builtin.fn2.ReduceRight;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
-
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Reverse.reverse;
@@ -59,15 +58,15 @@ public interface Monoid<A> extends Semigroup<A> {
      * <code>Iterable&lt;A&gt;</code> (that is, an <code>Iterable</code> of elements this monoid is formed over), then
      * reduce the result from left to right. Under algebraic data types, this is isomorphic to a flatMap.
      *
+     * @param <B> the input Iterable element type
      * @param fn  the mapping function from A to B
      * @param bs  the Iterable of Bs
-     * @param <B> the input Iterable element type
      * @return the folded result under this Monoid
      * @see Map
      * @see Monoid#reduceLeft(Iterable)
      */
-    default <B> A foldMap(Function<? super B, ? extends A> fn, Iterable<B> bs) {
-        return FoldLeft.foldLeft(this.toBiFunction(), identity(), map(fn, bs));
+    default <B> A foldMap(Fn1<? super B, ? extends A> fn, Iterable<B> bs) {
+        return FoldLeft.foldLeft(this, identity(), map(fn, bs));
     }
 
     /**
@@ -116,11 +115,11 @@ public interface Monoid<A> extends Semigroup<A> {
         };
     }
 
-    static <A> Monoid<A> monoid(Semigroup<A> semigroup, Supplier<A> identitySupplier) {
+    static <A> Monoid<A> monoid(Semigroup<A> semigroup, Fn0<A> identityFn0) {
         return new Monoid<A>() {
             @Override
             public A identity() {
-                return identitySupplier.get();
+                return identityFn0.apply();
             }
 
             @Override

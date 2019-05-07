@@ -45,7 +45,7 @@ public final class IterableLens {
      * @return a lens focusing on the tail of an {@link Iterable}
      */
     public static <A> Lens.Simple<Iterable<A>, Iterable<A>> tail() {
-        return simpleLens(Tail::tail, fn2(Head.<A>head().andThen(o -> o.fmap(cons()).orElse(id()))).toBiFunction());
+        return simpleLens(Tail::tail, fn2(Head.<A>head().fmap(o -> o.fmap(cons()).orElse(id()))));
     }
 
     /**

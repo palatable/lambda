@@ -1,11 +1,10 @@
 package com.jnape.palatable.lambda.functions.builtin.fn3;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functions.builtin.fn2.LTE;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.functions.specialized.Predicate;
-
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn3.CmpEqBy.cmpEqBy;
 
@@ -20,25 +19,25 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.CmpEqBy.cmpEqBy;
  * @see LTE
  * @see GTEBy
  */
-public final class LTEBy<A, B extends Comparable<B>> implements Fn3<Function<? super A, ? extends B>, A, A, Boolean> {
+public final class LTEBy<A, B extends Comparable<B>> implements Fn3<Fn1<? super A, ? extends B>, A, A, Boolean> {
 
-    private static final LTEBy<?,?> INSTANCE = new LTEBy<>();
+    private static final LTEBy<?, ?> INSTANCE = new LTEBy<>();
 
     private LTEBy() {
     }
 
     @Override
-    public Boolean checkedApply(Function<? super A, ? extends B> compareFn, A y, A x) {
+    public Boolean checkedApply(Fn1<? super A, ? extends B> compareFn, A y, A x) {
         return LTBy.<A, B>ltBy(compareFn).or(cmpEqBy(compareFn)).apply(y, x);
     }
 
     @Override
-    public BiPredicate<A, A> apply(Function<? super A, ? extends B> compareFn) {
+    public BiPredicate<A, A> apply(Fn1<? super A, ? extends B> compareFn) {
         return Fn3.super.apply(compareFn)::apply;
     }
 
     @Override
-    public Predicate<A> apply(Function<? super A, ? extends B> compareFn, A y) {
+    public Predicate<A> apply(Fn1<? super A, ? extends B> compareFn, A y) {
         return Fn3.super.apply(compareFn, y)::apply;
     }
 
@@ -47,15 +46,15 @@ public final class LTEBy<A, B extends Comparable<B>> implements Fn3<Function<? s
         return (LTEBy<A, B>) INSTANCE;
     }
 
-    public static <A, B extends Comparable<B>> BiPredicate<A, A> lteBy(Function<? super A, ? extends B> fn) {
+    public static <A, B extends Comparable<B>> BiPredicate<A, A> lteBy(Fn1<? super A, ? extends B> fn) {
         return LTEBy.<A, B>lteBy().apply(fn);
     }
 
-    public static <A, B extends Comparable<B>> Predicate<A> lteBy(Function<? super A, ? extends B> fn, A y) {
+    public static <A, B extends Comparable<B>> Predicate<A> lteBy(Fn1<? super A, ? extends B> fn, A y) {
         return LTEBy.<A, B>lteBy(fn).apply(y);
     }
 
-    public static <A, B extends Comparable<B>> Boolean lteBy(Function<? super A, ? extends B> fn, A y, A x) {
+    public static <A, B extends Comparable<B>> Boolean lteBy(Fn1<? super A, ? extends B> fn, A y, A x) {
         return lteBy(fn, y).apply(x);
     }
 }

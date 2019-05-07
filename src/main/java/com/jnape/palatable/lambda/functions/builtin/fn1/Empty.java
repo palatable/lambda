@@ -25,6 +25,6 @@ public final class Empty<A> implements Predicate<Iterable<A>> {
     }
 
     public static <A> Boolean empty(Iterable<A> as) {
-        return Empty.<A>empty().test(as);
+        return Empty.<A>empty().apply(as);
     }
 }

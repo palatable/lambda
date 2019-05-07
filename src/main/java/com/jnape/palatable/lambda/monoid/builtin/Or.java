@@ -4,8 +4,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Find.find;
 
@@ -33,12 +31,7 @@ public final class Or implements Monoid<Boolean>, BiPredicate<Boolean, Boolean> 
     }
 
     @Override
-    public boolean test(Boolean x, Boolean y) {
-        return apply(x, y);
-    }
-
-    @Override
-    public <B> Boolean foldMap(Function<? super B, ? extends Boolean> fn, Iterable<B> bs) {
+    public <B> Boolean foldMap(Fn1<? super B, ? extends Boolean> fn, Iterable<B> bs) {
         return find(fn, bs).fmap(constantly(true)).orElse(false);
     }
 

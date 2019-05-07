@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.functor.Functor;
@@ -15,8 +16,6 @@ import com.jnape.palatable.lambda.optics.functions.Matching;
 import com.jnape.palatable.lambda.optics.functions.Pre;
 import com.jnape.palatable.lambda.optics.functions.Re;
 import com.jnape.palatable.lambda.optics.functions.View;
-
-import java.util.function.Function;
 
 /**
  * Prisms are {@link Iso Isos} that can fail in one direction. Example:
@@ -63,7 +62,7 @@ public interface Prism<S, T, A, B> extends
      *
      * @return a {@link Tuple2 tuple} of the two mappings encapsulated by this {@link Prism}
      */
-    default Tuple2<Function<? super B, ? extends T>, Function<? super S, ? extends Either<T, A>>> unPrism() {
+    default Tuple2<Fn1<? super B, ? extends T>, Fn1<? super S, ? extends Either<T, A>>> unPrism() {
         return Tuple2.fill(this.<Market<A, B, ?, ?>, Identity<?>, Identity<B>, Identity<T>,
                 Market<A, B, A, Identity<B>>, Market<A, B, S, Identity<T>>>apply(
                 new Market<>(Identity::new, Either::right)).fmap(Identity::runIdentity))
@@ -82,8 +81,8 @@ public interface Prism<S, T, A, B> extends
      * @param <B> the input that guarantees its output
      * @return the {@link Prism}
      */
-    static <S, T, A, B> Prism<S, T, A, B> prism(Function<? super S, ? extends CoProduct2<T, A, ?>> sta,
-                                                Function<? super B, ? extends T> bt) {
+    static <S, T, A, B> Prism<S, T, A, B> prism(Fn1<? super S, ? extends CoProduct2<T, A, ?>> sta,
+                                                Fn1<? super B, ? extends T> bt) {
         return new Prism<S, T, A, B>() {
             @Override
             public <F extends Functor<?, ? extends F>> Optic<Cocartesian<?, ?, ?>, F, S, T, A, B> toOptic(
@@ -156,8 +155,8 @@ public interface Prism<S, T, A, B> extends
      *                direction
      * @return the {@link Simple simple prism}
      */
-    static <S, A> Prism.Simple<S, A> simplePrism(Function<? super S, ? extends Maybe<A>> sMaybeA,
-                                                 Function<? super A, ? extends S> as) {
+    static <S, A> Prism.Simple<S, A> simplePrism(Fn1<? super S, ? extends Maybe<A>> sMaybeA,
+                                                 Fn1<? super A, ? extends S> as) {
         return Prism.<S, S, A, A>prism(s -> sMaybeA.apply(s).toEither(() -> s), as)::toOptic;
     }
 

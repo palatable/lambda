@@ -4,7 +4,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 
 import java.util.Collections;
-import java.util.function.BiFunction;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -25,7 +24,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Unfoldr.unfoldr;
  *
  * @param <A> the {@link Iterable} element type
  */
-public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A, ? extends Boolean>, Iterable<A>, Iterable<Iterable<A>>> {
+public final class MagnetizeBy<A> implements Fn2<Fn2<? super A, ? super A, ? extends Boolean>, Iterable<A>, Iterable<Iterable<A>>> {
 
     private static final MagnetizeBy<?> INSTANCE = new MagnetizeBy<>();
 
@@ -33,7 +32,7 @@ public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A
     }
 
     @Override
-    public Iterable<Iterable<A>> checkedApply(BiFunction<? super A, ? super A, ? extends Boolean> predicate,
+    public Iterable<Iterable<A>> checkedApply(Fn2<? super A, ? super A, ? extends Boolean> predicate,
                                               Iterable<A> as) {
         return () -> uncons(as).fmap(into((A head, Iterable<A> tail) -> {
             Iterable<A> group = cons(head, unfoldr(into((pivot, ys) -> uncons(ys)
@@ -50,12 +49,12 @@ public final class MagnetizeBy<A> implements Fn2<BiFunction<? super A, ? super A
     }
 
     public static <A> Fn1<Iterable<A>, Iterable<Iterable<A>>> magnetizeBy(
-            BiFunction<? super A, ? super A, ? extends Boolean> predicate) {
+            Fn2<? super A, ? super A, ? extends Boolean> predicate) {
         return MagnetizeBy.<A>magnetizeBy().apply(predicate);
     }
 
     public static <A> Iterable<Iterable<A>> magnetizeBy(
-            BiFunction<? super A, ? super A, ? extends Boolean> predicate,
+            Fn2<? super A, ? super A, ? extends Boolean> predicate,
             Iterable<A> as) {
         return MagnetizeBy.<A>magnetizeBy(predicate).apply(as);
     }

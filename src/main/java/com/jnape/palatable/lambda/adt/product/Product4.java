@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.adt.product;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple4;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn4;
 
 /**
@@ -31,7 +32,7 @@ public interface Product4<_1, _2, _3, _4> extends Product3<_1, _2, _3> {
      * @return the result of applying the destructured product to the function
      */
     default <R> R into(Fn4<? super _1, ? super _2, ? super _3, ? super _4, ? extends R> fn) {
-        return Product3.super.into(fn).apply(_4());
+        return Product3.super.<Fn1<? super _4, ? extends R>>into(fn).apply(_4());
     }
 
     /**

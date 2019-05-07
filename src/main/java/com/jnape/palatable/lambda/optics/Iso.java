@@ -13,8 +13,6 @@ import com.jnape.palatable.lambda.optics.functions.Over;
 import com.jnape.palatable.lambda.optics.functions.Set;
 import com.jnape.palatable.lambda.optics.functions.View;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
@@ -97,7 +95,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Iso<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
+    default <U> Iso<S, U, A, B> fmap(Fn1<? super T, ? extends U> fn) {
         return Monad.super.<U>fmap(fn).coerce();
     }
 
@@ -113,7 +111,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Iso<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, Iso<S, ?, A, B>> appFn) {
+    default <U> Iso<S, U, A, B> zip(Applicative<Fn1<? super T, ? extends U>, Iso<S, ?, A, B>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -137,13 +135,13 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Iso<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, Iso<S, ?, A, B>>> fn) {
+    default <U> Iso<S, U, A, B> flatMap(Fn1<? super T, ? extends Monad<U, Iso<S, ?, A, B>>> fn) {
         //noinspection RedundantTypeArguments
         return unIso().fmap(bt -> Fn2.<B, B, U>fn2(
-                fn1(bt.andThen(fn.<Iso<S, U, A, B>>andThen(Monad<U, Iso<S, ?, A, B>>::coerce))
-                            .andThen(Iso::unIso)
-                            .andThen(Tuple2::_2)
-                            .andThen(Fn1::fn1))))
+                fn1(bt.fmap(fn.<Iso<S, U, A, B>>fmap(Monad<U, Iso<S, ?, A, B>>::coerce))
+                            .fmap(Iso::unIso)
+                            .fmap(Tuple2::_2)
+                            .fmap(Fn1::fn1))))
                 .fmap(Fn2::uncurry)
                 .fmap(bbu -> bbu.<B>diMapL(Tuple2::fill))
                 .into(Iso::iso);
@@ -153,7 +151,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R> Iso<R, T, A, B> diMapL(Function<? super R, ? extends S> fn) {
+    default <R> Iso<R, T, A, B> diMapL(Fn1<? super R, ? extends S> fn) {
         return (Iso<R, T, A, B>) Profunctor.super.<R>diMapL(fn);
     }
 
@@ -161,7 +159,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Iso<S, U, A, B> diMapR(Function<? super T, ? extends U> fn) {
+    default <U> Iso<S, U, A, B> diMapR(Fn1<? super T, ? extends U> fn) {
         return (Iso<S, U, A, B>) Profunctor.super.<U>diMapR(fn);
     }
 
@@ -169,8 +167,8 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R, U> Iso<R, U, A, B> diMap(Function<? super R, ? extends S> lFn,
-                                         Function<? super T, ? extends U> rFn) {
+    default <R, U> Iso<R, U, A, B> diMap(Fn1<? super R, ? extends S> lFn,
+                                         Fn1<? super T, ? extends U> rFn) {
         return this.<R>mapS(lFn).mapT(rFn);
     }
 
@@ -178,7 +176,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R> Iso<R, T, A, B> contraMap(Function<? super R, ? extends S> fn) {
+    default <R> Iso<R, T, A, B> contraMap(Fn1<? super R, ? extends S> fn) {
         return (Iso<R, T, A, B>) Profunctor.super.<R>contraMap(fn);
     }
 
@@ -186,7 +184,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R> Iso<R, T, A, B> mapS(Function<? super R, ? extends S> fn) {
+    default <R> Iso<R, T, A, B> mapS(Fn1<? super R, ? extends S> fn) {
         return iso(Optic.super.mapS(fn));
     }
 
@@ -194,7 +192,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Iso<S, U, A, B> mapT(Function<? super T, ? extends U> fn) {
+    default <U> Iso<S, U, A, B> mapT(Fn1<? super T, ? extends U> fn) {
         return iso(Optic.super.mapT(fn));
     }
 
@@ -202,7 +200,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <C> Iso<S, T, C, B> mapA(Function<? super A, ? extends C> fn) {
+    default <C> Iso<S, T, C, B> mapA(Fn1<? super A, ? extends C> fn) {
         return iso(Optic.super.mapA(fn));
     }
 
@@ -210,7 +208,7 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <Z> Iso<S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
+    default <Z> Iso<S, T, A, Z> mapB(Fn1<? super Z, ? extends B> fn) {
         return iso(Optic.super.mapB(fn));
     }
 
@@ -241,8 +239,7 @@ public interface Iso<S, T, A, B> extends
      * @param <B> the smaller type for mirrored focusing
      * @return the iso
      */
-    static <S, T, A, B> Iso<S, T, A, B> iso(Function<? super S, ? extends A> f,
-                                            Function<? super B, ? extends T> g) {
+    static <S, T, A, B> Iso<S, T, A, B> iso(Fn1<? super S, ? extends A> f, Fn1<? super B, ? extends T> g) {
         return iso(optic(pafb -> pafb.diMap(f, fb -> fb.fmap(g))));
     }
 
@@ -278,7 +275,7 @@ public interface Iso<S, T, A, B> extends
      * @param <A> the other side of the isomorphism
      * @return the simple iso
      */
-    static <S, A> Iso.Simple<S, A> simpleIso(Function<? super S, ? extends A> f, Function<? super A, ? extends S> g) {
+    static <S, A> Iso.Simple<S, A> simpleIso(Fn1<? super S, ? extends A> f, Fn1<? super A, ? extends S> g) {
         return adapt(iso(f, g));
     }
 

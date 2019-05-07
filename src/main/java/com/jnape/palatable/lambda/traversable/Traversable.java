@@ -1,10 +1,9 @@
 package com.jnape.palatable.lambda.traversable;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
-
-import java.util.function.Function;
 
 /**
  * An interface for a class of data structures that can be "traversed from left to right" in a structure-preserving
@@ -36,21 +35,21 @@ public interface Traversable<A, T extends Traversable<?, T>> extends Functor<A, 
      * Apply <code>fn</code> to each element of this traversable from left to right, and collapse the results into
      * a single resulting applicative, potentially with the assistance of the applicative's pure function.
      *
-     * @param fn        the function to apply
-     * @param pure      the applicative pure function
      * @param <B>       the resulting element type
      * @param <App>     the result applicative type
      * @param <TravB>   this Traversable instance over B
      * @param <AppB>    the result applicative instance over B
      * @param <AppTrav> the full inferred resulting type from the traversal
+     * @param fn        the function to apply
+     * @param pure      the applicative pure function
      * @return the traversed Traversable, wrapped inside an applicative
      */
     <B, App extends Applicative<?, App>, TravB extends Traversable<B, T>, AppB extends Applicative<B, App>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(
-            Function<? super A, ? extends AppB> fn, Function<? super TravB, ? extends AppTrav> pure);
+            Fn1<? super A, ? extends AppB> fn, Fn1<? super TravB, ? extends AppTrav> pure);
 
     @Override
-    default <B> Traversable<B, T> fmap(Function<? super A, ? extends B> fn) {
+    default <B> Traversable<B, T> fmap(Fn1<? super A, ? extends B> fn) {
         return traverse(a -> new Identity<B>(fn.apply(a)), Identity::new).runIdentity();
     }
 }

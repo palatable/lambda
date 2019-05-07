@@ -2,14 +2,12 @@ package com.jnape.palatable.lambda.optics;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monad.Monad;
-
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.optics.Iso.iso;
 import static com.jnape.palatable.lambda.optics.Lens.Simple.adapt;
@@ -148,7 +146,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Lens<S, U, A, B> fmap(Function<? super T, ? extends U> fn) {
+    default <U> Lens<S, U, A, B> fmap(Fn1<? super T, ? extends U> fn) {
         return Monad.super.<U>fmap(fn).coerce();
     }
 
@@ -164,7 +162,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Lens<S, U, A, B> zip(Applicative<Function<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
+    default <U> Lens<S, U, A, B> zip(Applicative<Fn1<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -188,7 +186,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Lens<S, U, A, B> flatMap(Function<? super T, ? extends Monad<U, Lens<S, ?, A, B>>> f) {
+    default <U> Lens<S, U, A, B> flatMap(Fn1<? super T, ? extends Monad<U, Lens<S, ?, A, B>>> f) {
 
         return lens(view(this), (s, b) -> set(f.apply(set(this, b, s)).<Lens<S, U, A, B>>coerce(), b, s));
     }
@@ -197,7 +195,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R> Lens<R, T, A, B> diMapL(Function<? super R, ? extends S> fn) {
+    default <R> Lens<R, T, A, B> diMapL(Fn1<? super R, ? extends S> fn) {
         return (Lens<R, T, A, B>) Profunctor.super.<R>diMapL(fn);
     }
 
@@ -205,7 +203,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Lens<S, U, A, B> diMapR(Function<? super T, ? extends U> fn) {
+    default <U> Lens<S, U, A, B> diMapR(Fn1<? super T, ? extends U> fn) {
         return (Lens<S, U, A, B>) Profunctor.super.<U>diMapR(fn);
     }
 
@@ -213,8 +211,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R, U> Lens<R, U, A, B> diMap(Function<? super R, ? extends S> lFn,
-                                          Function<? super T, ? extends U> rFn) {
+    default <R, U> Lens<R, U, A, B> diMap(Fn1<? super R, ? extends S> lFn, Fn1<? super T, ? extends U> rFn) {
         return this.<R>mapS(lFn).mapT(rFn);
     }
 
@@ -222,7 +219,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R> Lens<R, T, A, B> contraMap(Function<? super R, ? extends S> fn) {
+    default <R> Lens<R, T, A, B> contraMap(Fn1<? super R, ? extends S> fn) {
         return (Lens<R, T, A, B>) Profunctor.super.<R>contraMap(fn);
     }
 
@@ -230,7 +227,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R> Lens<R, T, A, B> mapS(Function<? super R, ? extends S> fn) {
+    default <R> Lens<R, T, A, B> mapS(Fn1<? super R, ? extends S> fn) {
         return lens(Optic.super.mapS(fn));
     }
 
@@ -238,7 +235,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <U> Lens<S, U, A, B> mapT(Function<? super T, ? extends U> fn) {
+    default <U> Lens<S, U, A, B> mapT(Fn1<? super T, ? extends U> fn) {
         return lens(Optic.super.mapT(fn));
     }
 
@@ -246,7 +243,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <C> Lens<S, T, C, B> mapA(Function<? super A, ? extends C> fn) {
+    default <C> Lens<S, T, C, B> mapA(Fn1<? super A, ? extends C> fn) {
         return lens(Optic.super.mapA(fn));
     }
 
@@ -254,7 +251,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <Z> Lens<S, T, A, Z> mapB(Function<? super Z, ? extends B> fn) {
+    default <Z> Lens<S, T, A, Z> mapB(Fn1<? super Z, ? extends B> fn) {
         return lens(Optic.super.mapB(fn));
     }
 
@@ -295,8 +292,8 @@ public interface Lens<S, T, A, B> extends
      * @param <B>    the type of the "smaller" update value
      * @return the lens
      */
-    static <S, T, A, B> Lens<S, T, A, B> lens(Function<? super S, ? extends A> getter,
-                                              BiFunction<? super S, ? super B, ? extends T> setter) {
+    static <S, T, A, B> Lens<S, T, A, B> lens(Fn1<? super S, ? extends A> getter,
+                                              Fn2<? super S, ? super B, ? extends T> setter) {
         return lens(Optic.<Fn1<?, ?>, Functor<?, ?>,
                 S, T, A, B,
                 Functor<B, ? extends Functor<?, ?>>,
@@ -337,8 +334,8 @@ public interface Lens<S, T, A, B> extends
      * @param <A>    the type of both "smaller" values
      * @return the lens
      */
-    static <S, A> Lens.Simple<S, A> simpleLens(Function<? super S, ? extends A> getter,
-                                               BiFunction<? super S, ? super A, ? extends S> setter) {
+    static <S, A> Lens.Simple<S, A> simpleLens(Fn1<? super S, ? extends A> getter,
+                                               Fn2<? super S, ? super A, ? extends S> setter) {
         return adapt(lens(getter, setter));
     }
 
@@ -356,7 +353,7 @@ public interface Lens<S, T, A, B> extends
      * @return the dual-focus lens
      */
     static <S, A, B, C, D> Lens<S, S, Tuple2<A, B>, Tuple2<C, D>> both(Lens<S, S, A, C> f, Lens<S, S, B, D> g) {
-        return lens(Both.both(view(f), view(g)), (s, cd) -> cd.biMap(set(f), set(g)).into(Fn1::compose).apply(s));
+        return lens(Both.both(view(f), view(g)), (s, cd) -> cd.biMap(set(f), set(g)).into(Fn1::contraMap).apply(s));
     }
 
     /**

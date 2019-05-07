@@ -5,7 +5,6 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Sort;
 
 import java.util.List;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.SortWith.sortWith;
 import static java.util.Comparator.comparing;
@@ -20,7 +19,7 @@ import static java.util.Comparator.comparing;
  * @see Sort
  * @see SortWith
  */
-public final class SortBy<A, B extends Comparable<B>> implements Fn2<Function<? super A, ? extends B>, Iterable<A>, List<A>> {
+public final class SortBy<A, B extends Comparable<B>> implements Fn2<Fn1<? super A, ? extends B>, Iterable<A>, List<A>> {
 
     private static final SortBy<?, ?> INSTANCE = new SortBy<>();
 
@@ -28,8 +27,8 @@ public final class SortBy<A, B extends Comparable<B>> implements Fn2<Function<? 
     }
 
     @Override
-    public List<A> checkedApply(Function<? super A, ? extends B> fn, Iterable<A> as) {
-        return sortWith(comparing(fn), as);
+    public List<A> checkedApply(Fn1<? super A, ? extends B> fn, Iterable<A> as) {
+        return sortWith(comparing(fn.toFunction()), as);
     }
 
     @SuppressWarnings("unchecked")
@@ -37,12 +36,11 @@ public final class SortBy<A, B extends Comparable<B>> implements Fn2<Function<? 
         return (SortBy<A, B>) INSTANCE;
     }
 
-    public static <A, B extends Comparable<B>> Fn1<Iterable<A>, List<A>> sortBy(
-            Function<? super A, ? extends B> fn) {
+    public static <A, B extends Comparable<B>> Fn1<Iterable<A>, List<A>> sortBy(Fn1<? super A, ? extends B> fn) {
         return SortBy.<A, B>sortBy().apply(fn);
     }
 
-    public static <A, B extends Comparable<B>> List<A> sortBy(Function<? super A, ? extends B> fn, Iterable<A> as) {
+    public static <A, B extends Comparable<B>> List<A> sortBy(Fn1<? super A, ? extends B> fn, Iterable<A> as) {
         return SortBy.<A, B>sortBy(fn).apply(as);
     }
 }

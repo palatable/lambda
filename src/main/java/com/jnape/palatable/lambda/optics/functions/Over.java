@@ -6,8 +6,6 @@ import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.optics.Optic;
 
-import java.util.function.Function;
-
 /**
  * Given an {@link Optic}, a function from <code>A</code> to <code>B</code>, and a "larger" value <code>S</code>,
  * produce a <code>T</code> by retrieving the <code>A</code> from the <code>S</code>, applying the function, and
@@ -24,7 +22,7 @@ import java.util.function.Function;
  * @see View
  */
 public final class Over<S, T, A, B> implements
-        Fn3<Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B>, Function<? super A, ? extends B>, S, T> {
+        Fn3<Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B>, Fn1<? super A, ? extends B>, S, T> {
 
     private static final Over<?, ?, ?, ?> INSTANCE = new Over<>();
 
@@ -33,7 +31,7 @@ public final class Over<S, T, A, B> implements
 
     @Override
     public T checkedApply(Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B> optic,
-                          Function<? super A, ? extends B> fn,
+                          Fn1<? super A, ? extends B> fn,
                           S s) {
         return optic.<Fn1<?, ?>, Identity<?>, Identity<B>, Identity<T>, Fn1<A, Identity<B>>, Fn1<S, Identity<T>>>apply(
                 a -> new Identity<>(fn.apply(a))).apply(s).runIdentity();
@@ -44,18 +42,18 @@ public final class Over<S, T, A, B> implements
         return (Over<S, T, A, B>) INSTANCE;
     }
 
-    public static <S, T, A, B> Fn2<Function<? super A, ? extends B>, S, T> over(
+    public static <S, T, A, B> Fn2<Fn1<? super A, ? extends B>, S, T> over(
             Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B> optic) {
         return Over.<S, T, A, B>over().apply(optic);
     }
 
     public static <S, T, A, B> Fn1<S, T> over(Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B> optic,
-                                              Function<? super A, ? extends B> fn) {
+                                              Fn1<? super A, ? extends B> fn) {
         return over(optic).apply(fn);
     }
 
     public static <S, T, A, B> T over(Optic<? super Fn1<?, ?>, ? super Identity<?>, S, T, A, B> optic,
-                                      Function<? super A, ? extends B> fn, S s) {
+                                      Fn1<? super A, ? extends B> fn, S s) {
         return over(optic, fn).apply(s);
     }
 }

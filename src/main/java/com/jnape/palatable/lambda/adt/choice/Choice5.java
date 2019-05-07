@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct4;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct5;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple5;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -12,7 +13,6 @@ import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into5.into5;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
@@ -59,19 +59,16 @@ public abstract class Choice5<A, B, C, D, E> implements
      * {@inheritDoc}
      */
     @Override
-    public Choice4<A, B, C, D> converge(Function<? super E, ? extends CoProduct4<A, B, C, D, ?>> convergenceFn) {
-        return match(Choice4::a,
-                     Choice4::b,
-                     Choice4::c,
-                     Choice4::d,
-                     convergenceFn.andThen(cp4 -> cp4.match(Choice4::a, Choice4::b, Choice4::c, Choice4::d)));
+    public Choice4<A, B, C, D> converge(Fn1<? super E, ? extends CoProduct4<A, B, C, D, ?>> convergenceFn) {
+        return match(Choice4::a, Choice4::b, Choice4::c, Choice4::d,
+                     convergenceFn.fmap(cp4 -> cp4.match(Choice4::a, Choice4::b, Choice4::c, Choice4::d)));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <F> Choice5<A, B, C, D, F> fmap(Function<? super E, ? extends F> fn) {
+    public <F> Choice5<A, B, C, D, F> fmap(Fn1<? super E, ? extends F> fn) {
         return Monad.super.<F>fmap(fn).coerce();
     }
 
@@ -79,26 +76,24 @@ public abstract class Choice5<A, B, C, D, E> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public <F> Choice5<A, B, C, F, E> biMapL(Function<? super D, ? extends F> fn) {
-        return (Choice5<A, B, C, F, E>) Bifunctor.super.biMapL(fn);
+    public <F> Choice5<A, B, C, F, E> biMapL(Fn1<? super D, ? extends F> fn) {
+        return (Choice5<A, B, C, F, E>) Bifunctor.super.<F>biMapL(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public <F> Choice5<A, B, C, D, F> biMapR(Function<? super E, ? extends F> fn) {
-        return (Choice5<A, B, C, D, F>) Bifunctor.super.biMapR(fn);
+    public <F> Choice5<A, B, C, D, F> biMapR(Fn1<? super E, ? extends F> fn) {
+        return (Choice5<A, B, C, D, F>) Bifunctor.super.<F>biMapR(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <F, G> Choice5<A, B, C, F, G> biMap(Function<? super D, ? extends F> lFn,
-                                               Function<? super E, ? extends G> rFn) {
+    public <F, G> Choice5<A, B, C, F, G> biMap(Fn1<? super D, ? extends F> lFn,
+                                               Fn1<? super E, ? extends G> rFn) {
         return match(Choice5::a, Choice5::b, Choice5::c, d -> d(lFn.apply(d)), e -> e(rFn.apply(e)));
     }
 
@@ -114,7 +109,7 @@ public abstract class Choice5<A, B, C, D, E> implements
      * {@inheritDoc}
      */
     @Override
-    public <F> Choice5<A, B, C, D, F> zip(Applicative<Function<? super E, ? extends F>, Choice5<A, B, C, D, ?>> appFn) {
+    public <F> Choice5<A, B, C, D, F> zip(Applicative<Fn1<? super E, ? extends F>, Choice5<A, B, C, D, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -123,7 +118,7 @@ public abstract class Choice5<A, B, C, D, E> implements
      */
     @Override
     public <F> Lazy<Choice5<A, B, C, D, F>> lazyZip(
-            Lazy<? extends Applicative<Function<? super E, ? extends F>, Choice5<A, B, C, D, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super E, ? extends F>, Choice5<A, B, C, D, ?>>> lazyAppFn) {
         return match(a -> lazy(a(a)),
                      b -> lazy(b(b)),
                      c -> lazy(c(c)),
@@ -151,7 +146,7 @@ public abstract class Choice5<A, B, C, D, E> implements
      * {@inheritDoc}
      */
     @Override
-    public <F> Choice5<A, B, C, D, F> flatMap(Function<? super E, ? extends Monad<F, Choice5<A, B, C, D, ?>>> f) {
+    public <F> Choice5<A, B, C, D, F> flatMap(Fn1<? super E, ? extends Monad<F, Choice5<A, B, C, D, ?>>> f) {
         return match(Choice5::a, Choice5::b, Choice5::c, Choice5::d, e -> f.apply(e).coerce());
     }
 
@@ -162,8 +157,8 @@ public abstract class Choice5<A, B, C, D, E> implements
     @SuppressWarnings("unchecked")
     public <F, App extends Applicative<?, App>, TravB extends Traversable<F, Choice5<A, B, C, D, ?>>,
             AppB extends Applicative<F, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super E, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super E, ? extends AppB> fn,
+                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) Choice5.<A, B, C, D, F>a(a)).coerce(),
                      b -> pure.apply((TravB) Choice5.<A, B, C, D, F>b(b)).coerce(),
                      c -> pure.apply((TravB) Choice5.<A, B, C, D, F>c(c)),
@@ -256,9 +251,9 @@ public abstract class Choice5<A, B, C, D, E> implements
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                           Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn,
-                           Function<? super E, ? extends R> eFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                           Fn1<? super C, ? extends R> cFn, Fn1<? super D, ? extends R> dFn,
+                           Fn1<? super E, ? extends R> eFn) {
             return aFn.apply(a);
         }
 
@@ -290,9 +285,9 @@ public abstract class Choice5<A, B, C, D, E> implements
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                           Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn,
-                           Function<? super E, ? extends R> eFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                           Fn1<? super C, ? extends R> cFn, Fn1<? super D, ? extends R> dFn,
+                           Fn1<? super E, ? extends R> eFn) {
             return bFn.apply(b);
         }
 
@@ -324,9 +319,9 @@ public abstract class Choice5<A, B, C, D, E> implements
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                           Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn,
-                           Function<? super E, ? extends R> eFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                           Fn1<? super C, ? extends R> cFn, Fn1<? super D, ? extends R> dFn,
+                           Fn1<? super E, ? extends R> eFn) {
             return cFn.apply(c);
         }
 
@@ -358,9 +353,9 @@ public abstract class Choice5<A, B, C, D, E> implements
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                           Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn,
-                           Function<? super E, ? extends R> eFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                           Fn1<? super C, ? extends R> cFn, Fn1<? super D, ? extends R> dFn,
+                           Fn1<? super E, ? extends R> eFn) {
             return dFn.apply(d);
         }
 
@@ -392,9 +387,9 @@ public abstract class Choice5<A, B, C, D, E> implements
         }
 
         @Override
-        public <R> R match(Function<? super A, ? extends R> aFn, Function<? super B, ? extends R> bFn,
-                           Function<? super C, ? extends R> cFn, Function<? super D, ? extends R> dFn,
-                           Function<? super E, ? extends R> eFn) {
+        public <R> R match(Fn1<? super A, ? extends R> aFn, Fn1<? super B, ? extends R> bFn,
+                           Fn1<? super C, ? extends R> cFn, Fn1<? super D, ? extends R> dFn,
+                           Fn1<? super E, ? extends R> eFn) {
             return eFn.apply(e);
         }
 

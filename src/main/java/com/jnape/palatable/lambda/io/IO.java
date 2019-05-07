@@ -5,6 +5,8 @@ import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
+import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -12,8 +14,8 @@ import com.jnape.palatable.lambda.monad.Monad;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Function;
 
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
@@ -77,7 +79,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * @param recoveryFn the recovery function
      * @return the guarded {@link IO}
      */
-    public final IO<A> exceptionally(Function<? super Throwable, ? extends A> recoveryFn) {
+    public final IO<A> exceptionally(Fn1<? super Throwable, ? extends A> recoveryFn) {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
@@ -103,7 +105,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    public final <B> IO<B> fmap(Function<? super A, ? extends B> fn) {
+    public final <B> IO<B> fmap(Fn1<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -111,11 +113,11 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    public final <B> IO<B> zip(Applicative<Function<? super A, ? extends B>, IO<?>> appFn) {
+    public final <B> IO<B> zip(Applicative<Fn1<? super A, ? extends B>, IO<?>> appFn) {
         @SuppressWarnings("unchecked")
         IO<Object> source = (IO<Object>) this;
         @SuppressWarnings("unchecked")
-        IO<Function<Object, Object>> zip = (IO<Function<Object, Object>>) (Object) appFn;
+        IO<Fn1<Object, Object>> zip = (IO<Fn1<Object, Object>>) (Object) appFn;
         return new Compose<>(source, a(zip));
     }
 
@@ -123,7 +125,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> Lazy<IO<B>> lazyZip(Lazy<? extends Applicative<Function<? super A, ? extends B>, IO<?>>> lazyAppFn) {
+    public <B> Lazy<IO<B>> lazyZip(Lazy<? extends Applicative<Fn1<? super A, ? extends B>, IO<?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, IO<?>>::coerce);
     }
 
@@ -147,11 +149,11 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    public final <B> IO<B> flatMap(Function<? super A, ? extends Monad<B, IO<?>>> f) {
+    public final <B> IO<B> flatMap(Fn1<? super A, ? extends Monad<B, IO<?>>> f) {
         @SuppressWarnings("unchecked")
         IO<Object> source = (IO<Object>) this;
         @SuppressWarnings({"unchecked", "RedundantCast"})
-        Function<Object, IO<Object>> flatMap = (Function<Object, IO<Object>>) (Object) f;
+        Fn1<Object, IO<Object>> flatMap = (Fn1<Object, IO<Object>>) (Object) f;
         return new Compose<>(source, Choice2.b(flatMap));
     }
 
@@ -187,7 +189,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
-                return fn0.get();
+                return fn0.apply();
             }
 
             @Override
@@ -198,13 +200,16 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
     }
 
     /**
-     * Static factory method for creating an {@link IO} that runs <code>runnable</code> and returns {@link Unit}.
+     * Static factory method for creating an {@link IO} that runs a {@link SideEffect} and returns {@link Unit}.
      *
-     * @param runnable the {@link Runnable}
+     * @param sideEffect the {@link SideEffect}
      * @return the {@link IO}
      */
-    public static IO<Unit> io(Runnable runnable) {
-        return io(fn0(runnable));
+    public static IO<Unit> io(SideEffect sideEffect) {
+        return io(fn0(() -> {
+            sideEffect.Ω();
+            return UNIT;
+        }));
     }
 
     /**
@@ -228,17 +233,16 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
 
             @Override
             public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
-                return supplier.get();
+                return supplier.apply();
             }
         };
     }
 
     private static final class Compose<A> extends IO<A> {
-        private final IO<Object>                                                          source;
-        private final Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>> composition;
+        private final IO<Object>                                                source;
+        private final Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>> composition;
 
-        private Compose(IO<Object> source,
-                        Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>> composition) {
+        private Compose(IO<Object> source, Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>> composition) {
             this.source = source;
             this.composition = composition;
         }
@@ -269,7 +273,8 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
             CompletableFuture<A> future = (CompletableFuture<A>) deforest(new LinkedList<>())
                     .into((source, compositions) -> foldLeft(
                             (io, composition) -> composition
-                                    .match(zip -> zip.unsafePerformAsyncIO(executor).thenCompose(io::thenApply),
+                                    .match(zip -> zip.unsafePerformAsyncIO(executor)
+                                                   .thenCompose(f -> io.thenApply(f.toFunction())),
                                            flatMap -> io.thenComposeAsync(obj -> flatMap.apply(obj)
                                                    .unsafePerformAsyncIO(executor))),
                             source.unsafePerformAsyncIO(executor),
@@ -277,9 +282,9 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
             return future;
         }
 
-        private Tuple2<IO<Object>, LinkedList<Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>>>>
-        deforest(LinkedList<Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>>> branches) {
-            Tuple2<Compose<?>, LinkedList<Choice2<IO<Function<Object, Object>>, Function<Object, IO<Object>>>>> args =
+        private Tuple2<IO<Object>, LinkedList<Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>>>>
+        deforest(LinkedList<Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>>> branches) {
+            Tuple2<Compose<?>, LinkedList<Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>>>> args =
                     tuple(this, branches);
             return trampoline(into((source, compositions) -> {
                 IO<Object> leaf = source.source;

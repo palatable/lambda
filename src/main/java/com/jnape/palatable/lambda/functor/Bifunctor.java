@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functor;
 
-import java.util.function.Function;
+import com.jnape.palatable.lambda.functions.Fn1;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
@@ -26,7 +26,7 @@ public interface Bifunctor<A, B, BF extends Bifunctor<?, ?, BF>> extends Bounded
      * @param fn  the mapping function
      * @return a bifunctor over C (the new left parameter) and B (the same right parameter)
      */
-    default <C> Bifunctor<C, B, BF> biMapL(Function<? super A, ? extends C> fn) {
+    default <C> Bifunctor<C, B, BF> biMapL(Fn1<? super A, ? extends C> fn) {
         return biMap(fn, id());
     }
 
@@ -38,7 +38,7 @@ public interface Bifunctor<A, B, BF extends Bifunctor<?, ?, BF>> extends Bounded
      * @param fn  the mapping function
      * @return a bifunctor over A (the same left parameter) and C (the new right parameter)
      */
-    default <C> Bifunctor<A, C, BF> biMapR(Function<? super B, ? extends C> fn) {
+    default <C> Bifunctor<A, C, BF> biMapR(Fn1<? super B, ? extends C> fn) {
         return biMap(id(), fn);
     }
 
@@ -52,5 +52,5 @@ public interface Bifunctor<A, B, BF extends Bifunctor<?, ?, BF>> extends Bounded
      * @param rFn the right parameter mapping function
      * @return a bifunctor over C (the new left parameter type) and D (the new right parameter type)
      */
-    <C, D> Bifunctor<C, D, BF> biMap(Function<? super A, ? extends C> lFn, Function<? super B, ? extends D> rFn);
+    <C, D> Bifunctor<C, D, BF> biMap(Fn1<? super A, ? extends C> lFn, Fn1<? super B, ? extends D> rFn);
 }

@@ -3,15 +3,15 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.specialized.checked.CheckedRunnable;
+import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
@@ -35,14 +35,14 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
     /**
      * Catch any instance of <code>throwableType</code> and map it to a success value.
      *
+     * @param <S>           the {@link Throwable} (sub)type
      * @param throwableType the {@link Throwable} (sub)type to be caught
      * @param recoveryFn    the function mapping the {@link Throwable} to the result
-     * @param <S>           the {@link Throwable} (sub)type
      * @return a new {@link Try} instance around either the original successful result or the mapped result
      */
     @SuppressWarnings("unchecked")
     public final <S extends Throwable> Try<A> catching(Class<S> throwableType,
-                                                       Function<? super S, ? extends A> recoveryFn) {
+                                                       Fn1<? super S, ? extends A> recoveryFn) {
         return catching(throwableType::isInstance, t -> recoveryFn.apply((S) t));
     }
 
@@ -53,8 +53,8 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * @param recoveryFn the function mapping the {@link Throwable} to the result
      * @return a new {@link Try} instance around either the original successful result or the mapped result
      */
-    public final Try<A> catching(Function<? super Throwable, ? extends Boolean> predicate,
-                                 Function<? super Throwable, ? extends A> recoveryFn) {
+    public final Try<A> catching(Fn1<? super Throwable, ? extends Boolean> predicate,
+                                 Fn1<? super Throwable, ? extends A> recoveryFn) {
         return match(t -> predicate.apply(t) ? success(recoveryFn.apply(t)) : failure(t), Try::success);
     }
 
@@ -67,18 +67,18 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * over some {@link Throwable} <code>t1</code>, and the runnable throws a new {@link Throwable} <code>t2</code>, the
      * result is a failure over <code>t1</code> with <code>t2</code> added to <code>t1</code> as a suppressed exception.
      *
-     * @param runnable the runnable block of code to execute
+     * @param sideEffect the runnable block of code to execute
      * @return the same {@link Try} instance if runnable completes successfully; otherwise, a {@link Try} conforming to
      * rules above
      */
-    public final Try<A> ensuring(CheckedRunnable<?> runnable) {
-        return match(t -> trying(runnable)
+    public final Try<A> ensuring(SideEffect sideEffect) {
+        return match(t -> trying(sideEffect)
                              .<Try<A>>fmap(constantly(failure(t)))
                              .recover(t2 -> {
                                  t.addSuppressed(t2);
                                  return failure(t);
                              }),
-                     a -> trying(runnable).fmap(constantly(a)));
+                     a -> trying(sideEffect).fmap(constantly(a)));
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * @param fn the function mapping the potential {@link Throwable} <code>T</code> to <code>A</code>
      * @return a success value
      */
-    public final A recover(Function<? super Throwable, ? extends A> fn) {
+    public final A recover(Fn1<? super Throwable, ? extends A> fn) {
         return match(fn, id());
     }
 
@@ -99,14 +99,16 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * @param fn the function mapping the potential <code>A</code> to <code>T</code>
      * @return a failure value
      */
-    public final Throwable forfeit(Function<? super A, ? extends Throwable> fn) {
+    public final Throwable forfeit(Fn1<? super A, ? extends Throwable> fn) {
         return match(id(), fn);
     }
 
     /**
      * If this is a success value, return it. Otherwise, rethrow the captured failure.
      *
+     * @param <T> a declarable exception type used for catching checked exceptions
      * @return possibly the success value
+     * @throws T anything that the call site may want to explicitly catch or indicate could be thrown
      */
     public abstract <T extends Throwable> A orThrow() throws T;
 
@@ -134,19 +136,19 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * If this is a success, wrap the value in a {@link Either#right} and return it. Otherwise, apply the mapping
      * function to the failure {@link Throwable}, re-wrap it in an {@link Either#left}, and return it.
      *
-     * @param fn  the mapping function
      * @param <L> the {@link Either} left parameter type
+     * @param fn  the mapping function
      * @return {@link Either} the success value or the mapped left value
      */
-    public final <L> Either<L, A> toEither(Function<? super Throwable, ? extends L> fn) {
-        return match(fn.andThen(Either::left), Either::right);
+    public final <L> Either<L, A> toEither(Fn1<? super Throwable, ? extends L> fn) {
+        return match(fn.fmap(Either::left), Either::right);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> Try<B> fmap(Fn1<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -154,7 +156,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<B> flatMap(Function<? super A, ? extends Monad<B, Try<?>>> f) {
+    public <B> Try<B> flatMap(Fn1<? super A, ? extends Monad<B, Try<?>>> f) {
         return match(Try::failure, a -> f.apply(a).coerce());
     }
 
@@ -170,13 +172,15 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * {@inheritDoc}
      */
     @Override
-    public <B> Try<B> zip(Applicative<Function<? super A, ? extends B>, Try<?>> appFn) {
+    public <B> Try<B> zip(Applicative<Fn1<? super A, ? extends B>, Try<?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public <B> Lazy<Try<B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, Try<?>>> lazyAppFn) {
+    public <B> Lazy<Try<B>> lazyZip(Lazy<? extends Applicative<Fn1<? super A, ? extends B>, Try<?>>> lazyAppFn) {
         return match(f -> lazy(failure(f)),
                      s -> lazyAppFn.fmap(tryF -> tryF.<B>fmap(f -> f.apply(s)).coerce()));
     }
@@ -204,8 +208,8 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Try<?>>,
             AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Function<? super A, ? extends AppB> fn,
-                                                                      Function<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends AppB> fn,
+                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(t -> pure.apply((TravB) failure(t)),
                      a -> fn.apply(a).fmap(Try::success).<TravB>fmap(Applicative::coerce).coerce());
     }
@@ -242,7 +246,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      */
     public static <A> Try<A> trying(Fn0<? extends A> supplier) {
         try {
-            return success(supplier.get());
+            return success(supplier.apply());
         } catch (Throwable t) {
             return failure(t);
         }
@@ -251,20 +255,20 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
     /**
      * Execute <code>runnable</code>, returning a success {@link Unit} or a failure of the thrown {@link Throwable}.
      *
-     * @param runnable the runnable
+     * @param sideEffect the runnable
      * @return a new {@link Try} around either a successful {@link Unit} result or the thrown {@link Throwable}
      */
-    public static Try<Unit> trying(CheckedRunnable<?> runnable) {
+    public static Try<Unit> trying(SideEffect sideEffect) {
         return trying(() -> {
-            runnable.run();
+            IO.io(sideEffect).unsafePerformIO();
             return UNIT;
         });
     }
 
     /**
-     * Given a <code>{@link Fn0}&lt;{@link AutoCloseable}&gt;</code> <code>aSupplier</code> and a
-     * {@link Function} <code>fn</code>, apply <code>fn</code> to the result of <code>aSupplier</code>, ensuring
-     * that the result has its {@link AutoCloseable#close() close} method invoked, regardless of the outcome.
+     * Given a <code>{@link Fn0}&lt;{@link AutoCloseable}&gt;</code> <code>aSupplier</code> and an {@link Fn1}
+     * <code>fn</code>, apply <code>fn</code> to the result of <code>aSupplier</code>, ensuring that the result has its
+     * {@link AutoCloseable#close() close} method invoked, regardless of the outcome.
      * <p>
      * If the resource creation process throws, the function body throws, or the
      * {@link AutoCloseable#close() close method} throws, the result is a failure. If both the function body and the
@@ -354,7 +358,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
         }
 
         @Override
-        public <R> R match(Function<? super Throwable, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
+        public <R> R match(Fn1<? super Throwable, ? extends R> aFn, Fn1<? super A, ? extends R> bFn) {
             return aFn.apply(t);
         }
 
@@ -389,7 +393,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
         }
 
         @Override
-        public <R> R match(Function<? super Throwable, ? extends R> aFn, Function<? super A, ? extends R> bFn) {
+        public <R> R match(Fn1<? super Throwable, ? extends R> aFn, Fn1<? super A, ? extends R> bFn) {
             return bFn.apply(a);
         }
 

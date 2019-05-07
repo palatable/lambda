@@ -4,8 +4,6 @@ import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.CatMaybes.catMaybes;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Head.head;
@@ -39,7 +37,7 @@ public final class First<A> implements Monoid<Maybe<A>> {
     }
 
     @Override
-    public <B> Maybe<A> foldMap(Function<? super B, ? extends Maybe<A>> fn, Iterable<B> bs) {
+    public <B> Maybe<A> foldMap(Fn1<? super B, ? extends Maybe<A>> fn, Iterable<B> bs) {
         return head(catMaybes(map(fn, bs)));
     }
 

@@ -8,8 +8,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -89,7 +87,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> State<S, B> flatMap(Function<? super A, ? extends Monad<B, State<S, ?>>> f) {
+    public <B> State<S, B> flatMap(Fn1<? super A, ? extends Monad<B, State<S, ?>>> f) {
         return state(s -> run(s).into((a, s2) -> f.apply(a).<State<S, B>>coerce().run(s2)));
     }
 
@@ -105,7 +103,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> State<S, B> fmap(Function<? super A, ? extends B> fn) {
+    public <B> State<S, B> fmap(Fn1<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -113,7 +111,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> State<S, B> zip(Applicative<Function<? super A, ? extends B>, State<S, ?>> appFn) {
+    public <B> State<S, B> zip(Applicative<Fn1<? super A, ? extends B>, State<S, ?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -122,7 +120,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     @Override
     public <B> Lazy<State<S, B>> lazyZip(
-            Lazy<? extends Applicative<Function<? super A, ? extends B>, State<S, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, State<S, ?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, State<S, ?>>::coerce);
     }
 

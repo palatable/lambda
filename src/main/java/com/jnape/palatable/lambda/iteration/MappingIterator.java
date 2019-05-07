@@ -1,14 +1,15 @@
 package com.jnape.palatable.lambda.iteration;
 
+import com.jnape.palatable.lambda.functions.Fn1;
+
 import java.util.Iterator;
-import java.util.function.Function;
 
 public final class MappingIterator<A, B> extends ImmutableIterator<B> {
 
-    private final Function<? super A, ? extends B> function;
-    private final Iterator<A>                      iterator;
+    private final Fn1<? super A, ? extends B> function;
+    private final Iterator<A>                 iterator;
 
-    public MappingIterator(Function<? super A, ? extends B> function, Iterator<A> iterator) {
+    public MappingIterator(Fn1<? super A, ? extends B> function, Iterator<A> iterator) {
         this.function = function;
         this.iterator = iterator;
     }

@@ -1,24 +1,24 @@
 package testsupport.applicatives;
 
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Profunctor;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 public final class InvocationRecordingProfunctor<A, B> implements Profunctor<A, B, InvocationRecordingProfunctor<?, ?>> {
-    private final AtomicReference<Function<?, ?>> leftFn;
-    private final AtomicReference<Function<?, ?>> rightFn;
+    private final AtomicReference<Fn1<?, ?>> leftFn;
+    private final AtomicReference<Fn1<?, ?>> rightFn;
 
-    public InvocationRecordingProfunctor(AtomicReference<Function<?, ?>> leftFn,
-                                         AtomicReference<Function<?, ?>> rightFn) {
+    public InvocationRecordingProfunctor(AtomicReference<Fn1<?, ?>> leftFn,
+                                         AtomicReference<Fn1<?, ?>> rightFn) {
         this.leftFn = leftFn;
         this.rightFn = rightFn;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <C, D> InvocationRecordingProfunctor<C, D> diMap(Function<? super C, ? extends A> lFn,
-                                                            Function<? super B, ? extends D> rFn) {
+    public <C, D> InvocationRecordingProfunctor<C, D> diMap(Fn1<? super C, ? extends A> lFn,
+                                                            Fn1<? super B, ? extends D> rFn) {
         leftFn.set(lFn);
         rightFn.set(rFn);
         return (InvocationRecordingProfunctor<C, D>) this;

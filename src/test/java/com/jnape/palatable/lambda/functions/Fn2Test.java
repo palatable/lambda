@@ -31,12 +31,6 @@ public class Fn2Test {
     }
 
     @Test
-    @SuppressWarnings("ConstantConditions")
-    public void composePreservesTypeSpecificity() {
-        assertTrue(CHECK_LENGTH.compose(Object::toString) instanceof Fn2);
-    }
-
-    @Test
     public void toBiFunction() {
         BiFunction<String, Integer, Boolean> biFunction = CHECK_LENGTH.toBiFunction();
         assertEquals(true, biFunction.apply("abc", 3));
@@ -44,10 +38,13 @@ public class Fn2Test {
 
     @Test
     public void fn2() {
-        BiFunction<String, String, String> biFunction = String::format;
-        assertEquals("foo bar", Fn2.fn2(biFunction).apply("foo %s", "bar"));
-
         Fn1<String, Fn1<String, String>> curriedFn1 = (x) -> (y) -> String.format(x, y);
         assertEquals("foo bar", Fn2.fn2(curriedFn1).apply("foo %s", "bar"));
+    }
+
+    @Test
+    public void fromBiFunction() {
+        BiFunction<String, String, String> biFunction = String::format;
+        assertEquals("foo bar", Fn2.fromBiFunction(biFunction).apply("foo %s", "bar"));
     }
 }

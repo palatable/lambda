@@ -39,7 +39,7 @@ public final class RightAny<L, R> implements SemigroupFactory<Semigroup<R>, Eith
     public Semigroup<Either<L, R>> checkedApply(Semigroup<R> rSemigroup) {
         return (x, y) -> x.match(constantly(y),
                                  xR -> y.match(constantly(right(xR)),
-                                               rSemigroup.apply(xR).andThen(Either::right)));
+                                               rSemigroup.apply(xR).fmap(Either::right)));
     }
 
     @SuppressWarnings("unchecked")

@@ -4,16 +4,13 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.monad.Monad.join;
 
 /**
- * Given a {@link BiFunction} that receives a recursive function and an input and yields a {@link Lazy lazy} result, and
- * an input, produce a {@link Lazy lazy} result that, when forced, will recursively invoke the function until it
- * terminates in a stack-safe way.
+ * Given a {@link Fn2} that receives a recursive function and an input and yields a {@link Lazy lazy} result, and an
+ * input, produce a {@link Lazy lazy} result that, when forced, will recursively invoke the function until it terminates
+ * in a stack-safe way.
  * <p>
  * Example:
  * <pre>
@@ -29,8 +26,7 @@ import static com.jnape.palatable.lambda.monad.Monad.join;
  * @param <A> the input type
  * @param <B> the output type
  */
-public final class LazyRec<A, B> implements
-        Fn2<BiFunction<Function<? super A, ? extends Lazy<B>>, A, Lazy<B>>, A, Lazy<B>> {
+public final class LazyRec<A, B> implements Fn2<Fn2<Fn1<? super A, ? extends Lazy<B>>, A, Lazy<B>>, A, Lazy<B>> {
 
     private static final LazyRec<?, ?> INSTANCE = new LazyRec<>();
 
@@ -38,7 +34,7 @@ public final class LazyRec<A, B> implements
     }
 
     @Override
-    public Lazy<B> checkedApply(BiFunction<Function<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn, A a) {
+    public Lazy<B> checkedApply(Fn2<Fn1<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn, A a) {
         return join(lazy(() -> fn.apply(nextA -> apply(fn, nextA), a)));
     }
 
@@ -47,11 +43,11 @@ public final class LazyRec<A, B> implements
         return (LazyRec<A, B>) INSTANCE;
     }
 
-    public static <A, B> Fn1<A, Lazy<B>> lazyRec(BiFunction<Function<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn) {
+    public static <A, B> Fn1<A, Lazy<B>> lazyRec(Fn2<Fn1<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn) {
         return LazyRec.<A, B>lazyRec().apply(fn);
     }
 
-    public static <A, B> Lazy<B> lazyRec(BiFunction<Function<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn, A a) {
+    public static <A, B> Lazy<B> lazyRec(Fn2<Fn1<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn, A a) {
         return lazyRec(fn).apply(a);
     }
 }
