@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Market`, `Tagged`, profunctors supporting optics 
 - `Re` for viewing an `Optic` in one direction reliably
 - `Pre` for viewing at most one value from an `Optic` in one direction
+- `SideEffect`, for representing side-effects runnable by `IO`
 
 ## [3.3.0] - 2019-02-18
 ### Added

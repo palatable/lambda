@@ -14,6 +14,11 @@ import com.jnape.palatable.lambda.io.IO;
  */
 public interface SideEffect {
 
+    /**
+     * A no-op {@link SideEffect}
+     */
+    @SuppressWarnings("unused") SideEffect NOOP = () -> {};
+
     @SuppressWarnings("NonAsciiCharacters")
     void Ω() throws Throwable;
 
