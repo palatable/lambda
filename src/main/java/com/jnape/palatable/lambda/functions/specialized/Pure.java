@@ -1,8 +1,8 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
-import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.internal.Runtime;
 
 /**
  * Generalized, portable {@link Applicative#pure(Object)}, with a loosened {@link Functor} constraint.
@@ -14,9 +14,10 @@ public interface Pure<F extends Functor<?, ? extends F>> {
 
     <A> Functor<A, ? extends F> checkedApply(A a) throws Throwable;
 
-    default <A> Functor<A, ? extends F> apply(A a) {
+    default <A, FA extends Functor<A, ? extends F>> FA apply(A a) {
         try {
-            return checkedApply(a);
+            @SuppressWarnings("unchecked") FA fa = (FA) checkedApply(a);
+            return fa;
         } catch (Throwable t) {
             throw Runtime.throwChecked(t);
         }

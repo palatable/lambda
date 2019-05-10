@@ -95,7 +95,7 @@ public interface Prism<S, T, A, B> extends
                         Cocartesian<A, Functor<B, ? extends F>, ?>,
                         Cocartesian<S, Functor<T, ? extends F>, ?>>optic(pafb -> pafb.<T>cocartesian()
                         .diMap(s -> sta.apply(s).match(Choice2::a, Choice2::b),
-                               tOrFb -> tOrFb.match(pure::apply, fb -> fb.fmap(bt))));
+                               tOrFb -> tOrFb.<Functor<T, ? extends F>>match(pure::apply, fb -> fb.fmap(bt))));
             }
         };
     }
