@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.TakingIterable;
+import com.jnape.palatable.lambda.internal.iteration.TakingIterable;
 
 /**
  * Lazily limit the <code>Iterable</code> to <code>n</code> elements by returning an <code>Iterable</code> that stops

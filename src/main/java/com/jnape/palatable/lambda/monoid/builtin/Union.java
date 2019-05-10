@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.monoid.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Distinct;
-import com.jnape.palatable.lambda.iteration.UnioningIterable;
+import com.jnape.palatable.lambda.internal.iteration.UnioningIterable;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 import java.util.Collections;

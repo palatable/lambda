@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
-import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
+import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 

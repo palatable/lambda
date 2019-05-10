@@ -1,6 +1,6 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
-import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
+import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
 public interface MonoidFactory<A, B> extends SemigroupFactory<A, B> {

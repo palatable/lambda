@@ -4,7 +4,7 @@ import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.UnfoldingIterator;
+import com.jnape.palatable.lambda.internal.iteration.UnfoldingIterator;
 
 /**
  * Given an initial seed value and a function that takes the seed type and produces an <code>{@link Maybe}&lt;{@link

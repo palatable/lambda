@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.PredicatedTakingIterable;
+import com.jnape.palatable.lambda.internal.iteration.PredicatedTakingIterable;
 
 /**
  * Lazily limit the <code>Iterable</code> to the first group of contiguous elements that satisfy the predicate by

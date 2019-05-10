@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iteration.ReversingIterable;
+import com.jnape.palatable.lambda.internal.iteration.ReversingIterable;
 
 /**
  * Given an <code>Iterable</code>, return a reversed representation of that <code>Iterable</code>. Note that reversing

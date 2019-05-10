@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.PredicatedDroppingIterable;
+import com.jnape.palatable.lambda.internal.iteration.PredicatedDroppingIterable;
 
 /**
  * Lazily limit the <code>Iterable</code> by skipping the first contiguous group of elements that satisfy the predicate,

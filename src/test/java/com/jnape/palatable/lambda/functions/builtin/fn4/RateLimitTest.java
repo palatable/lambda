@@ -1,8 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn4;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.specialized.SideEffect;
-import com.jnape.palatable.lambda.iteration.IterationInterruptedException;
+import com.jnape.palatable.lambda.internal.iteration.IterationInterruptedException;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;

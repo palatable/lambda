@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iteration.DistinctIterable;
+import com.jnape.palatable.lambda.internal.iteration.DistinctIterable;
 
 /**
  * Return an {@link Iterable} of the distinct values from the given input {@link Iterable}.

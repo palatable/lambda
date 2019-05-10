@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.product.Product2;
-import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
+import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import static com.jnape.palatable.lambda.functions.Fn4.fn4;

@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.FilteringIterable;
+import com.jnape.palatable.lambda.internal.iteration.FilteringIterable;
 
 /**
  * Lazily apply a predicate to each element in an <code>Iterable</code>, returning an <code>Iterable</code> of just the

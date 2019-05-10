@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.DroppingIterable;
+import com.jnape.palatable.lambda.internal.iteration.DroppingIterable;
 
 /**
  * Lazily skip the first <code>n</code> elements from an <code>Iterable</code> by returning an <code>Iterable</code>

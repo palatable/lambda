@@ -1,7 +1,7 @@
 package com.jnape.palatable.lambda.functions.builtin.fn1;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.iteration.RepetitiousIterator;
+import com.jnape.palatable.lambda.internal.iteration.RepetitiousIterator;
 
 /**
  * Given a value, return an infinite <code>Iterable</code> that repeatedly iterates that value.

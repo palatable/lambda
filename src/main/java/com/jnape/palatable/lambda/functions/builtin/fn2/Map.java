@@ -2,7 +2,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.iteration.MappingIterable;
+import com.jnape.palatable.lambda.internal.iteration.MappingIterable;
 
 /**
  * Lazily apply a function to each element in an <code>Iterable</code>, producing an <code>Iterable</code> of the mapped

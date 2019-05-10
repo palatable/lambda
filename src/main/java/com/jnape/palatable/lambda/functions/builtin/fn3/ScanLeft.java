@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn3;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
-import com.jnape.palatable.lambda.iteration.ScanningIterator;
+import com.jnape.palatable.lambda.internal.iteration.ScanningIterator;
 
 /**
  * Given an <code>Iterable</code> of <code>A</code>s, a starting value <code>B</code>, and a

@@ -4,7 +4,6 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
-import com.jnape.palatable.lambda.functions.specialized.checked.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
@@ -13,6 +12,7 @@ import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
+import static com.jnape.palatable.lambda.internal.Runtime.throwChecked;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -354,7 +354,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
 
         @Override
         public A orThrow() {
-            throw Runtime.throwChecked(t);
+            throw throwChecked(t);
         }
 
         @Override

@@ -5,8 +5,8 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functions.Fn4;
-import com.jnape.palatable.lambda.iteration.IterationInterruptedException;
-import com.jnape.palatable.lambda.iteration.RateLimitingIterable;
+import com.jnape.palatable.lambda.internal.iteration.IterationInterruptedException;
+import com.jnape.palatable.lambda.internal.iteration.RateLimitingIterable;
 
 import java.time.Duration;
 import java.time.Instant;
