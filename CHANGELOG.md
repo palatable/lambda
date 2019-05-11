@@ -44,6 +44,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Re` for viewing an `Optic` in one direction reliably
 - `Pre` for viewing at most one value from an `Optic` in one direction
 - `SideEffect`, for representing side-effects runnable by `IO`
+- `IO#safe`, mapping an `IO<A>` to an `IO<Either<Throwable, A>>` that will never throw
+- `IO#ensuring`, like `finally` semantics for `IO`s
+- `IO#throwing`, for producing an `IO<A>` that will throw a given `Throwable` when executed
 
 ## [3.3.0] - 2019-02-18
 ### Added

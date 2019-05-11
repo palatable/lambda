@@ -13,8 +13,13 @@ import testsupport.traits.MonadLaws;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.jnape.palatable.lambda.adt.Either.left;
+import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
@@ -23,7 +28,9 @@ import static com.jnape.palatable.lambda.io.IO.io;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.ForkJoinPool.commonPool;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 
 @RunWith(Traits.class)
@@ -174,6 +181,66 @@ public class IOTest {
                              return a.flatMap(x -> x < STACK_EXPLODING_NUMBER ? apply(io(x + 1)) : io(x));
                          }
                      }.apply(io(0)).unsafePerformAsyncIO().join());
+    }
 
+    @Test
+    public void safe() {
+        assertEquals(right(1), io(() -> 1).safe().unsafePerformIO());
+        IllegalStateException thrown = new IllegalStateException("kaboom");
+        assertEquals(left(thrown), io(() -> {throw thrown;}).safe().unsafePerformIO());
+    }
+
+    @Test
+    public void ensuring() {
+        AtomicInteger counter    = new AtomicInteger(0);
+        IO<Integer>   incCounter = io(counter::incrementAndGet);
+        assertEquals("foo", io(() -> "foo").ensuring(incCounter).unsafePerformIO());
+        assertEquals(1, counter.get());
+
+        IllegalStateException thrown = new IllegalStateException("kaboom");
+        try {
+            io(() -> {throw thrown;}).ensuring(incCounter).unsafePerformIO();
+            fail("Expected exception to have been thrown, but wasn't.");
+        } catch (IllegalStateException actual) {
+            assertEquals(thrown, actual);
+            assertEquals(2, counter.get());
+        }
+    }
+
+    @Test
+    public void ensuringRunsStrictlyAfterIO() {
+        Executor      twoThreads = Executors.newFixedThreadPool(2);
+        AtomicInteger counter    = new AtomicInteger(0);
+        io(() -> {
+            Thread.sleep(100);
+            counter.incrementAndGet();
+        }).ensuring(io(() -> {
+            if (counter.get() == 0)
+                fail("Expected to run after initial IO, but ran first");
+        })).unsafePerformAsyncIO(twoThreads).join();
+    }
+
+    @Test
+    public void ensuringAttachesThrownExceptionToThrownBodyException() {
+        IllegalStateException thrownByBody     = new IllegalStateException("kaboom");
+        IllegalStateException thrownByEnsuring = new IllegalStateException("KABOOM");
+
+        try {
+            io(() -> {throw thrownByBody;}).ensuring(io(() -> {throw thrownByEnsuring;})).unsafePerformIO();
+            fail("Expected exception to have been thrown, but wasn't.");
+        } catch (IllegalStateException actual) {
+            assertEquals(thrownByBody, actual);
+            assertArrayEquals(new Throwable[]{thrownByEnsuring}, actual.getSuppressed());
+        }
+    }
+
+    @Test
+    public void throwing() {
+        IllegalStateException expected = new IllegalStateException("thrown");
+        try {
+            IO.throwing(expected).unsafePerformIO();
+        } catch (IllegalStateException actual) {
+            assertEquals(expected, actual);
+        }
     }
 }

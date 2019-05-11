@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.io;
 
+import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
@@ -19,11 +20,13 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
+import static com.jnape.palatable.lambda.monad.Monad.join;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.concurrent.ForkJoinPool.commonPool;
@@ -94,6 +97,32 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
     }
 
     /**
+     * Return an {@link IO} that will run <code>ensureIO</code> strictly after running this {@link IO} regardless of
+     * whether this {@link IO} terminates normally, analogous to a finally block.
+     *
+     * @param ensureIO the {@link IO} to ensure runs strictly after this {@link IO}
+     * @return the combined {@link IO}
+     */
+    public final IO<A> ensuring(IO<?> ensureIO) {
+        return join(fmap(a -> ensureIO.fmap(constantly(a)))
+                            .exceptionally(t -> join(ensureIO.<IO<A>>fmap(constantly(io(() -> {throw t;})))
+                                                             .exceptionally(t2 -> io(() -> {
+                                                                 t.addSuppressed(t2);
+                                                                 throw t;
+                                                             })))));
+    }
+
+    /**
+     * Return a safe {@link IO} that will never throw by lifting the result of this {@link IO} into {@link Either},
+     * catching any {@link Throwable} and wrapping it in a {@link Either#left(Object) left}.
+     *
+     * @return the safe {@link IO}
+     */
+    public final IO<Either<Throwable, A>> safe() {
+        return fmap(Either::<Throwable, A>right).exceptionally(Either::left);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -155,6 +184,17 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
         @SuppressWarnings({"unchecked", "RedundantCast"})
         Fn1<Object, IO<Object>> flatMap = (Fn1<Object, IO<Object>>) (Object) f;
         return new Compose<>(source, Choice2.b(flatMap));
+    }
+
+    /**
+     * Produce an {@link IO} that throws the given {@link Throwable} when executed.
+     *
+     * @param t   the {@link Throwable}
+     * @param <A> any result type
+     * @return the {@link IO}
+     */
+    public static <A> IO<A> throwing(Throwable t) {
+        return io(() -> {throw t;});
     }
 
     /**
