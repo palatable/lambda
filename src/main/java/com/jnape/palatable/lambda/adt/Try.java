@@ -12,13 +12,13 @@ import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
-import static com.jnape.palatable.lambda.internal.Runtime.throwChecked;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.internal.Runtime.throwChecked;
 
 /**
  * A {@link Monad} of the evaluation outcome of an expression that might throw. Try/catch/finally semantics map to

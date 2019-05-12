@@ -5,8 +5,6 @@ import com.jnape.palatable.lambda.adt.choice.Choice5;
 import com.jnape.palatable.lambda.adt.product.Product6;
 import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;

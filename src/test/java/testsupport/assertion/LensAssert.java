@@ -6,7 +6,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Map;
 import com.jnape.palatable.lambda.functor.Functor;
-import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.optics.Optic;
 

@@ -14,7 +14,6 @@ import testsupport.traits.TraversableLaws;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;

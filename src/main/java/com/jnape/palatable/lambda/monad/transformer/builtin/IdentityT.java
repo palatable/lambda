@@ -9,7 +9,6 @@ import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * A {@link MonadT monad transformer} for {@link Identity}.

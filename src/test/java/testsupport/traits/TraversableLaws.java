@@ -10,8 +10,6 @@ import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.traversable.Traversable;
 import com.jnape.palatable.traitor.traits.Trait;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;

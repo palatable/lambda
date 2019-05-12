@@ -2,8 +2,8 @@ package com.jnape.palatable.lambda.functions;
 
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
-import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.io.IO;
 
 import java.util.function.Consumer;

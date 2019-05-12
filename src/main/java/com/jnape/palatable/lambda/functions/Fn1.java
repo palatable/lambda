@@ -3,11 +3,11 @@ package com.jnape.palatable.lambda.functions;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
+import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.Function;

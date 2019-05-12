@@ -6,8 +6,6 @@ import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT;
 
-import java.util.function.Function;
-
 /**
  * An interface representing a {@link Monad} transformer.
  * <p>

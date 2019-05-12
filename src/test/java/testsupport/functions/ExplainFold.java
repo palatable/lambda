@@ -2,8 +2,6 @@ package testsupport.functions;
 
 import com.jnape.palatable.lambda.functions.Fn2;
 
-import java.util.function.BiFunction;
-
 import static java.lang.String.format;
 
 public class ExplainFold {

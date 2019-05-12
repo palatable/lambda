@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.jnape.palatable.lambda.optics.Lens.simpleLens;
-import static java.util.Collections.singleton;
 
 /**
  * Lenses that operate on {@link Set}s.

@@ -7,7 +7,6 @@ import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.traitor.traits.Trait;
 
 import java.util.Random;
-import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;

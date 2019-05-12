@@ -6,8 +6,6 @@ import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.traitor.traits.Trait;
 
-import java.util.function.Function;
-
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
