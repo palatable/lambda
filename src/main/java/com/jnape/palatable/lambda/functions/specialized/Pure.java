@@ -22,4 +22,15 @@ public interface Pure<F extends Functor<?, ? extends F>> {
             throw Runtime.throwChecked(t);
         }
     }
+
+    /**
+     * Static method to aid inference.
+     *
+     * @param pure the {@link Pure}
+     * @param <F>  the {@link Functor} witness
+     * @return the {@link Pure}
+     */
+    static <F extends Functor<?, ? extends F>> Pure<F> pure(Pure<F> pure) {
+        return pure;
+    }
 }
