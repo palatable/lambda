@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.specialized.SideEffect.NOOP;
 import static com.jnape.palatable.lambda.io.IO.io;
 
 /**
@@ -88,6 +89,16 @@ public interface Effect<A> extends Fn1<A, IO<Unit>> {
      */
     static Effect<Unit> effect(SideEffect sideEffect) {
         return effect(constantly(io(sideEffect)));
+    }
+
+    /**
+     * Create an {@link Effect} that accepts an input and does nothing;
+     *
+     * @return the noop {@link Effect}
+     */
+    @SuppressWarnings("unused")
+    static <A> Effect<A> noop() {
+        return effect(NOOP).contraMap(constantly(UNIT));
     }
 
     /**

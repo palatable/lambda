@@ -17,7 +17,7 @@ public interface SideEffect {
     /**
      * A no-op {@link SideEffect}
      */
-    @SuppressWarnings("unused") SideEffect NOOP = () -> {};
+    SideEffect NOOP = () -> {};
 
     @SuppressWarnings("NonAsciiCharacters")
     void Ω() throws Throwable;
