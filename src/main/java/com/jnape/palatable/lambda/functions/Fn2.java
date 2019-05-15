@@ -153,8 +153,16 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
         return (a, b) -> curriedFn1.apply(a).apply(b);
     }
 
+    /**
+     * Static method to aid inference.
+     *
+     * @param fn2 the {@link Fn2}
+     * @param <A> the first input type
+     * @param <B> the second input type
+     * @param <C> the output type
+     * @return the {@link Fn2}
+     */
     static <A, B, C> Fn2<A, B, C> fn2(Fn2<A, B, C> fn2) {
         return fn2;
     }
-
 }
