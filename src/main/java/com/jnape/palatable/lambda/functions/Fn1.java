@@ -12,7 +12,7 @@ import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.function.Function;
 
-import static com.jnape.palatable.lambda.functions.Fn2.fn2;
+import static com.jnape.palatable.lambda.functions.Fn2.curried;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
@@ -69,7 +69,7 @@ public interface Fn1<A, B> extends
      * @return the widened function
      */
     default <Z> Fn2<Z, A, B> widen() {
-        return fn2(constantly(this));
+        return curried(constantly(this));
     }
 
     /**
@@ -246,7 +246,7 @@ public interface Fn1<A, B> extends
      * @return an {@link Fn2}&lt;Y, Z, B&gt;
      */
     default <Y, Z> Fn2<Y, Z, B> compose(Fn2<? super Y, ? super Z, ? extends A> before) {
-        return fn2(before.fmap(this::contraMap))::apply;
+        return curried(before.fmap(this::contraMap))::apply;
     }
 
     /**

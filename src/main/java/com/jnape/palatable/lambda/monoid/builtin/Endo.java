@@ -4,7 +4,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
-import static com.jnape.palatable.lambda.functions.Fn2.fn2;
+import static com.jnape.palatable.lambda.functions.Fn2.curried;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
@@ -35,7 +35,7 @@ public final class Endo<A> implements Monoid<Fn1<A, A>> {
 
     @Override
     public Fn2<Fn1<A, A>, A, A> apply(Fn1<A, A> f) {
-        return fn2(Monoid.super.apply(f));
+        return curried(Monoid.super.apply(f));
     }
 
     @SuppressWarnings("unchecked")

@@ -6,7 +6,7 @@ import com.jnape.palatable.lambda.functions.builtin.fn1.Tail;
 import com.jnape.palatable.lambda.optics.Iso;
 import com.jnape.palatable.lambda.optics.Lens;
 
-import static com.jnape.palatable.lambda.functions.Fn2.fn2;
+import static com.jnape.palatable.lambda.functions.Fn2.curried;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
@@ -45,7 +45,7 @@ public final class IterableLens {
      * @return a lens focusing on the tail of an {@link Iterable}
      */
     public static <A> Lens.Simple<Iterable<A>, Iterable<A>> tail() {
-        return simpleLens(Tail::tail, fn2(Head.<A>head().fmap(o -> o.fmap(cons()).orElse(id()))));
+        return simpleLens(Tail::tail, curried(Head.<A>head().fmap(o -> o.fmap(cons()).orElse(id()))));
     }
 
     /**

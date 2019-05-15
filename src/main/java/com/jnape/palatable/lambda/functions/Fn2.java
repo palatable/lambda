@@ -100,7 +100,7 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      */
     @Override
     default <D> Fn2<A, B, C> discardR(Applicative<D, Fn1<A, ?>> appB) {
-        return fn2(Fn1.super.discardR(appB));
+        return curried(Fn1.super.discardR(appB));
     }
 
     /**
@@ -108,7 +108,7 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      */
     @Override
     default <Z> Fn2<Z, B, C> diMapL(Fn1<? super Z, ? extends A> fn) {
-        return fn2(Fn1.super.diMapL(fn));
+        return curried(Fn1.super.diMapL(fn));
     }
 
     /**
@@ -116,7 +116,7 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      */
     @Override
     default <Z> Fn2<Z, B, C> contraMap(Fn1<? super Z, ? extends A> fn) {
-        return fn2(Fn1.super.contraMap(fn));
+        return curried(Fn1.super.contraMap(fn));
     }
 
     /**
@@ -149,7 +149,12 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      * @param <C>        the output type
      * @return the {@link Fn2}
      */
-    static <A, B, C> Fn2<A, B, C> fn2(Fn1<A, Fn1<B, C>> curriedFn1) {
+    static <A, B, C> Fn2<A, B, C> curried(Fn1<A, Fn1<B, C>> curriedFn1) {
         return (a, b) -> curriedFn1.apply(a).apply(b);
     }
+
+    static <A, B, C> Fn2<A, B, C> fn2(Fn2<A, B, C> fn2) {
+        return fn2;
+    }
+
 }

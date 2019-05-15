@@ -137,7 +137,7 @@ public interface Iso<S, T, A, B> extends
     @Override
     default <U> Iso<S, U, A, B> flatMap(Fn1<? super T, ? extends Monad<U, Iso<S, ?, A, B>>> fn) {
         //noinspection RedundantTypeArguments
-        return unIso().fmap(bt -> Fn2.<B, B, U>fn2(
+        return unIso().fmap(bt -> Fn2.<B, B, U>curried(
                 fn1(bt.fmap(fn.<Iso<S, U, A, B>>fmap(Monad<U, Iso<S, ?, A, B>>::coerce))
                             .fmap(Iso::unIso)
                             .fmap(Tuple2::_2)

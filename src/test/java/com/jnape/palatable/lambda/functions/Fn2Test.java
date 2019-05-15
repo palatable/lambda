@@ -36,9 +36,15 @@ public class Fn2Test {
     }
 
     @Test
-    public void fn2() {
+    public void curried() {
         Fn1<String, Fn1<String, String>> curriedFn1 = (x) -> (y) -> String.format(x, y);
-        assertEquals("foo bar", Fn2.fn2(curriedFn1).apply("foo %s", "bar"));
+        assertEquals("foo bar", Fn2.curried(curriedFn1).apply("foo %s", "bar"));
+    }
+
+    @Test
+    public void fn2() {
+        Fn2<String, String, String> fn2 = Fn2.fn2(String::format);
+        assertEquals("foo bar", fn2.apply("foo %s", "bar"));
     }
 
     @Test
