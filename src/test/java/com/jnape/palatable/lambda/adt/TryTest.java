@@ -51,7 +51,7 @@ public class TryTest {
 
     @Test
     public void catchingWithGenericPredicate() {
-        Try<String> caught = Try.<RuntimeException, String>failure(new RuntimeException())
+        Try<String> caught = Try.<String>failure(new RuntimeException())
                 .catching(__ -> false, r -> "caught first")
                 .catching(__ -> true, r -> "caught second");
 
@@ -68,7 +68,7 @@ public class TryTest {
 
     @Test
     public void firstMatchingCatchBlockWins() {
-        Try<String> caught = Try.<RuntimeException, String>failure(new IllegalStateException())
+        Try<String> caught = Try.<String>failure(new IllegalStateException())
                 .catching(__ -> true, __ -> "first")
                 .catching(__ -> true, __ -> "second");
 
@@ -77,7 +77,7 @@ public class TryTest {
 
     @Test
     public void catchBasedOnExceptionType() {
-        Try<String> caught = Try.<RuntimeException, String>failure(new IllegalStateException())
+        Try<String> caught = Try.<String>failure(new IllegalStateException())
                 .catching(IllegalArgumentException.class, __ -> "illegal argument exception")
                 .catching(IllegalStateException.class, __ -> "illegal state exception")
                 .catching(RuntimeException.class, __ -> "runtime exception");
@@ -114,14 +114,14 @@ public class TryTest {
     @Test
     public void forfeitEnsuresFailure() {
         IllegalStateException expected = new IllegalStateException();
-        assertEquals(expected, Try.<RuntimeException, Object>failure(expected).forfeit(__ -> new IllegalArgumentException()));
+        assertEquals(expected, Try.failure(expected).forfeit(__ -> new IllegalArgumentException()));
         assertEquals(expected, Try.<Object>success(1).forfeit(__ -> expected));
     }
 
     @Test
     public void recoverEnsuresSuccess() {
         assertEquals((Integer) 1, Try.success(1).recover(constantly(1)));
-        assertEquals((Integer) 1, Try.<RuntimeException, Integer>failure(new IllegalArgumentException()).recover(constantly(1)));
+        assertEquals((Integer) 1, Try.<Integer>failure(new IllegalArgumentException()).recover(constantly(1)));
     }
 
     @Test
@@ -231,6 +231,21 @@ public class TryTest {
         } catch (IOException ioException) {
             fail("Expected thrown exception to not be IOException, but merely proving it can still be caught");
         } catch (Exception expected) {
+        }
+    }
+
+    @Test
+    public void orThrowCanTransformFirst() {
+        try {
+            Try.trying(() -> {
+                throw new IllegalStateException();
+            }).<Exception>orThrow(IllegalArgumentException::new);
+            fail("Expected RuntimeException to be thrown, but nothing was");
+        } catch (IllegalStateException ioException) {
+            fail("Expected thrown exception to not be IllegalStateException, but it was");
+        } catch (IllegalArgumentException expected) {
+        } catch (Exception e) {
+            fail("A different exception altogether was thrown.");
         }
     }
 }

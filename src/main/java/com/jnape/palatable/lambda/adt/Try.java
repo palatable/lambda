@@ -110,7 +110,24 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * @return possibly the success value
      * @throws T anything that the call site may want to explicitly catch or indicate could be thrown
      */
-    public abstract <T extends Throwable> A orThrow() throws T;
+    public final <T extends Throwable> A orThrow() throws T {
+        try {
+            return orThrow(id());
+        } catch (Throwable t) {
+            throw throwChecked(t);
+        }
+    }
+
+    /**
+     * If this is a success value, return it. Otherwise, transform the captured failure with <code>fn</code> and throw
+     * the result.
+     *
+     * @param <T> the type of the thrown {@link Throwable}
+     * @return possibly the success value
+     * @throws T the transformation output
+     */
+    public abstract <T extends Throwable> A orThrow(Fn1<? super Throwable, ? extends T> fn) throws T;
+
 
     /**
      * If this is a success, wrap the value in a {@link Maybe#just} and return it. Otherwise, return {@link
@@ -228,12 +245,11 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
     /**
      * Static factory method for creating a failure value.
      *
-     * @param t   the wrapped {@link Throwable}
-     * @param <T> the failure parameter type
+     * @param t   the {@link Throwable}
      * @param <A> the success parameter type
      * @return a failure value of t
      */
-    public static <T extends Throwable, A> Try<A> failure(T t) {
+    public static <A> Try<A> failure(Throwable t) {
         return new Failure<>(t);
     }
 
@@ -353,8 +369,8 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
         }
 
         @Override
-        public A orThrow() {
-            throw throwChecked(t);
+        public <T extends Throwable> A orThrow(Fn1<? super Throwable, ? extends T> fn) throws T {
+            throw fn.apply(t);
         }
 
         @Override
@@ -388,7 +404,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
         }
 
         @Override
-        public A orThrow() {
+        public <T extends Throwable> A orThrow(Fn1<? super Throwable, ? extends T> fn) {
             return a;
         }
 
