@@ -316,7 +316,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
                                     .match(zip -> zip.unsafePerformAsyncIO(executor)
                                                    .thenCompose(f -> io.thenApply(f.toFunction())),
                                            flatMap -> io.thenComposeAsync(obj -> flatMap.apply(obj)
-                                                   .unsafePerformAsyncIO(executor))),
+                                                   .unsafePerformAsyncIO(executor), executor)),
                             source.unsafePerformAsyncIO(executor),
                             compositions));
             return future;
