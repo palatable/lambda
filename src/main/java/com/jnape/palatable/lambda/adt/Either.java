@@ -12,6 +12,7 @@ import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
@@ -176,7 +177,7 @@ public abstract class Either<L, R> implements
      * @param rightEffect the effecting consumer for right values
      * @return the Either, unaltered
      */
-    public Either<L, R> peek(Effect<L> leftEffect, Effect<R> rightEffect) {
+    public Either<L, R> peek(Fn1<? super L, ? extends IO<?>> leftEffect, Fn1<? super R, ? extends IO<?>> rightEffect) {
         return Peek2.peek2(leftEffect, rightEffect, this);
     }
 

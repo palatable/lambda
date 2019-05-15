@@ -3,6 +3,7 @@ package testsupport.traits;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.traitor.traits.Trait;
 
@@ -22,9 +23,8 @@ public class BifunctorLaws<BF extends Bifunctor<?, ?, BF>> implements Trait<Bifu
                                this::testRightIdentity,
                                this::testMutualIdentity)
                 )
-                .peek(s -> {
-                    throw new AssertionError("The following Bifunctor laws did not hold for instance of " + bifunctor.getClass() + ": \n\t - " + s);
-                });
+                .peek(s -> IO.throwing(new AssertionError("The following Bifunctor laws did not hold for instance of " +
+                                                                  bifunctor.getClass() + ": \n\t - " + s)));
     }
 
     private Maybe<String> testLeftIdentity(Bifunctor<?, ?, BF> bifunctor) {

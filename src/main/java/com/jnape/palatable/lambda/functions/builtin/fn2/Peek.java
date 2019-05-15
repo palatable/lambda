@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.functions.Effect;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.io.IO;
 
 /**
  * Given an {@link Effect}, "peek" at the value contained inside a {@link Functor} via {@link Functor#fmap(Fn1)},
@@ -12,7 +13,7 @@ import com.jnape.palatable.lambda.functor.Functor;
  * @param <A>  the functor parameter type
  * @param <FA> the functor type
  */
-public final class Peek<A, FA extends Functor<A, ?>> implements Fn2<Effect<? super A>, FA, FA> {
+public final class Peek<A, FA extends Functor<A, ?>> implements Fn2<Fn1<? super A, ? extends IO<?>>, FA, FA> {
     private static final Peek<?, ?> INSTANCE = new Peek<>();
 
     private Peek() {
@@ -20,11 +21,11 @@ public final class Peek<A, FA extends Functor<A, ?>> implements Fn2<Effect<? sup
 
     @Override
     @SuppressWarnings("unchecked")
-    public FA checkedApply(Effect<? super A> consumer, FA fa) {
+    public FA checkedApply(Fn1<? super A, ? extends IO<?>> effect, FA fa) {
         return (FA) fa.fmap(a -> {
-            consumer.apply(a).unsafePerformIO();
+            effect.apply(a).unsafePerformIO();
             return a;
-        });
+        }).coerce();
     }
 
     @SuppressWarnings("unchecked")
@@ -32,11 +33,11 @@ public final class Peek<A, FA extends Functor<A, ?>> implements Fn2<Effect<? sup
         return (Peek<A, FA>) INSTANCE;
     }
 
-    public static <A, FA extends Functor<A, ?>> Fn1<FA, FA> peek(Effect<? super A> consumer) {
-        return Peek.<A, FA>peek().apply(consumer);
+    public static <A, FA extends Functor<A, ?>> Fn1<FA, FA> peek(Fn1<? super A, ? extends IO<?>> effect) {
+        return Peek.<A, FA>peek().apply(effect);
     }
 
-    public static <A, FA extends Functor<A, ?>> FA peek(Effect<? super A> consumer, FA fa) {
-        return Peek.<A, FA>peek(consumer).apply(fa);
+    public static <A, FA extends Functor<A, ?>> FA peek(Fn1<? super A, ? extends IO<?>> effect, FA fa) {
+        return Peek.<A, FA>peek(effect).apply(fa);
     }
 }

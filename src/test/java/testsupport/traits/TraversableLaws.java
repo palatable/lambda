@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.traversable.Traversable;
 import com.jnape.palatable.traitor.traits.Trait;
@@ -28,10 +29,8 @@ public class TraversableLaws<Trav extends Traversable<?, Trav>> implements Trait
                                this::testIdentity,
                                this::testComposition)
                 )
-                .peek(s -> {
-                    throw new AssertionError("The following Traversable laws did not hold for instance of "
-                                                     + traversable.getClass() + ": \n\t - " + s);
-                });
+                .peek(s -> IO.throwing(new AssertionError("The following Traversable laws did not hold for instance of "
+                                                                  + traversable.getClass() + ": \n\t - " + s)));
     }
 
     private Maybe<String> testNaturality(Traversable<?, Trav> trav) {

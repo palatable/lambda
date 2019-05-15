@@ -21,9 +21,10 @@ import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.Effect.fromConsumer;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -98,10 +99,10 @@ public class MaybeTest {
     @Test
     public void peek() {
         AtomicInteger ref = new AtomicInteger(0);
-        assertEquals(just(1), just(1).peek(fromConsumer(__ -> ref.incrementAndGet())));
+        assertEquals(just(1), just(1).peek(constantly(io(ref::incrementAndGet))));
         assertEquals(1, ref.get());
 
-        assertEquals(nothing(), nothing().peek(fromConsumer(__ -> ref.incrementAndGet())));
+        assertEquals(nothing(), nothing().peek(constantly(io(ref::incrementAndGet))));
         assertEquals(1, ref.get());
     }
 

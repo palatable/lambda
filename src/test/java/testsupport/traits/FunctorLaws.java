@@ -3,6 +3,7 @@ package testsupport.traits;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.traitor.traits.Trait;
 
@@ -21,9 +22,8 @@ public class FunctorLaws<F extends Functor<?, F>> implements Trait<Functor<?, F>
                         fn -> fn.apply(f),
                         asList(this::testIdentity,
                                this::testComposition))
-                .peek(s -> {
-                    throw new AssertionError("The following Functor laws did not hold for instance of " + f.getClass() + ": \n\t - " + s);
-                });
+                .peek(s -> IO.throwing(new AssertionError("The following Functor laws did not hold for instance of " +
+                                                                  f.getClass() + ": \n\t - " + s)));
     }
 
     private Maybe<String> testIdentity(Functor<?, F> f) {

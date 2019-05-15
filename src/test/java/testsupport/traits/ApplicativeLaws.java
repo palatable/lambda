@@ -3,6 +3,7 @@ package testsupport.traits;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.traitor.traits.Trait;
 
@@ -30,9 +31,8 @@ public class ApplicativeLaws<App extends Applicative<?, App>> implements Trait<A
                                this::testDiscardR,
                                this::testLazyZip)
                 )
-                .peek(s -> {
-                    throw new AssertionError("The following Applicative laws did not hold for instance of " + applicative.getClass() + ": \n\t - " + s);
-                });
+                .peek(s -> IO.throwing(new AssertionError("The following Applicative laws did not hold for instance of "
+                                                                  + applicative.getClass() + ": \n\t - " + s)));
     }
 
     private Maybe<String> testIdentity(Applicative<?, App> applicative) {

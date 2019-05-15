@@ -2,6 +2,7 @@ package testsupport.traits;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.traitor.traits.Trait;
@@ -24,9 +25,8 @@ public class MonadLaws<M extends Monad<?, M>> implements Trait<Monad<?, M>> {
                         this::testRightIdentity,
                         this::testAssociativity,
                         this::testJoin))
-                .peek(s -> {
-                    throw new AssertionError("The following Monad laws did not hold for instance of " + m.getClass() + ": \n\t - " + s);
-                });
+                .peek(s -> IO.throwing(new AssertionError("The following Monad laws did not hold for instance of " +
+                                                                  m.getClass() + ": \n\t - " + s)));
     }
 
     private Maybe<String> testLeftIdentity(Monad<?, M> m) {

@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.Fn3;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.BoundedBifunctor;
+import com.jnape.palatable.lambda.io.IO;
 
 /**
  * Given two {@link Effect}s, "peek" at the values contained inside a {@link Bifunctor} via
@@ -16,7 +17,7 @@ import com.jnape.palatable.lambda.functor.BoundedBifunctor;
  * @param <FAB> the bifunctor type
  */
 public final class Peek2<A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>> implements
-        Fn3<Effect<? super A>, Effect<? super B>, FAB, FAB> {
+        Fn3<Fn1<? super A, ? extends IO<?>>, Fn1<? super B, ? extends IO<?>>, FAB, FAB> {
     private static final Peek2<?, ?, ?> INSTANCE = new Peek2<>();
 
     private Peek2() {
@@ -24,12 +25,12 @@ public final class Peek2<A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? s
 
     @Override
     @SuppressWarnings("unchecked")
-    public FAB checkedApply(Effect<? super A> aConsumer, Effect<? super B> bConsumer, FAB fab) {
+    public FAB checkedApply(Fn1<? super A, ? extends IO<?>> effectA, Fn1<? super B, ? extends IO<?>> effectB, FAB fab) {
         return (FAB) fab.biMap(a -> {
-            aConsumer.apply(a).unsafePerformIO();
+            effectA.apply(a).unsafePerformIO();
             return a;
         }, b -> {
-            bConsumer.apply(b).unsafePerformIO();
+            effectB.apply(b).unsafePerformIO();
             return b;
         });
     }
@@ -39,21 +40,21 @@ public final class Peek2<A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? s
         return (Peek2<A, B, FAB>) INSTANCE;
     }
 
-    public static <A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>> Fn2<Effect<? super B>, FAB, FAB>
-    peek2(Effect<? super A> aConsumer) {
-        return Peek2.<A, B, FAB>peek2().apply(aConsumer);
+    public static <A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>>
+    Fn2<Fn1<? super B, ? extends IO<?>>, FAB, FAB> peek2(Fn1<? super A, ? extends IO<?>> effectA) {
+        return Peek2.<A, B, FAB>peek2().apply(effectA);
     }
 
     public static <A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>> Fn1<FAB, FAB> peek2(
-            Effect<? super A> aConsumer,
-            Effect<? super B> bConsumer) {
-        return Peek2.<A, B, FAB>peek2(aConsumer).apply(bConsumer);
+            Fn1<? super A, ? extends IO<?>> effectA,
+            Fn1<? super B, ? extends IO<?>> effectB) {
+        return Peek2.<A, B, FAB>peek2(effectA).apply(effectB);
     }
 
     public static <A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>> FAB peek2(
-            Effect<? super A> aConsumer,
-            Effect<? super B> bConsumer,
+            Fn1<? super A, ? extends IO<?>> effectA,
+            Fn1<? super B, ? extends IO<?>> effectB,
             FAB fab) {
-        return Peek2.<A, B, FAB>peek2(aConsumer, bConsumer).apply(fab);
+        return Peek2.<A, B, FAB>peek2(effectA, effectB).apply(fab);
     }
 }

@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Map;
 import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.optics.Optic;
 
@@ -33,7 +34,7 @@ public final class LensAssert {
                 .reduceLeft(asList(falsify("You get back what you put in", (s, b) -> view(lens, set(lens, b, s)), (s, b) -> b, cases),
                                    falsify("Putting back what you got changes nothing", (s, b) -> set(lens, view(lens, s), s), (s, b) -> s, cases),
                                    falsify("Setting twice is equivalent to setting once", (s, b) -> set(lens, b, set(lens, b, s)), (s, b) -> set(lens, b, s), cases)))
-                .peek(failures -> {throw new AssertionError("Lens law failures\n\n" + failures);});
+                .peek(failures -> IO.throwing(new AssertionError("Lens law failures\n\n" + failures)));
     }
 
     private static <S, A, X> Maybe<String> falsify(String label, Fn2<S, A, X> l, Fn2<S, A, X> r,
