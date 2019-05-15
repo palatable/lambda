@@ -47,6 +47,16 @@ public interface Effect<A> extends Fn1<A, IO<Unit>> {
     }
 
     /**
+     * Left-to-right composition of {@link Effect Effects}.
+     *
+     * @param effect the other {@link Effect}
+     * @return the composed {@link Effect}
+     */
+    default Effect<A> andThen(Effect<A> effect) {
+        return a -> apply(a).flatMap(constantly(effect.apply(a)));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
