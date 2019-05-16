@@ -97,7 +97,7 @@ public interface Effect<A> extends Fn1<A, IO<Unit>> {
      * @param sideEffect the {@link SideEffect}
      * @return the {@link Effect}
      */
-    static Effect<Unit> effect(SideEffect sideEffect) {
+    static <A> Effect<A> effect(SideEffect sideEffect) {
         return effect(constantly(io(sideEffect)));
     }
 
@@ -108,7 +108,7 @@ public interface Effect<A> extends Fn1<A, IO<Unit>> {
      */
     @SuppressWarnings("unused")
     static <A> Effect<A> noop() {
-        return effect(NOOP).contraMap(constantly(UNIT));
+        return effect(NOOP);
     }
 
     /**

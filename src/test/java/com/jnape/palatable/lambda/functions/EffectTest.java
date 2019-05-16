@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.Effect.effect;
 import static com.jnape.palatable.lambda.functions.Effect.fromConsumer;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
@@ -51,8 +50,8 @@ public class EffectTest {
     public void staticFactoryMethods() {
         AtomicInteger counter = new AtomicInteger();
 
-        Effect<Unit> runnableEffect = effect(counter::incrementAndGet);
-        runnableEffect.apply(UNIT).unsafePerformIO();
+        Effect<String> sideEffect = effect(counter::incrementAndGet);
+        sideEffect.apply("foo").unsafePerformIO();
         assertEquals(1, counter.get());
 
         Effect<AtomicInteger> fnEffect = Effect.fromConsumer(AtomicInteger::incrementAndGet);
