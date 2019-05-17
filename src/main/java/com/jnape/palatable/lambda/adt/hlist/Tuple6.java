@@ -191,9 +191,9 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
 
     @Override
     public <_6Prime, App extends Applicative<?, App>, TravB extends Traversable<_6Prime, Tuple6<_1, _2, _3, _4, _5, ?>>,
-            AppB extends Applicative<_6Prime, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _6, ? extends AppB> fn,
-                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Fn1<? super _6, ? extends Applicative<_6Prime, App>> fn,
+            Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_6).fmap(_6Prime -> fmap(constantly(_6Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

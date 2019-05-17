@@ -70,8 +70,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
 
     @Override
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, SingletonHList<?>>,
-            AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _1, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _1, ? extends Applicative<B, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(head()).fmap(SingletonHList::new).<TravB>fmap(Applicative::coerce).coerce();
     }

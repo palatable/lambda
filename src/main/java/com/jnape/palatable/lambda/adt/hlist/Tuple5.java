@@ -170,9 +170,9 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
 
     @Override
     public <_5Prime, App extends Applicative<?, App>, TravB extends Traversable<_5Prime, Tuple5<_1, _2, _3, _4, ?>>,
-            AppB extends Applicative<_5Prime, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _5, ? extends AppB> fn,
-                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Fn1<? super _5, ? extends Applicative<_5Prime, App>> fn,
+            Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_5).fmap(_3Prime -> fmap(constantly(_3Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

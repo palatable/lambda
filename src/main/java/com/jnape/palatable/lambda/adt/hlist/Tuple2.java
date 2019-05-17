@@ -133,9 +133,9 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
 
     @Override
     public <_2Prime, App extends Applicative<?, App>, TravB extends Traversable<_2Prime, Tuple2<_1, ?>>,
-            AppB extends Applicative<_2Prime, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _2, ? extends AppB> fn,
-                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Fn1<? super _2, ? extends Applicative<_2Prime, App>> fn,
+            Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_2).fmap(_2Prime -> fmap(constantly(_2Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

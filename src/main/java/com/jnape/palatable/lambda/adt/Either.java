@@ -282,8 +282,7 @@ public abstract class Either<L, R> implements
     @Override
     @SuppressWarnings("unchecked")
     public final <R2, App extends Applicative<?, App>, TravB extends Traversable<R2, Either<L, ?>>,
-            AppB extends Applicative<R2, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super R, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super R, ? extends Applicative<R2, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return (AppTrav) match(l -> pure.apply((TravB) left(l)), r -> fn.apply(r).fmap(Either::right));
     }

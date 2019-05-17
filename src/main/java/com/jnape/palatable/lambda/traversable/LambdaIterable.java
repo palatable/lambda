@@ -112,8 +112,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
     @Override
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, LambdaIterable<?>>,
-            AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends Applicative<B, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return FoldRight.<A, AppTrav>foldRight(
                 (a, lglb) -> fn.apply(a)

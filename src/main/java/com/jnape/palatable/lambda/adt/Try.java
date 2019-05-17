@@ -224,8 +224,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
     @Override
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Try<?>>,
-            AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends Applicative<B, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(t -> pure.apply((TravB) failure(t)),
                      a -> fn.apply(a).fmap(Try::success).<TravB>fmap(Applicative::coerce).coerce());

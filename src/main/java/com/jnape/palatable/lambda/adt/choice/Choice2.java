@@ -151,8 +151,7 @@ public abstract class Choice2<A, B> implements
     @Override
     @SuppressWarnings("unchecked")
     public <C, App extends Applicative<?, App>, TravB extends Traversable<C, Choice2<A, ?>>,
-            AppB extends Applicative<C, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super B, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super B, ? extends Applicative<C, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) a(a)),
                      b -> fn.apply(b).<Choice2<A, C>>fmap(Choice2::b).<TravB>fmap(Functor::coerce).coerce());

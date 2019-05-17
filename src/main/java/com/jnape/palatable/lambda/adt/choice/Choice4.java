@@ -152,8 +152,7 @@ public abstract class Choice4<A, B, C, D> implements
     @Override
     @SuppressWarnings("unchecked")
     public <E, App extends Applicative<?, App>, TravB extends Traversable<E, Choice4<A, B, C, ?>>,
-            AppB extends Applicative<E, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super D, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super D, ? extends Applicative<E, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) Choice4.<A, B, C, E>a(a)).coerce(),
                      b -> pure.apply((TravB) Choice4.<A, B, C, E>b(b)).coerce(),

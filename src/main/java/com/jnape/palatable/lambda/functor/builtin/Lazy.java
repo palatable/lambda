@@ -50,8 +50,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
     @Override
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Lazy<?>>,
-            AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends Applicative<B, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(value()).fmap(b -> (TravB) lazy(b)).coerce();
     }

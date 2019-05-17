@@ -78,8 +78,7 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
 
     @Override
     public <C, App extends Applicative<?, App>, TravB extends Traversable<C, RecursiveResult<A, ?>>,
-            AppB extends Applicative<C, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super B, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super B, ? extends Applicative<C, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(__ -> pure.apply(coerce()),
                      b -> fn.apply(b).fmap(this::pure).<TravB>fmap(RecursiveResult::coerce).coerce());

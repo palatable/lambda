@@ -92,8 +92,7 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
     @Override
     @SuppressWarnings("unchecked")
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, Identity<?>>,
-            AppB extends Applicative<B, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends AppB> fn,
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends Applicative<B, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return (AppTrav) fn.apply(runIdentity()).fmap(Identity::new);
     }

@@ -62,8 +62,8 @@ public abstract class These<A, B> implements
     @Override
     @SuppressWarnings("unchecked")
     public <C, App extends Applicative<?, App>, TravB extends Traversable<C, These<A, ?>>,
-            AppB extends Applicative<C, App>, AppTrav extends Applicative<TravB, App>>
-    AppTrav traverse(Fn1<? super B, ? extends AppB> fn, Fn1<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>>
+    AppTrav traverse(Fn1<? super B, ? extends Applicative<C, App>> fn, Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(a -> pure.apply((TravB) a(a)),
                      b -> fn.apply(b).fmap(this::pure).<TravB>fmap(Applicative::coerce).coerce(),
                      into((a, b) -> fn.apply(b).fmap(c -> both(a, c)).<TravB>fmap(Applicative::coerce).coerce()));

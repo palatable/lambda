@@ -212,9 +212,9 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime, App extends Applicative<?, App>,
             TravB extends Traversable<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>>,
-            AppB extends Applicative<_7Prime, App>,
-            AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _7, ? extends AppB> fn,
-                                                                      Fn1<? super TravB, ? extends AppTrav> pure) {
+            AppTrav extends Applicative<TravB, App>> AppTrav traverse(
+            Fn1<? super _7, ? extends Applicative<_7Prime, App>> fn,
+            Fn1<? super TravB, ? extends AppTrav> pure) {
         return fn.apply(_7).fmap(_7Prime -> fmap(constantly(_7Prime))).<TravB>fmap(Applicative::coerce).coerce();
     }
 

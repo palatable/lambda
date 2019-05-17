@@ -47,15 +47,14 @@ public final class LambdaMap<A, B> implements Functor<B, LambdaMap<A, ?>>, Trave
     @Override
     @SuppressWarnings("unchecked")
     public <C, App extends Applicative<?, App>, TravC extends Traversable<C, LambdaMap<A, ?>>,
-            AppC extends Applicative<C, App>,
-            AppTrav extends Applicative<TravC, App>> AppTrav traverse(Fn1<? super B, ? extends AppC> fn,
+            AppTrav extends Applicative<TravC, App>> AppTrav traverse(Fn1<? super B, ? extends Applicative<C, App>> fn,
                                                                       Fn1<? super TravC, ? extends AppTrav> pure) {
         return foldLeft(curried(appTrav -> into((k, appV) -> (AppTrav) appTrav.<TravC>zip(appV.fmap(v -> m -> {
                             ((LambdaMap<A, C>) m).unwrap().put(k, v);
                             return m;
                         })))),
                         pure.apply((TravC) LambdaMap.<A, C>wrap(new HashMap<>())),
-                        this.<AppC>fmap(fn).unwrap().entrySet());
+                        this.fmap(fn).unwrap().entrySet());
     }
 
     @Override
