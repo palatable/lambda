@@ -2,7 +2,6 @@ package com.jnape.palatable.lambda.adt;
 
 import com.jnape.palatable.lambda.adt.choice.Choice3;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
-import com.jnape.palatable.lambda.functions.Effect;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
@@ -166,7 +165,7 @@ public abstract class Either<L, R> implements
      * @param effect the effecting consumer
      * @return the Either, unaltered
      */
-    public Either<L, R> peek(Effect<R> effect) {
+    public Either<L, R> peek(Fn1<? super R, ? extends IO<?>> effect) {
         return Peek.peek(effect, this);
     }
 
