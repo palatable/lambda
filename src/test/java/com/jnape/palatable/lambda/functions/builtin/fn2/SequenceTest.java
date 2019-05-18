@@ -7,6 +7,8 @@ import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import org.junit.Test;
 
+import java.util.Map;
+
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
@@ -68,5 +70,8 @@ public class SequenceTest {
 
         Maybe<Iterable<Integer>> d = sequence(asList(just(1), just(2)), Maybe::just);
         assertThat(d.orElseThrow(AssertionError::new), iterates(1, 2));
+
+        Either<String, Map<String, Integer>> e = sequence(singletonMap("foo", right(1)), Either::right);
+        assertEquals(right(singletonMap("foo", 1)), e);
     }
 }
