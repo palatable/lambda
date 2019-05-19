@@ -95,6 +95,7 @@ public interface Effect<A> extends Fn1<A, IO<Unit>> {
      * Create an {@link Effect} from a {@link SideEffect};
      *
      * @param sideEffect the {@link SideEffect}
+     * @param <A>        any desired input type
      * @return the {@link Effect}
      */
     static <A> Effect<A> effect(SideEffect sideEffect) {
@@ -104,6 +105,7 @@ public interface Effect<A> extends Fn1<A, IO<Unit>> {
     /**
      * Create an {@link Effect} that accepts an input and does nothing;
      *
+     * @param <A> any desired input type
      * @return the noop {@link Effect}
      */
     @SuppressWarnings("unused")

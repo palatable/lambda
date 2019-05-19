@@ -122,6 +122,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * If this is a success value, return it. Otherwise, transform the captured failure with <code>fn</code> and throw
      * the result.
      *
+     * @param fn  the {@link Throwable} transformation
      * @param <T> the type of the thrown {@link Throwable}
      * @return possibly the success value
      * @throws T the transformation output
