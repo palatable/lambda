@@ -68,11 +68,11 @@ public final class MapLens {
      * A lens that focuses on a value at a key in a map, as a {@link Maybe}, and produces a subtype <code>M</code> on
      * the way back out.
      *
+     * @param copyFn the copy function
+     * @param k      the key to focus on
      * @param <M>    the map subtype
      * @param <K>    the key type
      * @param <V>    the value type
-     * @param k      the key to focus on
-     * @param copyFn the copy function
      * @return a lens that focuses on the value at key, as a {@link Maybe}
      */
     public static <M extends Map<K, V>, K, V> Lens<Map<K, V>, M, Maybe<V>, Maybe<V>> valueAt(
