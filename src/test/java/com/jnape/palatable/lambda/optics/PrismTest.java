@@ -3,7 +3,14 @@ package com.jnape.palatable.lambda.optics;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.traitor.annotations.TestTraits;
+import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import testsupport.EquatableM;
+import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
@@ -16,9 +23,16 @@ import static com.jnape.palatable.lambda.optics.functions.Re.re;
 import static com.jnape.palatable.lambda.optics.functions.View.view;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Traits.class)
 public class PrismTest {
 
     private static final Fn1<String, Integer> PARSE_INT = Fn1.fn1(Integer::parseInt);
+
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    public EquatableM<Prism<String, ?, Integer, Integer>, String> testSubject() {
+        return new EquatableM<>(Prism.fromPartial(Integer::parseInt, Object::toString),
+                                prism -> matching(prism, "foo"));
+    }
 
     @Test
     public void prismLaws() {

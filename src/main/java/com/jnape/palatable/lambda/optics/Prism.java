@@ -7,15 +7,26 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
+import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.functor.builtin.Market;
+import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.optics.functions.Matching;
 import com.jnape.palatable.lambda.optics.functions.Pre;
 import com.jnape.palatable.lambda.optics.functions.Re;
 import com.jnape.palatable.lambda.optics.functions.View;
+
+import static com.jnape.palatable.lambda.adt.Either.left;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Downcast.downcast;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
+import static com.jnape.palatable.lambda.optics.Prism.Simple.adapt;
+import static com.jnape.palatable.lambda.optics.functions.Matching.matching;
+import static com.jnape.palatable.lambda.optics.functions.Re.re;
 
 /**
  * Prisms are {@link Iso Isos} that can fail in one direction. Example:
@@ -42,10 +53,23 @@ import com.jnape.palatable.lambda.optics.functions.View;
  * @param <B> the input that guarantees its output
  */
 @FunctionalInterface
-public interface Prism<S, T, A, B> extends
-        ProtoOptic<Cocartesian<?, ?, ?>, S, T, A, B>,
-        Optic<Cocartesian<?, ?, ?>, Identity<?>, S, T, A, B> {
+public interface Prism<S, T, A, B> extends ProtoOptic<Cocartesian<?, ?, ?>, S, T, A, B>, Monad<T, Prism<S, ?, A, B>> {
 
+    /**
+     * Recover the two mappings encapsulated by this {@link Prism} by sending it through a {@link Market}.
+     *
+     * @return a {@link Tuple2 tuple} of the two mappings encapsulated by this {@link Prism}
+     */
+    default Tuple2<Fn1<? super B, ? extends T>, Fn1<? super S, ? extends Either<T, A>>> unPrism() {
+        return Tuple2.fill(this.<Market<A, B, ?, ?>, Identity<?>, Identity<B>, Identity<T>,
+                Market<A, B, A, Identity<B>>, Market<A, B, S, Identity<T>>>apply(
+                new Market<>(Identity::new, Either::right)).fmap(Identity::runIdentity))
+                .biMap(Market::bt, Market::sta);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <CoP extends Profunctor<?, ?, ? extends Cocartesian<?, ?, ?>>,
             CoF extends Functor<?, ? extends Identity<?>>,
@@ -58,15 +82,62 @@ public interface Prism<S, T, A, B> extends
     }
 
     /**
-     * Recover the two mappings encapsulated by this {@link Prism} by sending it through a {@link Market}.
-     *
-     * @return a {@link Tuple2 tuple} of the two mappings encapsulated by this {@link Prism}
+     * {@inheritDoc}
      */
-    default Tuple2<Fn1<? super B, ? extends T>, Fn1<? super S, ? extends Either<T, A>>> unPrism() {
-        return Tuple2.fill(this.<Market<A, B, ?, ?>, Identity<?>, Identity<B>, Identity<T>,
-                Market<A, B, A, Identity<B>>, Market<A, B, S, Identity<T>>>apply(
-                new Market<>(Identity::new, Either::right)).fmap(Identity::runIdentity))
-                .biMap(Market::bt, Market::sta);
+    @Override
+    default <U> Prism<S, U, A, B> pure(U u) {
+        return prism(constantly(left(u)), constantly(u));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Prism<S, U, A, B> flatMap(Fn1<? super T, ? extends Monad<U, Prism<S, ?, A, B>>> f) {
+        return unPrism().into((bt, seta) -> prism(
+                s -> seta.apply(s).match(t -> matching(f.apply(t).<Prism<S, U, A, B>>coerce(), s), Either::right),
+                b -> View.<B, B, U, U>view(re(f.apply(bt.apply(b)).coerce())).apply(b)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Prism<S, U, A, B> fmap(Fn1<? super T, ? extends U> fn) {
+        return Monad.super.<U>fmap(fn).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Prism<S, U, A, B> zip(Applicative<Fn1<? super T, ? extends U>, Prism<S, ?, A, B>> appFn) {
+        return Monad.super.zip(appFn).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Lazy<Prism<S, U, A, B>> lazyZip(
+            Lazy<? extends Applicative<Fn1<? super T, ? extends U>, Prism<S, ?, A, B>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<U, Prism<S, ?, A, B>>::coerce);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Prism<S, U, A, B> discardL(Applicative<U, Prism<S, ?, A, B>> appB) {
+        return Monad.super.discardL(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Prism<S, T, A, B> discardR(Applicative<U, Prism<S, ?, A, B>> appB) {
+        return Monad.super.discardR(appB).coerce();
     }
 
     /**
@@ -85,8 +156,7 @@ public interface Prism<S, T, A, B> extends
                                                 Fn1<? super B, ? extends T> bt) {
         return new Prism<S, T, A, B>() {
             @Override
-            public <F extends Functor<?, ? extends F>> Optic<Cocartesian<?, ?, ?>, F, S, T, A, B> toOptic(
-                    Pure<? extends F> pure) {
+            public <F extends Applicative<?, F>> Optic<Cocartesian<?, ?, ?>, F, S, T, A, B> toOptic(Pure<F> pure) {
                 return Optic.<Cocartesian<?, ?, ?>,
                         F,
                         S, T, A, B,
@@ -113,8 +183,7 @@ public interface Prism<S, T, A, B> extends
     static <S, T, A, B> Prism<S, T, A, B> prism(ProtoOptic<? super Cocartesian<?, ?, ?>, S, T, A, B> protoOptic) {
         return new Prism<S, T, A, B>() {
             @Override
-            public <F extends Functor<?, ? extends F>> Optic<Cocartesian<?, ?, ?>, F, S, T, A, B> toOptic(
-                    Pure<? extends F> pure) {
+            public <F extends Applicative<?, F>> Optic<Cocartesian<?, ?, ?>, F, S, T, A, B> toOptic(Pure<F> pure) {
                 Optic<? super Cocartesian<?, ?, ?>, F, S, T, A, B> optic = protoOptic.toOptic(pure);
                 return Optic.reframe(optic);
             }
@@ -138,8 +207,7 @@ public interface Prism<S, T, A, B> extends
             Optic<? super Cocartesian<?, ?, ?>, ? super Functor<?, ?>, S, T, A, B> optic) {
         return new Prism<S, T, A, B>() {
             @Override
-            public <F extends Functor<?, ? extends F>> Optic<Cocartesian<?, ?, ?>, F, S, T, A, B> toOptic(
-                    Pure<? extends F> pure) {
+            public <F extends Applicative<?, F>> Optic<Cocartesian<?, ?, ?>, F, S, T, A, B> toOptic(Pure<F> pure) {
                 return Optic.reframe(optic);
             }
         };
@@ -158,6 +226,12 @@ public interface Prism<S, T, A, B> extends
     static <S, A> Prism.Simple<S, A> simplePrism(Fn1<? super S, ? extends Maybe<A>> sMaybeA,
                                                  Fn1<? super A, ? extends S> as) {
         return Prism.<S, S, A, A>prism(s -> sMaybeA.apply(s).toEither(() -> s), as)::toOptic;
+    }
+
+
+    static <S, A> Prism.Simple<S, A> fromPartial(Fn1<? super S, ? extends A> partialSa,
+                                                 Fn1<? super A, ? extends S> as) {
+        return adapt(prism(partialSa.<S, A>diMap(downcast(), upcast()).choose(), as));
     }
 
     /**
