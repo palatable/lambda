@@ -312,10 +312,10 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
             @SuppressWarnings("unchecked")
             CompletableFuture<A> future = (CompletableFuture<A>) deforest(new LinkedList<>())
                     .into((source, compositions) -> foldLeft(
-                            (io, composition) -> composition
+                            (ioFuture, composition) -> composition
                                     .match(zip -> zip.unsafePerformAsyncIO(executor)
-                                                   .thenCompose(f -> io.thenApply(f.toFunction())),
-                                           flatMap -> io.thenComposeAsync(obj -> flatMap.apply(obj)
+                                                   .thenComposeAsync(f -> ioFuture.thenApply(f.toFunction()), executor),
+                                           flatMap -> ioFuture.thenComposeAsync(obj -> flatMap.apply(obj)
                                                    .unsafePerformAsyncIO(executor), executor)),
                             source.unsafePerformAsyncIO(executor),
                             compositions));
