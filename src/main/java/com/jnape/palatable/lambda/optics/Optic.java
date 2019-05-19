@@ -10,8 +10,7 @@ import com.jnape.palatable.lambda.functor.Profunctor;
  * Precisely stated, for some {@link Profunctor} <code>P</code> and some {@link Functor} <code>F</code>, and for the
  * types <code>S</code> <code>T</code> <code>A</code> <code>B</code>, an
  * <code>{@link Optic}&lt;P, F, S, T, A, B&gt;</code> is a polymorphic function
- * <code>(P&lt;A, F&lt;B&gt;&gt; -&gt; P&lt;S, F&lt;T&gt;&gt;)</code> (existentially-quantified allowing for
- * covariance).
+ * <code>P&lt;A, F&lt;B&gt;&gt; -&gt; P&lt;S, F&lt;T&gt;&gt;</code>.
  *
  * @param <P> the {@link Profunctor} bound
  * @param <F> the {@link Functor} bound
