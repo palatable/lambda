@@ -47,6 +47,9 @@ public interface Traversable<A, T extends Traversable<?, T>> extends Functor<A, 
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(
             Fn1<? super A, ? extends Applicative<B, App>> fn, Fn1<? super TravB, ? extends AppTrav> pure);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <B> Traversable<B, T> fmap(Fn1<? super A, ? extends B> fn) {
         return traverse(a -> new Identity<B>(fn.apply(a)), Identity::new).runIdentity();

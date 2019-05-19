@@ -1,8 +1,8 @@
-package com.jnape.palatable.lambda.functions.builtin.fn2;
+package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Distinct;
+import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Distinct.distinct;
@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Find.find;
  *
  * @param <A> the {@link Iterable} element type
  */
-public final class Intersection<A> implements Fn2<Iterable<A>, Iterable<A>, Iterable<A>> {
+public final class Intersection<A> implements Semigroup<Iterable<A>> {
 
     private static final Intersection<?> INSTANCE = new Intersection<>();
 

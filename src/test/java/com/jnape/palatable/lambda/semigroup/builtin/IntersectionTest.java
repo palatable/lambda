@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.functions.builtin.fn2;
+package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -10,7 +10,7 @@ import testsupport.traits.FiniteIteration;
 import testsupport.traits.InfiniteIterableSupport;
 import testsupport.traits.Laziness;
 
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Intersection.intersection;
+import static com.jnape.palatable.lambda.semigroup.builtin.Intersection.intersection;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
