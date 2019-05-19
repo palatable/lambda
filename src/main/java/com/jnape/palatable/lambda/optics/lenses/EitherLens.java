@@ -8,7 +8,7 @@ import com.jnape.palatable.lambda.optics.Lens;
 import static com.jnape.palatable.lambda.optics.Lens.simpleLens;
 
 /**
- * Lenses that operate on {@link Either}s.
+ * Lenses for {@link Either}.
  */
 public final class EitherLens {
 
@@ -26,7 +26,7 @@ public final class EitherLens {
      * @param <R> the right parameter type
      * @return a lens that focuses on right values
      */
-    public static <L, R> Lens.Simple<Either<L, R>, Maybe<R>> right() {
+    public static <L, R> Lens.Simple<Either<L, R>, Maybe<R>> _right() {
         return simpleLens(CoProduct2::projectB, (lOrR, maybeR) -> maybeR.<Either<L, R>>fmap(Either::right).orElse(lOrR));
     }
 
@@ -41,7 +41,7 @@ public final class EitherLens {
      * @param <R> the right parameter type
      * @return a lens that focuses on left values
      */
-    public static <L, R> Lens.Simple<Either<L, R>, Maybe<L>> left() {
+    public static <L, R> Lens.Simple<Either<L, R>, Maybe<L>> _left() {
         return simpleLens(CoProduct2::projectA, (lOrR, maybeL) -> maybeL.<Either<L, R>>fmap(Either::left).orElse(lOrR));
     }
 }

@@ -17,7 +17,7 @@ public class EitherLensTest {
 
     @Test
     public void rightFocusesOnRightValues() {
-        Lens.Simple<Either<String, Integer>, Maybe<Integer>> right = EitherLens.right();
+        Lens.Simple<Either<String, Integer>, Maybe<Integer>> right = EitherLens._right();
 
         assertEquals(just(1), view(right, right(1)));
         assertEquals(nothing(), view(right, left("fail")));
@@ -29,7 +29,7 @@ public class EitherLensTest {
 
     @Test
     public void leftFocusesOnLeftValues() {
-        Lens.Simple<Either<String, Integer>, Maybe<String>> left = EitherLens.left();
+        Lens.Simple<Either<String, Integer>, Maybe<String>> left = EitherLens._left();
 
         assertEquals(just("fail"), view(left, left("fail")));
         assertEquals(nothing(), view(left, right(1)));
