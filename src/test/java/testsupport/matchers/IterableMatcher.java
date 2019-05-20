@@ -5,9 +5,9 @@ import org.hamcrest.Description;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 
 public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
 
@@ -48,7 +48,7 @@ public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
             if (nextExpected instanceof Iterable && nextActual instanceof Iterable) {
                 if (!iterablesIterateSameElementsInOrder((Iterable<?>) nextExpected, (Iterable<?>) nextActual))
                     return false;
-            } else if (!reflectionEquals(nextExpected, nextActual))
+            } else if (!Objects.equals(nextExpected, nextActual))
                 return false;
         }
 
