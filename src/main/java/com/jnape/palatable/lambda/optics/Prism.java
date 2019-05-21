@@ -53,7 +53,10 @@ import static com.jnape.palatable.lambda.optics.functions.Re.re;
  * @param <B> the input that guarantees its output
  */
 @FunctionalInterface
-public interface Prism<S, T, A, B> extends ProtoOptic<Cocartesian<?, ?, ?>, S, T, A, B>, Monad<T, Prism<S, ?, A, B>> {
+public interface Prism<S, T, A, B> extends
+        ProtoOptic<Cocartesian<?, ?, ?>, S, T, A, B>,
+        Monad<T, Prism<S, ?, A, B>>,
+        Profunctor<S, T, Prism<?, ?, A, B>> {
 
     /**
      * Recover the two mappings encapsulated by this {@link Prism} by sending it through a {@link Market}.
@@ -138,6 +141,39 @@ public interface Prism<S, T, A, B> extends ProtoOptic<Cocartesian<?, ?, ?>, S, T
     @Override
     default <U> Prism<S, T, A, B> discardR(Applicative<U, Prism<S, ?, A, B>> appB) {
         return Monad.super.discardR(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <R, U> Prism<R, U, A, B> diMap(Fn1<? super R, ? extends S> lFn,
+                                           Fn1<? super T, ? extends U> rFn) {
+        return unPrism().into((bt, seta) -> prism(seta.diMap(lFn, tOrA -> tOrA.biMapL(rFn)), bt.fmap(rFn)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <R> Prism<R, T, A, B> diMapL(Fn1<? super R, ? extends S> fn) {
+        return (Prism<R, T, A, B>) Profunctor.super.<R>diMapL(fn);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Prism<S, U, A, B> diMapR(Fn1<? super T, ? extends U> fn) {
+        return (Prism<S, U, A, B>) Profunctor.super.<U>diMapR(fn);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <R> Prism<R, T, A, B> contraMap(Fn1<? super R, ? extends S> fn) {
+        return (Prism<R, T, A, B>) Profunctor.super.<R>contraMap(fn);
     }
 
     /**
