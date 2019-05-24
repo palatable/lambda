@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+No changes yet
+
+## [4.0.0] - 2019-05-20
 ### Changed
 - ***Breaking Change***: `IO` is now sealed and moved to its own package. Most previous constructions using the static 
                          factory methods should continue to work (by simply targeting `Supplier` now instead of an 
@@ -475,8 +478,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-3.3.0...HEAD
-[3.3.0]: https://github.com/palatable/lambda/compare/lambda-3.2.0...3.3.0
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-4.0.0...HEAD
+[4.0.0]: https://github.com/palatable/lambda/compare/lambda-3.3.0...lambda-4.0.0
+[3.3.0]: https://github.com/palatable/lambda/compare/lambda-3.2.0...lambda-3.3.0
 [3.2.0]: https://github.com/palatable/lambda/compare/lambda-3.1.0...lambda-3.2.0
 [3.1.0]: https://github.com/palatable/lambda/compare/lambda-3.0.3...lambda-3.1.0
 [3.0.3]: https://github.com/palatable/lambda/compare/lambda-3.0.2...lambda-3.0.3
