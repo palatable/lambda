@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -20,7 +21,9 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  * @param <L> the left type
  * @param <R> the right type
  */
-public final class EitherT<M extends Monad<?, M>, L, R> implements MonadT<M, Either<L, ?>, R> {
+public final class EitherT<M extends Monad<?, M>, L, R> implements
+        Bifunctor<L, R, EitherT<M, ?, ?>>,
+        MonadT<M, Either<L, ?>, R> {
 
     private final Monad<Either<L, R>, M> melr;
 
@@ -98,6 +101,31 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements MonadT<M, Eit
     @Override
     public <B> EitherT<M, L, R> discardR(Applicative<B, MonadT<M, Either<L, ?>, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <L2, R2> EitherT<M, L2, R2> biMap(Fn1<? super L, ? extends L2> lFn,
+                                             Fn1<? super R, ? extends R2> rFn) {
+        return eitherT(melr.fmap(e -> e.biMap(lFn, rFn)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <L2> EitherT<M, L2, R> biMapL(Fn1<? super L, ? extends L2> fn) {
+        return (EitherT<M, L2, R>) Bifunctor.super.<L2>biMapL(fn);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <R2> EitherT<M, L, R2> biMapR(Fn1<? super R, ? extends R2> fn) {
+        return (EitherT<M, L, R2>) Bifunctor.super.<R2>biMapR(fn);
     }
 
     @Override

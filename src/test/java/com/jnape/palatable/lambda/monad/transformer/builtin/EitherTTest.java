@@ -7,6 +7,7 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class EitherTTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class})
     public Subjects<EitherT<Identity<?>, String, Integer>> testSubject() {
         return subjects(eitherT(new Identity<>(left("foo"))), eitherT(new Identity<>(right(1))));
     }
