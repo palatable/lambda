@@ -15,13 +15,17 @@ import testsupport.traits.MonadLaws;
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.optics.Prism.prism;
 import static com.jnape.palatable.lambda.optics.Prism.simplePrism;
 import static com.jnape.palatable.lambda.optics.functions.Matching.matching;
 import static com.jnape.palatable.lambda.optics.functions.Pre.pre;
 import static com.jnape.palatable.lambda.optics.functions.Re.re;
 import static com.jnape.palatable.lambda.optics.functions.View.view;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static testsupport.assertion.PrismAssert.assertPrismLawfulness;
 
 @RunWith(Traits.class)
 public class PrismTest {
@@ -59,5 +63,29 @@ public class PrismTest {
         assertEquals("123", is.apply(123));
         assertEquals(right(123), sis.apply("123"));
         assertEquals(left("foo"), sis.apply("foo"));
+    }
+
+    @Test
+    public void andThen() {
+        Prism.Simple<String, Float> stringFloat = Prism.Simple.fromPartial(Float::parseFloat, Object::toString);
+        Prism.Simple<Float, Integer> floatInt = simplePrism(f -> just(f.intValue()).filter(i -> eq(i.floatValue(), f)),
+                                                            Integer::floatValue);
+        Prism<String, String, Integer, Integer> composed = stringFloat.andThen(floatInt);
+
+        assertPrismLawfulness(composed, singletonList("1.2"), singletonList(1));
+        assertPrismLawfulness(composed, singletonList("1.0"), singletonList(1));
+        assertPrismLawfulness(composed, singletonList("foo"), emptyList());
+    }
+
+    @Test
+    public void composed() {
+        Prism.Simple<String, Float> stringFloat = Prism.Simple.fromPartial(Float::parseFloat, Object::toString);
+        Prism.Simple<Float, Integer> floatInt = simplePrism(f -> just(f.intValue()).filter(i -> eq(i.floatValue(), f)),
+                                                            Integer::floatValue);
+        Prism<String, String, Integer, Integer> composed = floatInt.compose(stringFloat);
+
+        assertPrismLawfulness(composed, singletonList("1.2"), singletonList(1));
+        assertPrismLawfulness(composed, singletonList("1.0"), singletonList(1));
+        assertPrismLawfulness(composed, singletonList("foo"), emptyList());
     }
 }

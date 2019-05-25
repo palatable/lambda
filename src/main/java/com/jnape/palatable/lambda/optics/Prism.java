@@ -88,6 +88,54 @@ public interface Prism<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
+    default <Z, C> Prism<S, T, Z, C> andThen(ProtoOptic<? super Cocartesian<?, ?, ?>, A, B, Z, C> f) {
+        return prism(ProtoOptic.super.andThen(f));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <R, U> Prism<R, U, A, B> compose(ProtoOptic<? super Cocartesian<?, ?, ?>, R, U, S, T> g) {
+        return prism(ProtoOptic.super.compose(g));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <R> Prism<R, T, A, B> mapS(Fn1<? super R, ? extends S> fn) {
+        return prism(ProtoOptic.super.mapS(fn));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Prism<S, U, A, B> mapT(Fn1<? super T, ? extends U> fn) {
+        return prism(ProtoOptic.super.mapT(fn));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> Prism<S, T, C, B> mapA(Fn1<? super A, ? extends C> fn) {
+        return prism(ProtoOptic.super.mapA(fn));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <Z> Prism<S, T, A, Z> mapB(Fn1<? super Z, ? extends B> fn) {
+        return prism(ProtoOptic.super.mapB(fn));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     default <U> Prism<S, U, A, B> pure(U u) {
         return prism(constantly(left(u)), constantly(u));
     }
@@ -264,10 +312,21 @@ public interface Prism<S, T, A, B> extends
         return Prism.<S, S, A, A>prism(s -> sMaybeA.apply(s).toEither(() -> s), as)::toOptic;
     }
 
-
-    static <S, A> Prism.Simple<S, A> fromPartial(Fn1<? super S, ? extends A> partialSa,
-                                                 Fn1<? super A, ? extends S> as) {
-        return adapt(prism(partialSa.<S, A>diMap(downcast(), upcast()).choose(), as));
+    /**
+     * Static factory method for creating a {@link Prism} from a partial function <code>S -&gt; A</code> and a total
+     * function <code>B -&gt; S</code>.
+     *
+     * @param partialSa the partial direction
+     * @param bs        the reverse total direction
+     * @param <S>       the input that might fail to map to its output and the guaranteed output from the other
+     *                  direction
+     * @param <A>       the output that might fail to be produced
+     * @param <B>       the input that guarantees its output in the other direction
+     * @return the {@link Prism}
+     */
+    static <S, A, B> Prism<S, S, A, B> fromPartial(Fn1<? super S, ? extends A> partialSa,
+                                                   Fn1<? super B, ? extends S> bs) {
+        return prism(partialSa.<S, A>diMap(downcast(), upcast()).choose(), bs);
     }
 
     /**
@@ -321,6 +380,23 @@ public interface Prism<S, T, A, B> extends
         static <S, A> Prism.Simple<S, A> adapt(
                 Optic<? super Cocartesian<?, ?, ?>, ? super Functor<?, ?>, S, S, A, A> optic) {
             return adapt(prism(optic));
+        }
+
+        /**
+         * Static factory method for creating a {@link Prism.Simple simple Prism} from a partial function
+         * <code>S -&gt; A</code> and a total function <code>A -&gt; T</code>.
+         *
+         * @param partialSa the partial direction
+         * @param as        the reverse total direction
+         * @param <S>       the input that might fail to map to its output and the guaranteed output from the other
+         *                  direction
+         * @param <A>       the output that might fail to be produced and the input that guarantees its output in the
+         *                  other direction
+         * @return the {@link Prism.Simple simple Prism}
+         */
+        static <S, A> Prism.Simple<S, A> fromPartial(Fn1<? super S, ? extends A> partialSa,
+                                                     Fn1<? super A, ? extends S> as) {
+            return adapt(Prism.fromPartial(partialSa, as));
         }
     }
 }

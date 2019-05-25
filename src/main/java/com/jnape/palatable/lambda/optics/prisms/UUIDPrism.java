@@ -4,10 +4,13 @@ import com.jnape.palatable.lambda.optics.Prism;
 
 import java.util.UUID;
 
+import static com.jnape.palatable.lambda.optics.Prism.Simple.fromPartial;
+
 /**
  * {@link Prism Prisms} for {@link UUID}.
  */
 public final class UUIDPrism {
+
     private UUIDPrism() {
     }
 
@@ -17,6 +20,6 @@ public final class UUIDPrism {
      * @return the {@link Prism}
      */
     public static Prism.Simple<String, UUID> uuid() {
-        return Prism.fromPartial(UUID::fromString, UUID::toString);
+        return fromPartial(UUID::fromString, UUID::toString);
     }
 }
