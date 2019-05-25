@@ -22,6 +22,18 @@ import com.jnape.palatable.lambda.functor.Profunctor;
 @FunctionalInterface
 public interface Optic<P extends Profunctor<?, ?, ? extends P>, F extends Functor<?, ? extends F>, S, T, A, B> {
 
+    /**
+     * The polymorphic arrow between profunctors in this optic interface.
+     *
+     * @param pafb   the input
+     * @param <CoP>  the profunctor type constraint witnessed by the application of this optic
+     * @param <CoF>  the functor type constraint witnessed by the application of this optic
+     * @param <FB>   the covariant parameter type of the input profunctor
+     * @param <FT>   the covariant parameter type of the output profunctor
+     * @param <PAFB> the full input type
+     * @param <PSFT> the full output type
+     * @return the output profunctor
+     */
     <CoP extends Profunctor<?, ?, ? extends P>,
             CoF extends Functor<?, ? extends F>,
             FB extends Functor<B, ? extends CoF>,
