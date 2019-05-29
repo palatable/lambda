@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
-No changes yet
+### Added
+- `Optic#andThen`, `Optic#compose`, and other defaults added
+- `Prism#andThen`, `Prism#compose` begets another `Prism`
+- `Prism#fromPartial` public interfaces
 
 ## [4.0.0] - 2019-05-20
 ### Changed
