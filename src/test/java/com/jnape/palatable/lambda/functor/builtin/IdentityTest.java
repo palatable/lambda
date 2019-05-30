@@ -4,11 +4,7 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.MonadRecLaws;
-import testsupport.traits.TraversableLaws;
+import testsupport.traits.*;
 
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static org.junit.Assert.assertEquals;
@@ -16,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class IdentityTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class, MonadRecLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class, MonadRecLaws.class, ComonadLaws.class})
     public Identity<?> testSubject() {
         return new Identity<>("");
     }
