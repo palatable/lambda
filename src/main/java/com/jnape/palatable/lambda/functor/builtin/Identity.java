@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
+import com.jnape.palatable.lambda.comonad.Comonad;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -7,12 +8,14 @@ import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+
 /**
  * A functor over some value of type <code>A</code> that can be mapped over and retrieved later.
  *
  * @param <A> the value type
  */
-public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, Identity<?>> {
+public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, Identity<?>>, Comonad<A, Identity<?>> {
 
     private final A a;
 
@@ -35,6 +38,22 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
     @Override
     public <B> Identity<B> flatMap(Fn1<? super A, ? extends Monad<B, Identity<?>>> f) {
         return f.apply(runIdentity()).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public A extract() {
+        return a;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Comonad<B, Identity<?>> extendImpl(Fn1<? super Comonad<A, Identity<?>>, ? extends B> f) {
+        return fmap(constantly(f.apply(this)));
     }
 
     /**
