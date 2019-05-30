@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
+import com.jnape.palatable.lambda.comonad.Comonad;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
@@ -10,6 +11,7 @@ import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 
 /**
@@ -17,7 +19,7 @@ import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoli
  *
  * @param <A> the value type
  */
-public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<A, Identity<?>> {
+public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<A, Identity<?>>, Comonad<A, Identity<?>> {
 
     private final A a;
 
@@ -40,6 +42,22 @@ public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<
     @Override
     public <B> Identity<B> flatMap(Fn1<? super A, ? extends Monad<B, Identity<?>>> f) {
         return f.apply(runIdentity()).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public A extract() {
+        return a;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Comonad<B, Identity<?>> extendImpl(Fn1<? super Comonad<A, Identity<?>>, ? extends B> f) {
+        return fmap(constantly(f.apply(this)));
     }
 
     /**
@@ -108,7 +126,7 @@ public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<
     @Override
     public <B> Identity<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Identity<?>>> fn) {
         return new Identity<>(trampoline(a -> fn.apply(a).<Identity<RecursiveResult<A, B>>>coerce().runIdentity(),
-                                         runIdentity()));
+                runIdentity()));
     }
 
     @Override
