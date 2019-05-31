@@ -7,8 +7,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Tail.tail;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.PrependAll.prependAll;
 
 /**
- * Lazily inject the provided separator value between each value in the supplied <code>Iterable</code>. An empty
- * <code>Iterable</code> is left untouched.
+ * Lazily inject the provided separator value between each value in the supplied <code>Iterable</code>. An
+ * <code>Iterable</code> with fewer than two elements is left untouched.
  *
  * @param <A> the Iterable parameter type
  * @see PrependAll
