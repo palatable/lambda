@@ -31,6 +31,11 @@ public class IntersperseTest {
     }
 
     @Test
+    public void doesNotIntersperseSingletonIterable() {
+        assertThat(intersperse(0, asList(1)), iterates(1));
+    }
+
+    @Test
     public void doesNotIntersperseEmptyIterable() {
         assertThat(intersperse(0, emptyList()), isEmpty());
     }
