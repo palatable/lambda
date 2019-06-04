@@ -20,7 +20,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
  * @param <A> the embedded output type
  */
 public interface ReaderT<R, M extends Monad<?, M>, A> extends
-        MonadT<Fn1<R, ?>, M, A>,
+        MonadT<Fn1<R, ?>, M, A, ReaderT<R, M, ?>>,
         Cartesian<R, A, ReaderT<?, M, ?>> {
 
     /**
@@ -57,7 +57,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> flatMap(Fn1<? super A, ? extends Monad<B, MonadT<Fn1<R, ?>, M, ?>>> f) {
+    default <B> ReaderT<R, M, B> flatMap(Fn1<? super A, ? extends Monad<B, ReaderT<R, M, ?>>> f) {
         return readerT(r -> runReaderT(r).flatMap(a -> f.apply(a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
     }
 
@@ -81,7 +81,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> zip(Applicative<Fn1<? super A, ? extends B>, MonadT<Fn1<R, ?>, M, ?>> appFn) {
+    default <B> ReaderT<R, M, B> zip(Applicative<Fn1<? super A, ? extends B>, ReaderT<R, M, ?>> appFn) {
         return readerT(r -> runReaderT(r).zip(appFn.<ReaderT<R, M, Fn1<? super A, ? extends B>>>coerce().runReaderT(r)));
     }
 
@@ -90,7 +90,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      */
     @Override
     default <B> Lazy<? extends ReaderT<R, M, B>> lazyZip(
-            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MonadT<Fn1<R, ?>, M, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, ReaderT<R, M, ?>>> lazyAppFn) {
         return lazyAppFn.fmap(this::zip);
     }
 
@@ -98,7 +98,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> discardL(Applicative<B, MonadT<Fn1<R, ?>, M, ?>> appB) {
+    default <B> ReaderT<R, M, B> discardL(Applicative<B, ReaderT<R, M, ?>> appB) {
         return MonadT.super.discardL(appB).coerce();
     }
 
@@ -106,7 +106,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, A> discardR(Applicative<B, MonadT<Fn1<R, ?>, M, ?>> appB) {
+    default <B> ReaderT<R, M, A> discardR(Applicative<B, ReaderT<R, M, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
     }
 

@@ -1,10 +1,7 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
-import com.jnape.palatable.lambda.monad.Monad;
-import com.jnape.palatable.lambda.monad.transformer.MonadT;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
@@ -22,9 +19,9 @@ import static org.junit.Assert.assertEquals;
 public class ReaderTTest {
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<MonadT<Fn1<Integer, ?>, Identity<?>, ?>, Integer> testSubject() {
+    public EquatableM<ReaderT<Integer, Identity<?>, ?>, Integer> testSubject() {
         return new EquatableM<>(readerT(Identity::new),
-                                readerT -> ((Fn1<Integer, ? extends Monad<?, Identity<?>>>) readerT.run()).apply(1));
+                                readerT -> readerT.runReaderT(1));
     }
 
     @Test
