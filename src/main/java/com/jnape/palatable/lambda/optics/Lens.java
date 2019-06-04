@@ -5,10 +5,13 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monad.Monad;
 
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.optics.Iso.iso;
 import static com.jnape.palatable.lambda.optics.Lens.Simple.adapt;
 import static com.jnape.palatable.lambda.optics.functions.Set.set;
@@ -138,7 +141,7 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
  */
 @FunctionalInterface
 public interface Lens<S, T, A, B> extends
-        Optic<Fn1<?, ?>, Functor<?, ?>, S, T, A, B>,
+        Optic<Cartesian<?, ?, ?>, Functor<?, ?>, S, T, A, B>,
         Monad<T, Lens<S, ?, A, B>>,
         Profunctor<S, T, Lens<?, ?, A, B>> {
 
@@ -269,7 +272,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <C, D> Lens<S, T, C, D> andThen(Optic<? super Fn1<?, ?>, ? super Functor<?, ?>, A, B, C, D> f) {
+    default <C, D> Lens<S, T, C, D> andThen(Optic<? super Cartesian<?, ?, ?>, ? super Functor<?, ?>, A, B, C, D> f) {
         return lens(Optic.super.andThen(f));
     }
 
@@ -277,7 +280,7 @@ public interface Lens<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
-    default <R, U> Lens<R, U, A, B> compose(Optic<? super Fn1<?, ?>, ? super Functor<?, ?>, R, U, S, T> g) {
+    default <R, U> Lens<R, U, A, B> compose(Optic<? super Cartesian<?, ?, ?>, ? super Functor<?, ?>, R, U, S, T> g) {
         return lens(Optic.super.compose(g));
     }
 
@@ -294,13 +297,14 @@ public interface Lens<S, T, A, B> extends
      */
     static <S, T, A, B> Lens<S, T, A, B> lens(Fn1<? super S, ? extends A> getter,
                                               Fn2<? super S, ? super B, ? extends T> setter) {
-        return lens(Optic.<Fn1<?, ?>, Functor<?, ?>,
+        return lens(Optic.<Cartesian<?, ?, ?>, Functor<?, ?>,
                 S, T, A, B,
                 Functor<B, ? extends Functor<?, ?>>,
                 Functor<T, ? extends Functor<?, ?>>,
-                Fn1<A, Functor<B, ? extends Functor<?, ?>>>,
-                Fn1<S, Functor<T, ? extends Functor<?, ?>>>>optic(afb -> s -> afb.apply(getter.apply(s))
-                .fmap(b -> setter.apply(s, b))));
+                Cartesian<A, Functor<B, ? extends Functor<?, ?>>, ? extends Cartesian<?, ?, ?>>,
+                Cartesian<S, Functor<T, ? extends Functor<?, ?>>, ? extends Cartesian<?, ?, ?>>>optic(
+                afb -> afb.<S>cartesian().diMap(s -> tuple(s, getter.apply(s)),
+                                                into((s, fb) -> fb.fmap(setter.apply(s))))));
     }
 
     /**
@@ -313,11 +317,14 @@ public interface Lens<S, T, A, B> extends
      * @param <B>   the type of the "smaller" update value
      * @return the {@link Lens}
      */
-    static <S, T, A, B> Lens<S, T, A, B> lens(Optic<? super Fn1<?, ?>, ? super Functor<?, ?>, S, T, A, B> optic) {
+    static <S, T, A, B> Lens<S, T, A, B> lens(
+            Optic<? super Cartesian<?, ?, ?>, ? super Functor<?, ?>, S, T, A, B> optic) {
         return new Lens<S, T, A, B>() {
             @Override
-            public <CoP extends Profunctor<?, ?, ? extends Fn1<?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>,
-                    FB extends Functor<B, ? extends CoF>, FT extends Functor<T, ? extends CoF>,
+            public <CoP extends Profunctor<?, ?, ? extends Cartesian<?, ?, ?>>,
+                    CoF extends Functor<?, ? extends Functor<?, ?>>,
+                    FB extends Functor<B, ? extends CoF>,
+                    FT extends Functor<T, ? extends CoF>,
                     PAFB extends Profunctor<A, FB, ? extends CoP>,
                     PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
                 return optic.apply(pafb);
@@ -378,13 +385,13 @@ public interface Lens<S, T, A, B> extends
      * @param <A> the type of both "smaller" values
      */
     @FunctionalInterface
-    interface Simple<S, A> extends Lens<S, S, A, A>, Optic.Simple<Fn1<?, ?>, Functor<?, ?>, S, A> {
+    interface Simple<S, A> extends Lens<S, S, A, A>, Optic.Simple<Cartesian<?, ?, ?>, Functor<?, ?>, S, A> {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        default <B> Lens.Simple<S, B> andThen(Optic.Simple<? super Fn1<?, ?>, ? super Functor<?, ?>, A, B> f) {
+        default <B> Lens.Simple<S, B> andThen(Optic.Simple<? super Cartesian<?, ?, ?>, ? super Functor<?, ?>, A, B> f) {
             return Lens.Simple.adapt(Lens.super.andThen(f));
         }
 
@@ -392,7 +399,7 @@ public interface Lens<S, T, A, B> extends
          * {@inheritDoc}
          */
         @Override
-        default <R> Lens.Simple<R, A> compose(Optic.Simple<? super Fn1<?, ?>, ? super Functor<?, ?>, R, S> g) {
+        default <R> Lens.Simple<R, A> compose(Optic.Simple<? super Cartesian<?, ?, ?>, ? super Functor<?, ?>, R, S> g) {
             return Lens.Simple.adapt(Lens.super.compose(g));
         }
 
@@ -404,10 +411,11 @@ public interface Lens<S, T, A, B> extends
          * @param <A>  A/B
          * @return the simple lens
          */
-        static <S, A> Lens.Simple<S, A> adapt(Optic<? super Fn1<?, ?>, ? super Functor<?, ?>, S, S, A, A> lens) {
+        static <S, A> Lens.Simple<S, A> adapt(
+                Optic<? super Cartesian<?, ?, ?>, ? super Functor<?, ?>, S, S, A, A> lens) {
             return new Lens.Simple<S, A>() {
                 @Override
-                public <CoP extends Profunctor<?, ?, ? extends Fn1<?, ?>>,
+                public <CoP extends Profunctor<?, ?, ? extends Cartesian<?, ?, ?>>,
                         CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<A, ? extends CoF>,
                         FT extends Functor<S, ? extends CoF>, PAFB extends Profunctor<A, FB, ? extends CoP>,
                         PSFT extends Profunctor<S, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
