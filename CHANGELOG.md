@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Changed
+- `MonadT` is now witnessed by a parameter for better subtyping
+- `Alter` now merely requires an `Fn1` instead of an explicit `Effect`
+
 ### Added
 - `Optic#andThen`, `Optic#compose`, and other defaults added
 - `Prism#andThen`, `Prism#compose` begets another `Prism`
 - `Prism#fromPartial` public interfaces
-- `ReaderT`, the transformer for the reader monad
+- `ReaderT`, the transformer for the reader monad 
 
 ## [4.0.0] - 2019-05-20
 ### Changed
