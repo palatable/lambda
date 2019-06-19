@@ -16,7 +16,7 @@ import java.util.Objects;
  * @param <M> the outer {@link Monad}
  * @param <A> the carrier type
  */
-public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Identity<?>, A> {
+public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Identity<?>, A, IdentityT<M, ?>> {
 
     private final Monad<Identity<A>, M> mia;
 
@@ -36,7 +36,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      * {@inheritDoc}
      */
     @Override
-    public <B> IdentityT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, MonadT<M, Identity<?>, ?>>> f) {
+    public <B> IdentityT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, IdentityT<M, ?>>> f) {
         return identityT(mia.flatMap(identityA -> f.apply(identityA.runIdentity()).<IdentityT<M, B>>coerce().run()));
     }
 
@@ -60,7 +60,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      * {@inheritDoc}
      */
     @Override
-    public <B> IdentityT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, MonadT<M, Identity<?>, ?>> appFn) {
+    public <B> IdentityT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, IdentityT<M, ?>> appFn) {
         return MonadT.super.zip(appFn).coerce();
     }
 
@@ -69,7 +69,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      */
     @Override
     public <B> Lazy<IdentityT<M, B>> lazyZip(
-            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MonadT<M, Identity<?>, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, IdentityT<M, ?>>> lazyAppFn) {
         return new Compose<>(mia)
                 .lazyZip(lazyAppFn.fmap(maybeT -> new Compose<>(
                         maybeT.<IdentityT<M, Fn1<? super A, ? extends B>>>coerce()
@@ -82,7 +82,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      * {@inheritDoc}
      */
     @Override
-    public <B> IdentityT<M, B> discardL(Applicative<B, MonadT<M, Identity<?>, ?>> appB) {
+    public <B> IdentityT<M, B> discardL(Applicative<B, IdentityT<M, ?>> appB) {
         return MonadT.super.discardL(appB).coerce();
     }
 
@@ -90,7 +90,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      * {@inheritDoc}
      */
     @Override
-    public <B> IdentityT<M, A> discardR(Applicative<B, MonadT<M, Identity<?>, ?>> appB) {
+    public <B> IdentityT<M, A> discardR(Applicative<B, IdentityT<M, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
     }
 

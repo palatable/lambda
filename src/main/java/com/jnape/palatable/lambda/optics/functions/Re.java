@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.optics.functions;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.functor.builtin.Const;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.functor.builtin.Tagged;
@@ -18,7 +19,8 @@ import com.jnape.palatable.lambda.optics.Prism;
  * @param <B> the value to read from
  */
 public final class Re<S, T, A, B> implements
-        Fn1<Optic<? super Tagged<?, ?>, ? super Identity<?>, S, T, A, B>, Optic<Fn1<?, ?>, Const<T, ?>, B, B, T, T>> {
+        Fn1<Optic<? super Tagged<?, ?>, ? super Identity<?>, S, T, A, B>,
+                Optic<Profunctor<?, ?, ?>, Const<T, ?>, B, B, T, T>> {
 
     private static final Re<?, ?, ?, ?> INSTANCE = new Re<>();
 
@@ -26,14 +28,17 @@ public final class Re<S, T, A, B> implements
     }
 
     @Override
-    public Optic<Fn1<?, ?>, Const<T, ?>, B, B, T, T> checkedApply(
+    public Optic<Profunctor<?, ?, ?>, Const<T, ?>, B, B, T, T> checkedApply(
             Optic<? super Tagged<?, ?>, ? super Identity<?>, S, T, A, B> optic) {
-        return Optic.<Fn1<?, ?>, Const<T, ?>, B, B, T, T,
+        return Optic.<Profunctor<?, ?, ?>, Const<T, ?>, B, B, T, T,
                 Const<T, T>, Const<T, B>,
-                Fn1<T, Const<T, T>>,
-                Fn1<B, Const<T, B>>>optic(pafb -> b -> new Const<>(optic.<Tagged<?, ?>, Identity<?>, Identity<B>,
-                Identity<T>, Tagged<A, Identity<B>>,
-                Tagged<S, Identity<T>>>apply(new Tagged<>(new Identity<>(b))).unTagged().runIdentity()));
+                Profunctor<T, Const<T, T>, ? extends Profunctor<?, ?, ?>>,
+                Profunctor<B, Const<T, B>, ? extends Profunctor<?, ?, ?>>>optic(
+                pafb -> pafb.diMap(
+                        b -> optic.<Tagged<?, ?>, Identity<?>, Identity<B>, Identity<T>,
+                                Tagged<A, Identity<B>>, Tagged<S, Identity<T>>>apply(
+                                new Tagged<>(new Identity<>(b))).unTagged().runIdentity(),
+                        fb -> new Const<>(fb.runConst())));
     }
 
     @SuppressWarnings("unchecked")
@@ -41,7 +46,7 @@ public final class Re<S, T, A, B> implements
         return (Re<S, T, A, B>) INSTANCE;
     }
 
-    public static <S, T, A, B> Optic<Fn1<?, ?>, Const<T, ?>, B, B, T, T> re(
+    public static <S, T, A, B> Optic<Profunctor<?, ?, ?>, Const<T, ?>, B, B, T, T> re(
             Optic<? super Tagged<?, ?>, ? super Identity<?>, S, T, A, B> optic) {
         return Re.<S, T, A, B>re().apply(optic);
     }

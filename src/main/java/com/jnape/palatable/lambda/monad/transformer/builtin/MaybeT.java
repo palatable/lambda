@@ -20,7 +20,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @param <M> the outer {@link Monad}
  * @param <A> the carrier type
  */
-public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?>, A> {
+public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?>, A, MaybeT<M, ?>> {
 
     private final Monad<Maybe<A>, M> mma;
 
@@ -56,7 +56,7 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      * {@inheritDoc}
      */
     @Override
-    public <B> MaybeT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, MonadT<M, Maybe<?>, ?>> appFn) {
+    public <B> MaybeT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, MaybeT<M, ?>> appFn) {
         return MonadT.super.zip(appFn).coerce();
     }
 
@@ -65,7 +65,7 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      */
     @Override
     public <B> Lazy<MaybeT<M, B>> lazyZip(
-            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MonadT<M, Maybe<?>, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MaybeT<M, ?>>> lazyAppFn) {
         return new Compose<>(mma)
                 .lazyZip(lazyAppFn.fmap(maybeT -> new Compose<>(
                         maybeT.<MaybeT<M, Fn1<? super A, ? extends B>>>coerce()
@@ -77,7 +77,7 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      * {@inheritDoc}
      */
     @Override
-    public <B> MaybeT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, MonadT<M, Maybe<?>, ?>>> f) {
+    public <B> MaybeT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, MaybeT<M, ?>>> f) {
         return maybeT(mma.flatMap(ma -> ma
                 .match(constantly(mma.pure(nothing())),
                        a -> f.apply(a).<MaybeT<M, B>>coerce().run())));
@@ -87,7 +87,7 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      * {@inheritDoc}
      */
     @Override
-    public <B> MaybeT<M, B> discardL(Applicative<B, MonadT<M, Maybe<?>, ?>> appB) {
+    public <B> MaybeT<M, B> discardL(Applicative<B, MaybeT<M, ?>> appB) {
         return MonadT.super.discardL(appB).coerce();
     }
 
@@ -95,7 +95,7 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      * {@inheritDoc}
      */
     @Override
-    public <B> MaybeT<M, A> discardR(Applicative<B, MonadT<M, Maybe<?>, ?>> appB) {
+    public <B> MaybeT<M, A> discardR(Applicative<B, MaybeT<M, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
     }
 
