@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  *
  * @param <A> the input and output
  */
-public final class Alter<A> implements Fn2<Effect<? super A>, A, IO<A>> {
+public final class Alter<A> implements Fn2<Fn1<? super A, ? extends IO<?>>, A, IO<A>> {
 
     private static final Alter<?> INSTANCE = new Alter<>();
 
@@ -21,7 +21,7 @@ public final class Alter<A> implements Fn2<Effect<? super A>, A, IO<A>> {
     }
 
     @Override
-    public IO<A> checkedApply(Effect<? super A> effect, A a) {
+    public IO<A> checkedApply(Fn1<? super A, ? extends IO<?>> effect, A a) {
         return effect.fmap(io -> io.fmap(constantly(a))).apply(a);
     }
 

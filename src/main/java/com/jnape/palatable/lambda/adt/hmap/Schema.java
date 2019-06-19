@@ -11,8 +11,8 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple5;
 import com.jnape.palatable.lambda.adt.hlist.Tuple6;
 import com.jnape.palatable.lambda.adt.hlist.Tuple7;
 import com.jnape.palatable.lambda.adt.hlist.Tuple8;
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
+import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.optics.Lens;
@@ -39,8 +39,12 @@ public interface Schema<Values extends HCons<?, ?>> extends Lens.Simple<HMap, Ma
                                                   maybeNewValues -> maybeNewValues.fmap(HCons<A, Values>::head)));
         return new Schema<NewValues>() {
             @Override
-            public <CoP extends Profunctor<?, ?, ? extends Fn1<?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<Maybe<NewValues>, ? extends CoF>, FT extends Functor<HMap, ? extends CoF>, PAFB extends Profunctor<Maybe<NewValues>, FB, ? extends CoP>, PSFT extends Profunctor<HMap, FT, ? extends CoP>> PSFT apply(
-                    PAFB pafb) {
+            public <CoP extends Profunctor<?, ?, ? extends Cartesian<?, ?, ?>>,
+                    CoF extends Functor<?, ? extends Functor<?, ?>>,
+                    FB extends Functor<Maybe<NewValues>, ? extends CoF>,
+                    FT extends Functor<HMap, ? extends CoF>,
+                    PAFB extends Profunctor<Maybe<NewValues>, FB, ? extends CoP>,
+                    PSFT extends Profunctor<HMap, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
                 return lens.apply(pafb);
             }
         };
@@ -52,8 +56,12 @@ public interface Schema<Values extends HCons<?, ?>> extends Lens.Simple<HMap, Ma
                 .mapB(maybeSingletonA -> maybeSingletonA.fmap(HCons::head));
         return new Schema<SingletonHList<A>>() {
             @Override
-            public <CoP extends Profunctor<?, ?, ? extends Fn1<?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<Maybe<SingletonHList<A>>, ? extends CoF>, FT extends Functor<HMap, ? extends CoF>, PAFB extends Profunctor<Maybe<SingletonHList<A>>, FB, ? extends CoP>, PSFT extends Profunctor<HMap, FT, ? extends CoP>> PSFT apply(
-                    PAFB pafb) {
+            public <CoP extends Profunctor<?, ?, ? extends Cartesian<?, ?, ?>>,
+                    CoF extends Functor<?, ? extends Functor<?, ?>>,
+                    FB extends Functor<Maybe<SingletonHList<A>>, ? extends CoF>,
+                    FT extends Functor<HMap, ? extends CoF>,
+                    PAFB extends Profunctor<Maybe<SingletonHList<A>>, FB, ? extends CoP>,
+                    PSFT extends Profunctor<HMap, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
                 return lens.apply(pafb);
             }
         };

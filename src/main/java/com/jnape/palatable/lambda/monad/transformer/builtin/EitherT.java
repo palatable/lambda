@@ -23,7 +23,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  */
 public final class EitherT<M extends Monad<?, M>, L, R> implements
         Bifunctor<L, R, EitherT<M, ?, ?>>,
-        MonadT<M, Either<L, ?>, R> {
+        MonadT<M, Either<L, ?>, R, EitherT<M, L, ?>> {
 
     private final Monad<Either<L, R>, M> melr;
 
@@ -43,7 +43,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
      * {@inheritDoc}
      */
     @Override
-    public <R2> EitherT<M, L, R2> flatMap(Fn1<? super R, ? extends Monad<R2, MonadT<M, Either<L, ?>, ?>>> f) {
+    public <R2> EitherT<M, L, R2> flatMap(Fn1<? super R, ? extends Monad<R2, EitherT<M, L, ?>>> f) {
         return eitherT(melr.flatMap(lr -> lr.match(l -> melr.pure(left(l)),
                                                    r -> f.apply(r).<EitherT<M, L, R2>>coerce().run())));
     }
@@ -69,7 +69,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
      */
     @Override
     public <R2> EitherT<M, L, R2> zip(
-            Applicative<Fn1<? super R, ? extends R2>, MonadT<M, Either<L, ?>, ?>> appFn) {
+            Applicative<Fn1<? super R, ? extends R2>, EitherT<M, L, ?>> appFn) {
         return MonadT.super.zip(appFn).coerce();
     }
 
@@ -78,7 +78,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
      */
     @Override
     public <R2> Lazy<EitherT<M, L, R2>> lazyZip(
-            Lazy<? extends Applicative<Fn1<? super R, ? extends R2>, MonadT<M, Either<L, ?>, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super R, ? extends R2>, EitherT<M, L, ?>>> lazyAppFn) {
         return new Compose<>(melr)
                 .lazyZip(lazyAppFn.fmap(maybeT -> new Compose<>(
                         maybeT.<EitherT<M, L, Fn1<? super R, ? extends R2>>>coerce()
@@ -91,7 +91,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
      * {@inheritDoc}
      */
     @Override
-    public <R2> EitherT<M, L, R2> discardL(Applicative<R2, MonadT<M, Either<L, ?>, ?>> appB) {
+    public <R2> EitherT<M, L, R2> discardL(Applicative<R2, EitherT<M, L, ?>> appB) {
         return MonadT.super.discardL(appB).coerce();
     }
 
@@ -99,7 +99,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
      * {@inheritDoc}
      */
     @Override
-    public <B> EitherT<M, L, R> discardR(Applicative<B, MonadT<M, Either<L, ?>, ?>> appB) {
+    public <B> EitherT<M, L, R> discardR(Applicative<B, EitherT<M, L, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
     }
 

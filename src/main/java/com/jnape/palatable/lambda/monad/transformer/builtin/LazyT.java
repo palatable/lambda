@@ -18,7 +18,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  * @param <M> the outer {@link Monad}
  * @param <A> the carrier type
  */
-public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
+public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, LazyT<M, ?>> {
 
     private final Monad<Lazy<A>, M> mla;
 
@@ -38,8 +38,9 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      * {@inheritDoc}
      */
     @Override
-    public <B> LazyT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, MonadT<M, Lazy<?>, ?>>> f) {
-        return new LazyT<>(mla.flatMap(lazyA -> f.apply(lazyA.value()).<MonadT<M, Lazy<?>, B>>coerce().run()));
+    public <B> LazyT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, LazyT<M, ?>>> f) {
+        return new LazyT<>(mla.flatMap(lazyA -> f.apply(lazyA.value())
+                .<MonadT<M, Lazy<?>, B, LazyT<M, ?>>>coerce().run()));
     }
 
     /**
@@ -62,7 +63,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      * {@inheritDoc}
      */
     @Override
-    public <B> LazyT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, MonadT<M, Lazy<?>, ?>> appFn) {
+    public <B> LazyT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, LazyT<M, ?>> appFn) {
         return MonadT.super.zip(appFn).coerce();
     }
 
@@ -71,7 +72,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      */
     @Override
     public <B> Lazy<LazyT<M, B>> lazyZip(
-            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MonadT<M, Lazy<?>, ?>>> lazyAppFn) {
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, LazyT<M, ?>>> lazyAppFn) {
         return new Compose<>(mla)
                 .lazyZip(lazyAppFn.fmap(lazyT -> new Compose<>(
                         lazyT.<LazyT<M, Fn1<? super A, ? extends B>>>coerce()
@@ -84,7 +85,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      * {@inheritDoc}
      */
     @Override
-    public <B> LazyT<M, B> discardL(Applicative<B, MonadT<M, Lazy<?>, ?>> appB) {
+    public <B> LazyT<M, B> discardL(Applicative<B, LazyT<M, ?>> appB) {
         return MonadT.super.discardL(appB).coerce();
     }
 
@@ -92,7 +93,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A> {
      * {@inheritDoc}
      */
     @Override
-    public <B> LazyT<M, A> discardR(Applicative<B, MonadT<M, Lazy<?>, ?>> appB) {
+    public <B> LazyT<M, A> discardR(Applicative<B, LazyT<M, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
     }
 
