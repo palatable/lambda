@@ -15,7 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Optic#andThen`, `Optic#compose`, and other defaults added
 - `Prism#andThen`, `Prism#compose` begets another `Prism`
 - `Prism#fromPartial` public interfaces
-- `ReaderT`, the transformer for the reader monad 
+- `ReaderT`, the transformer for the reader monad
+- `Until`, for repeatedly executing an `IO` until its result matches a predicate
 
 ## [4.0.0] - 2019-05-20
 ### Changed
