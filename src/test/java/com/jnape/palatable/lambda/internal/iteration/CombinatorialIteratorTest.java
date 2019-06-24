@@ -46,7 +46,6 @@ public class CombinatorialIteratorTest {
     @Test
     public void doesNotHaveNextIfNoAsButMoreBs() {
         when(as.hasNext()).thenReturn(false);
-        when(bs.hasNext()).thenReturn(true);
 
         assertThat(combinatorialIterator.hasNext(), is(false));
     }
