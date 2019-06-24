@@ -5,11 +5,10 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.mockito.exceptions.misusing.NotAMockException;
 import org.mockito.exceptions.verification.NoInteractionsWanted;
-import org.mockito.internal.stubbing.InvocationContainerImpl;
-import org.mockito.internal.util.MockUtil;
 import org.mockito.invocation.Invocation;
 
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.internal.util.MockUtil.getInvocationContainer;
 
 public class ZeroInvocationsMatcher<T> extends BaseMatcher<T> {
     @Override
@@ -27,7 +26,7 @@ public class ZeroInvocationsMatcher<T> extends BaseMatcher<T> {
     @Override
     public void describeMismatch(Object item, final Description description) {
         description.appendText("had these: ");
-        for (Invocation invocation : ((InvocationContainerImpl) MockUtil.getMockHandler(item).getInvocationContainer()).getInvocations())
+        for (Invocation invocation : getInvocationContainer(item).getInvocations())
             description.appendText(invocation.toString());
     }
 
