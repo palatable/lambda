@@ -55,7 +55,7 @@
     <properties>
         <traitor.version>1.2</traitor.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <hamcrest-all.version>1.3</hamcrest-all.version>
+        <hamcrest.version>2.1</hamcrest.version>
         <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
     </properties>
 
@@ -66,8 +66,8 @@
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <version>${hamcrest-all.version}</version>
+            <artifactId>hamcrest</artifactId>
+            <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
