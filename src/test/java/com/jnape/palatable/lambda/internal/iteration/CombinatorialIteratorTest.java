@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Iterator;
 
@@ -46,7 +46,6 @@ public class CombinatorialIteratorTest {
     @Test
     public void doesNotHaveNextIfNoAsButMoreBs() {
         when(as.hasNext()).thenReturn(false);
-        when(bs.hasNext()).thenReturn(true);
 
         assertThat(combinatorialIterator.hasNext(), is(false));
     }

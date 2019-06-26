@@ -1,11 +1,11 @@
 package com.jnape.palatable.lambda.functions.builtin.fn2;
 
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functions.specialized.Kleisli;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 
+import static com.jnape.palatable.lambda.functions.specialized.Kleisli.kleisli;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
-import static com.jnape.palatable.lambda.monad.Monad.join;
 
 /**
  * Given a {@link Fn2} that receives a recursive function and an input and yields a {@link Lazy lazy} result, and an
@@ -26,7 +26,8 @@ import static com.jnape.palatable.lambda.monad.Monad.join;
  * @param <A> the input type
  * @param <B> the output type
  */
-public final class LazyRec<A, B> implements Fn2<Fn2<Fn1<? super A, ? extends Lazy<B>>, A, Lazy<B>>, A, Lazy<B>> {
+public final class LazyRec<A, B> implements
+        Fn2<Fn2<Kleisli<? super A, ? extends B, Lazy<?>, Lazy<B>>, A, Lazy<B>>, A, Lazy<B>> {
 
     private static final LazyRec<?, ?> INSTANCE = new LazyRec<>();
 
@@ -34,8 +35,8 @@ public final class LazyRec<A, B> implements Fn2<Fn2<Fn1<? super A, ? extends Laz
     }
 
     @Override
-    public Lazy<B> checkedApply(Fn2<Fn1<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn, A a) {
-        return join(lazy(() -> fn.apply(nextA -> apply(fn, nextA), a)));
+    public Lazy<B> checkedApply(Fn2<Kleisli<? super A, ? extends B, Lazy<?>, Lazy<B>>, A, Lazy<B>> fn, A a) {
+        return lazy(a).flatMap(fn.apply(lazyRec(fn)));
     }
 
     @SuppressWarnings("unchecked")
@@ -43,11 +44,12 @@ public final class LazyRec<A, B> implements Fn2<Fn2<Fn1<? super A, ? extends Laz
         return (LazyRec<A, B>) INSTANCE;
     }
 
-    public static <A, B> Fn1<A, Lazy<B>> lazyRec(Fn2<Fn1<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn) {
-        return LazyRec.<A, B>lazyRec().apply(fn);
+    public static <A, B> Kleisli<? super A, ? extends B, Lazy<?>, Lazy<B>> lazyRec(
+            Fn2<Kleisli<? super A, ? extends B, Lazy<?>, Lazy<B>>, A, Lazy<B>> fn) {
+        return kleisli(LazyRec.<A, B>lazyRec().apply(fn));
     }
 
-    public static <A, B> Lazy<B> lazyRec(Fn2<Fn1<? super A, ? extends Lazy<B>>, A, Lazy<B>> fn, A a) {
+    public static <A, B> Lazy<B> lazyRec(Fn2<Kleisli<? super A, ? extends B, Lazy<?>, Lazy<B>>, A, Lazy<B>> fn, A a) {
         return lazyRec(fn).apply(a);
     }
 }

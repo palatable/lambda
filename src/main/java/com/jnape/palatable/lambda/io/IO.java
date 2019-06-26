@@ -4,28 +4,24 @@ import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
-import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.builtin.fn2.LazyRec;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 
-import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
-import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
-import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
-import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
-import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
-import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Downcast.downcast;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.monad.Monad.join;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
@@ -142,20 +138,16 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    public final <B> IO<B> zip(Applicative<Fn1<? super A, ? extends B>, IO<?>> appFn) {
-        @SuppressWarnings("unchecked")
-        IO<Object> source = (IO<Object>) this;
-        @SuppressWarnings("unchecked")
-        IO<Fn1<Object, Object>> zip = (IO<Fn1<Object, Object>>) (Object) appFn;
-        return new Compose<>(source, a(zip));
+    public <B> IO<B> zip(Applicative<Fn1<? super A, ? extends B>, IO<?>> appFn) {
+        return new Compose<>(this, a((IO<Fn1<? super A, ? extends B>>) appFn));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <B> Lazy<IO<B>> lazyZip(Lazy<? extends Applicative<Fn1<? super A, ? extends B>, IO<?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, IO<?>>::coerce);
+    public final <B> Lazy<IO<B>> lazyZip(Lazy<? extends Applicative<Fn1<? super A, ? extends B>, IO<?>>> lazyAppFn) {
+        return Monad.super.lazyZip(lazyAppFn).<IO<B>>fmap(Functor::coerce).coerce();
     }
 
     /**
@@ -179,11 +171,9 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      */
     @Override
     public final <B> IO<B> flatMap(Fn1<? super A, ? extends Monad<B, IO<?>>> f) {
-        @SuppressWarnings("unchecked")
-        IO<Object> source = (IO<Object>) this;
         @SuppressWarnings({"unchecked", "RedundantCast"})
-        Fn1<Object, IO<Object>> flatMap = (Fn1<Object, IO<Object>>) (Object) f;
-        return new Compose<>(source, Choice2.b(flatMap));
+        Choice2<IO<?>, Fn1<Object, IO<?>>> composition = Choice2.b((Fn1<Object, IO<?>>) (Object) f);
+        return new Compose<>(this, composition);
     }
 
     /**
@@ -279,61 +269,55 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
     }
 
     private static final class Compose<A> extends IO<A> {
-        private final IO<Object>                                                source;
-        private final Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>> composition;
 
-        private Compose(IO<Object> source, Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>> composition) {
+        private final IO<?>                              source;
+        private final Choice2<IO<?>, Fn1<Object, IO<?>>> composition;
+
+        private Compose(IO<?> source, Choice2<IO<?>, Fn1<Object, IO<?>>> composition) {
             this.source = source;
             this.composition = composition;
         }
 
         @Override
         public A unsafePerformIO() {
-            @SuppressWarnings("unchecked")
-            A result = (A) trampoline(into((source, compositions) -> {
-                Object res = source.unsafePerformIO();
-                return compositions.isEmpty()
-                       ? terminate(res)
-                       : compositions.pop().match(
-                               zip -> recurse(tuple(io(zip.unsafePerformIO().apply(res)), compositions)),
-                               flatMap -> {
-                                   IO<Object> next = flatMap.apply(res);
-                                   return (next instanceof Compose<?>)
-                                          ? recurse(((Compose<?>) next).deforest(compositions))
-                                          : recurse(tuple(next, compositions));
-                               });
-            }), deforest(new LinkedList<>()));
-
-            return result;
+            Lazy<Object> lazyA = LazyRec.<IO<?>, Object>lazyRec(
+                    (f, io) -> {
+                        if (io instanceof IO.Compose<?>) {
+                            Compose<?>   compose = (Compose<?>) io;
+                            Lazy<Object> head    = f.apply(compose.source);
+                            return compose.composition
+                                    .match(zip -> head.flatMap(x -> f.apply(zip)
+                                                   .<Fn1<Object, Object>>fmap(downcast())
+                                                   .fmap(g -> g.apply(x))),
+                                           flatMap -> head.fmap(flatMap).flatMap(f));
+                        }
+                        return lazy(io::unsafePerformIO);
+                    },
+                    this);
+            return downcast(lazyA.value());
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
-            @SuppressWarnings("unchecked")
-            CompletableFuture<A> future = (CompletableFuture<A>) deforest(new LinkedList<>())
-                    .into((source, compositions) -> foldLeft(
-                            (ioFuture, composition) -> composition
-                                    .match(zip -> zip.unsafePerformAsyncIO(executor)
-                                                   .thenComposeAsync(f -> ioFuture.thenApply(f.toFunction()), executor),
-                                           flatMap -> ioFuture.thenComposeAsync(obj -> flatMap.apply(obj)
-                                                   .unsafePerformAsyncIO(executor), executor)),
-                            source.unsafePerformAsyncIO(executor),
-                            compositions));
-            return future;
-        }
+            Lazy<CompletableFuture<Object>> lazyFuture = LazyRec.<IO<?>, CompletableFuture<Object>>lazyRec(
+                    (f, io) -> {
+                        if (io instanceof IO.Compose<?>) {
+                            Compose<?>                      compose = (Compose<?>) io;
+                            Lazy<CompletableFuture<Object>> head    = f.apply(compose.source);
+                            return compose.composition
+                                    .match(zip -> head.flatMap(futureX -> f.apply(zip)
+                                                   .fmap(futureF -> futureF.thenCompose(f2 -> futureX
+                                                           .thenApply(((Fn1<Object, Object>) f2).toFunction())))),
+                                           flatMap -> head.fmap(futureX -> futureX
+                                                   .thenComposeAsync(x -> f.apply(flatMap.apply(x)).value(),
+                                                                     executor)));
+                        }
+                        return lazy(() -> (CompletableFuture<Object>) io.unsafePerformAsyncIO(executor));
+                    },
+                    this);
 
-        private Tuple2<IO<Object>, LinkedList<Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>>>>
-        deforest(LinkedList<Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>>> branches) {
-            Tuple2<Compose<?>, LinkedList<Choice2<IO<Fn1<Object, Object>>, Fn1<Object, IO<Object>>>>> args =
-                    tuple(this, branches);
-            return trampoline(into((source, compositions) -> {
-                IO<Object> leaf = source.source;
-                compositions.push(source.composition);
-                return leaf instanceof Compose<?>
-                       ? recurse(tuple((Compose<?>) leaf, compositions))
-                       : terminate(tuple(leaf, compositions));
-            }), args);
+            return (CompletableFuture<A>) lazyFuture.value();
         }
-
     }
 }

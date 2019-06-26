@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Iterator;
 
@@ -38,7 +38,6 @@ public class ZippingIteratorTest {
     @Test
     public void doesNotHaveNextIfAsDoesNotHaveNext() {
         when(as.hasNext()).thenReturn(false);
-        when(bs.hasNext()).thenReturn(true);
         assertThat(zippingIterator.hasNext(), is(false));
     }
 
@@ -51,9 +50,6 @@ public class ZippingIteratorTest {
 
     @Test
     public void zipsNextElementFromAsAndBs() {
-        when(as.hasNext()).thenReturn(true);
-        when(bs.hasNext()).thenReturn(true);
-
         when(as.next()).thenReturn(1);
         when(bs.next()).thenReturn(2);
 

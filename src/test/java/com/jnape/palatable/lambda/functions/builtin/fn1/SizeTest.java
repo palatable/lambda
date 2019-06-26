@@ -4,13 +4,12 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class SizeTest {
 
@@ -23,12 +22,18 @@ public class SizeTest {
     @Test
     @SuppressWarnings("serial")
     public void optimizesForCollections() {
-        Collection<Integer> collection = spy(new ArrayList<Integer>() {{
-            add(1);
-            add(2);
-            add(3);
-        }});
-        when(collection.iterator()).thenThrow(new IllegalStateException("should not be using the iterator"));
+        Collection<Integer> collection = new ArrayList<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                throw new IllegalStateException("should not be using the iterator");
+            }
+
+            {
+                add(1);
+                add(2);
+                add(3);
+            }
+        };
         assertEquals((Long) 3L, size(collection));
     }
 }
