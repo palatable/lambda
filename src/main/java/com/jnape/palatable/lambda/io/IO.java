@@ -1,7 +1,6 @@
 package com.jnape.palatable.lambda.io;
 
 import com.jnape.palatable.lambda.adt.Either;
-import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.functions.Fn0;
@@ -16,6 +15,7 @@ import com.jnape.palatable.lambda.monad.Monad;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
@@ -84,7 +84,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
-                return Try.trying(IO.this::unsafePerformIO).recover(recoveryFn);
+                return trying(IO.this::unsafePerformIO).recover(recoveryFn);
             }
 
             @Override
@@ -93,6 +93,30 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
             }
         };
     }
+
+//    /**
+//     * Given a function from any {@link Throwable} to the result type <code>A</code>, if this {@link IO} successfully
+//     * yields a result, return it; otherwise, map the {@link Throwable} to the result type and return that.
+//     *
+//     * @param recoveryFn the recovery function
+//     * @return the guarded {@link IO}
+//     */
+//    public final IO<A> exceptionallyIO(Fn1<? super Throwable, ? extends IO<A>> recoveryFn) {
+//        return new IO<A>() {
+//            @Override
+//            public A unsafePerformIO() {
+//                return trying(IO.this::unsafePerformIO).recover(t -> recoveryFn.apply(t).unsafePerformIO())
+//            }
+//
+//            @Override
+//            public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
+////                IO.this.unsafePerformAsyncIO(executor)
+////                        .thenCombine()
+////                        .exceptionally(t -> recoveryFn.apply(t).unsafePerformAsyncIO(executor))
+//            }
+//        };
+//    }
+
 
     /**
      * Return an {@link IO} that will run <code>ensureIO</code> strictly after running this {@link IO} regardless of
@@ -378,8 +402,10 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
                             Lazy<CompletableFuture<Object>> head    = f.apply(compose.source);
                             return compose.composition
                                     .match(zip -> head.flatMap(futureX -> f.apply(zip)
-                                                   .fmap(futureF -> futureF.thenCompose(f2 -> futureX
-                                                           .thenApply(((Fn1<Object, Object>) f2).toFunction())))),
+                                                   .fmap(futureF -> futureF.thenCombineAsync(
+                                                           futureX,
+                                                           (f2, x) -> ((Fn1<Object, Object>) f2).apply(x),
+                                                           executor))),
                                            flatMap -> head.fmap(futureX -> futureX
                                                    .thenComposeAsync(x -> f.apply(flatMap.apply(x)).value(),
                                                                      executor)));
