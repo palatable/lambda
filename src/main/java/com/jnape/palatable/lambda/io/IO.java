@@ -98,14 +98,17 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
-                return trying(IO.this::unsafePerformIO)
-                        .recover(t -> trying(recoveryFn.apply(t)::unsafePerformIO)
-                                .fmap(Try::success)
-                                .recover(t2 -> {
-                                    t.addSuppressed(t2);
-                                    return failure(t);
-                                })
-                                .orThrow());
+                return trying(fn0(IO.this::unsafePerformIO))
+                        .recover(t -> {
+                            IO<A> recoveryIO = recoveryFn.apply(t);
+                            return trying(fn0(recoveryIO::unsafePerformIO))
+                                    .fmap(Try::success)
+                                    .recover(t2 -> {
+                                        t.addSuppressed(t2);
+                                        return failure(t);
+                                    })
+                                    .orThrow();
+                        });
             }
 
             @Override
