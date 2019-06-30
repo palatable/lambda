@@ -18,11 +18,13 @@ import java.util.concurrent.Executor;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
+import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Downcast.downcast;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.monad.Monad.join;
+import static java.lang.Thread.interrupted;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.concurrent.ForkJoinPool.commonPool;
@@ -138,7 +140,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * {@inheritDoc}
      */
     @Override
-    public <B> IO<B> zip(Applicative<Fn1<? super A, ? extends B>, IO<?>> appFn) {
+    public final <B> IO<B> zip(Applicative<Fn1<? super A, ? extends B>, IO<?>> appFn) {
         return new Compose<>(this, a((IO<Fn1<? super A, ? extends B>>) appFn));
     }
 
@@ -172,7 +174,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
     @Override
     public final <B> IO<B> flatMap(Fn1<? super A, ? extends Monad<B, IO<?>>> f) {
         @SuppressWarnings({"unchecked", "RedundantCast"})
-        Choice2<IO<?>, Fn1<Object, IO<?>>> composition = Choice2.b((Fn1<Object, IO<?>>) (Object) f);
+        Choice2<IO<?>, Fn1<Object, IO<?>>> composition = b((Fn1<Object, IO<?>>) (Object) f);
         return new Compose<>(this, composition);
     }
 
@@ -185,6 +187,75 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      */
     public static <A> IO<A> throwing(Throwable t) {
         return io(() -> {throw t;});
+    }
+
+    /**
+     * Wrap the given {@link IO} in an {@link IO} that first checks if the {@link Thread#currentThread() thread} the
+     * {@link IO} runs on is {@link Thread#interrupted() interrupted}. If it is, an {@link InterruptedException} is
+     * thrown; otherwise the given {@link IO} is executed as usual. Note that for {@link IO}s supporting parallelism,
+     * the thread that is checked for interruption may not necessarily be the same thread that the {@link IO} ultimately
+     * runs on.
+     *
+     * @param io  the {@link IO} to wrap
+     * @param <A> the {@link IO} result type
+     * @return an {@link IO} that first checks for {@link Thread#interrupted() thread interrupts}
+     */
+    public static <A> IO<A> interruptible(IO<A> io) {
+        return join(io(() -> {
+            if (interrupted())
+                throw new InterruptedException();
+            return io;
+        }));
+    }
+
+    /**
+     * <a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html">Synchronize</a> the given
+     * {@link IO} using the provided lock object. Note that to ensure that the entirety of the {@link IO}'s computation
+     * actually runs inside the synchronized region, the {@link IO} is executed
+     * {@link IO#unsafePerformIO() synchronously} inside the synchronized block regardless of the caller's chosen
+     * execution strategy.
+     *
+     * @param lock the lock object
+     * @param io   the {@link IO}
+     * @param <A>  the {@link IO} result type
+     * @return the synchronized {@link IO}
+     */
+    public static <A> IO<A> monitorSync(Object lock, IO<A> io) {
+        return io(() -> {
+            synchronized (lock) {
+                return io.unsafePerformIO();
+            }
+        });
+    }
+
+    /**
+     * Fuse all fork opportunities of a given {@link IO} such that, unless it is {@link IO#pin(IO, Executor) pinned}
+     * (or is originally {@link IO#externallyManaged(Fn0) externally managed}), no parallelism will be used when
+     * running it, regardless of what semantics are used when it is executed.
+     *
+     * @param io  the {@link IO}
+     * @param <A> the {@link IO} result type
+     * @return the fused {@link IO}
+     * @see IO#pin(IO, Executor)
+     */
+    public static <A> IO<A> fuse(IO<A> io) {
+        return io(io::unsafePerformIO);
+    }
+
+    /**
+     * Pin an {@link IO} to an {@link Executor} such that regardless of what future decisions are made, when it runs, it
+     * will run using whatever parallelism is supported by the {@link Executor}'s threading model. Note that if this
+     * {@link IO} has already been pinned (or is originally {@link IO#externallyManaged(Fn0) externally managed}),
+     * pinning to an additional {@link Executor} has no meaningful effect.
+     *
+     * @param io       the {@link IO}
+     * @param executor the {@link Executor}
+     * @param <A>      the {@link IO} result type
+     * @return the {@link IO} pinned to the {@link Executor}
+     * @see IO#fuse(IO)
+     */
+    public static <A> IO<A> pin(IO<A> io, Executor executor) {
+        return IO.externallyManaged(() -> io.unsafePerformAsyncIO(executor));
     }
 
     /**
