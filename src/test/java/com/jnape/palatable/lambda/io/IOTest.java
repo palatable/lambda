@@ -120,9 +120,12 @@ public class IOTest {
     }
 
     @Test
-    public void exceptionallyRecoversThrowableToResult() {
-        IO<String> io = io(() -> { throw new UnsupportedOperationException("foo"); });
+    public void exceptionally() {
+        Executor   executor = newFixedThreadPool(2);
+        IO<String> io       = io(() -> { throw new UnsupportedOperationException("foo"); });
         assertEquals("foo", io.exceptionally(Throwable::getMessage).unsafePerformIO());
+        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO().join());
+        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO(executor).join());
 
         IO<String> externallyManaged = externallyManaged(() -> new CompletableFuture<String>() {{
             completeExceptionally(new UnsupportedOperationException("foo"));
@@ -131,17 +134,34 @@ public class IOTest {
     }
 
     @Test
-    public void exceptionallyRescuesFutures() {
-        ExecutorService executor = newFixedThreadPool(2);
-
-        IO<String> io = io(() -> { throw new UnsupportedOperationException("foo"); });
-        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO().join());
-        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO(executor).join());
+    public void exceptionallyIO() {
+        Executor   executor = newFixedThreadPool(2);
+        IO<String> io       = IO.throwing(new UnsupportedOperationException("foo"));
+        assertEquals("foo", io.exceptionallyIO(t -> io(t::getMessage)).unsafePerformIO());
+        assertEquals("foo",
+                     io.exceptionallyIO(e -> io(() -> e.getCause().getMessage())).unsafePerformAsyncIO().join());
+        assertEquals("foo",
+                     io.exceptionallyIO(e -> io(() -> e.getCause().getMessage()))
+                             .unsafePerformAsyncIO(executor).join());
 
         IO<String> externallyManaged = externallyManaged(() -> new CompletableFuture<String>() {{
             completeExceptionally(new UnsupportedOperationException("foo"));
-        }}).exceptionally(e -> e.getCause().getMessage());
+        }}).exceptionallyIO(e -> io(() -> e.getCause().getMessage()));
         assertEquals("foo", externallyManaged.unsafePerformIO());
+    }
+
+    @Test
+    public void exceptionallyIOSuppressesSecondaryThrowable() {
+        Throwable foo = new UnsupportedOperationException("foo");
+        Throwable bar = new UnsupportedOperationException("bar");
+
+        try {
+            IO.throwing(foo).exceptionallyIO(t -> IO.throwing(bar)).unsafePerformIO();
+            fail("Expected exception to have been thrown, but wasn't.");
+        } catch (UnsupportedOperationException expected) {
+            assertEquals(expected, foo);
+            assertArrayEquals(new Throwable[]{bar}, expected.getSuppressed());
+        }
     }
 
     @Test

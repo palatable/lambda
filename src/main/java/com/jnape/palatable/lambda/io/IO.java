@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.io;
 
 import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.functions.Fn0;
@@ -15,6 +16,7 @@ import com.jnape.palatable.lambda.monad.Monad;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import static com.jnape.palatable.lambda.adt.Try.failure;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
@@ -81,42 +83,47 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * @return the guarded {@link IO}
      */
     public final IO<A> exceptionally(Fn1<? super Throwable, ? extends A> recoveryFn) {
+        return exceptionallyIO(t -> io(recoveryFn.apply(t)));
+    }
+
+    /**
+     * Like {@link IO#exceptionally(Fn1) exceptionally}, but recover the {@link Throwable} via another {@link IO}
+     * operation. If both {@link IO IOs} throw, the "cleanup" {@link IO IO's} {@link Throwable} is
+     * {@link Throwable#addSuppressed(Throwable) suppressed} by this {@link IO IO's} {@link Throwable}.
+     *
+     * @param recoveryFn the recovery function
+     * @return the guarded {@link IO}
+     */
+    public final IO<A> exceptionallyIO(Fn1<? super Throwable, ? extends IO<A>> recoveryFn) {
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
-                return trying(IO.this::unsafePerformIO).recover(recoveryFn);
+                return trying(IO.this::unsafePerformIO)
+                        .recover(t -> trying(recoveryFn.apply(t)::unsafePerformIO)
+                                .fmap(Try::success)
+                                .recover(t2 -> {
+                                    t.addSuppressed(t2);
+                                    return failure(t);
+                                })
+                                .orThrow());
             }
 
             @Override
             public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
-                return IO.this.unsafePerformAsyncIO(executor).exceptionally(recoveryFn::apply);
+                return IO.this.unsafePerformAsyncIO(executor)
+                        .thenApply(CompletableFuture::completedFuture)
+                        .exceptionally(t -> recoveryFn.apply(t).unsafePerformAsyncIO(executor)
+                                .thenApply(CompletableFuture::completedFuture)
+                                .exceptionally(t2 -> {
+                                    t.addSuppressed(t2);
+                                    return new CompletableFuture<A>() {{
+                                        completeExceptionally(t);
+                                    }};
+                                }).thenCompose(f -> f))
+                        .thenCompose(f -> f);
             }
         };
     }
-
-//    /**
-//     * Given a function from any {@link Throwable} to the result type <code>A</code>, if this {@link IO} successfully
-//     * yields a result, return it; otherwise, map the {@link Throwable} to the result type and return that.
-//     *
-//     * @param recoveryFn the recovery function
-//     * @return the guarded {@link IO}
-//     */
-//    public final IO<A> exceptionallyIO(Fn1<? super Throwable, ? extends IO<A>> recoveryFn) {
-//        return new IO<A>() {
-//            @Override
-//            public A unsafePerformIO() {
-//                return trying(IO.this::unsafePerformIO).recover(t -> recoveryFn.apply(t).unsafePerformIO())
-//            }
-//
-//            @Override
-//            public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
-////                IO.this.unsafePerformAsyncIO(executor)
-////                        .thenCombine()
-////                        .exceptionally(t -> recoveryFn.apply(t).unsafePerformAsyncIO(executor))
-//            }
-//        };
-//    }
-
 
     /**
      * Return an {@link IO} that will run <code>ensureIO</code> strictly after running this {@link IO} regardless of

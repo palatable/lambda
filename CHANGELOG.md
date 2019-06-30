@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `IO#monitorSync`, for wrapping an `IO` in a `synchronized` block on a given lock object
 - `IO#pin`, for pinning an `IO` to an `Executor` without yet executing it
 - `IO#fuse`, for fusing the fork opportunities of a given `IO` into a single linearized `IO`
+- `IO#exceptionallyIO`, like `exceptionally` but recover inside another `IO`
 
 ## [4.0.0] - 2019-05-20
 ### Changed
