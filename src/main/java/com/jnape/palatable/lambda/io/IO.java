@@ -9,7 +9,6 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.LazyRec;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 
@@ -183,7 +182,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      */
     @Override
     public final <B> Lazy<IO<B>> lazyZip(Lazy<? extends Applicative<Fn1<? super A, ? extends B>, IO<?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).<IO<B>>fmap(Functor::coerce).coerce();
+        return Monad.super.lazyZip(lazyAppFn).<IO<B>>fmap(Monad<B, IO<?>>::coerce).coerce();
     }
 
     /**
