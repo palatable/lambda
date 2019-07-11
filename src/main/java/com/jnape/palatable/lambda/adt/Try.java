@@ -8,6 +8,7 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadError;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -27,7 +28,10 @@ import static com.jnape.palatable.lambda.internal.Runtime.throwChecked;
  * @param <A> the possibly successful expression result
  * @see Either
  */
-public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>, CoProduct2<Throwable, A, Try<A>> {
+public abstract class Try<A> implements
+        MonadError<Throwable, A, Try<?>>,
+        Traversable<A, Try<?>>,
+        CoProduct2<Throwable, A, Try<A>> {
 
     private Try() {
     }
@@ -166,8 +170,24 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      * {@inheritDoc}
      */
     @Override
+    public Try<A> throwError(Throwable throwable) {
+        return failure(throwable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Try<A> catchError(Fn1<? super Throwable, ? extends Monad<A, Try<?>>> recoveryFn) {
+        return match(t -> recoveryFn.apply(t).coerce(), Try::success);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <B> Try<B> fmap(Fn1<? super A, ? extends B> fn) {
-        return Monad.super.<B>fmap(fn).coerce();
+        return MonadError.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -191,7 +211,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      */
     @Override
     public <B> Try<B> zip(Applicative<Fn1<? super A, ? extends B>, Try<?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadError.super.zip(appFn).coerce();
     }
 
     /**
@@ -208,7 +228,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      */
     @Override
     public <B> Try<B> discardL(Applicative<B, Try<?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadError.super.discardL(appB).coerce();
     }
 
     /**
@@ -216,7 +236,7 @@ public abstract class Try<A> implements Monad<A, Try<?>>, Traversable<A, Try<?>>
      */
     @Override
     public <B> Try<A> discardR(Applicative<B, Try<?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadError.super.discardR(appB).coerce();
     }
 
     /**

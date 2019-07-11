@@ -16,6 +16,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +38,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.io.IO.externallyManaged;
 import static com.jnape.palatable.lambda.io.IO.io;
+import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -48,6 +50,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
+import static testsupport.assertion.MonadErrorAssert.assertLawsEq;
 
 @RunWith(Traits.class)
 public class IOTest {
@@ -57,6 +60,14 @@ public class IOTest {
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
     public EquatableM<IO<?>, Integer> testSubject() {
         return new EquatableM<>(io(1), IO::unsafePerformIO);
+    }
+
+    @Test
+    public void monadError() {
+        assertLawsEq(subjects(new EquatableM<>(IO.throwing(new IllegalStateException("a")), IO::unsafePerformIO),
+                              new EquatableM<>(io(1), IO::unsafePerformIO)),
+                     new IOException("bar"),
+                     e -> io(e.getMessage().length()));
     }
 
     @Test
@@ -120,43 +131,29 @@ public class IOTest {
     }
 
     @Test
-    public void exceptionally() {
-        Executor   executor = newFixedThreadPool(2);
-        IO<String> io       = io(() -> { throw new UnsupportedOperationException("foo"); });
-        assertEquals("foo", io.exceptionally(Throwable::getMessage).unsafePerformIO());
-        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO().join());
-        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO(executor).join());
-
-        IO<String> externallyManaged = externallyManaged(() -> new CompletableFuture<String>() {{
-            completeExceptionally(new UnsupportedOperationException("foo"));
-        }}).exceptionally(e -> e.getCause().getMessage());
-        assertEquals("foo", externallyManaged.unsafePerformIO());
-    }
-
-    @Test
-    public void exceptionallyIO() {
+    public void catchError() {
         Executor   executor = newFixedThreadPool(2);
         IO<String> io       = IO.throwing(new UnsupportedOperationException("foo"));
-        assertEquals("foo", io.exceptionallyIO(t -> io(t::getMessage)).unsafePerformIO());
+        assertEquals("foo", io.catchError(t -> io(t::getMessage)).unsafePerformIO());
         assertEquals("foo",
-                     io.exceptionallyIO(e -> io(() -> e.getCause().getMessage())).unsafePerformAsyncIO().join());
+                     io.catchError(e -> io(() -> e.getCause().getMessage())).unsafePerformAsyncIO().join());
         assertEquals("foo",
-                     io.exceptionallyIO(e -> io(() -> e.getCause().getMessage()))
+                     io.catchError(e -> io(() -> e.getCause().getMessage()))
                              .unsafePerformAsyncIO(executor).join());
 
         IO<String> externallyManaged = externallyManaged(() -> new CompletableFuture<String>() {{
             completeExceptionally(new UnsupportedOperationException("foo"));
-        }}).exceptionallyIO(e -> io(() -> e.getCause().getMessage()));
+        }}).catchError(e -> io(() -> e.getCause().getMessage()));
         assertEquals("foo", externallyManaged.unsafePerformIO());
     }
 
     @Test
-    public void exceptionallyIOSuppressesSecondaryThrowable() {
+    public void catchErrorSuppressesSecondaryThrowable() {
         Throwable foo = new UnsupportedOperationException("foo");
         Throwable bar = new UnsupportedOperationException("bar");
 
         try {
-            IO.throwing(foo).exceptionallyIO(t -> IO.throwing(bar)).unsafePerformIO();
+            IO.throwing(foo).catchError(t -> IO.throwing(bar)).unsafePerformIO();
             fail("Expected exception to have been thrown, but wasn't.");
         } catch (UnsupportedOperationException expected) {
             assertEquals(expected, foo);

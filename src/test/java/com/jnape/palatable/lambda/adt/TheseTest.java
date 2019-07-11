@@ -17,6 +17,7 @@ import static com.jnape.palatable.lambda.adt.These.both;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
+import static testsupport.assertion.MonadErrorAssert.assertLaws;
 
 @RunWith(Traits.class)
 public class TheseTest {

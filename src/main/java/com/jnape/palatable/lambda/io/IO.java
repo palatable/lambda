@@ -11,10 +11,12 @@ import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadError;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Try.failure;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
@@ -37,7 +39,7 @@ import static java.util.concurrent.ForkJoinPool.commonPool;
  *
  * @param <A> the result type
  */
-public abstract class IO<A> implements Monad<A, IO<?>> {
+public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A, IO<?>> {
 
     private IO() {
     }
@@ -80,51 +82,11 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      *
      * @param recoveryFn the recovery function
      * @return the guarded {@link IO}
+     * @deprecated in favor of canonical {@link IO#catchError(Fn1)}
      */
+    @Deprecated
     public final IO<A> exceptionally(Fn1<? super Throwable, ? extends A> recoveryFn) {
-        return exceptionallyIO(t -> io(recoveryFn.apply(t)));
-    }
-
-    /**
-     * Like {@link IO#exceptionally(Fn1) exceptionally}, but recover the {@link Throwable} via another {@link IO}
-     * operation. If both {@link IO IOs} throw, the "cleanup" {@link IO IO's} {@link Throwable} is
-     * {@link Throwable#addSuppressed(Throwable) suppressed} by this {@link IO IO's} {@link Throwable}.
-     *
-     * @param recoveryFn the recovery function
-     * @return the guarded {@link IO}
-     */
-    public final IO<A> exceptionallyIO(Fn1<? super Throwable, ? extends IO<A>> recoveryFn) {
-        return new IO<A>() {
-            @Override
-            public A unsafePerformIO() {
-                return trying(fn0(IO.this::unsafePerformIO))
-                        .recover(t -> {
-                            IO<A> recoveryIO = recoveryFn.apply(t);
-                            return trying(fn0(recoveryIO::unsafePerformIO))
-                                    .fmap(Try::success)
-                                    .recover(t2 -> {
-                                        t.addSuppressed(t2);
-                                        return failure(t);
-                                    })
-                                    .orThrow();
-                        });
-            }
-
-            @Override
-            public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
-                return IO.this.unsafePerformAsyncIO(executor)
-                        .thenApply(CompletableFuture::completedFuture)
-                        .exceptionally(t -> recoveryFn.apply(t).unsafePerformAsyncIO(executor)
-                                .thenApply(CompletableFuture::completedFuture)
-                                .exceptionally(t2 -> {
-                                    t.addSuppressed(t2);
-                                    return new CompletableFuture<A>() {{
-                                        completeExceptionally(t);
-                                    }};
-                                }).thenCompose(f -> f))
-                        .thenCompose(f -> f);
-            }
-        };
+        return catchError(t -> io(recoveryFn.apply(t)));
     }
 
     /**
@@ -136,11 +98,12 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      */
     public final IO<A> ensuring(IO<?> ensureIO) {
         return join(fmap(a -> ensureIO.fmap(constantly(a)))
-                            .exceptionally(t -> join(ensureIO.<IO<A>>fmap(constantly(io(() -> {throw t;})))
-                                                             .exceptionally(t2 -> io(() -> {
-                                                                 t.addSuppressed(t2);
-                                                                 throw t;
-                                                             })))));
+                            .catchError(t1 -> ensureIO
+                                    .fmap(constantly(IO.<A>throwing(t1)))
+                                    .catchError(t2 -> io(io(() -> {
+                                        t1.addSuppressed(t2);
+                                        throw t1;
+                                    })))));
     }
 
     /**
@@ -150,7 +113,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      * @return the safe {@link IO}
      */
     public final IO<Either<Throwable, A>> safe() {
-        return fmap(Either::<Throwable, A>right).exceptionally(Either::left);
+        return fmap(Either::<Throwable, A>right).catchError(t -> io(left(t)));
     }
 
     /**
@@ -166,7 +129,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      */
     @Override
     public final <B> IO<B> fmap(Fn1<? super A, ? extends B> fn) {
-        return Monad.super.<B>fmap(fn).coerce();
+        return MonadError.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -182,7 +145,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      */
     @Override
     public final <B> Lazy<IO<B>> lazyZip(Lazy<? extends Applicative<Fn1<? super A, ? extends B>, IO<?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).<IO<B>>fmap(Monad<B, IO<?>>::coerce).coerce();
+        return MonadError.super.lazyZip(lazyAppFn).<IO<B>>fmap(Monad<B, IO<?>>::coerce).coerce();
     }
 
     /**
@@ -190,7 +153,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      */
     @Override
     public final <B> IO<B> discardL(Applicative<B, IO<?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadError.super.discardL(appB).coerce();
     }
 
     /**
@@ -198,7 +161,7 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
      */
     @Override
     public final <B> IO<A> discardR(Applicative<B, IO<?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadError.super.discardR(appB).coerce();
     }
 
     /**
@@ -209,6 +172,49 @@ public abstract class IO<A> implements Monad<A, IO<?>> {
         @SuppressWarnings({"unchecked", "RedundantCast"})
         Choice2<IO<?>, Fn1<Object, IO<?>>> composition = b((Fn1<Object, IO<?>>) (Object) f);
         return new Compose<>(this, composition);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final IO<A> throwError(Throwable throwable) {
+        return IO.throwing(throwable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final IO<A> catchError(Fn1<? super Throwable, ? extends Monad<A, IO<?>>> recoveryFn) {
+        return new IO<A>() {
+            @Override
+            public A unsafePerformIO() {
+                return trying(fn0(IO.this::unsafePerformIO))
+                        .recover(t -> trying(fn0(recoveryFn.apply(t).<IO<A>>coerce()::unsafePerformIO))
+                                .fmap(Try::success)
+                                .recover(t2 -> {
+                                    t.addSuppressed(t2);
+                                    return failure(t);
+                                })
+                                .orThrow());
+            }
+
+            @Override
+            public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
+                return IO.this.unsafePerformAsyncIO(executor)
+                        .thenApply(CompletableFuture::completedFuture)
+                        .exceptionally(t -> recoveryFn.apply(t).<IO<A>>coerce().unsafePerformAsyncIO(executor)
+                                .thenApply(CompletableFuture::completedFuture)
+                                .exceptionally(t2 -> {
+                                    t.addSuppressed(t2);
+                                    return new CompletableFuture<A>() {{
+                                        completeExceptionally(t);
+                                    }};
+                                }).thenCompose(f -> f))
+                        .thenCompose(f -> f);
+            }
+        };
     }
 
     /**

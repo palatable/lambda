@@ -13,6 +13,7 @@ import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadError;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -34,7 +35,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Maybe<A> implements
         CoProduct2<Unit, A, Maybe<A>>,
-        Monad<A, Maybe<?>>,
+        MonadError<Unit, A, Maybe<?>>,
         Traversable<A, Maybe<?>> {
 
     private Maybe() {
@@ -87,6 +88,22 @@ public abstract class Maybe<A> implements
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Maybe<A> throwError(Unit unit) {
+        return nothing();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Maybe<A> catchError(Fn1<? super Unit, ? extends Monad<A, Maybe<?>>> recoveryFn) {
+        return match(recoveryFn, Maybe::just).coerce();
+    }
+
+    /**
      * If this value is absent, return the value supplied by <code>lSupplier</code> wrapped in <code>Either.left</code>.
      * Otherwise, wrap the value in <code>Either.right</code> and return it.
      *
@@ -127,7 +144,7 @@ public abstract class Maybe<A> implements
      */
     @Override
     public final <B> Maybe<B> fmap(Fn1<? super A, ? extends B> fn) {
-        return Monad.super.<B>fmap(fn).coerce();
+        return MonadError.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -135,7 +152,7 @@ public abstract class Maybe<A> implements
      */
     @Override
     public final <B> Maybe<B> zip(Applicative<Fn1<? super A, ? extends B>, Maybe<?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadError.super.zip(appFn).coerce();
     }
 
     /**
@@ -156,7 +173,7 @@ public abstract class Maybe<A> implements
      */
     @Override
     public final <B> Maybe<B> discardL(Applicative<B, Maybe<?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadError.super.discardL(appB).coerce();
     }
 
     /**
@@ -164,7 +181,7 @@ public abstract class Maybe<A> implements
      */
     @Override
     public final <B> Maybe<A> discardR(Applicative<B, Maybe<?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadError.super.discardR(appB).coerce();
     }
 
     /**

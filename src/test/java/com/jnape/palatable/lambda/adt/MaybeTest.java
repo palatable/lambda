@@ -28,6 +28,7 @@ import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static testsupport.assertion.MonadErrorAssert.assertLaws;
 
 @RunWith(Traits.class)
 public class MaybeTest {
@@ -35,6 +36,11 @@ public class MaybeTest {
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class, MonadLaws.class})
     public Subjects<Maybe<Integer>> testSubject() {
         return subjects(Maybe.nothing(), just(1));
+    }
+
+    @Test
+    public void monadError() {
+        assertLaws(subjects(nothing(), just(1)), UNIT, constantly(just(2)));
     }
 
     @Test(expected = NullPointerException.class)

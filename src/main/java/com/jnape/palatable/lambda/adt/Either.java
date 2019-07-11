@@ -13,6 +13,7 @@ import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadError;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -32,7 +33,7 @@ import static java.util.Arrays.asList;
  */
 public abstract class Either<L, R> implements
         CoProduct2<L, R, Either<L, R>>,
-        Monad<R, Either<L, ?>>,
+        MonadError<L, R, Either<L, ?>>,
         Traversable<R, Either<L, ?>>,
         Bifunctor<L, R, Either<?, ?>> {
 
@@ -206,7 +207,7 @@ public abstract class Either<L, R> implements
      */
     @Override
     public final <R2> Either<L, R2> fmap(Fn1<? super R, ? extends R2> fn) {
-        return Monad.super.<R2>fmap(fn).coerce();
+        return MonadError.super.<R2>fmap(fn).coerce();
     }
 
     /**
@@ -247,7 +248,7 @@ public abstract class Either<L, R> implements
      */
     @Override
     public final <R2> Either<L, R2> zip(Applicative<Fn1<? super R, ? extends R2>, Either<L, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadError.super.zip(appFn).coerce();
     }
 
     /**
@@ -265,7 +266,7 @@ public abstract class Either<L, R> implements
      */
     @Override
     public final <R2> Either<L, R2> discardL(Applicative<R2, Either<L, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadError.super.discardL(appB).coerce();
     }
 
     /**
@@ -273,7 +274,23 @@ public abstract class Either<L, R> implements
      */
     @Override
     public final <R2> Either<L, R> discardR(Applicative<R2, Either<L, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadError.super.discardR(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Either<L, R> throwError(L l) {
+        return left(l);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Either<L, R> catchError(Fn1<? super L, ? extends Monad<R, Either<L, ?>>> recoveryFn) {
+        return match(recoveryFn.fmap(Monad::coerce), Either::right);
     }
 
     /**

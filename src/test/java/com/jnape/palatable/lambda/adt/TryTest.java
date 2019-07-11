@@ -37,6 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static testsupport.assertion.MonadErrorAssert.assertLaws;
 import static testsupport.matchers.LeftMatcher.isLeftThat;
 
 @RunWith(Traits.class)
@@ -47,6 +48,14 @@ public class TryTest {
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
     public Subjects<Try<Integer>> testSubject() {
         return subjects(failure(new IllegalStateException()), success(1));
+    }
+
+    @Test
+    public void monadError() {
+        assertLaws(subjects(failure(new IllegalStateException("a")),
+                            success(1)),
+                   new IOException("bar"),
+                   t -> success(t.getMessage().length()));
     }
 
     @Test

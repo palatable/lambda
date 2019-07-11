@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `IO#pin`, for pinning an `IO` to an `Executor` without yet executing it
 - `IO#fuse`, for fusing the fork opportunities of a given `IO` into a single linearized `IO`
 - `IO#exceptionallyIO`, like `exceptionally` but recover inside another `IO`
+- `MonadError`, monads that can be thrown to and caught from
 
 ## [4.0.0] - 2019-05-20
 ### Changed

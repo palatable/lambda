@@ -29,6 +29,7 @@ import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static testsupport.assertion.MonadErrorAssert.assertLaws;
 
 @RunWith(Traits.class)
 public class EitherTest {
@@ -39,6 +40,11 @@ public class EitherTest {
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
     public Subjects<Either<String, Integer>> testSubjects() {
         return subjects(left("foo"), right(1));
+    }
+
+    @Test
+    public void monadError() {
+        assertLaws(subjects(left("a"), right(1)), "bar", e -> right(e.length()));
     }
 
     @Test
