@@ -1,18 +1,23 @@
 package com.jnape.palatable.lambda.io;
 
 import com.jnape.palatable.lambda.adt.Unit;
+import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Sequence;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
@@ -24,23 +29,30 @@ import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Replicate.replicate;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2.liftA2;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.io.IO.externallyManaged;
 import static com.jnape.palatable.lambda.io.IO.io;
+import static java.lang.Thread.currentThread;
+import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.ForkJoinPool.commonPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 
 @RunWith(Traits.class)
 public class IOTest {
+
+    public @Rule ExpectedException thrown = ExpectedException.none();
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
     public EquatableM<IO<?>, Integer> testSubject() {
@@ -108,9 +120,12 @@ public class IOTest {
     }
 
     @Test
-    public void exceptionallyRecoversThrowableToResult() {
-        IO<String> io = io(() -> { throw new UnsupportedOperationException("foo"); });
+    public void exceptionally() {
+        Executor   executor = newFixedThreadPool(2);
+        IO<String> io       = io(() -> { throw new UnsupportedOperationException("foo"); });
         assertEquals("foo", io.exceptionally(Throwable::getMessage).unsafePerformIO());
+        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO().join());
+        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO(executor).join());
 
         IO<String> externallyManaged = externallyManaged(() -> new CompletableFuture<String>() {{
             completeExceptionally(new UnsupportedOperationException("foo"));
@@ -119,17 +134,34 @@ public class IOTest {
     }
 
     @Test
-    public void exceptionallyRescuesFutures() {
-        ExecutorService executor = newFixedThreadPool(2);
-
-        IO<String> io = io(() -> { throw new UnsupportedOperationException("foo"); });
-        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO().join());
-        assertEquals("foo", io.exceptionally(e -> e.getCause().getMessage()).unsafePerformAsyncIO(executor).join());
+    public void exceptionallyIO() {
+        Executor   executor = newFixedThreadPool(2);
+        IO<String> io       = IO.throwing(new UnsupportedOperationException("foo"));
+        assertEquals("foo", io.exceptionallyIO(t -> io(t::getMessage)).unsafePerformIO());
+        assertEquals("foo",
+                     io.exceptionallyIO(e -> io(() -> e.getCause().getMessage())).unsafePerformAsyncIO().join());
+        assertEquals("foo",
+                     io.exceptionallyIO(e -> io(() -> e.getCause().getMessage()))
+                             .unsafePerformAsyncIO(executor).join());
 
         IO<String> externallyManaged = externallyManaged(() -> new CompletableFuture<String>() {{
             completeExceptionally(new UnsupportedOperationException("foo"));
-        }}).exceptionally(e -> e.getCause().getMessage());
+        }}).exceptionallyIO(e -> io(() -> e.getCause().getMessage()));
         assertEquals("foo", externallyManaged.unsafePerformIO());
+    }
+
+    @Test
+    public void exceptionallyIOSuppressesSecondaryThrowable() {
+        Throwable foo = new UnsupportedOperationException("foo");
+        Throwable bar = new UnsupportedOperationException("bar");
+
+        try {
+            IO.throwing(foo).exceptionallyIO(t -> IO.throwing(bar)).unsafePerformIO();
+            fail("Expected exception to have been thrown, but wasn't.");
+        } catch (UnsupportedOperationException expected) {
+            assertEquals(expected, foo);
+            assertArrayEquals(new Throwable[]{bar}, expected.getSuppressed());
+        }
     }
 
     @Test
@@ -294,5 +326,66 @@ public class IOTest {
 
         assertEquals((Long) 3L, size(io.unsafePerformIO()));
         assertEquals((Long) 3L, size(io.unsafePerformIO()));
+    }
+
+    @Test(expected = InterruptedException.class)
+    public void interruptible() {
+        currentThread().interrupt();
+
+        IO<Unit> io = IO.interruptible(IO.throwing(new AssertionError("expected to never be called")));
+        io.unsafePerformIO();
+    }
+
+    @Test
+    public void monitorSync() throws InterruptedException {
+        Object         lock       = new Object();
+        List<String>   accesses   = new ArrayList<>();
+        CountDownLatch oneStarted = new CountDownLatch(1);
+        CountDownLatch finishLine = new CountDownLatch(2);
+
+        IO<Unit> one = io(() -> {
+            accesses.add("one entered");
+            oneStarted.countDown();
+            Thread.sleep(10);
+            accesses.add("one exited");
+            finishLine.countDown();
+        });
+
+        IO<Unit> two = io(() -> {
+            oneStarted.await();
+            accesses.add("two entered");
+            Thread.sleep(10);
+            accesses.add("two exited");
+            finishLine.countDown();
+        });
+
+        new Thread(IO.monitorSync(lock, one)::unsafePerformIO) {{
+            start();
+        }};
+
+        new Thread(IO.monitorSync(lock, two)::unsafePerformIO) {{
+            start();
+        }};
+
+        finishLine.await(500, MILLISECONDS);
+        assertEquals(asList("one entered", "one exited", "two entered", "two exited"), accesses);
+    }
+
+    @Test
+    public void fuse() {
+        IO<Thread>                 currentThreadIO = io(Thread::currentThread);
+        IO<Tuple2<Thread, Thread>> threads         = liftA2(HList::tuple, currentThreadIO, currentThreadIO);
+        Executor                   executor        = Executors.newFixedThreadPool(2);
+        Boolean                    sameThread      = IO.fuse(threads).unsafePerformAsyncIO(executor).join().into(eq());
+        assertTrue("Expected both IOs to run on the same Thread, but they didn't.", sameThread);
+    }
+
+    @Test
+    public void pin() {
+        Thread     mainThread      = currentThread();
+        IO<Thread> currentThreadIO = io(Thread::currentThread);
+        Executor   executor        = Executors.newFixedThreadPool(2);
+        Thread     chosenThread    = IO.pin(currentThreadIO, Runnable::run).unsafePerformAsyncIO(executor).join();
+        assertEquals("Expected IO to run on the main Thread, but it didn't.", mainThread, chosenThread);
     }
 }
