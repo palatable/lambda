@@ -364,7 +364,7 @@ public class IOTest {
             start();
         }};
 
-        if (!finishLine.await(5, SECONDS))
+        if (!finishLine.await(15, SECONDS))
             fail("Expected threads to have completed by now");
         assertEquals(asList("one entered", "one exited", "two entered", "two exited"), accesses);
     }
