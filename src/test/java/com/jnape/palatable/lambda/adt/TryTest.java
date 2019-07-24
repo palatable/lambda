@@ -25,6 +25,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Try.failure;
 import static com.jnape.palatable.lambda.adt.Try.success;
 import static com.jnape.palatable.lambda.adt.Try.trying;
+import static com.jnape.palatable.lambda.adt.Try.withResources;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
@@ -173,7 +174,7 @@ public class TryTest {
     @Test
     public void withResourcesCleansUpAutoCloseableInSuccessCase() {
         AtomicBoolean closed = new AtomicBoolean(false);
-        assertEquals(success(1), Try.withResources(() -> () -> closed.set(true), resource -> success(1)));
+        assertEquals(success(1), withResources(() -> (AutoCloseable) () -> closed.set(true), resource -> success(1)));
         assertTrue(closed.get());
     }
 
@@ -181,30 +182,30 @@ public class TryTest {
     public void withResourcesCleansUpAutoCloseableInFailureCase() {
         AtomicBoolean    closed    = new AtomicBoolean(false);
         RuntimeException exception = new RuntimeException();
-        assertEquals(Try.failure(exception), Try.withResources(() -> () -> closed.set(true),
-                                                               resource -> { throw exception; }));
+        assertEquals(Try.failure(exception), withResources(() -> (AutoCloseable) () -> closed.set(true),
+                                                           resource -> { throw exception; }));
         assertTrue(closed.get());
     }
 
     @Test
     public void withResourcesExposesResourceCreationFailure() {
         IOException ioException = new IOException();
-        assertEquals(Try.failure(ioException), Try.withResources(() -> { throw ioException; }, resource -> success(1)));
+        assertEquals(Try.failure(ioException), withResources(() -> { throw ioException; }, resource -> success(1)));
     }
 
     @Test
     public void withResourcesExposesResourceCloseFailure() {
         IOException ioException = new IOException();
-        assertEquals(Try.failure(ioException), Try.withResources(() -> () -> { throw ioException; },
-                                                                 resource -> success(1)));
+        assertEquals(Try.failure(ioException), withResources(() -> (AutoCloseable) () -> { throw ioException; },
+                                                             resource -> success(1)));
     }
 
     @Test
     public void withResourcesPreservesSuppressedExceptionThrownDuringClose() {
         RuntimeException rootException     = new RuntimeException();
         IOException      nestedIOException = new IOException();
-        Try<Throwable> failure = Try.withResources(() -> () -> { throw nestedIOException; },
-                                                   resource -> { throw rootException; });
+        Try<Throwable> failure = withResources(() -> (AutoCloseable) () -> { throw nestedIOException; },
+                                               resource -> { throw rootException; });
         Throwable thrown = failure.recover(id());
 
         assertEquals(thrown, rootException);
@@ -214,10 +215,10 @@ public class TryTest {
     @Test
     public void cascadingWithResourcesClosesInInverseOrder() {
         List<String> closeMessages = new ArrayList<>();
-        assertEquals(success(1), Try.withResources(() -> (AutoCloseable) () -> closeMessages.add("close a"),
-                                                   a -> () -> closeMessages.add("close b"),
-                                                   b -> () -> closeMessages.add("close c"),
-                                                   c -> success(1)));
+        assertEquals(success(1), withResources(() -> (AutoCloseable) () -> closeMessages.add("close a"),
+                                               a -> () -> closeMessages.add("close b"),
+                                               b -> () -> closeMessages.add("close c"),
+                                               c -> success(1)));
         assertEquals(asList("close c", "close b", "close a"), closeMessages);
     }
 
