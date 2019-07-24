@@ -2,6 +2,7 @@ package testsupport;
 
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 
 import java.util.Objects;
@@ -42,6 +43,13 @@ public final class EquatableM<M extends Monad<?, M>, A> implements Monad<A, Equa
     @Override
     public <B> EquatableM<M, B> zip(Applicative<Fn1<? super A, ? extends B>, EquatableM<M, ?>> appFn) {
         return new EquatableM<>(ma.zip(appFn.<EquatableM<M, Fn1<? super A, ? extends B>>>coerce().ma), equatable);
+    }
+
+    @Override
+    public <B> Lazy<EquatableM<M, B>> lazyZip(
+            Lazy<? extends Applicative<Fn1<? super A, ? extends B>, EquatableM<M, ?>>> lazyAppFn) {
+        return ma.lazyZip(lazyAppFn.fmap(eqF -> eqF.<EquatableM<M, Fn1<? super A, ? extends B>>>coerce().ma))
+                .fmap(mb -> new EquatableM<>(mb, equatable));
     }
 
     @Override

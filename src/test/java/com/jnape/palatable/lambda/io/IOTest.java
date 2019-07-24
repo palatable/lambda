@@ -45,6 +45,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.ForkJoinPool.commonPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -364,7 +365,8 @@ public class IOTest {
             start();
         }};
 
-        finishLine.await(500, MILLISECONDS);
+        if (!finishLine.await(1, SECONDS))
+            fail("Expected threads to have completed by now");
         assertEquals(asList("one entered", "one exited", "two entered", "two exited"), accesses);
     }
 
