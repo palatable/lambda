@@ -352,7 +352,6 @@ public class IOTest {
         IO<Unit> two = io(() -> {
             oneStarted.await();
             accesses.add("two entered");
-            Thread.sleep(10);
             accesses.add("two exited");
             finishLine.countDown();
         });
@@ -365,7 +364,7 @@ public class IOTest {
             start();
         }};
 
-        if (!finishLine.await(1, SECONDS))
+        if (!finishLine.await(5, SECONDS))
             fail("Expected threads to have completed by now");
         assertEquals(asList("one entered", "one exited", "two entered", "two exited"), accesses);
     }
