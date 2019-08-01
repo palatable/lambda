@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.Optional;
@@ -32,7 +33,7 @@ import static testsupport.assertion.MonadErrorAssert.assertLaws;
 @RunWith(Traits.class)
 public class MaybeTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Subjects<Maybe<Integer>> testSubject() {
         return subjects(Maybe.nothing(), just(1));
     }
@@ -114,7 +115,7 @@ public class MaybeTest {
     @Test
     public void divergesIntoChoice3() {
         assertEquals(Choice3.a(UNIT), nothing().diverge());
-        assertEquals(Choice3.b(1), just(1).diverge());
+        assertEquals(Choice3.<Unit, Integer, Object>b(1), just(1).diverge());
     }
 
     @Test

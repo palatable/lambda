@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
@@ -13,6 +14,7 @@ import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadError;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -20,6 +22,8 @@ import java.util.Objects;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static java.util.Arrays.asList;
@@ -35,6 +39,7 @@ import static java.util.Arrays.asList;
 public abstract class Either<L, R> implements
         CoProduct2<L, R, Either<L, R>>,
         MonadError<L, R, Either<L, ?>>,
+        MonadRec<R, Either<L, ?>>,
         Traversable<R, Either<L, ?>>,
         Bifunctor<L, R, Either<?, ?>> {
 
@@ -132,6 +137,16 @@ public abstract class Either<L, R> implements
     @SuppressWarnings("RedundantTypeArguments")
     public <R2> Either<L, R2> flatMap(Fn1<? super R, ? extends Monad<R2, Either<L, ?>>> rightFn) {
         return match(Either::left, rightFn.fmap(Monad<R2, Either<L, ?>>::coerce));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Either<L, B> trampolineM(Fn1<? super R, ? extends MonadRec<RecursiveResult<R, B>, Either<L, ?>>> fn) {
+        return match(Either::left, trampoline(a -> fn.apply(a).<Either<L, RecursiveResult<R, B>>>coerce()
+                .match(l -> terminate(left(l)),
+                       aOrB -> aOrB.fmap(Either::right))));
     }
 
     @Override
