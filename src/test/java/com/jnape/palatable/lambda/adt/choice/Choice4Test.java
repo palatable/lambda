@@ -10,6 +10,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice4.a;
@@ -36,25 +37,30 @@ public class Choice4Test {
         d = d(4D);
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class,
+                 ApplicativeLaws.class,
+                 MonadLaws.class,
+                 BifunctorLaws.class,
+                 TraversableLaws.class,
+                 MonadRecLaws.class})
     public Subjects<Choice4<String, Integer, Boolean, Character>> testSubjects() {
         return subjects(a("foo"), b(1), c(true), d('a'));
     }
 
     @Test
     public void convergeStaysInChoice() {
-        assertEquals(Choice3.a(1), a.converge(d -> Choice3.b(d.toString())));
-        assertEquals(Choice3.b("two"), b.converge(d -> Choice3.b(d.toString())));
-        assertEquals(Choice3.c(true), c.converge(d -> Choice3.b(d.toString())));
-        assertEquals(Choice3.b("4.0"), d.converge(d -> Choice3.b(d.toString())));
+        assertEquals(Choice3.<Integer, String, Boolean>a(1), a.converge(d -> Choice3.b(d.toString())));
+        assertEquals(Choice3.<Integer, String, Boolean>b("two"), b.converge(d -> Choice3.b(d.toString())));
+        assertEquals(Choice3.<Integer, String, Boolean>c(true), c.converge(d -> Choice3.b(d.toString())));
+        assertEquals(Choice3.<Integer, String, Boolean>b("4.0"), d.converge(d -> Choice3.b(d.toString())));
     }
 
     @Test
     public void divergeStaysInChoice() {
-        assertEquals(Choice5.a(1), a.diverge());
-        assertEquals(Choice5.b("two"), b.diverge());
-        assertEquals(Choice5.c(true), c.diverge());
-        assertEquals(Choice5.d(4D), d.diverge());
+        assertEquals(Choice5.<Integer, String, Boolean, Double, Object>a(1), a.diverge());
+        assertEquals(Choice5.<Integer, String, Boolean, Double, Object>b("two"), b.diverge());
+        assertEquals(Choice5.<Integer, String, Boolean, Double, Object>c(true), c.diverge());
+        assertEquals(Choice5.<Integer, String, Boolean, Double, Object>d(4D), d.diverge());
     }
 
     @Test

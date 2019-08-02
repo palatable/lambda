@@ -6,16 +6,20 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct4;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple4;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into4.into4;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -30,7 +34,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Choice4<A, B, C, D> implements
         CoProduct4<A, B, C, D, Choice4<A, B, C, D>>,
-        Monad<D, Choice4<A, B, C, ?>>,
+        MonadRec<D, Choice4<A, B, C, ?>>,
         Bifunctor<C, D, Choice4<A, B, ?, ?>>,
         Traversable<D, Choice4<A, B, C, ?>> {
 
@@ -69,7 +73,7 @@ public abstract class Choice4<A, B, C, D> implements
      */
     @Override
     public final <E> Choice4<A, B, C, E> fmap(Fn1<? super D, ? extends E> fn) {
-        return Monad.super.<E>fmap(fn).coerce();
+        return MonadRec.super.<E>fmap(fn).coerce();
     }
 
     /**
@@ -107,7 +111,7 @@ public abstract class Choice4<A, B, C, D> implements
      */
     @Override
     public <E> Choice4<A, B, C, E> zip(Applicative<Fn1<? super D, ? extends E>, Choice4<A, B, C, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -127,7 +131,7 @@ public abstract class Choice4<A, B, C, D> implements
      */
     @Override
     public <E> Choice4<A, B, C, E> discardL(Applicative<E, Choice4<A, B, C, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -135,7 +139,7 @@ public abstract class Choice4<A, B, C, D> implements
      */
     @Override
     public <E> Choice4<A, B, C, D> discardR(Applicative<E, Choice4<A, B, C, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -158,6 +162,19 @@ public abstract class Choice4<A, B, C, D> implements
                      b -> pure.apply((TravB) Choice4.<A, B, C, E>b(b)).coerce(),
                      c -> pure.apply((TravB) Choice4.<A, B, C, E>c(c)),
                      d -> fn.apply(d).<Choice4<A, B, C, E>>fmap(Choice4::d).<TravB>fmap(Functor::coerce).coerce());
+    }
+
+    @Override
+    public <E> Choice4<A, B, C, E> trampolineM(
+            Fn1<? super D, ? extends MonadRec<RecursiveResult<D, E>, Choice4<A, B, C, ?>>> fn) {
+        return match(Choice4::a,
+                     Choice4::b,
+                     Choice4::c,
+                     trampoline(d -> fn.apply(d).<Choice4<A, B, C, RecursiveResult<D, E>>>coerce()
+                             .match(a -> terminate(a(a)),
+                                    b -> terminate(b(b)),
+                                    c -> terminate(c(c)),
+                                    dOrE -> dOrE.fmap(Choice4::d))));
     }
 
     /**
