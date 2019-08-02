@@ -8,12 +8,14 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadError;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -24,6 +26,8 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -36,6 +40,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 public abstract class Maybe<A> implements
         CoProduct2<Unit, A, Maybe<A>>,
         MonadError<Unit, A, Maybe<?>>,
+        MonadRec<A, Maybe<?>>,
         Traversable<A, Maybe<?>> {
 
     private Maybe() {
@@ -191,6 +196,16 @@ public abstract class Maybe<A> implements
     @Override
     public final <B> Maybe<B> flatMap(Fn1<? super A, ? extends Monad<B, Maybe<?>>> f) {
         return match(constantly(nothing()), f.fmap(Monad<B, Maybe<?>>::coerce));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Maybe<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Maybe<?>>> fn) {
+        return match(constantly(nothing()), trampoline(a -> fn.apply(a).<Maybe<RecursiveResult<A, B>>>coerce()
+                .match(constantly(terminate(nothing())),
+                       aOrB -> aOrB.fmap(Maybe::just))));
     }
 
     /**

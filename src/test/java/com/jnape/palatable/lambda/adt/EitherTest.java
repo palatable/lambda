@@ -12,6 +12,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,7 +38,13 @@ public class EitherTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({
+            FunctorLaws.class,
+            ApplicativeLaws.class,
+            MonadLaws.class,
+            BifunctorLaws.class,
+            TraversableLaws.class,
+            MonadRecLaws.class})
     public Subjects<Either<String, Integer>> testSubjects() {
         return subjects(left("foo"), right(1));
     }
