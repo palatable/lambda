@@ -6,17 +6,21 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -30,7 +34,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Choice2<A, B> implements
         CoProduct2<A, B, Choice2<A, B>>,
-        Monad<B, Choice2<A, ?>>,
+        MonadRec<B, Choice2<A, ?>>,
         Bifunctor<A, B, Choice2<?, ?>>,
         Traversable<B, Choice2<A, ?>> {
 
@@ -68,7 +72,7 @@ public abstract class Choice2<A, B> implements
      */
     @Override
     public final <C> Choice2<A, C> fmap(Fn1<? super B, ? extends C> fn) {
-        return Monad.super.<C>fmap(fn).coerce();
+        return MonadRec.super.<C>fmap(fn).coerce();
     }
 
     /**
@@ -109,14 +113,14 @@ public abstract class Choice2<A, B> implements
      */
     @Override
     public <C> Choice2<A, C> zip(Applicative<Fn1<? super B, ? extends C>, Choice2<A, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <C> Lazy<? extends Monad<C, Choice2<A, ?>>> lazyZip(
+    public <C> Lazy<Choice2<A, C>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super B, ? extends C>, Choice2<A, ?>>> lazyAppFn) {
         return match(a -> lazy(a(a)),
                      b -> lazyAppFn.fmap(choiceF -> choiceF.<C>fmap(f -> f.apply(b)).coerce()));
@@ -127,7 +131,7 @@ public abstract class Choice2<A, B> implements
      */
     @Override
     public <C> Choice2<A, C> discardL(Applicative<C, Choice2<A, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -135,7 +139,7 @@ public abstract class Choice2<A, B> implements
      */
     @Override
     public <C> Choice2<A, B> discardR(Applicative<C, Choice2<A, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -144,6 +148,15 @@ public abstract class Choice2<A, B> implements
     @Override
     public final <C> Choice2<A, C> flatMap(Fn1<? super B, ? extends Monad<C, Choice2<A, ?>>> f) {
         return match(Choice2::a, b -> f.apply(b).coerce());
+    }
+
+    @Override
+    public <C> Choice2<A, C> trampolineM(Fn1<? super B, ? extends MonadRec<RecursiveResult<B, C>, Choice2<A, ?>>> fn) {
+        return match(Choice2::a,
+                trampoline(b -> fn.apply(b)
+                        .<Choice2<A, RecursiveResult<B, C>>>coerce()
+                        .match(a -> terminate(a(a)),
+                                bOrC -> bOrC.fmap(Choice2::b))));
     }
 
     /**
