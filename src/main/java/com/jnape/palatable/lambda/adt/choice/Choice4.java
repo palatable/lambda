@@ -164,6 +164,9 @@ public abstract class Choice4<A, B, C, D> implements
                      d -> fn.apply(d).<Choice4<A, B, C, E>>fmap(Choice4::d).<TravB>fmap(Functor::coerce).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E> Choice4<A, B, C, E> trampolineM(
             Fn1<? super D, ? extends MonadRec<RecursiveResult<D, E>, Choice4<A, B, C, ?>>> fn) {
