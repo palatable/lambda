@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -21,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class IdentityTTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public IdentityT<Maybe<?>, Integer> testSubject() {
         return identityT(just(new Identity<>(1)));
     }

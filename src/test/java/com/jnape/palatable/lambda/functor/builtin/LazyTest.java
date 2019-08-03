@@ -9,6 +9,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,7 +25,7 @@ import static testsupport.traits.Equivalence.equivalence;
 @RunWith(Traits.class)
 public class LazyTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Equivalence<Lazy<Integer>> testSubject() {
         return equivalence(lazy(0), Lazy::value);
     }

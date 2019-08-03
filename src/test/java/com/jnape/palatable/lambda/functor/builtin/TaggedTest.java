@@ -10,11 +10,12 @@ import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
 import static org.junit.Assert.assertEquals;
+import testsupport.traits.MonadRecLaws;
 
 @RunWith(Traits.class)
 public class TaggedTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class, MonadRecLaws.class})
     public Tagged<String, Integer> testSubject() {
         return new Tagged<>(1);
     }

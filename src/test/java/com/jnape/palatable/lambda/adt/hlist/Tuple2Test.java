@@ -10,6 +10,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.HashMap;
@@ -39,7 +40,13 @@ public class Tuple2Test {
         tuple2 = new Tuple2<>(1, new SingletonHList<>(2));
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({
+            FunctorLaws.class,
+            ApplicativeLaws.class,
+            MonadLaws.class,
+            MonadRecLaws.class,
+            BifunctorLaws.class,
+            TraversableLaws.class})
     public Tuple2<?, ?> testSubject() {
         return tuple("one", 2);
     }

@@ -3,15 +3,18 @@ package com.jnape.palatable.lambda.functor.builtin;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Downcast;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 
 /**
  * Like {@link Const}, but the phantom parameter is in the contravariant position, and the value is in covariant
@@ -21,9 +24,8 @@ import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
  * @param <B> the value type
  */
 public final class Tagged<S, B> implements
-        Monad<B, Tagged<S, ?>>,
-        Traversable<B, Tagged<S, ?>>,
-        Cocartesian<S, B, Tagged<?, ?>> {
+        MonadRec<B, Tagged<S, ?>>,
+        Traversable<B, Tagged<S, ?>>, Cocartesian<S, B, Tagged<?, ?>> {
 
     private final B b;
 
@@ -52,6 +54,15 @@ public final class Tagged<S, B> implements
      * {@inheritDoc}
      */
     @Override
+    public <C> Tagged<S, C> trampolineM(Fn1<? super B, ? extends MonadRec<RecursiveResult<B, C>, Tagged<S, ?>>> fn) {
+        return new Tagged<>(trampoline(b -> fn.apply(b).<Tagged<S, RecursiveResult<B, C>>>coerce().unTagged(),
+                                       unTagged()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <C> Tagged<S, C> pure(C c) {
         return new Tagged<>(c);
     }
@@ -61,7 +72,7 @@ public final class Tagged<S, B> implements
      */
     @Override
     public <C> Tagged<S, C> fmap(Fn1<? super B, ? extends C> fn) {
-        return Monad.super.<C>fmap(fn).coerce();
+        return MonadRec.super.<C>fmap(fn).coerce();
     }
 
     /**
@@ -69,7 +80,7 @@ public final class Tagged<S, B> implements
      */
     @Override
     public <C> Tagged<S, C> zip(Applicative<Fn1<? super B, ? extends C>, Tagged<S, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -77,7 +88,7 @@ public final class Tagged<S, B> implements
      */
     @Override
     public <C> Tagged<S, C> discardL(Applicative<C, Tagged<S, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -85,7 +96,7 @@ public final class Tagged<S, B> implements
      */
     @Override
     public <C> Tagged<S, B> discardR(Applicative<C, Tagged<S, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**

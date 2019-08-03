@@ -150,13 +150,15 @@ public abstract class Choice2<A, B> implements
         return match(Choice2::a, b -> f.apply(b).coerce());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Choice2<A, C> trampolineM(Fn1<? super B, ? extends MonadRec<RecursiveResult<B, C>, Choice2<A, ?>>> fn) {
         return match(Choice2::a,
-                trampoline(b -> fn.apply(b)
-                        .<Choice2<A, RecursiveResult<B, C>>>coerce()
-                        .match(a -> terminate(a(a)),
-                                bOrC -> bOrC.fmap(Choice2::b))));
+                     trampoline(b -> fn.apply(b).<Choice2<A, RecursiveResult<B, C>>>coerce()
+                             .match(a -> terminate(a(a)),
+                                    bOrC -> bOrC.fmap(Choice2::b))));
     }
 
     /**

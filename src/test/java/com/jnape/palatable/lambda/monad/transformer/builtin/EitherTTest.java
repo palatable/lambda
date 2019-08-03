@@ -10,6 +10,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
@@ -24,7 +25,12 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class EitherTTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class})
+    @TestTraits({
+            FunctorLaws.class,
+            ApplicativeLaws.class,
+            MonadLaws.class,
+            BifunctorLaws.class,
+            MonadRecLaws.class})
     public Subjects<EitherT<Identity<?>, String, Integer>> testSubject() {
         return subjects(eitherT(new Identity<>(left("foo"))), eitherT(new Identity<>(right(1))));
     }

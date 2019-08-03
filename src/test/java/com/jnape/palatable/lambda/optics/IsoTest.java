@@ -9,6 +9,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class IsoTest {
     private static final Iso<String, List<Character>, Integer, Double> ISO =
             iso(Integer::parseInt, dbl -> dbl.toString().chars().mapToObj(x -> (char) x).collect(toList()));
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Equivalence<Iso<String, List<Character>, Integer, Double>> testSubject() {
         return equivalence(ISO, iso -> view(iso, "123"));
     }

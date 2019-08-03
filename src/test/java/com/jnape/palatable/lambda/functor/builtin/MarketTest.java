@@ -9,6 +9,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.trying;
@@ -23,7 +24,7 @@ import static testsupport.traits.Equivalence.equivalence;
 @RunWith(Traits.class)
 public class MarketTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Subjects<Equivalence<Market<Integer, String, String, String>>> testSubject() {
         Market<Integer, String, String, String> market = new Market<>(id(), str -> trying(() -> parseInt(str),
                                                                                           constantly(str)));

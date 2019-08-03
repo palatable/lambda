@@ -12,6 +12,7 @@ import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadReaderLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.MonadWriterLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
@@ -27,6 +28,7 @@ public class StateTTest {
     @TestTraits({FunctorLaws.class,
                  ApplicativeLaws.class,
                  MonadLaws.class,
+                 MonadRecLaws.class,
                  MonadReaderLaws.class,
                  MonadWriterLaws.class})
     public Equivalence<StateT<String, Identity<?>, Integer>> testReader() {

@@ -3,11 +3,13 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.MonadWriter;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 import com.jnape.palatable.lambda.monoid.Monoid;
@@ -27,13 +29,13 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
  * @param <M> the {@link Monad monadic embedding}
  * @param <A> the result type
  */
-public final class WriterT<W, M extends Monad<?, M>, A> implements
+public final class WriterT<W, M extends MonadRec<?, M>, A> implements
         MonadWriter<W, A, WriterT<W, M, ?>>,
         MonadT<M, A, WriterT<W, M, ?>, WriterT<W, ?, ?>> {
 
-    private final Fn1<? super Monoid<W>, ? extends Monad<Tuple2<A, W>, M>> writerFn;
+    private final Fn1<? super Monoid<W>, ? extends MonadRec<Tuple2<A, W>, M>> writerFn;
 
-    private WriterT(Fn1<? super Monoid<W>, ? extends Monad<Tuple2<A, W>, M>> writerFn) {
+    private WriterT(Fn1<? super Monoid<W>, ? extends MonadRec<Tuple2<A, W>, M>> writerFn) {
         this.writerFn = writerFn;
     }
 
@@ -46,7 +48,7 @@ public final class WriterT<W, M extends Monad<?, M>, A> implements
      * @param <MAW>  the inferred {@link Monad} result
      * @return the accumulation with the result
      */
-    public <MAW extends Monad<Tuple2<A, W>, M>> MAW runWriterT(Monoid<W> monoid) {
+    public <MAW extends MonadRec<Tuple2<A, W>, M>> MAW runWriterT(Monoid<W> monoid) {
         return writerFn.apply(monoid).coerce();
     }
 
@@ -70,8 +72,20 @@ public final class WriterT<W, M extends Monad<?, M>, A> implements
      * {@inheritDoc}
      */
     @Override
-    public <B, N extends Monad<?, N>> WriterT<W, N, B> lift(Monad<B, N> mb) {
+    public <B, N extends MonadRec<?, N>> WriterT<W, N, B> lift(MonadRec<B, N> mb) {
         return WriterT.<W>liftWriterT().apply(mb);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> WriterT<W, M, B> trampolineM(
+            Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, WriterT<W, M, ?>>> fn) {
+        return new WriterT<>(monoid -> runWriterT(monoid).trampolineM(into((a, w) -> fn.apply(a)
+                .<WriterT<W, M, RecursiveResult<A, B>>>coerce()
+                .runWriterT(monoid).fmap(t -> t.fmap(monoid.apply(w)))
+                .fmap(into((aOrB, w_) -> aOrB.biMap(a_ -> tuple(a_, w_), b -> tuple(b, w_)))))));
     }
 
     /**
@@ -143,7 +157,7 @@ public final class WriterT<W, M extends Monad<?, M>, A> implements
      * @param <M> the {@link Monad} type
      * @return the {@link WriterT}
      */
-    public static <W, M extends Monad<?, M>> WriterT<W, M, Unit> tell(Monad<W, M> mw) {
+    public static <W, M extends MonadRec<?, M>> WriterT<W, M, Unit> tell(MonadRec<W, M> mw) {
         return writerT(mw.fmap(tupler(UNIT)));
     }
 
@@ -156,7 +170,7 @@ public final class WriterT<W, M extends Monad<?, M>, A> implements
      * @param <A> the value type
      * @return the {@link WriterT}
      */
-    public static <W, M extends Monad<?, M>, A> WriterT<W, M, A> listen(Monad<A, M> ma) {
+    public static <W, M extends MonadRec<?, M>, A> WriterT<W, M, A> listen(MonadRec<A, M> ma) {
         return new WriterT<>(monoid -> ma.fmap(a -> tuple(a, monoid.identity())));
     }
 
@@ -169,7 +183,7 @@ public final class WriterT<W, M extends Monad<?, M>, A> implements
      * @param <A> the value type
      * @return the {@link WriterT}
      */
-    public static <W, M extends Monad<?, M>, A> WriterT<W, M, A> writerT(Monad<Tuple2<A, W>, M> mwa) {
+    public static <W, M extends MonadRec<?, M>, A> WriterT<W, M, A> writerT(MonadRec<Tuple2<A, W>, M> mwa) {
         return new WriterT<>(constantly(mwa));
     }
 
@@ -181,11 +195,11 @@ public final class WriterT<W, M extends Monad<?, M>, A> implements
      * @param <M>   the argument {@link Monad} witness
      * @return the {@link Pure} instance
      */
-    public static <W, M extends Monad<?, M>> Pure<WriterT<W, M, ?>> pureWriterT(Pure<M> pureM) {
+    public static <W, M extends MonadRec<?, M>> Pure<WriterT<W, M, ?>> pureWriterT(Pure<M> pureM) {
         return new Pure<WriterT<W, M, ?>>() {
             @Override
             public <A> WriterT<W, M, A> checkedApply(A a) throws Throwable {
-                return listen(pureM.<A, Monad<A, M>>apply(a));
+                return listen(pureM.<A, MonadRec<A, M>>apply(a));
             }
         };
     }

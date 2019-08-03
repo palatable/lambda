@@ -4,16 +4,21 @@ import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.optics.Prism;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
+import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 
 /**
  * A profunctor used to extract the isomorphic functions a {@link Prism} is composed of.
@@ -24,7 +29,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @param <T> the guaranteed output
  */
 public final class Market<A, B, S, T> implements
-        Monad<T, Market<A, B, S, ?>>,
+        MonadRec<T, Market<A, B, S, ?>>,
         Cocartesian<S, T, Market<A, B, ?, ?>> {
 
     private final Fn1<? super B, ? extends T>            bt;
@@ -70,6 +75,23 @@ public final class Market<A, B, S, T> implements
                             s -> sta().apply(s).invert()
                                     .flatMap(t -> f.apply(t).<Market<A, B, S, U>>coerce().sta()
                                             .apply(s).invert()).invert());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <U> Market<A, B, S, U> trampolineM(
+            Fn1<? super T, ? extends MonadRec<RecursiveResult<T, U>, Market<A, B, S, ?>>> fn) {
+        Fn1<B, U> bu = Fn1.<B, T>fn1(bt).trampolineM(t -> fn1(fn.apply(t).<Market<A, B, S, RecursiveResult<T, U>>>coerce().bt));
+        Fn1<S, Either<U, A>> sua = Fn1.<S, Either<T, A>>fn1(sta)
+                .flatMap(tOrA -> fn1(s -> tOrA.match(
+                        trampoline(t -> fn.apply(t).<Market<A, B, S, RecursiveResult<T, U>>>coerce()
+                                .sta.apply(s)
+                                .match(tOrU -> tOrU.match(RecursiveResult::recurse, u -> terminate(left(u))),
+                                       a -> terminate(right(a)))),
+                        Either::right)));
+        return new Market<>(bu, sua);
     }
 
     /**

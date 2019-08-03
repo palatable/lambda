@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class TryTest {
 
     @Rule public ExpectedException thrown = ExpectedException.none();
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class, MonadRecLaws.class})
     public Subjects<Try<Integer>> testSubject() {
         return subjects(failure(new IllegalStateException()), success(1));
     }

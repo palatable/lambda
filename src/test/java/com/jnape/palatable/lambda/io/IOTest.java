@@ -14,6 +14,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class IOTest {
 
     public @Rule ExpectedException thrown = ExpectedException.none();
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Equivalence<IO<Integer>> testSubject() {
         return equivalence(io(1), IO::unsafePerformIO);
     }

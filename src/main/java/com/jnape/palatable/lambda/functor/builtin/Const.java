@@ -1,10 +1,12 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -19,7 +21,7 @@ import java.util.Objects;
  * @param <B> the right (phantom) parameter type
  */
 public final class Const<A, B> implements
-        Monad<B, Const<A, ?>>,
+        MonadRec<B, Const<A, ?>>,
         Bifunctor<A, B, Const<?, ?>>,
         Traversable<B, Const<A, ?>> {
 
@@ -48,7 +50,7 @@ public final class Const<A, B> implements
      */
     @Override
     public <C> Const<A, C> fmap(Fn1<? super B, ? extends C> fn) {
-        return Monad.super.<C>fmap(fn).coerce();
+        return MonadRec.super.<C>fmap(fn).coerce();
     }
 
     /**
@@ -65,7 +67,7 @@ public final class Const<A, B> implements
      */
     @Override
     public <C> Const<A, C> zip(Applicative<Fn1<? super B, ? extends C>, Const<A, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -74,7 +76,7 @@ public final class Const<A, B> implements
     @Override
     public <C> Lazy<Const<A, C>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super B, ? extends C>, Const<A, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, Const<A, ?>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<C, Const<A, ?>>::coerce);
     }
 
     /**
@@ -82,7 +84,7 @@ public final class Const<A, B> implements
      */
     @Override
     public <C> Const<A, C> discardL(Applicative<C, Const<A, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -90,7 +92,7 @@ public final class Const<A, B> implements
      */
     @Override
     public <C> Const<A, B> discardR(Applicative<C, Const<A, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -99,6 +101,15 @@ public final class Const<A, B> implements
     @Override
     @SuppressWarnings("unchecked")
     public <C> Const<A, C> flatMap(Fn1<? super B, ? extends Monad<C, Const<A, ?>>> f) {
+        return (Const<A, C>) this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public <C> Const<A, C> trampolineM(Fn1<? super B, ? extends MonadRec<RecursiveResult<B, C>, Const<A, ?>>> fn) {
         return (Const<A, C>) this;
     }
 

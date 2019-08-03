@@ -7,12 +7,14 @@ import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.LazyRec;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadError;
+import com.jnape.palatable.lambda.monad.MonadRec;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -38,7 +40,7 @@ import static java.util.concurrent.ForkJoinPool.commonPool;
  *
  * @param <A> the result type
  */
-public abstract class IO<A> implements MonadError<Throwable, A, IO<?>> {
+public abstract class IO<A> implements MonadRec<A, IO<?>>, MonadError<Throwable, A, IO<?>> {
 
     private IO() {
     }
@@ -171,6 +173,16 @@ public abstract class IO<A> implements MonadError<Throwable, A, IO<?>> {
         @SuppressWarnings({"unchecked", "RedundantCast"})
         Choice2<IO<?>, Fn1<Object, IO<?>>> composition = b((Fn1<Object, IO<?>>) (Object) f);
         return new Compose<>(this, composition);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> IO<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, IO<?>>> fn) {
+        return flatMap(a -> fn.apply(a).<IO<RecursiveResult<A, B>>>coerce().flatMap(aOrB -> aOrB.match(
+                a_ -> io(a_).trampolineM(fn),
+                IO::io)));
     }
 
     /**

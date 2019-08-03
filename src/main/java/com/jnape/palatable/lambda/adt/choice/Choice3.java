@@ -39,17 +39,6 @@ public abstract class Choice3<A, B, C> implements
         Traversable<C, Choice3<A, B, ?>>,
         MonadRec<C, Choice3<A, B, ?>> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <D> Choice3<A, B, D> trampolineM(Fn1<? super C, ? extends MonadRec<RecursiveResult<C, D>, Choice3<A, B, ?>>> fn) {
-        return flatMap(trampoline(c -> fn.apply(c).<Choice3<A, B, RecursiveResult<C, D>>>coerce()
-                .match(a -> terminate(a(a)),
-                        b -> terminate(b(b)),
-                        r -> r.fmap(Choice3::c))));
-    }
-
     private Choice3() {
     }
 
@@ -161,6 +150,18 @@ public abstract class Choice3<A, B, C> implements
     @Override
     public <D> Choice3<A, B, D> flatMap(Fn1<? super C, ? extends Monad<D, Choice3<A, B, ?>>> f) {
         return match(Choice3::a, Choice3::b, c -> f.apply(c).coerce());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <D> Choice3<A, B, D> trampolineM(
+            Fn1<? super C, ? extends MonadRec<RecursiveResult<C, D>, Choice3<A, B, ?>>> fn) {
+        return flatMap(trampoline(c -> fn.apply(c).<Choice3<A, B, RecursiveResult<C, D>>>coerce()
+                .match(a -> terminate(a(a)),
+                       b -> terminate(b(b)),
+                       r -> r.fmap(Choice3::c))));
     }
 
     /**

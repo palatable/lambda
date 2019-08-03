@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.optics;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
@@ -10,6 +11,7 @@ import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.functor.builtin.Exchange;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.optics.functions.Over;
 import com.jnape.palatable.lambda.optics.functions.Set;
 import com.jnape.palatable.lambda.optics.functions.View;
@@ -56,7 +58,7 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
 @FunctionalInterface
 public interface Iso<S, T, A, B> extends
         Optic<Profunctor<?, ?, ?>, Functor<?, ?>, S, T, A, B>,
-        Monad<T, Iso<S, ?, A, B>>,
+        MonadRec<T, Iso<S, ?, A, B>>,
         Profunctor<S, T, Iso<?, ?, A, B>> {
 
     /**
@@ -97,7 +99,7 @@ public interface Iso<S, T, A, B> extends
      */
     @Override
     default <U> Iso<S, U, A, B> fmap(Fn1<? super T, ? extends U> fn) {
-        return Monad.super.<U>fmap(fn).coerce();
+        return MonadRec.super.<U>fmap(fn).coerce();
     }
 
     /**
@@ -113,7 +115,7 @@ public interface Iso<S, T, A, B> extends
      */
     @Override
     default <U> Iso<S, U, A, B> zip(Applicative<Fn1<? super T, ? extends U>, Iso<S, ?, A, B>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -121,7 +123,7 @@ public interface Iso<S, T, A, B> extends
      */
     @Override
     default <U> Iso<S, U, A, B> discardL(Applicative<U, Iso<S, ?, A, B>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -129,7 +131,7 @@ public interface Iso<S, T, A, B> extends
      */
     @Override
     default <U> Iso<S, T, A, B> discardR(Applicative<U, Iso<S, ?, A, B>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -146,6 +148,18 @@ public interface Iso<S, T, A, B> extends
                 .fmap(Fn2::uncurry)
                 .fmap(bbu -> bbu.<B>diMapL(Tuple2::fill))
                 .into(Iso::iso);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Iso<S, U, A, B> trampolineM(
+            Fn1<? super T, ? extends MonadRec<RecursiveResult<T, U>, Iso<S, ?, A, B>>> fn) {
+        return unIso().into((sa, bt) -> iso(
+                sa,
+                Fn1.<B, T>fn1(bt).trampolineM(t -> fn1(fn.apply(t).<Iso<S, RecursiveResult<T, U>, A, B>>coerce()
+                                                               .unIso()._2()))));
     }
 
     /**

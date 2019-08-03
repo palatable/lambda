@@ -11,6 +11,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
@@ -34,7 +35,7 @@ public class PrismTest {
 
     private static final Fn1<String, Integer> PARSE_INT = Fn1.fn1(Integer::parseInt);
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Equivalence<Prism<String, String, Integer, Integer>> testSubject() {
         return equivalence(Prism.fromPartial(Integer::parseInt, Object::toString),
                            prism -> matching(prism, "foo"));

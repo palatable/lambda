@@ -10,6 +10,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.MonadReaderLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
@@ -21,7 +22,7 @@ import static testsupport.traits.Equivalence.equivalence;
 @RunWith(Traits.class)
 public class ReaderTTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadReaderLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadReaderLaws.class, MonadRecLaws.class})
     public Equivalence<ReaderT<Integer, Identity<?>, Integer>> testSubject() {
         return equivalence(readerT(Identity::new), readerT -> readerT.runReaderT(1));
     }

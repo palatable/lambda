@@ -1,6 +1,8 @@
 package com.jnape.palatable.lambda.monad;
 
 import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.adt.Try;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -15,6 +17,10 @@ import com.jnape.palatable.lambda.io.IO;
  * @param <E> the error type
  * @param <M> the {@link Monad} witness
  * @param <A> the carrier
+ * @see IO
+ * @see Either
+ * @see Try
+ * @see Maybe
  */
 public interface MonadError<E, A, M extends MonadError<E, ?, M>> extends Monad<A, M> {
 

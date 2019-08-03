@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cocartesian;
@@ -15,6 +16,7 @@ import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.functor.builtin.Market;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.optics.functions.Matching;
 import com.jnape.palatable.lambda.optics.functions.Pre;
 import com.jnape.palatable.lambda.optics.functions.Re;
@@ -57,7 +59,7 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
 @FunctionalInterface
 public interface Prism<S, T, A, B> extends
         ProtoOptic<Cocartesian<?, ?, ?>, S, T, A, B>,
-        Monad<T, Prism<S, ?, A, B>>,
+        MonadRec<T, Prism<S, ?, A, B>>,
         Profunctor<S, T, Prism<?, ?, A, B>> {
 
     /**
@@ -156,7 +158,7 @@ public interface Prism<S, T, A, B> extends
      */
     @Override
     default <U> Prism<S, U, A, B> fmap(Fn1<? super T, ? extends U> fn) {
-        return Monad.super.<U>fmap(fn).coerce();
+        return MonadRec.super.<U>fmap(fn).coerce();
     }
 
     /**
@@ -164,7 +166,7 @@ public interface Prism<S, T, A, B> extends
      */
     @Override
     default <U> Prism<S, U, A, B> zip(Applicative<Fn1<? super T, ? extends U>, Prism<S, ?, A, B>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -173,7 +175,7 @@ public interface Prism<S, T, A, B> extends
     @Override
     default <U> Lazy<Prism<S, U, A, B>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super T, ? extends U>, Prism<S, ?, A, B>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<U, Prism<S, ?, A, B>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<U, Prism<S, ?, A, B>>::coerce);
     }
 
     /**
@@ -181,7 +183,7 @@ public interface Prism<S, T, A, B> extends
      */
     @Override
     default <U> Prism<S, U, A, B> discardL(Applicative<U, Prism<S, ?, A, B>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -189,7 +191,20 @@ public interface Prism<S, T, A, B> extends
      */
     @Override
     default <U> Prism<S, T, A, B> discardR(Applicative<U, Prism<S, ?, A, B>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Prism<S, U, A, B> trampolineM(
+            Fn1<? super T, ? extends MonadRec<RecursiveResult<T, U>, Prism<S, ?, A, B>>> fn) {
+        Market<A, B, S, U> absu = unPrism().into(Market<A, B, S, T>::new)
+                .trampolineM(t -> fn.apply(t).<Prism<S, RecursiveResult<T, U>, A, B>>coerce()
+                        .unPrism()
+                        .into(Market<A, B, S, RecursiveResult<T, U>>::new));
+        return prism(absu.sta(), absu.bt());
     }
 
     /**

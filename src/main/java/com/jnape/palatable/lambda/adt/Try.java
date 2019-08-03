@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Downcast;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
@@ -11,6 +12,7 @@ import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadError;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -20,6 +22,8 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.internal.Runtime.throwChecked;
 
@@ -32,6 +36,7 @@ import static com.jnape.palatable.lambda.internal.Runtime.throwChecked;
  */
 public abstract class Try<A> implements
         MonadError<Throwable, A, Try<?>>,
+        MonadRec<A, Try<?>>,
         Traversable<A, Try<?>>,
         CoProduct2<Throwable, A, Try<A>> {
 
@@ -237,6 +242,17 @@ public abstract class Try<A> implements
     @Override
     public <B> Try<A> discardR(Applicative<B, Try<?>> appB) {
         return MonadError.super.discardR(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Try<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Try<?>>> fn) {
+        return flatMap(trampoline(a -> fn.apply(a).<Try<RecursiveResult<A, B>>>coerce().match(
+                t -> terminate(failure(t)),
+                aOrB -> aOrB.fmap(Try::success)
+        )));
     }
 
     /**

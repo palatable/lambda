@@ -8,6 +8,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.MonadReaderLaws;
 import testsupport.traits.MonadWriterLaws;
 
@@ -30,6 +31,7 @@ public class Fn1Test {
     @TestTraits({FunctorLaws.class,
                  ApplicativeLaws.class,
                  MonadLaws.class,
+                 MonadRecLaws.class,
                  MonadReaderLaws.class,
                  MonadWriterLaws.class})
     public Equivalence<Fn1<String, Object>> testSubject() {

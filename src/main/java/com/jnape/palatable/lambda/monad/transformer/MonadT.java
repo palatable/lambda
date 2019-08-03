@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadBase;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.builtin.EitherT;
 import com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT;
 import com.jnape.palatable.lambda.monad.transformer.builtin.ReaderT;
@@ -39,14 +40,14 @@ import com.jnape.palatable.lambda.monad.transformer.builtin.ReaderT;
  * @see EitherT
  * @see ReaderT
  */
-public interface MonadT<M extends Monad<?, M>, A, MT extends MonadT<M, ?, MT, T>, T extends MonadT<?, ?, ?, T>> extends
-        MonadBase<M, A, T>,
-        Monad<A, MT> {
+public interface MonadT<M extends MonadRec<?, M>, A, MT extends MonadT<M, ?, MT, T>, T extends MonadT<?, ?, ?, T>>
+        extends MonadBase<M, A, T>, Monad<A, MT>, MonadRec<A, MT> {
 
     /**
      * {@inheritDoc}
      */
-    <B, N extends Monad<?, N>> MonadT<N, B, ?, T> lift(Monad<B, N> mb);
+    @Override
+    <B, N extends MonadRec<?, N>> MonadT<N, B, ?, T> lift(MonadRec<B, N> mb);
 
     /**
      * {@inheritDoc}
@@ -65,7 +66,7 @@ public interface MonadT<M extends Monad<?, M>, A, MT extends MonadT<M, ?, MT, T>
      */
     @Override
     default <B> MonadT<M, B, MT, T> fmap(Fn1<? super A, ? extends B> fn) {
-        return Monad.super.<B>fmap(fn).coerce();
+        return MonadRec.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -73,7 +74,7 @@ public interface MonadT<M extends Monad<?, M>, A, MT extends MonadT<M, ?, MT, T>
      */
     @Override
     default <B> MonadT<M, B, MT, T> zip(Applicative<Fn1<? super A, ? extends B>, MT> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -82,7 +83,7 @@ public interface MonadT<M extends Monad<?, M>, A, MT extends MonadT<M, ?, MT, T>
     @Override
     default <B> Lazy<? extends MonadT<M, B, MT, T>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MT>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative<B, MT>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Applicative<B, MT>::coerce);
     }
 
     /**
@@ -90,7 +91,7 @@ public interface MonadT<M extends Monad<?, M>, A, MT extends MonadT<M, ?, MT, T>
      */
     @Override
     default <B> MonadT<M, B, MT, T> discardL(Applicative<B, MT> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -98,6 +99,6 @@ public interface MonadT<M extends Monad<?, M>, A, MT extends MonadT<M, ?, MT, T>
      */
     @Override
     default <B> MonadT<M, A, MT, T> discardR(Applicative<B, MT> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 }

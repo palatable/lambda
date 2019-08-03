@@ -13,6 +13,7 @@ import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadReaderLaws;
 import testsupport.traits.MonadWriterLaws;
+import testsupport.traits.MonadRecLaws;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -26,6 +27,7 @@ public class StateTest {
     @TestTraits({FunctorLaws.class,
                  ApplicativeLaws.class,
                  MonadLaws.class,
+                 MonadRecLaws.class,
                  MonadReaderLaws.class,
                  MonadWriterLaws.class})
     public Equivalence<State<String, Integer>> testSubject() {

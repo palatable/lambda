@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class MaybeTTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Subjects<MaybeT<Either<String, ?>, Integer>> testSubject() {
         return subjects(maybeT(right(just(1))),
                         maybeT(right(nothing())),

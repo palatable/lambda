@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
@@ -8,6 +9,7 @@ import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
 import java.util.Objects;
@@ -15,14 +17,15 @@ import java.util.Objects;
 /**
  * A {@link MonadT monad transformer} for {@link Identity}.
  *
- * @param <M> the outer {@link Monad}
+ * @param <M> the outer {@link Monad stack-safe monad}
  * @param <A> the carrier type
  */
-public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, A, IdentityT<M, ?>, IdentityT<?, ?>> {
+public final class IdentityT<M extends MonadRec<?, M>, A> implements
+        MonadT<M, A, IdentityT<M, ?>, IdentityT<?, ?>> {
 
-    private final Monad<Identity<A>, M> mia;
+    private final MonadRec<Identity<A>, M> mia;
 
-    private IdentityT(Monad<Identity<A>, M> mia) {
+    private IdentityT(MonadRec<Identity<A>, M> mia) {
         this.mia = mia;
     }
 
@@ -32,7 +35,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, A, I
      * @param <MIA> the witnessed target type
      * @return the embedded {@link Monad}
      */
-    public <MIA extends Monad<Identity<A>, M>> MIA runIdentityT() {
+    public <MIA extends MonadRec<Identity<A>, M>> MIA runIdentityT() {
         return mia.coerce();
     }
 
@@ -40,7 +43,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, A, I
      * {@inheritDoc}
      */
     @Override
-    public <B, N extends Monad<?, N>> IdentityT<N, B> lift(Monad<B, N> mb) {
+    public <B, N extends MonadRec<?, N>> IdentityT<N, B> lift(MonadRec<B, N> mb) {
         return liftIdentityT().apply(mb);
     }
 
@@ -49,7 +52,23 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, A, I
      */
     @Override
     public <B> IdentityT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, IdentityT<M, ?>>> f) {
-        return identityT(mia.flatMap(identityA -> f.apply(identityA.runIdentity()).<IdentityT<M, B>>coerce().runIdentityT()));
+        return identityT(mia.flatMap(identityA -> f.apply(identityA.runIdentity())
+                .<IdentityT<M, B>>coerce()
+                .runIdentityT()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> IdentityT<M, B> trampolineM(
+            Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, IdentityT<M, ?>>> fn) {
+        return identityT(runIdentityT().fmap(Identity::runIdentity)
+                                 .trampolineM(a -> fn.apply(a)
+                                         .<IdentityT<M, RecursiveResult<A, B>>>coerce()
+                                         .runIdentityT()
+                                         .fmap(Identity::runIdentity))
+                                 .fmap(Identity::new));
     }
 
     /**
@@ -85,7 +104,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, A, I
         return new Compose<>(mia)
                 .lazyZip(lazyAppFn.fmap(maybeT -> new Compose<>(
                         maybeT.<IdentityT<M, Fn1<? super A, ? extends B>>>coerce()
-                                .<Monad<Identity<Fn1<? super A, ? extends B>>, M>>runIdentityT())))
+                                .<MonadRec<Identity<Fn1<? super A, ? extends B>>, M>>runIdentityT())))
                 .fmap(compose -> identityT(compose.getCompose()));
     }
 
@@ -129,7 +148,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, A, I
      * @param <A> the carrier type
      * @return the new {@link IdentityT}.
      */
-    public static <M extends Monad<?, M>, A> IdentityT<M, A> identityT(Monad<Identity<A>, M> mia) {
+    public static <M extends MonadRec<?, M>, A> IdentityT<M, A> identityT(MonadRec<Identity<A>, M> mia) {
         return new IdentityT<>(mia);
     }
 
@@ -140,11 +159,11 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, A, I
      * @param <M>   the argument {@link Monad} witness
      * @return the {@link Pure} instance
      */
-    public static <M extends Monad<?, M>> Pure<IdentityT<M, ?>> pureIdentityT(Pure<M> pureM) {
+    public static <M extends MonadRec<?, M>> Pure<IdentityT<M, ?>> pureIdentityT(Pure<M> pureM) {
         return new Pure<IdentityT<M, ?>>() {
             @Override
             public <A> IdentityT<M, A> checkedApply(A a) {
-                return identityT(pureM.<A, Monad<A, M>>apply(a).fmap(Identity::new));
+                return identityT(pureM.<A, MonadRec<A, M>>apply(a).fmap(Identity::new));
             }
         };
     }
@@ -157,7 +176,7 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, A, I
     public static Lift<IdentityT<?, ?>> liftIdentityT() {
         return new Lift<IdentityT<?, ?>>() {
             @Override
-            public <A, M extends Monad<?, M>> IdentityT<M, A> checkedApply(Monad<A, M> ga) {
+            public <A, M extends MonadRec<?, M>> IdentityT<M, A> checkedApply(MonadRec<A, M> ga) {
                 return identityT(ga.fmap(Identity::new));
             }
         };

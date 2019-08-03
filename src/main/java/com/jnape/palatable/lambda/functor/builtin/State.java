@@ -3,18 +3,23 @@ package com.jnape.palatable.lambda.functor.builtin;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadReader;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.MonadWriter;
 import com.jnape.palatable.lambda.monad.transformer.builtin.StateT;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Both.both;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.stateT;
 
 /**
@@ -26,7 +31,10 @@ import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.stateT
  * @param <S> the state type
  * @param <A> the result type
  */
-public final class State<S, A> implements MonadReader<S, A, State<S, ?>>, MonadWriter<S, A, State<S, ?>> {
+public final class State<S, A> implements
+        MonadRec<A, State<S,?>>,
+        MonadReader<S, A, State<S, ?>>,
+        MonadWriter<S, A, State<S, ?>> {
 
     private final StateT<S, Identity<?>, A> stateFn;
 
@@ -130,7 +138,7 @@ public final class State<S, A> implements MonadReader<S, A, State<S, ?>>, MonadW
      */
     @Override
     public <B> State<S, B> fmap(Fn1<? super A, ? extends B> fn) {
-        return MonadReader.super.<B>fmap(fn).coerce();
+        return MonadRec.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -138,7 +146,7 @@ public final class State<S, A> implements MonadReader<S, A, State<S, ?>>, MonadW
      */
     @Override
     public <B> State<S, B> zip(Applicative<Fn1<? super A, ? extends B>, State<S, ?>> appFn) {
-        return MonadReader.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -147,7 +155,7 @@ public final class State<S, A> implements MonadReader<S, A, State<S, ?>>, MonadW
     @Override
     public <B> Lazy<State<S, B>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super A, ? extends B>, State<S, ?>>> lazyAppFn) {
-        return MonadReader.super.lazyZip(lazyAppFn).fmap(Monad<B, State<S, ?>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<B, State<S, ?>>::coerce);
     }
 
     /**
@@ -155,7 +163,7 @@ public final class State<S, A> implements MonadReader<S, A, State<S, ?>>, MonadW
      */
     @Override
     public <B> State<S, A> discardR(Applicative<B, State<S, ?>> appB) {
-        return MonadReader.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -163,7 +171,17 @@ public final class State<S, A> implements MonadReader<S, A, State<S, ?>>, MonadW
      */
     @Override
     public <B> State<S, B> discardL(Applicative<B, State<S, ?>> appB) {
-        return MonadReader.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> State<S, B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, State<S, ?>>> fn) {
+        return state(fn1(this::run).fmap(trampoline(into((a, s) -> fn.apply(a)
+                .<State<S, RecursiveResult<A, B>>>coerce().run(s)
+                .into((aOrB, s_) -> aOrB.biMap(a_ -> tuple(a_, s_), b -> tuple(b, s_)))))));
     }
 
     /**

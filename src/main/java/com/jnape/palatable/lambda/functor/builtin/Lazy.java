@@ -3,9 +3,11 @@ package com.jnape.palatable.lambda.functor.builtin;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.LinkedList;
@@ -22,7 +24,7 @@ import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoli
  *
  * @param <A> the value type
  */
-public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<?>> {
+public abstract class Lazy<A> implements MonadRec<A, Lazy<?>>, Traversable<A, Lazy<?>> {
 
     private Lazy() {
     }
@@ -69,7 +71,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
      */
     @Override
     public final <B> Lazy<B> fmap(Fn1<? super A, ? extends B> fn) {
-        return Monad.super.<B>fmap(fn).coerce();
+        return MonadRec.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -77,7 +79,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
      */
     @Override
     public <B> Lazy<B> zip(Applicative<Fn1<? super A, ? extends B>, Lazy<?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -85,7 +87,7 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
      */
     @Override
     public final <B> Lazy<B> discardL(Applicative<B, Lazy<?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -93,7 +95,16 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
      */
     @Override
     public final <B> Lazy<A> discardR(Applicative<B, Lazy<?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Lazy<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Lazy<?>>> fn) {
+        return flatMap(a -> fn.apply(a).<Lazy<RecursiveResult<A, B>>>coerce()
+                .flatMap(aOrB -> aOrB.match(a_ -> lazy(a_).trampolineM(fn), Lazy::lazy)));
     }
 
     @Override

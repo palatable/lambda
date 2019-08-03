@@ -7,15 +7,19 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple8;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into8.into8;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -33,7 +37,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Choice8<A, B, C, D, E, F, G, H> implements
         CoProduct8<A, B, C, D, E, F, G, H, Choice8<A, B, C, D, E, F, G, H>>,
-        Monad<H, Choice8<A, B, C, D, E, F, G, ?>>,
+        MonadRec<H, Choice8<A, B, C, D, E, F, G, ?>>,
         Bifunctor<G, H, Choice8<A, B, C, D, E, F, ?, ?>>,
         Traversable<H, Choice8<A, B, C, D, E, F, G, ?>> {
 
@@ -66,7 +70,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
      */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> fmap(Fn1<? super H, ? extends I> fn) {
-        return Monad.super.<I>fmap(fn).coerce();
+        return MonadRec.super.<I>fmap(fn).coerce();
     }
 
     /**
@@ -108,7 +112,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> zip(
             Applicative<Fn1<? super H, ? extends I>, Choice8<A, B, C, D, E, F, G, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -132,7 +136,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
      */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> discardL(Applicative<I, Choice8<A, B, C, D, E, F, G, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -140,7 +144,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
      */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, H> discardR(Applicative<I, Choice8<A, B, C, D, E, F, G, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -150,6 +154,23 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
     public <I> Choice8<A, B, C, D, E, F, G, I> flatMap(
             Fn1<? super H, ? extends Monad<I, Choice8<A, B, C, D, E, F, G, ?>>> fn) {
         return match(Choice8::a, Choice8::b, Choice8::c, Choice8::d, Choice8::e, Choice8::f, Choice8::g, h -> fn.apply(h).coerce());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <I> Choice8<A, B, C, D, E, F, G, I> trampolineM(
+            Fn1<? super H, ? extends MonadRec<RecursiveResult<H, I>, Choice8<A, B, C, D, E, F, G, ?>>> fn) {
+        return flatMap(trampoline(h -> fn.apply(h).<Choice8<A, B, C, D, E, F, G, RecursiveResult<H, I>>>coerce().match(
+                a -> terminate(a(a)),
+                b -> terminate(b(b)),
+                c -> terminate(c(c)),
+                d -> terminate(d(d)),
+                e -> terminate(e(e)),
+                f -> terminate(f(f)),
+                g -> terminate(g(g)),
+                hRec -> hRec.fmap(Choice8::h))));
     }
 
     /**

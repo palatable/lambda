@@ -13,6 +13,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class LensTest {
     private static final Lens<List<String>, Set<Integer>, String, Integer>
             LENS         = lens(xs -> xs.get(0), (xs, i) -> singleton(i));
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Equivalence<Lens<Map<String, Integer>, List<Integer>, Integer, String>> testSubject() {
         return equivalence(lens(m -> m.get("foo"), (m, s) -> singletonList(m.get(s))), lens -> view(lens, emptyMap()));
     }

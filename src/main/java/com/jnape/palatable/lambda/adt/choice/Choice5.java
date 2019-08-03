@@ -159,17 +159,14 @@ public abstract class Choice5<A, B, C, D, E> implements
      * {@inheritDoc}
      */
     @Override
-    public <F> Choice5<A, B, C, D, F> trampolineM(Fn1<? super E, ? extends MonadRec<RecursiveResult<E, F>, Choice5<A, B, C, D, ?>>> fn) {
-        return match(Choice5::a,
-                     Choice5::b,
-                     Choice5::c,
-                     Choice5::d,
-                     trampoline(e -> fn.apply(e).<Choice5<A, B, C, D, RecursiveResult<E, F>>>coerce().match(
-                                a -> terminate(Choice5.a(a)),
-                                b -> terminate(Choice5.b(b)),
-                                c -> terminate(Choice5.c(c)),
-                                d -> terminate(Choice5.d(d)),
-                                eRec -> eRec.fmap(Choice5::e))));
+    public <F> Choice5<A, B, C, D, F> trampolineM(
+            Fn1<? super E, ? extends MonadRec<RecursiveResult<E, F>, Choice5<A, B, C, D, ?>>> fn) {
+        return flatMap(trampoline(e -> fn.apply(e).<Choice5<A, B, C, D, RecursiveResult<E, F>>>coerce().match(
+                a -> terminate(Choice5.a(a)),
+                b -> terminate(Choice5.b(b)),
+                c -> terminate(Choice5.c(c)),
+                d -> terminate(Choice5.d(d)),
+                eRec -> eRec.fmap(Choice5::e))));
     }
 
     /**
