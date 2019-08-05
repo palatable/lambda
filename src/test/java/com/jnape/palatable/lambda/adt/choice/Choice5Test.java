@@ -6,17 +6,9 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.BifunctorLaws;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.TraversableLaws;
+import testsupport.traits.*;
 
-import static com.jnape.palatable.lambda.adt.choice.Choice5.a;
-import static com.jnape.palatable.lambda.adt.choice.Choice5.b;
-import static com.jnape.palatable.lambda.adt.choice.Choice5.c;
-import static com.jnape.palatable.lambda.adt.choice.Choice5.d;
-import static com.jnape.palatable.lambda.adt.choice.Choice5.e;
+import static com.jnape.palatable.lambda.adt.choice.Choice5.*;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
@@ -39,7 +31,12 @@ public class Choice5Test {
         e = e('z');
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class,
+                 ApplicativeLaws.class,
+                 MonadLaws.class,
+                 BifunctorLaws.class,
+                 TraversableLaws.class,
+                 MonadRecLaws.class})
     public Subjects<Choice5<String, Integer, Boolean, Character, Double>> testSubjects() {
         return subjects(Choice5.a("foo"), Choice5.b(1), Choice5.c(true), Choice5.d('a'), Choice5.e(2d));
     }
