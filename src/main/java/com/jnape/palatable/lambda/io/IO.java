@@ -298,6 +298,36 @@ public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A,
     }
 
     /**
+     * Given an {@link IO}, return an {@link IO} that wraps it, caches its first successful result, and guarantees that
+     * no subsequent interactions will happen with it afterwards, returning the cached result thereafter. Note that if
+     * the underlying {@link IO} throws, the failure will not be cached, so subsequent interactions with the memoized
+     * {@link IO} will again call through to the delegate until it completes normally.
+     *
+     * @param io  the delegate {@link IO}
+     * @param <A> the return type
+     * @return the memoized {@link IO}
+     */
+    public static <A> IO<A> memoize(IO<A> io) {
+        class Ref {
+            A       value;
+            boolean computed;
+        }
+        Ref ref = new Ref();
+        return join(io(() -> {
+            if (!ref.computed) {
+                return monitorSync(ref, io(() -> {
+                    if (!ref.computed) {
+                        A a = io.unsafePerformIO();
+                        ref.computed = true;
+                        ref.value = a;
+                    }
+                })).flatMap(constantly(io(() -> ref.value)));
+            }
+            return io(ref.value);
+        }));
+    }
+
+    /**
      * Static factory method for creating an {@link IO} that just returns <code>a</code> when performed.
      *
      * @param a   the result

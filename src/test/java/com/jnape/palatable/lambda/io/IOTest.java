@@ -386,4 +386,52 @@ public class IOTest {
         Thread     chosenThread    = IO.pin(currentThreadIO, Runnable::run).unsafePerformAsyncIO(executor).join();
         assertEquals("Expected IO to run on the main Thread, but it didn't.", mainThread, chosenThread);
     }
+
+    @Test
+    public void memoize() {
+        AtomicInteger counter  = new AtomicInteger(0);
+        IO<Integer>   memoized = IO.memoize(io(counter::incrementAndGet));
+        memoized.unsafePerformIO();
+        memoized.unsafePerformIO();
+        assertEquals(1, counter.get());
+    }
+
+    @Test
+    public void memoizationMutuallyExcludesSimultaneousComputation() throws InterruptedException {
+        AtomicInteger counter = new AtomicInteger(0);
+
+        IO<Integer> memoized = IO.memoize(io(() -> {
+            Thread.sleep(10);
+            return counter.incrementAndGet();
+        }));
+
+        Thread t1 = new Thread(memoized::unsafePerformIO) {{
+            start();
+        }};
+
+        Thread t2 = new Thread(memoized::unsafePerformIO) {{
+            start();
+        }};
+
+        t1.join();
+        t2.join();
+
+        assertEquals(1, counter.get());
+    }
+
+    @Test
+    public void failuresAreNotMemoized() {
+        IllegalStateException exception = new IllegalStateException("not yet");
+        AtomicInteger         counter   = new AtomicInteger(0);
+        IO<Integer> io = IO.memoize(io(() -> {
+            int next = counter.incrementAndGet();
+            if (next > 1)
+                return next;
+            throw exception;
+        }));
+
+        assertEquals(left(exception), io.safe().unsafePerformIO());
+        assertEquals((Integer) 2, io.unsafePerformIO());
+        assertEquals((Integer) 2, io.unsafePerformIO());
+    }
 }
