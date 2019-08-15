@@ -317,9 +317,8 @@ public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A,
             if (!ref.computed) {
                 return monitorSync(ref, io(() -> {
                     if (!ref.computed) {
-                        A a = io.unsafePerformIO();
+                        ref.value = io.unsafePerformIO();
                         ref.computed = true;
-                        ref.value = a;
                     }
                 })).flatMap(constantly(io(() -> ref.value)));
             }
