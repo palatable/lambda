@@ -12,7 +12,12 @@ import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -58,8 +63,8 @@ public class Tuple3Test {
 
     @Test
     public void randomAccess() {
-        Tuple2<String, String> spiedTail = spy(tuple("second", "third"));
-        Tuple3<String, String, String> tuple3 = new Tuple3<>("first", spiedTail);
+        Tuple2<String, String>         spiedTail = spy(tuple("second", "third"));
+        Tuple3<String, String, String> tuple3    = new Tuple3<>("first", spiedTail);
 
         verify(spiedTail, times(1))._1();
         verify(spiedTail, times(1))._2();
@@ -92,5 +97,12 @@ public class Tuple3Test {
         Tuple3<String, Integer, Integer>               a = tuple("foo", 1, 2);
         Fn1<Integer, Tuple3<String, Integer, Integer>> b = x -> tuple("bar", 2, x + 1);
         assertEquals(tuple("foo", 1, 3), a.flatMap(b));
+    }
+
+    @Test
+    public void fromIterable() {
+        assertEquals(nothing(), Tuple3.fromIterable(emptyList()));
+        assertEquals(nothing(), Tuple3.fromIterable(singletonList(1)));
+        assertEquals(just(tuple(1, 1, 1)), Tuple3.fromIterable(repeat(1)));
     }
 }

@@ -1,8 +1,10 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.builtin.fn1.Head;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -12,6 +14,7 @@ import com.jnape.palatable.lambda.traversable.Traversable;
 import java.util.Map;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
 
 /**
  * A 2-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -160,5 +163,17 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
      */
     public static <A> Tuple2<A, A> fill(A a) {
         return tuple(a, a);
+    }
+
+    /**
+     * Return {@link Maybe#just(Object) just} the first two elements from the given {@link Iterable}, or
+     * {@link Maybe#nothing() nothing} if there are less than two elements.
+     *
+     * @param as  the {@link Iterable}
+     * @param <A> the {@link Iterable} element type
+     * @return {@link Maybe} the first two elements of the given {@link Iterable}
+     */
+    public static <A> Maybe<Tuple2<A, A>> fromIterable(Iterable<A> as) {
+        return uncons(as).flatMap(tail -> tail.traverse(Head::head, Maybe::just));
     }
 }

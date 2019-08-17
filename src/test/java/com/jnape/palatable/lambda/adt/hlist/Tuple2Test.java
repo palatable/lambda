@@ -15,8 +15,13 @@ import testsupport.traits.TraversableLaws;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.spy;
@@ -114,5 +119,12 @@ public class Tuple2Test {
         Tuple2<String, Integer>               a = tuple("foo", 1);
         Fn1<Integer, Tuple2<String, Integer>> b = x -> tuple("bar", x + 1);
         assertEquals(tuple("foo", 2), a.flatMap(b));
+    }
+
+    @Test
+    public void fromIterable() {
+        assertEquals(nothing(), Tuple2.fromIterable(emptyList()));
+        assertEquals(nothing(), Tuple2.fromIterable(singletonList(1)));
+        assertEquals(just(tuple(1, 1)), Tuple2.fromIterable(repeat(1)));
     }
 }

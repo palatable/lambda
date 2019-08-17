@@ -13,7 +13,12 @@ import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -113,5 +118,12 @@ public class Tuple8Test {
         Fn1<Integer, Tuple8<String, Integer, Integer, Integer, Integer, Integer, Integer, Integer>> b =
                 x -> tuple("bar", 2, 3, 4, 5, 6, 7, x + 1);
         assertEquals(tuple("foo", 1, 2, 3, 4, 5, 6, 8), a.flatMap(b));
+    }
+
+    @Test
+    public void fromIterable() {
+        assertEquals(nothing(), Tuple8.fromIterable(emptyList()));
+        assertEquals(nothing(), Tuple8.fromIterable(singletonList(1)));
+        assertEquals(just(tuple(1, 1, 1, 1, 1, 1, 1, 1)), Tuple8.fromIterable(repeat(1)));
     }
 }

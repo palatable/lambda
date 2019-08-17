@@ -1,8 +1,10 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
+import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product3;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.builtin.fn2.Into;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -10,6 +12,7 @@ import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
 
 /**
  * A 3-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -151,5 +154,17 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
      */
     public static <A> Tuple3<A, A, A> fill(A a) {
         return tuple(a, a, a);
+    }
+
+    /**
+     * Return {@link Maybe#just(Object) just} the first three elements from the given {@link Iterable}, or
+     * {@link Maybe#nothing() nothing} if there are less than three elements.
+     *
+     * @param as  the {@link Iterable}
+     * @param <A> the {@link Iterable} element type
+     * @return {@link Maybe} the first three elements of the given {@link Iterable}
+     */
+    public static <A> Maybe<Tuple3<A, A, A>> fromIterable(Iterable<A> as) {
+        return uncons(as).flatMap(Into.into((head, tail) -> Tuple2.fromIterable(tail).fmap(t -> t.cons(head))));
     }
 }

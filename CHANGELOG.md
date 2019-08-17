@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `IO#exceptionallyIO`, like `exceptionally` but recover inside another `IO`
 - `IO#memoize`, for memoizing an `IO` by caching its first successful result
 - `MonadError`, monads that can be thrown to and caught from
+- `Tuple2-8#fromIterable`, for populating a `TupleN` with the first `N` elements of an `Iterable`
 
 ## [4.0.0] - 2019-05-20
 ### Changed
