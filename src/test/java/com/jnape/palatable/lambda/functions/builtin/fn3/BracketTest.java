@@ -6,11 +6,15 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Bracket.bracket;
 import static com.jnape.palatable.lambda.io.IO.io;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThat;
+import static testsupport.matchers.IOMatcher.throwsException;
+import static testsupport.matchers.IOMatcher.yieldsValue;
 
 public class BracketTest {
 
@@ -26,7 +30,7 @@ public class BracketTest {
         IO<Integer> hashIO = bracket(io(() -> count), c -> io(c::incrementAndGet), c -> io(c::hashCode));
 
         assertEquals(0, count.get());
-        assertEquals((Integer) count.hashCode(), hashIO.unsafePerformIO());
+        assertThat(hashIO, yieldsValue(equalTo(count.hashCode())));
         assertEquals(1, count.get());
     }
 
@@ -35,28 +39,19 @@ public class BracketTest {
         IllegalStateException thrown = new IllegalStateException("kaboom");
         IO<Integer>           hashIO = bracket(io(count), c -> io(c::incrementAndGet), c -> io(() -> {throw thrown;}));
 
-        try {
-            hashIO.unsafePerformIO();
-            fail("Expected exception to be raised");
-        } catch (IllegalStateException actual) {
-            assertEquals(thrown, actual);
-            assertEquals(1, count.get());
-        }
+        assertThat(hashIO, throwsException(equalTo(thrown)));
+        assertEquals(1, count.get());
     }
 
     @Test
     public void cleanupOnlyRunsIfInitialIORuns() {
         IllegalStateException thrown = new IllegalStateException("kaboom");
         IO<Integer> hashIO = bracket(io(() -> {throw thrown;}),
-                                     __ -> io(count::incrementAndGet),
-                                     __ -> io(count::incrementAndGet));
-        try {
-            hashIO.unsafePerformIO();
-            fail("Expected exception to be raised");
-        } catch (IllegalStateException actual) {
-            assertEquals(thrown, actual);
-            assertEquals(0, count.get());
-        }
+                                     constantly(io(count::incrementAndGet)),
+                                     constantly(io(count::incrementAndGet)));
+
+        assertThat(hashIO, throwsException(equalTo(thrown)));
+        assertEquals(0, count.get());
     }
 
     @Test
@@ -64,14 +59,10 @@ public class BracketTest {
         IllegalStateException bodyError    = new IllegalStateException("kaboom");
         IllegalStateException cleanupError = new IllegalStateException("KABOOM");
         IO<Integer> hashIO = bracket(io(count),
-                                     c -> io(() -> {throw cleanupError;}),
-                                     c -> io(() -> {throw bodyError;}));
-        try {
-            hashIO.unsafePerformIO();
-            fail("Expected exception to be raised");
-        } catch (IllegalStateException actual) {
-            assertEquals(bodyError, actual);
-            assertArrayEquals(new Throwable[]{cleanupError}, actual.getSuppressed());
-        }
+                                     constantly(io(() -> {throw cleanupError;})),
+                                     constantly(io(() -> {throw bodyError;})));
+
+        assertThat(hashIO, throwsException(equalTo(bodyError)));
+        assertArrayEquals(new Throwable[]{cleanupError}, bodyError.getSuppressed());
     }
 }
