@@ -6,23 +6,24 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadReaderLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.ReaderT.readerT;
 import static org.junit.Assert.assertEquals;
+import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class ReaderTTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<ReaderT<Integer, Identity<?>, ?>, Integer> testSubject() {
-        return new EquatableM<>(readerT(Identity::new),
-                                readerT -> readerT.runReaderT(1));
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadReaderLaws.class})
+    public Equivalence<ReaderT<Integer, Identity<?>, Integer>> testSubject() {
+        return equivalence(readerT(Identity::new), readerT -> readerT.runReaderT(1));
     }
 
     @Test
@@ -31,6 +32,14 @@ public class ReaderTTest {
                      ReaderT.<Integer, Identity<?>, Integer>readerT(Identity::new)
                              .diMap(String::length, x -> x + 1)
                              .runReaderT("123"));
+    }
+
+    @Test
+    public void local() {
+        assertEquals(new Identity<>(2),
+                     ReaderT.<Integer, Identity<?>, Integer>readerT(Identity::new)
+                             .local(x -> x + 1)
+                             .runReaderT(1));
     }
 
     @Test

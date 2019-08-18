@@ -9,8 +9,8 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
@@ -32,6 +32,7 @@ import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
+import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class LensTest {
@@ -42,9 +43,8 @@ public class LensTest {
             LENS         = lens(xs -> xs.get(0), (xs, i) -> singleton(i));
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<Lens<Map<String, Integer>, ?, Integer, String>, List<Integer>> testSubject() {
-        return new EquatableM<>(lens(m -> m.get("foo"), (m, s) -> singletonList(m.get(s))),
-                                lens -> view(lens, emptyMap()));
+    public Equivalence<Lens<Map<String, Integer>, List<Integer>, Integer, String>> testSubject() {
+        return equivalence(lens(m -> m.get("foo"), (m, s) -> singletonList(m.get(s))), lens -> view(lens, emptyMap()));
     }
 
     @Test
@@ -97,9 +97,9 @@ public class LensTest {
 
     @Test
     public void bothSplitsFocusBetweenLenses() {
-        Lens<String, String, Character, Character> firstChar = simpleLens(s -> s.charAt(0), (s, c) -> c + s.substring(1));
-        Lens<String, String, Integer, Integer> length = simpleLens(String::length, (s, k) -> s.substring(0, k));
-        Lens<String, String, Tuple2<Character, Integer>, Tuple2<Character, Integer>> both = both(firstChar, length);
+        Lens<String, String, Character, Character>                                   firstChar = simpleLens(s -> s.charAt(0), (s, c) -> c + s.substring(1));
+        Lens<String, String, Integer, Integer>                                       length    = simpleLens(String::length, (s, k) -> s.substring(0, k));
+        Lens<String, String, Tuple2<Character, Integer>, Tuple2<Character, Integer>> both      = both(firstChar, length);
 
         assertEquals(tuple('a', 3), view(both, "abc"));
         assertEquals("zb", set(both, tuple('z', 2), "abc"));
@@ -107,7 +107,7 @@ public class LensTest {
 
     @Test
     public void bothForSimpleLenses() {
-        Lens.Simple<String, Integer> stringToInt = simpleLens(Integer::parseInt, (s, i) -> s + i.toString());
+        Lens.Simple<String, Integer>   stringToInt  = simpleLens(Integer::parseInt, (s, i) -> s + i.toString());
         Lens.Simple<String, Character> stringToChar = simpleLens(s -> s.charAt(0), (s, c) -> s + c.toString());
 
         assertEquals(tuple(3, '3'), view(both(stringToInt, stringToChar), "3"));

@@ -10,12 +10,15 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadWriter;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Map;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Both.both;
 
 /**
  * A 2-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -32,7 +35,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
 public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
         Product2<_1, _2>,
         Map.Entry<_1, _2>,
-        Monad<_2, Tuple2<_1, ?>>,
+        MonadWriter<_1, _2, Tuple2<_1, ?>>,
         Bifunctor<_1, _2, Tuple2<?, ?>>,
         Traversable<_2, Tuple2<_1, ?>> {
 
@@ -43,6 +46,22 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
         super(_1, tail);
         this._1 = _1;
         _2 = tail.head();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <_3> Tuple2<_1, Tuple2<_2, _3>> listens(Fn1<? super _1, ? extends _3> fn) {
+        return fmap(both(id(), constantly(fn.apply(_1))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Tuple2<_1, _2> censor(Fn1<? super _1, ? extends _1> fn) {
+        return biMapL(fn);
     }
 
     /**
@@ -106,7 +125,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
      */
     @Override
     public <_2Prime> Tuple2<_1, _2Prime> fmap(Fn1<? super _2, ? extends _2Prime> fn) {
-        return Monad.super.<_2Prime>fmap(fn).coerce();
+        return MonadWriter.super.<_2Prime>fmap(fn).coerce();
     }
 
     /**
@@ -150,7 +169,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     @Override
     public <_2Prime> Tuple2<_1, _2Prime> zip(
             Applicative<Fn1<? super _2, ? extends _2Prime>, Tuple2<_1, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadWriter.super.zip(appFn).coerce();
     }
 
     /**
@@ -159,7 +178,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     @Override
     public <_2Prime> Lazy<Tuple2<_1, _2Prime>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super _2, ? extends _2Prime>, Tuple2<_1, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_2Prime, Tuple2<_1, ?>>::coerce);
+        return MonadWriter.super.lazyZip(lazyAppFn).fmap(Monad<_2Prime, Tuple2<_1, ?>>::coerce);
     }
 
     /**
@@ -167,7 +186,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
      */
     @Override
     public <_2Prime> Tuple2<_1, _2Prime> discardL(Applicative<_2Prime, Tuple2<_1, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadWriter.super.discardL(appB).coerce();
     }
 
     /**
@@ -175,7 +194,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
      */
     @Override
     public <_2Prime> Tuple2<_1, _2> discardR(Applicative<_2Prime, Tuple2<_1, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadWriter.super.discardR(appB).coerce();
     }
 
     /**

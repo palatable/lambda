@@ -1,30 +1,35 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.adt.Unit;
-import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadReaderLaws;
+import testsupport.traits.MonadWriterLaws;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.adt.product.Product2.product;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static org.junit.Assert.assertEquals;
+import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class StateTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<State<Unit, ?>, Unit> testSubject() {
-        return new EquatableM<>(State.get(), state -> state.run(UNIT).into(HList::tuple));
+    @TestTraits({FunctorLaws.class,
+                 ApplicativeLaws.class,
+                 MonadLaws.class,
+                 MonadReaderLaws.class,
+                 MonadWriterLaws.class})
+    public Equivalence<State<String, Integer>> testSubject() {
+        return equivalence(State.gets(String::length), s -> s.run("foo"));
     }
 
     @Test
@@ -62,7 +67,7 @@ public class StateTest {
     @Test
     public void state() {
         assertEquals(tuple(1, UNIT), State.<Unit, Integer>state(1).run(UNIT));
-        assertEquals(tuple(1, -1), State.<Integer, Integer>state(x -> product(x + 1, x - 1)).run(0));
+        assertEquals(tuple(1, -1), State.<Integer, Integer>state(x -> tuple(x + 1, x - 1)).run(0));
     }
 
     @Test
@@ -87,7 +92,7 @@ public class StateTest {
 
     @Test
     public void mapState() {
-        State<Integer, Integer> modified = State.<Integer>get().mapState(into((a, s) -> product(a + 1, s + 2)));
+        State<Integer, Integer> modified = State.<Integer>get().mapState(into((a, s) -> tuple(a + 1, s + 2)));
         assertEquals(tuple(1, 2), modified.run(0));
     }
 

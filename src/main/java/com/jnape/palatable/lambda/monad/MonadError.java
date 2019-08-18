@@ -16,7 +16,7 @@ import com.jnape.palatable.lambda.io.IO;
  * @param <M> the {@link Monad} witness
  * @param <A> the carrier
  */
-public interface MonadError<E, A, M extends Monad<?, M>> extends Monad<A, M> {
+public interface MonadError<E, A, M extends MonadError<E, ?, M>> extends Monad<A, M> {
 
     /**
      * Throw an error value of type <code>E</code> into the {@link Monad monad}.

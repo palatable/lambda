@@ -4,10 +4,12 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadReaderLaws;
+import testsupport.traits.MonadWriterLaws;
 
 import java.util.function.Function;
 
@@ -20,13 +22,18 @@ import static com.jnape.palatable.lambda.functions.Fn1.fromFunction;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.ReduceLeft.reduceLeft;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class Fn1Test {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<Fn1<String, ?>, ?> testSubject() {
-        return new EquatableM<>(fn1(Integer::parseInt), f -> f.apply("1"));
+    @TestTraits({FunctorLaws.class,
+                 ApplicativeLaws.class,
+                 MonadLaws.class,
+                 MonadReaderLaws.class,
+                 MonadWriterLaws.class})
+    public Equivalence<Fn1<String, Object>> testSubject() {
+        return equivalence(fn1(Integer::parseInt), f -> f.apply("1"));
     }
 
     @Test

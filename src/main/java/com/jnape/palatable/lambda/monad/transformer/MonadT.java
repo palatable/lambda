@@ -5,15 +5,18 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadBase;
 import com.jnape.palatable.lambda.monad.transformer.builtin.EitherT;
 import com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT;
 import com.jnape.palatable.lambda.monad.transformer.builtin.ReaderT;
 
 /**
+ * The generic type representing a {@link Monad} transformer, exposing the argument {@link Monad} as a type parameter.
+ * <p>
  * While any two {@link Functor functors} and any two {@link Applicative applicatives} can be composed in general, the
- * same is not true in general of any two {@link Monad monads}, in general. However, there exist {@link Monad monads}
- * that do compose, in general, with any other {@link Monad}. When this is the case, the combination of these
- * {@link Monad monads} with any other {@link Monad} can offer implementations of {@link Monad#pure pure} and
+ * same is not true in general of any two {@link Monad monads}. However, there exist {@link Monad monads} that do
+ * compose, in general, with any other {@link Monad}. When this is the case, the combination of these
+ * {@link Monad monads} with any other {@link Monad} can offer composed implementations of {@link Monad#pure pure} and
  * {@link Monad#flatMap(Fn1) flatMap} for free, simply by relying on the other {@link Monad monad's} implementation of
  * both, as well as their own privileged knowledge about how to merge the nested {@link Monad#flatMap(Fn1) flatMap}
  * call. This can be thought of as "gluing" together two {@link Monad monads}, allowing easier access to their values,
@@ -26,42 +29,42 @@ import com.jnape.palatable.lambda.monad.transformer.builtin.ReaderT;
  * For more information, <a href="https://en.wikipedia.org/wiki/Monad_transformer" target="_blank">read more about</a>
  * monad transformers.
  *
- * @param <F> the outer {@link Monad monad}
- * @param <G> the inner {@link Monad monad}
- * @param <A> the carrier type
+ * @param <M>  the argument {@link Monad monad}
+ * @param <A>  the carrier type
+ * @param <MT> the {@link Monad} witness
+ * @param <T>  the {@link MonadT} witness
+ * @see Monad
+ * @see MonadBase
  * @see MaybeT
  * @see EitherT
  * @see ReaderT
  */
-public interface MonadT<F extends Monad<?, F>, G extends Monad<?, G>, A, MT extends MonadT<F, G, ?, MT>>
-        extends Monad<A, MT> {
+public interface MonadT<M extends Monad<?, M>, A, MT extends MonadT<M, ?, MT, T>, T extends MonadT<?, ?, ?, T>> extends
+        MonadBase<M, A, T>,
+        Monad<A, MT> {
 
     /**
-     * Extract out the composed monad out of this transformer.
-     *
-     * @param <GA>  the inferred embedded monad
-     * @param <FGA> the inferred composed monad
-     * @return the composed monad
+     * {@inheritDoc}
      */
-    <GA extends Monad<A, G>, FGA extends Monad<GA, F>> FGA run();
+    <B, N extends Monad<?, N>> MonadT<N, B, ?, T> lift(Monad<B, N> mb);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    <B> MonadT<F, G, B, MT> flatMap(Fn1<? super A, ? extends Monad<B, MT>> f);
+    <B> MonadT<M, B, MT, T> flatMap(Fn1<? super A, ? extends Monad<B, MT>> f);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    <B> MonadT<F, G, B, MT> pure(B b);
+    <B> MonadT<M, B, MT, T> pure(B b);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <B> MonadT<F, G, B, MT> fmap(Fn1<? super A, ? extends B> fn) {
+    default <B> MonadT<M, B, MT, T> fmap(Fn1<? super A, ? extends B> fn) {
         return Monad.super.<B>fmap(fn).coerce();
     }
 
@@ -69,7 +72,7 @@ public interface MonadT<F extends Monad<?, F>, G extends Monad<?, G>, A, MT exte
      * {@inheritDoc}
      */
     @Override
-    default <B> MonadT<F, G, B, MT> zip(Applicative<Fn1<? super A, ? extends B>, MT> appFn) {
+    default <B> MonadT<M, B, MT, T> zip(Applicative<Fn1<? super A, ? extends B>, MT> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
@@ -77,16 +80,16 @@ public interface MonadT<F extends Monad<?, F>, G extends Monad<?, G>, A, MT exte
      * {@inheritDoc}
      */
     @Override
-    default <B> Lazy<? extends MonadT<F, G, B, MT>> lazyZip(
+    default <B> Lazy<? extends MonadT<M, B, MT, T>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super A, ? extends B>, MT>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, MT>::coerce);
+        return Monad.super.lazyZip(lazyAppFn).fmap(Applicative<B, MT>::coerce);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <B> MonadT<F, G, B, MT> discardL(Applicative<B, MT> appB) {
+    default <B> MonadT<M, B, MT, T> discardL(Applicative<B, MT> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
@@ -94,7 +97,7 @@ public interface MonadT<F extends Monad<?, F>, G extends Monad<?, G>, A, MT exte
      * {@inheritDoc}
      */
     @Override
-    default <B> MonadT<F, G, A, MT> discardR(Applicative<B, MT> appB) {
+    default <B> MonadT<M, A, MT, T> discardR(Applicative<B, MT> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 }

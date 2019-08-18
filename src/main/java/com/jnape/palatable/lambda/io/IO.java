@@ -38,7 +38,7 @@ import static java.util.concurrent.ForkJoinPool.commonPool;
  *
  * @param <A> the result type
  */
-public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A, IO<?>> {
+public abstract class IO<A> implements MonadError<Throwable, A, IO<?>> {
 
     private IO() {
     }

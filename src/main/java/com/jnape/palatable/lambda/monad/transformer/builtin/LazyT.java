@@ -1,9 +1,9 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -19,7 +19,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  * @param <M> the outer {@link Monad}
  * @param <A> the carrier type
  */
-public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, LazyT<M, ?>> {
+public final class LazyT<M extends Monad<?, M>, A> implements MonadT<M, A, LazyT<M, ?>, LazyT<?, ?>> {
 
     private final Monad<Lazy<A>, M> mla;
 
@@ -28,11 +28,21 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
     }
 
     /**
+     * Recover the full structure of the embedded {@link Monad}.
+     *
+     * @param <MLA> the witnessed target type
+     * @return the embedded {@link Monad}
+     */
+    public <MLA extends Monad<Lazy<A>, M>> MLA runLazyT() {
+        return mla.coerce();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    public <GA extends Monad<A, Lazy<?>>, FGA extends Monad<GA, M>> FGA run() {
-        return mla.<GA>fmap(Functor::coerce).coerce();
+    public <B, N extends Monad<?, N>> LazyT<N, B> lift(Monad<B, N> mb) {
+        return liftLazyT().apply(mb);
     }
 
     /**
@@ -40,8 +50,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
      */
     @Override
     public <B> LazyT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, LazyT<M, ?>>> f) {
-        return new LazyT<>(mla.flatMap(lazyA -> f.apply(lazyA.value())
-                .<MonadT<M, Lazy<?>, B, LazyT<M, ?>>>coerce().run()));
+        return new LazyT<>(mla.flatMap(lazyA -> f.apply(lazyA.value()).<LazyT<M, B>>coerce().runLazyT()));
     }
 
     /**
@@ -77,8 +86,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
         return new Compose<>(mla)
                 .lazyZip(lazyAppFn.fmap(lazyT -> new Compose<>(
                         lazyT.<LazyT<M, Fn1<? super A, ? extends B>>>coerce()
-                                .<Lazy<Fn1<? super A, ? extends B>>,
-                                        Monad<Lazy<Fn1<? super A, ? extends B>>, M>>run())))
+                                .<Monad<Lazy<Fn1<? super A, ? extends B>>, M>>runLazyT())))
                 .fmap(compose -> lazyT(compose.getCompose()));
     }
 
@@ -138,6 +146,20 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
             @Override
             public <A> LazyT<M, A> checkedApply(A a) {
                 return lazyT(pureM.<A, Monad<A, M>>apply(a).fmap(Lazy::lazy));
+            }
+        };
+    }
+
+    /**
+     * {@link Lift} for {@link LazyT}.
+     *
+     * @return the {@link Monad} lifted into {@link LazyT}
+     */
+    public static Lift<LazyT<?, ?>> liftLazyT() {
+        return new Lift<LazyT<?, ?>>() {
+            @Override
+            public <A, M extends Monad<?, M>> LazyT<M, A> checkedApply(Monad<A, M> ga) {
+                return lazyT(ga.fmap(Lazy::lazy));
             }
         };
     }

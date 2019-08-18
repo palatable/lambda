@@ -59,7 +59,8 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey<?, ?>, Object>> {
      * @throws NoSuchElementException if the key is unmapped
      */
     public <V> V demand(TypeSafeKey<?, V> key) throws NoSuchElementException {
-        return get(key).orElseThrow(() -> new NoSuchElementException("Demanded value for key " + key + ", but couldn't find one."));
+        return get(key).orElseThrow(() -> new NoSuchElementException("Demanded value for key " + key
+                                                                             + ", but couldn't find one."));
     }
 
     /**

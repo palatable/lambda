@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
@@ -24,7 +25,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
  */
 public final class EitherT<M extends Monad<?, M>, L, R> implements
         Bifunctor<L, R, EitherT<M, ?, ?>>,
-        MonadT<M, Either<L, ?>, R, EitherT<M, L, ?>> {
+        MonadT<M, R, EitherT<M, L, ?>, EitherT<?, L, ?>> {
 
     private final Monad<Either<L, R>, M> melr;
 
@@ -33,11 +34,21 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
     }
 
     /**
+     * Recover the full structure of the embedded {@link Monad}.
+     *
+     * @param <MELR> the witnessed target type
+     * @return the embedded {@link Monad}
+     */
+    public <MELR extends Monad<Either<L, R>, M>> MELR runEitherT() {
+        return melr.coerce();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    public <GA extends Monad<R, Either<L, ?>>, FGA extends Monad<GA, M>> FGA run() {
-        return melr.<GA>fmap(Either::coerce).coerce();
+    public <R2, N extends Monad<?, N>> EitherT<N, L, R2> lift(Monad<R2, N> mb) {
+        return EitherT.<L>liftEitherT().apply(mb);
     }
 
     /**
@@ -46,7 +57,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
     @Override
     public <R2> EitherT<M, L, R2> flatMap(Fn1<? super R, ? extends Monad<R2, EitherT<M, L, ?>>> f) {
         return eitherT(melr.flatMap(lr -> lr.match(l -> melr.pure(left(l)),
-                                                   r -> f.apply(r).<EitherT<M, L, R2>>coerce().run())));
+                                                   r -> f.apply(r).<EitherT<M, L, R2>>coerce().runEitherT())));
     }
 
     /**
@@ -83,8 +94,7 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
         return new Compose<>(melr)
                 .lazyZip(lazyAppFn.fmap(maybeT -> new Compose<>(
                         maybeT.<EitherT<M, L, Fn1<? super R, ? extends R2>>>coerce()
-                                .<Either<L, Fn1<? super R, ? extends R2>>,
-                                        Monad<Either<L, Fn1<? super R, ? extends R2>>, M>>run())))
+                                .<Monad<Either<L, Fn1<? super R, ? extends R2>>, M>>runEitherT())))
                 .fmap(compose -> eitherT(compose.getCompose()));
     }
 
@@ -174,4 +184,20 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
             }
         };
     }
+
+    /**
+     * {@link Lift} for {@link EitherT}.
+     *
+     * @param <L> the left type
+     * @return the {@link Monad}lifted into {@link EitherT}
+     */
+    public static <L> Lift<EitherT<?, L, ?>> liftEitherT() {
+        return new Lift<EitherT<?, L, ?>>() {
+            @Override
+            public <A, M extends Monad<?, M>> EitherT<M, L, A> checkedApply(Monad<A, M> ga) {
+                return eitherT(ga.fmap(Either::right));
+            }
+        };
+    }
+
 }

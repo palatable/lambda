@@ -7,8 +7,8 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
@@ -27,6 +27,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static testsupport.assertion.PrismAssert.assertPrismLawfulness;
+import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class PrismTest {
@@ -34,9 +35,9 @@ public class PrismTest {
     private static final Fn1<String, Integer> PARSE_INT = Fn1.fn1(Integer::parseInt);
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<Prism<String, ?, Integer, Integer>, String> testSubject() {
-        return new EquatableM<>(Prism.fromPartial(Integer::parseInt, Object::toString),
-                                prism -> matching(prism, "foo"));
+    public Equivalence<Prism<String, String, Integer, Integer>> testSubject() {
+        return equivalence(Prism.fromPartial(Integer::parseInt, Object::toString),
+                           prism -> matching(prism, "foo"));
     }
 
     @Test

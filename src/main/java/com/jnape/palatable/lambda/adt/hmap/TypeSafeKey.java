@@ -61,7 +61,7 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
      * @return the new {@link TypeSafeKey}
      */
     @Override
-    default <C> TypeSafeKey<A, C>andThen(Iso.Simple<B, C> f) {
+    default <C> TypeSafeKey<A, C> andThen(Iso.Simple<B, C> f) {
         Iso.Simple<A, C> composed = Iso.Simple.super.andThen(f);
         return new TypeSafeKey<A, C>() {
             @Override

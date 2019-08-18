@@ -10,8 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
@@ -56,6 +56,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 import static testsupport.assertion.MonadErrorAssert.assertLawsEq;
+import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class IOTest {
@@ -63,14 +64,14 @@ public class IOTest {
     public @Rule ExpectedException thrown = ExpectedException.none();
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<IO<?>, Integer> testSubject() {
-        return new EquatableM<>(io(1), IO::unsafePerformIO);
+    public Equivalence<IO<Integer>> testSubject() {
+        return equivalence(io(1), IO::unsafePerformIO);
     }
 
     @Test
     public void monadError() {
-        assertLawsEq(subjects(new EquatableM<>(IO.throwing(new IllegalStateException("a")), IO::unsafePerformIO),
-                              new EquatableM<>(io(1), IO::unsafePerformIO)),
+        assertLawsEq(subjects(equivalence(IO.throwing(new IllegalStateException("a")), IO::unsafePerformIO),
+                              equivalence(io(1), IO::unsafePerformIO)),
                      new IOException("bar"),
                      e -> io(e.getMessage().length()));
     }

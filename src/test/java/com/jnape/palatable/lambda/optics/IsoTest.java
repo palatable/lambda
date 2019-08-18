@@ -5,8 +5,8 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
@@ -19,6 +19,7 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
+import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class IsoTest {
@@ -27,8 +28,8 @@ public class IsoTest {
             iso(Integer::parseInt, dbl -> dbl.toString().chars().mapToObj(x -> (char) x).collect(toList()));
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<Iso<String, ?, Integer, Double>, List<Character>> testSubject() {
-        return new EquatableM<>(ISO, iso -> view(iso, "123"));
+    public Equivalence<Iso<String, List<Character>, Integer, Double>> testSubject() {
+        return equivalence(ISO, iso -> view(iso, "123"));
     }
 
     @Test
