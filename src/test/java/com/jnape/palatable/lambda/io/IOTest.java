@@ -348,31 +348,31 @@ public class IOTest {
         CountDownLatch oneStarted = new CountDownLatch(1);
         CountDownLatch finishLine = new CountDownLatch(2);
 
-        IO<Unit> one = io(() -> {
+        IO<Unit> one = IO.monitorSync(lock, io(() -> {
             accesses.add("one entered");
             oneStarted.countDown();
             Thread.sleep(10);
             accesses.add("one exited");
             finishLine.countDown();
-        });
+        }));
 
-        IO<Unit> two = io(() -> {
+        IO<Unit> two = IO.monitorSync(lock, io(() -> {
             oneStarted.await();
             accesses.add("two entered");
             accesses.add("two exited");
             finishLine.countDown();
-        });
+        }));
 
-        new Thread(IO.monitorSync(lock, one)::unsafePerformIO) {{
+        new Thread(one::unsafePerformIO) {{
             start();
         }};
 
-        new Thread(IO.monitorSync(lock, two)::unsafePerformIO) {{
+        new Thread(two::unsafePerformIO) {{
             start();
         }};
 
         if (!finishLine.await(15, SECONDS))
-            fail("Expected threads to have completed by now");
+            fail("Expected threads to have completed by now, only got this far: " + accesses);
         assertEquals(asList("one entered", "one exited", "two entered", "two exited"), accesses);
     }
 
