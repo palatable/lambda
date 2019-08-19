@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -48,6 +49,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
@@ -149,16 +151,21 @@ public class IOTest {
     }
 
     @Test
-    public void catchErrorSuppressesSecondaryThrowable() {
-        Throwable foo = new UnsupportedOperationException("foo");
-        Throwable bar = new UnsupportedOperationException("bar");
+    public void catchAndRethrow() {
+        IllegalStateException expected = new IllegalStateException("expected");
+        IO<Object> catchAndRethrow = IO.throwing(expected)
+                .catchError(IO::throwing);
 
         try {
-            IO.throwing(foo).catchError(t -> IO.throwing(bar)).unsafePerformIO();
-            fail("Expected exception to have been thrown, but wasn't.");
-        } catch (UnsupportedOperationException expected) {
-            assertEquals(expected, foo);
-            assertArrayEquals(new Throwable[]{bar}, expected.getSuppressed());
+            catchAndRethrow.unsafePerformIO();
+        } catch (Exception actual) {
+            assertSame(expected, actual);
+        }
+
+        try {
+            catchAndRethrow.unsafePerformAsyncIO().join();
+        } catch (CompletionException actual) {
+            assertEquals(expected, actual.getCause());
         }
     }
 

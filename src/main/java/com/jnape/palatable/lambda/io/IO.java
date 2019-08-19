@@ -17,8 +17,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
-import static com.jnape.palatable.lambda.adt.Try.failure;
-import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
@@ -190,28 +188,17 @@ public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A,
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
-                return trying(fn0(IO.this::unsafePerformIO))
-                        .recover(t -> trying(fn0(recoveryFn.apply(t).<IO<A>>coerce()::unsafePerformIO))
-                                .fmap(Try::success)
-                                .recover(t2 -> {
-                                    t.addSuppressed(t2);
-                                    return failure(t);
-                                })
-                                .orThrow());
+                return Try.trying(IO.this::unsafePerformIO)
+                        .catchError(t -> Try.trying(recoveryFn.apply(t).<IO<A>>coerce()::unsafePerformIO))
+                        .orThrow();
             }
 
             @Override
             public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
                 return IO.this.unsafePerformAsyncIO(executor)
-                        .thenApply(CompletableFuture::completedFuture)
-                        .exceptionally(t -> recoveryFn.apply(t).<IO<A>>coerce().unsafePerformAsyncIO(executor)
-                                .thenApply(CompletableFuture::completedFuture)
-                                .exceptionally(t2 -> {
-                                    t.addSuppressed(t2);
-                                    return new CompletableFuture<A>() {{
-                                        completeExceptionally(t);
-                                    }};
-                                }).thenCompose(f -> f))
+                        .handle((a, t) -> t == null
+                                          ? completedFuture(a)
+                                          : recoveryFn.apply(t).<IO<A>>coerce().unsafePerformAsyncIO(executor))
                         .thenCompose(f -> f);
             }
         };
