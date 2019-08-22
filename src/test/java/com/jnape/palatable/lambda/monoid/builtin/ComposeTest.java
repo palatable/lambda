@@ -15,7 +15,7 @@ public class ComposeTest {
 
     @Test
     public void monoid() throws ExecutionException, InterruptedException {
-        Monoid<Integer> addition = Monoid.monoid((x, y) -> x + y, 0);
+        Monoid<Integer> addition = Monoid.monoid(Integer::sum, 0);
 
         CompletableFuture<Integer> failedFuture = new CompletableFuture<Integer>() {{
             completeExceptionally(new RuntimeException());

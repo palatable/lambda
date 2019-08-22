@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.functions.recursion;
 
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -18,7 +19,11 @@ import java.util.Objects;
  * @param <B> the recursive function's output type
  * @see Trampoline
  */
-public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, RecursiveResult<A, B>>, Bifunctor<A, B, RecursiveResult<?, ?>>, Monad<B, RecursiveResult<A, ?>>, Traversable<B, RecursiveResult<A, ?>> {
+public abstract class RecursiveResult<A, B> implements
+        CoProduct2<A, B, RecursiveResult<A, B>>,
+        Bifunctor<A, B, RecursiveResult<?, ?>>,
+        Monad<B, RecursiveResult<A, ?>>,
+        Traversable<B, RecursiveResult<A, ?>> {
 
     private RecursiveResult() {
     }
@@ -90,6 +95,16 @@ public abstract class RecursiveResult<A, B> implements CoProduct2<A, B, Recursiv
 
     public static <A, B> RecursiveResult<A, B> terminate(B b) {
         return new Terminate<>(b);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link RecursiveResult}.
+     *
+     * @param <A> the recursive function's input type
+     * @return the {@link Pure} instance
+     */
+    public static <A> Pure<RecursiveResult<A, ?>> pureRecursiveResult() {
+        return RecursiveResult::terminate;
     }
 
     static final class Recurse<A, B> extends RecursiveResult<A, B> {

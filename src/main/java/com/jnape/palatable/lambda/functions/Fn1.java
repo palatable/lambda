@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.functions;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.builtin.fn1.Constantly;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.Cocartesian;
@@ -283,5 +285,14 @@ public interface Fn1<A, B> extends
      */
     static <A, B> Fn1<A, B> fromFunction(Function<? super A, ? extends B> function) {
         return function::apply;
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Fn1}.
+     *
+     * @return the {@link Pure} instance
+     */
+    static <A> Pure<Fn1<A, ?>> pureFn1() {
+        return Constantly::constantly;
     }
 }

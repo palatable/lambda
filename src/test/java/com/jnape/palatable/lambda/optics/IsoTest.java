@@ -54,4 +54,11 @@ public class IsoTest {
         assertEquals(just(1), view(mapped, just("1")));
         assertEquals(just(asList('1', '.', '2')), view(mapped.mirror(), just(1.2d)));
     }
+
+    @Test
+    public void staticPure() {
+        Iso<String, Character, Integer, Boolean> iso = Iso.<String, Integer, Boolean>pureIso(String::length).apply('1');
+        assertEquals((Integer) 3, view(iso, "foo"));
+        assertEquals((Character) '1', view(iso.mirror(), true));
+    }
 }

@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.traversable;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Empty;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -163,5 +164,19 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
      */
     public static <A> LambdaIterable<A> empty() {
         return wrap(emptyList());
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link LambdaIterable}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<LambdaIterable<?>> pureLambdaIterable() {
+        return new Pure<LambdaIterable<?>>() {
+            @Override
+            public <A> LambdaIterable<A> checkedApply(A a) throws Throwable {
+                return wrap(singleton(a));
+            }
+        };
     }
 }

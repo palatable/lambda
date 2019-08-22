@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.optics;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
@@ -14,6 +15,7 @@ import com.jnape.palatable.lambda.optics.functions.Set;
 import com.jnape.palatable.lambda.optics.functions.View;
 
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
+import static com.jnape.palatable.lambda.functions.Fn2.curried;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.optics.Iso.Simple.adapt;
@@ -136,12 +138,11 @@ public interface Iso<S, T, A, B> extends
      */
     @Override
     default <U> Iso<S, U, A, B> flatMap(Fn1<? super T, ? extends Monad<U, Iso<S, ?, A, B>>> fn) {
-        //noinspection RedundantTypeArguments
-        return unIso().fmap(bt -> Fn2.<B, B, U>curried(
-                fn1(bt.fmap(fn.<Iso<S, U, A, B>>fmap(Monad<U, Iso<S, ?, A, B>>::coerce))
-                            .fmap(Iso::unIso)
-                            .fmap(Tuple2::_2)
-                            .fmap(Fn1::fn1))))
+        return unIso()
+                .<Fn2<B, B, U>>fmap(bt -> curried(fn1(bt.fmap(fn.<Iso<S, U, A, B>>fmap(Monad::coerce))
+                                                              .fmap(Iso::unIso)
+                                                              .fmap(Tuple2::_2)
+                                                              .fmap(Fn1::fn1))))
                 .fmap(Fn2::uncurry)
                 .fmap(bbu -> bbu.<B>diMapL(Tuple2::fill))
                 .into(Iso::iso);
@@ -277,6 +278,24 @@ public interface Iso<S, T, A, B> extends
      */
     static <S, A> Iso.Simple<S, A> simpleIso(Fn1<? super S, ? extends A> f, Fn1<? super A, ? extends S> g) {
         return adapt(iso(f, g));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Iso}.
+     *
+     * @param sa  one side of the isomorphism
+     * @param <S> the larger type for focusing
+     * @param <A> the smaller type for focusing
+     * @param <B> the smaller type for mirrored focusing
+     * @return the {@link Pure} instance
+     */
+    static <S, A, B> Pure<Iso<S, ?, A, B>> pureIso(Fn1<? super S, ? extends A> sa) {
+        return new Pure<Iso<S, ?, A, B>>() {
+            @Override
+            public <T> Iso<S, T, A, B> checkedApply(T t) {
+                return iso(sa, constantly(t));
+            }
+        };
     }
 
     /**

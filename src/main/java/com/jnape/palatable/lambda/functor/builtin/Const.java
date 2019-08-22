@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -50,6 +51,9 @@ public final class Const<A, B> implements
         return Monad.super.<C>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <C> Const<A, C> pure(C c) {
@@ -149,5 +153,21 @@ public final class Const<A, B> implements
         return "Const{" +
                 "a=" + a +
                 '}';
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Const}.
+     *
+     * @param a   the stored value
+     * @param <A> the left parameter type, and the type of the stored value
+     * @return the {@link Pure} instance
+     */
+    public static <A> Pure<Const<A, ?>> pureConst(A a) {
+        return new Pure<Const<A, ?>>() {
+            @Override
+            public <B> Const<A, B> checkedApply(B b) {
+                return new Const<>(a);
+            }
+        };
     }
 }

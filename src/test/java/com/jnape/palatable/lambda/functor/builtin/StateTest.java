@@ -80,4 +80,10 @@ public class StateTest {
         State<Integer, Integer> modified = State.<Integer>get().mapState(into((a, s) -> product(a + 1, s + 2)));
         assertEquals(tuple(1, 2), modified.run(0));
     }
+
+    @Test
+    public void staticPure() {
+        State<String, Integer> state = State.<String>pureState().apply(1);
+        assertEquals(tuple(1, "foo"), state.run("foo"));
+    }
 }

@@ -48,4 +48,10 @@ public class Choice2Test {
             throw new AssertionError();
         })).value());
     }
+
+    @Test
+    public void staticPure() {
+        Choice2<Byte, Short> choice = Choice2.<Byte>pureChoice().apply((short) 2);
+        assertEquals(b((short) 2), choice);
+    }
 }

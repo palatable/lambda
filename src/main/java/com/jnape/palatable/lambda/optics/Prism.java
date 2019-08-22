@@ -144,9 +144,11 @@ public interface Prism<S, T, A, B> extends
      */
     @Override
     default <U> Prism<S, U, A, B> flatMap(Fn1<? super T, ? extends Monad<U, Prism<S, ?, A, B>>> f) {
-        return unPrism().into((bt, seta) -> prism(
-                s -> seta.apply(s).match(t -> matching(f.apply(t).<Prism<S, U, A, B>>coerce(), s), Either::right),
-                b -> View.<B, B, U, U>view(re(f.apply(bt.apply(b)).coerce())).apply(b)));
+        return unPrism()
+                .into((bt, seta) -> Prism.<S, U, A, B>prism(
+                        s -> seta.apply(s).<Either<U, A>>match(t -> matching(f.apply(t).<Prism<S, U, A, B>>coerce(), s),
+                                                               Either::right),
+                        b -> View.<B, B, U, U>view(re(f.apply(bt.apply(b)).coerce())).apply(b)));
     }
 
     /**
@@ -326,6 +328,20 @@ public interface Prism<S, T, A, B> extends
     static <S, A, B> Prism<S, S, A, B> fromPartial(Fn1<? super S, ? extends A> partialSa,
                                                    Fn1<? super B, ? extends S> bs) {
         return prism(partialSa.<S, A>diMap(downcast(), upcast()).choose(), bs);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Prism}.
+     *
+     * @return the {@link Pure} instance
+     */
+    static <S, A, B> Pure<Prism<S, ?, A, B>> purePrism() {
+        return new Pure<Prism<S, ?, A, B>>() {
+            @Override
+            public <T> Prism<S, T, A, B> checkedApply(T t) throws Throwable {
+                return prism(constantly(left(t)), constantly(t));
+            }
+        };
     }
 
     /**

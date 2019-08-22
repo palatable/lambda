@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
@@ -155,5 +156,22 @@ public final class EitherT<M extends Monad<?, M>, L, R> implements
      */
     public static <M extends Monad<?, M>, L, R> EitherT<M, L, R> eitherT(Monad<Either<L, R>, M> melr) {
         return new EitherT<>(melr);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link EitherT}.
+     *
+     * @param pureM the argument {@link Monad} {@link Pure}
+     * @param <M>   the argument {@link Monad} witness
+     * @param <L>   the left type
+     * @return the {@link Pure} instance
+     */
+    public static <M extends Monad<?, M>, L> Pure<EitherT<M, L, ?>> pureEitherT(Pure<M> pureM) {
+        return new Pure<EitherT<M, L, ?>>() {
+            @Override
+            public <R> EitherT<M, L, R> checkedApply(R r) throws Throwable {
+                return eitherT(pureM.<R, Monad<R, M>>apply(r).fmap(Either::right));
+            }
+        };
     }
 }

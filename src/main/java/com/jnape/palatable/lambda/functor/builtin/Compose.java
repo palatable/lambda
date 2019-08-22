@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 
 import java.util.Objects;
@@ -101,5 +102,20 @@ public final class Compose<F extends Applicative<?, F>, G extends Applicative<?,
     @Override
     public String toString() {
         return "Compose{fga=" + fga + '}';
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Compose}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static <F extends Applicative<?, F>, G extends Applicative<?, G>> Pure<Compose<F, G, ?>> pureCompose(
+            Pure<F> pureF, Pure<G> pureG) {
+        return new Pure<Compose<F, G, ?>>() {
+            @Override
+            public <A> Compose<F, G, A> checkedApply(A a) throws Throwable {
+                return new Compose<>(pureF.<Applicative<A, G>, Applicative<Applicative<A, G>, F>>apply(pureG.apply(a)));
+            }
+        };
     }
 }

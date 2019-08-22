@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.pureLazy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -62,5 +63,11 @@ public class LazyTest {
                                                        : lazy(x));
                          }
                      }.apply(lazy(0)).value());
+    }
+
+    @Test
+    public void staticPure() {
+        Lazy<Integer> lazy = pureLazy().apply(1);
+        assertEquals(lazy(1), lazy);
     }
 }

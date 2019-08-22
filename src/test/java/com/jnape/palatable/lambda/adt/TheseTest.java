@@ -17,7 +17,6 @@ import static com.jnape.palatable.lambda.adt.These.both;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
-import static testsupport.assertion.MonadErrorAssert.assertLaws;
 
 @RunWith(Traits.class)
 public class TheseTest {
@@ -36,5 +35,11 @@ public class TheseTest {
         assertEquals(a(1), a(1).lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        These<String, Integer> these = These.<String>pureThese().apply(1);
+        assertEquals(b(1), these);
     }
 }

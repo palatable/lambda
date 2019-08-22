@@ -70,4 +70,10 @@ public class Choice4Test {
             throw new AssertionError();
         })).value());
     }
+
+    @Test
+    public void staticPure() {
+        Choice4<Byte, Short, Integer, Long> choice = Choice4.<Byte, Short, Integer>pureChoice().apply(4L);
+        assertEquals(d(4L), choice);
+    }
 }

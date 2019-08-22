@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -26,48 +27,75 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
         super(_1, nil());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <_0> Tuple2<_0, _1> cons(_0 _0) {
         return new Tuple2<>(_0, this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <_1Prime> SingletonHList<_1Prime> fmap(Fn1<? super _1, ? extends _1Prime> fn) {
         return Monad.super.<_1Prime>fmap(fn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <_1Prime> SingletonHList<_1Prime> pure(_1Prime _1Prime) {
         return singletonHList(_1Prime);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <_1Prime> SingletonHList<_1Prime> zip(
             Applicative<Fn1<? super _1, ? extends _1Prime>, SingletonHList<?>> appFn) {
         return Monad.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <_1Prime> Lazy<SingletonHList<_1Prime>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super _1, ? extends _1Prime>, SingletonHList<?>>> lazyAppFn) {
         return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_1Prime, SingletonHList<?>>::coerce);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <_1Prime> SingletonHList<_1Prime> discardL(Applicative<_1Prime, SingletonHList<?>> appB) {
         return Monad.super.discardL(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <_1Prime> SingletonHList<_1> discardR(Applicative<_1Prime, SingletonHList<?>> appB) {
         return Monad.super.discardR(appB).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <_1Prime> SingletonHList<_1Prime> flatMap(Fn1<? super _1, ? extends Monad<_1Prime, SingletonHList<?>>> f) {
         return f.apply(head()).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <B, App extends Applicative<?, App>, TravB extends Traversable<B, SingletonHList<?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super _1, ? extends Applicative<B, App>> fn,
@@ -84,5 +112,14 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
      */
     public <R> R into(Fn1<? super _1, ? extends R> fn) {
         return fn.apply(head());
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link SingletonHList}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<SingletonHList<?>> pureSingletonHList() {
+        return HList::singletonHList;
     }
 }

@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.Functor;
@@ -375,6 +376,20 @@ public interface Lens<S, T, A, B> extends
      */
     static <S, A, B> Lens.Simple<S, Tuple2<A, B>> both(Lens.Simple<S, A> f, Lens.Simple<S, B> g) {
         return adapt(both((Lens<S, S, A, A>) f, g));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Lens}.
+     *
+     * @return the {@link Pure} instance
+     */
+    static <S, A, B> Pure<Lens<S, ?, A, B>> pureLens(Fn1<? super S, ? extends A> sa) {
+        return new Pure<Lens<S, ?, A, B>>() {
+            @Override
+            public <T> Lens<S, T, A, B> checkedApply(T t) {
+                return lens(sa, (s, b) -> t);
+            }
+        };
     }
 
     /**

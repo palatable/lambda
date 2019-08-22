@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -177,5 +178,22 @@ public final class ReaderT<R, M extends Monad<?, M>, A> implements
      */
     public static <R, M extends Monad<?, M>, A> ReaderT<R, M, A> readerT(Fn1<? super R, ? extends Monad<A, M>> fn) {
         return new ReaderT<>(fn);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link ReaderT}.
+     *
+     * @param pureM the argument {@link Monad} {@link Pure}
+     * @param <R>   the input type
+     * @param <M>   the argument {@link Monad} witness
+     * @return the {@link Pure} instance
+     */
+    public static <R, M extends Monad<?, M>> Pure<ReaderT<R, M, ?>> pureReaderT(Pure<M> pureM) {
+        return new Pure<ReaderT<R, M, ?>>() {
+            @Override
+            public <A> ReaderT<R, M, A> checkedApply(A a) {
+                return readerT(__ -> pureM.apply(a));
+            }
+        };
     }
 }

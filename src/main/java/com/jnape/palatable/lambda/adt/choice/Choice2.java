@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.Functor;
@@ -179,6 +180,16 @@ public abstract class Choice2<A, B> implements
      */
     public static <A, B> Choice2<A, B> b(B b) {
         return new _B<>(b);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Choice2}.
+     *
+     * @param <A> the first possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A> Pure<Choice2<A, ?>> pureChoice() {
+        return Choice2::b;
     }
 
     private static final class _A<A, B> extends Choice2<A, B> {

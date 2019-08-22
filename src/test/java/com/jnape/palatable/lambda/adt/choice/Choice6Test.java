@@ -90,4 +90,11 @@ public class Choice6Test {
             throw new AssertionError();
         })).value());
     }
+
+    @Test
+    public void staticPure() {
+        Choice6<Byte, Short, Integer, Long, Float, Double> choice =
+                Choice6.<Byte, Short, Integer, Long, Float>pureChoice().apply(6d);
+        assertEquals(f(6d), choice);
+    }
 }

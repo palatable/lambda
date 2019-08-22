@@ -7,6 +7,7 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek2;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
@@ -401,6 +402,15 @@ public abstract class Either<L, R> implements
      */
     public static <L, R> Either<L, R> right(R r) {
         return new Right<>(r);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Either}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static <L> Pure<Either<L, ?>> pureEither() {
+        return Either::right;
     }
 
     private static final class Left<L, R> extends Either<L, R> {

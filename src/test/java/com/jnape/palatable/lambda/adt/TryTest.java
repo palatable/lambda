@@ -23,6 +23,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Try.failure;
+import static com.jnape.palatable.lambda.adt.Try.pureTry;
 import static com.jnape.palatable.lambda.adt.Try.success;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.adt.Try.withResources;
@@ -257,5 +258,11 @@ public class TryTest {
         } catch (Exception e) {
             fail("A different exception altogether was thrown.");
         }
+    }
+
+    @Test
+    public void staticPure() {
+        Try<Integer> try_ = pureTry().apply(1);
+        assertEquals(success(1), try_);
     }
 }

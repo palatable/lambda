@@ -12,6 +12,7 @@ import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.ReaderT.readerT;
 import static org.junit.Assert.assertEquals;
 
@@ -38,5 +39,12 @@ public class ReaderTTest {
                      ReaderT.<String, Identity<?>, String>readerT(Identity::new)
                              .<Identity<String>, Maybe<?>, Integer>mapReaderT(id -> just(id.runIdentity().length()))
                              .runReaderT("foo"));
+    }
+
+    @Test
+    public void staticPure() {
+        ReaderT<String, Identity<?>, Integer> readerT =
+                ReaderT.<String, Identity<?>>pureReaderT(pureIdentity()).apply(1);
+        assertEquals(new Identity<>(1), readerT.runReaderT("foo"));
     }
 }

@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct7;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple7;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -292,6 +293,21 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
      */
     public static <A, B, C, D, E, F, G> Choice7<A, B, C, D, E, F, G> g(G g) {
         return new _G<>(g);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Choice7}.
+     *
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @param <F> the sixth possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A, B, C, D, E, F> Pure<Choice7<A, B, C, D, E, F, ?>> pureChoice() {
+        return Choice7::g;
     }
 
     private static final class _A<A, B, C, D, E, F, G> extends Choice7<A, B, C, D, E, F, G> {

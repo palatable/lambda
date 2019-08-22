@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
@@ -120,5 +121,21 @@ public final class IdentityT<M extends Monad<?, M>, A> implements MonadT<M, Iden
      */
     public static <M extends Monad<?, M>, A> IdentityT<M, A> identityT(Monad<Identity<A>, M> mia) {
         return new IdentityT<>(mia);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link IdentityT}.
+     *
+     * @param pureM the argument {@link Monad} {@link Pure}
+     * @param <M>   the argument {@link Monad} witness
+     * @return the {@link Pure} instance
+     */
+    public static <M extends Monad<?, M>> Pure<IdentityT<M, ?>> pureIdentityT(Pure<M> pureM) {
+        return new Pure<IdentityT<M, ?>>() {
+            @Override
+            public <A> IdentityT<M, A> checkedApply(A a) {
+                return identityT(pureM.<A, Monad<A, M>>apply(a).fmap(Identity::new));
+            }
+        };
     }
 }

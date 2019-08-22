@@ -15,6 +15,7 @@ import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.EitherT.eitherT;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
@@ -36,5 +37,12 @@ public class EitherTTest {
                      eitherT(nothing()).lazyZip(lazy(() -> {
                          throw new AssertionError();
                      })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        EitherT<Identity<?>, String, Integer> eitherT = EitherT.<Identity<?>, String>pureEitherT(pureIdentity())
+                .apply(1);
+        assertEquals(eitherT(new Identity<>(right(1))), eitherT);
     }
 }

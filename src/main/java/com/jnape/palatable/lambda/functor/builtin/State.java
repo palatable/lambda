@@ -5,6 +5,7 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 
@@ -209,5 +210,20 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     public static <S, A> State<S, A> state(A a) {
         return gets(constantly(a));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link State}.
+     *
+     * @param <S> the state type
+     * @return the {@link Pure} instance
+     */
+    public static <S> Pure<State<S, ?>> pureState() {
+        return new Pure<State<S, ?>>() {
+            @Override
+            public <A> State<S, A> checkedApply(A a) throws Throwable {
+                return state(s -> tuple(a, s));
+            }
+        };
     }
 }

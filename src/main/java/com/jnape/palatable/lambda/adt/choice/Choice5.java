@@ -6,6 +6,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct5;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple5;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -239,6 +240,19 @@ public abstract class Choice5<A, B, C, D, E> implements
      */
     public static <A, B, C, D, E> Choice5<A, B, C, D, E> e(E e) {
         return new _E<>(e);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Choice5}.
+     *
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A, B, C, D> Pure<Choice5<A, B, C, D, ?>> pureChoice() {
+        return Choice5::e;
     }
 
     private static final class _A<A, B, C, D, E> extends Choice5<A, B, C, D, E> {

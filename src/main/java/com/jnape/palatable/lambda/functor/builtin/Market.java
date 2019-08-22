@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.functor.builtin;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -130,5 +131,22 @@ public final class Market<A, B, S, T> implements
     @Override
     public <R> Market<A, B, R, T> contraMap(Fn1<? super R, ? extends S> fn) {
         return (Market<A, B, R, T>) Cocartesian.super.<R>contraMap(fn);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Market}.
+     *
+     * @param <A> the output that might fail to be produced
+     * @param <B> the input that guarantees its output
+     * @param <S> the input that might fail to map to its output
+     * @return the {@link Pure} instance
+     */
+    public static <A, B, S> Pure<Market<A, B, S, ?>> pureMarket() {
+        return new Pure<Market<A, B, S, ?>>() {
+            @Override
+            public <T> Market<A, B, S, T> checkedApply(T t) {
+                return new Market<>(constantly(t), constantly(left(t)));
+            }
+        };
     }
 }

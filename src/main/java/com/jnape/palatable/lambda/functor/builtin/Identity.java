@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
@@ -112,5 +113,14 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
         return "Identity{" +
                 "a=" + a +
                 '}';
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Identity}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<Identity<?>> pureIdentity() {
+        return Identity::new;
     }
 }

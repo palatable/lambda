@@ -62,4 +62,10 @@ public class Choice3Test {
             throw new AssertionError();
         })).value());
     }
+
+    @Test
+    public void staticPure() {
+        Choice3<Byte, Short, Integer> choice = Choice3.<Byte, Short>pureChoice().apply(3);
+        assertEquals(c(3), choice);
+    }
 }

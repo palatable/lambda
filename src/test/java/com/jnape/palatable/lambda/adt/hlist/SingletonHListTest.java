@@ -12,6 +12,7 @@ import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.nil;
 import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
+import static com.jnape.palatable.lambda.adt.hlist.SingletonHList.pureSingletonHList;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Traits.class)
@@ -47,5 +48,11 @@ public class SingletonHListTest {
     @Test
     public void intoAppliesHeadToFn() {
         assertEquals("FOO", singletonHList("foo").into(String::toUpperCase));
+    }
+
+    @Test
+    public void staticPure() {
+        SingletonHList<Integer> singletonHList = pureSingletonHList().apply(1);
+        assertEquals(singletonHList(1), singletonHList);
     }
 }

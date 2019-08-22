@@ -21,6 +21,7 @@ import static com.jnape.palatable.lambda.optics.Prism.simplePrism;
 import static com.jnape.palatable.lambda.optics.functions.Matching.matching;
 import static com.jnape.palatable.lambda.optics.functions.Pre.pre;
 import static com.jnape.palatable.lambda.optics.functions.Re.re;
+import static com.jnape.palatable.lambda.optics.functions.Set.set;
 import static com.jnape.palatable.lambda.optics.functions.View.view;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -87,5 +88,12 @@ public class PrismTest {
         assertPrismLawfulness(composed, singletonList("1.2"), singletonList(1));
         assertPrismLawfulness(composed, singletonList("1.0"), singletonList(1));
         assertPrismLawfulness(composed, singletonList("foo"), emptyList());
+    }
+
+    @Test
+    public void staticPure() {
+        Prism<String, Character, Integer, Boolean> prism = Prism.<String, Integer, Boolean>purePrism().apply('1');
+        assertEquals(left('1'), matching(prism, "foo"));
+        assertEquals((Character) '1', set(prism, true, "bar"));
     }
 }

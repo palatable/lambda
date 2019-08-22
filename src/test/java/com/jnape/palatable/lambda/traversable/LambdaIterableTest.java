@@ -2,6 +2,8 @@ package com.jnape.palatable.lambda.traversable;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functor.Functor;
+import com.jnape.palatable.lambda.functor.builtin.State;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -14,6 +16,7 @@ import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
@@ -21,6 +24,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Replicate.replicate;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.traversable.LambdaIterable.empty;
+import static com.jnape.palatable.lambda.traversable.LambdaIterable.pureLambdaIterable;
 import static com.jnape.palatable.lambda.traversable.LambdaIterable.wrap;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.util.Arrays.asList;
@@ -66,5 +70,11 @@ public class LambdaIterableTest {
         assertEquals(empty(), empty().lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        LambdaIterable<Integer> lambdaIterable = pureLambdaIterable().apply(1);
+        assertThat(lambdaIterable.unwrap(), iterates(1));
     }
 }

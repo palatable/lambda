@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.builtin.fn1.Downcast;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -44,10 +46,9 @@ public abstract class Try<A> implements
      * @param recoveryFn    the function mapping the {@link Throwable} to the result
      * @return a new {@link Try} instance around either the original successful result or the mapped result
      */
-    @SuppressWarnings("unchecked")
     public final <S extends Throwable> Try<A> catching(Class<S> throwableType,
                                                        Fn1<? super S, ? extends A> recoveryFn) {
-        return catching(throwableType::isInstance, t -> recoveryFn.apply((S) t));
+        return catching(throwableType::isInstance, t -> recoveryFn.apply(Downcast.<S, Throwable>downcast(t)));
     }
 
     /**
@@ -76,13 +77,13 @@ public abstract class Try<A> implements
      * rules above
      */
     public final Try<A> ensuring(SideEffect sideEffect) {
-        return match(t -> trying(sideEffect)
-                             .<Try<A>>fmap(constantly(failure(t)))
-                             .recover(t2 -> {
-                                 t.addSuppressed(t2);
-                                 return failure(t);
-                             }),
-                     a -> trying(sideEffect).fmap(constantly(a)));
+        return this.<Try<A>>match(t -> trying(sideEffect)
+                                          .<Try<A>>fmap(constantly(failure(t)))
+                                          .recover(t2 -> {
+                                              t.addSuppressed(t2);
+                                              return failure(t);
+                                          }),
+                                  a -> trying(sideEffect).fmap(constantly(a)));
     }
 
     /**
@@ -132,7 +133,6 @@ public abstract class Try<A> implements
      * @throws T the transformation output
      */
     public abstract <T extends Throwable> A orThrow(Fn1<? super Throwable, ? extends T> fn) throws T;
-
 
     /**
      * If this is a success, wrap the value in a {@link Maybe#just} and return it. Otherwise, return {@link
@@ -379,6 +379,15 @@ public abstract class Try<A> implements
             Fn1<? super B, ? extends C> cFn,
             Fn1<? super C, ? extends Try<? extends D>> fn) {
         return withResources(fn0, bFn, b -> withResources(() -> cFn.apply(b), fn::apply));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Try}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<Try<?>> pureTry() {
+        return Try::success;
     }
 
     private static final class Failure<A> extends Try<A> {

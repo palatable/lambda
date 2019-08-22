@@ -78,4 +78,10 @@ public class Choice5Test {
             throw new AssertionError();
         })).value());
     }
+
+    @Test
+    public void staticPure() {
+        Choice5<Byte, Short, Integer, Long, Float> choice = Choice5.<Byte, Short, Integer, Long>pureChoice().apply(5f);
+        assertEquals(e(5f), choice);
+    }
 }

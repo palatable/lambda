@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
@@ -123,5 +124,21 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
      */
     public static <M extends Monad<?, M>, A> LazyT<M, A> lazyT(Monad<Lazy<A>, M> mla) {
         return new LazyT<>(mla);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link LazyT}.
+     *
+     * @param pureM the argument {@link Monad} {@link Pure}
+     * @param <M>   the argument {@link Monad} witness
+     * @return the {@link Pure} instance
+     */
+    public static <M extends Monad<?, M>> Pure<LazyT<M, ?>> pureLazyT(Pure<M> pureM) {
+        return new Pure<LazyT<M, ?>>() {
+            @Override
+            public <A> LazyT<M, A> checkedApply(A a) {
+                return lazyT(pureM.<A, Monad<A, M>>apply(a).fmap(Lazy::lazy));
+            }
+        };
     }
 }

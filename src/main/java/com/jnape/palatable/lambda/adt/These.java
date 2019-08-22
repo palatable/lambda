@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -162,6 +163,16 @@ public abstract class These<A, B> implements
      */
     public static <A, B> These<A, B> both(A a, B b) {
         return new Both<>(tuple(a, b));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link These}.
+     *
+     * @param <A> the first possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A> Pure<These<A, ?>> pureThese() {
+        return These::b;
     }
 
     private static final class _A<A, B> extends These<A, B> {

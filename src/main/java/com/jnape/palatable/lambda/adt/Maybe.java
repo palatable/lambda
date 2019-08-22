@@ -8,6 +8,7 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -294,6 +295,15 @@ public abstract class Maybe<A> implements
     @SuppressWarnings("unchecked")
     public static <A> Maybe<A> nothing() {
         return (Maybe<A>) Nothing.INSTANCE;
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Maybe}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<Maybe<?  >> pureMaybe() {
+        return Maybe::just;
     }
 
     private static final class Nothing<A> extends Maybe<A> {

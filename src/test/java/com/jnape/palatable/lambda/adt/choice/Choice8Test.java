@@ -95,4 +95,11 @@ public class Choice8Test {
             throw new AssertionError();
         })).value());
     }
+
+    @Test
+    public void staticPure() {
+        Choice8<Byte, Short, Integer, Long, Float, Double, Boolean, Character> choice =
+                Choice8.<Byte, Short, Integer, Long, Float, Double, Boolean>pureChoice().apply('c');
+        assertEquals(h('c'), choice);
+    }
 }

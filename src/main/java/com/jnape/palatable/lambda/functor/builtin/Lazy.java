@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.functor.builtin;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.traversable.Traversable;
@@ -130,6 +131,15 @@ public abstract class Lazy<A> implements Monad<A, Lazy<?>>, Traversable<A, Lazy<
      */
     public static <A> Lazy<A> lazy(Fn0<A> fn0) {
         return new Later<>(fn0);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Lazy}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<Lazy<?>> pureLazy() {
+        return Lazy::lazy;
     }
 
     private static final class Later<A> extends Lazy<A> {

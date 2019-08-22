@@ -15,6 +15,7 @@ import testsupport.traits.TraversableLaws;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.adt.hlist.Tuple3.pureTuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -104,5 +105,11 @@ public class Tuple3Test {
         assertEquals(nothing(), Tuple3.fromIterable(emptyList()));
         assertEquals(nothing(), Tuple3.fromIterable(singletonList(1)));
         assertEquals(just(tuple(1, 1, 1)), Tuple3.fromIterable(repeat(1)));
+    }
+
+    @Test
+    public void staticPure() {
+        Tuple3<Integer, String, Character> tuple = pureTuple(1, "2").apply('3');
+        assertEquals(tuple(1, "2", '3'), tuple);
     }
 }

@@ -239,4 +239,10 @@ public class EitherTest {
             throw new AssertionError();
         })).value());
     }
+
+    @Test
+    public void staticPure() {
+        Either<String, Integer> either = Either.<String>pureEither().apply(1);
+        assertEquals(right(1), either);
+    }
 }

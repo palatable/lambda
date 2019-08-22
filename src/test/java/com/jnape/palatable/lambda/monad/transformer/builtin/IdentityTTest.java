@@ -12,8 +12,10 @@ import testsupport.traits.MonadLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.Maybe.pureMaybe;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.IdentityT.identityT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IdentityT.pureIdentityT;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Traits.class)
@@ -33,5 +35,11 @@ public class IdentityTTest {
                      identityT(nothing()).lazyZip(lazy(() -> {
                          throw new AssertionError();
                      })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        IdentityT<Maybe<?>, Integer> identityT = pureIdentityT(pureMaybe()).apply(1);
+        assertEquals(identityT(just(new Identity<>(1))), identityT);
     }
 }

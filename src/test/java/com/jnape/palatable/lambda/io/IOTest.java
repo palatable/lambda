@@ -39,6 +39,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.io.IO.externallyManaged;
 import static com.jnape.palatable.lambda.io.IO.io;
+import static com.jnape.palatable.lambda.io.IO.pureIO;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
@@ -440,5 +441,11 @@ public class IOTest {
         assertEquals(left(exception), io.safe().unsafePerformIO());
         assertEquals((Integer) 2, io.unsafePerformIO());
         assertEquals((Integer) 2, io.unsafePerformIO());
+    }
+
+    @Test
+    public void staticPure() {
+        IO<Integer> io = pureIO().apply(1);
+        assertEquals((Integer) 1, io.unsafePerformIO());
     }
 }

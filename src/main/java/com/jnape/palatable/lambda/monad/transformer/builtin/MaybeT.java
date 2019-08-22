@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -127,5 +128,21 @@ public final class MaybeT<M extends Monad<?, M>, A> implements MonadT<M, Maybe<?
      */
     public static <M extends Monad<?, M>, A> MaybeT<M, A> maybeT(Monad<Maybe<A>, M> mma) {
         return new MaybeT<>(mma);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link MaybeT}.
+     *
+     * @param pureM the argument {@link Monad} {@link Pure}
+     * @param <M>   the argument {@link Monad} witness
+     * @return the {@link Pure} instance
+     */
+    public static <M extends Monad<?, M>> Pure<MaybeT<M, ?>> pureMaybeT(Pure<M> pureM) {
+        return new Pure<MaybeT<M, ?>>() {
+            @Override
+            public <A> MaybeT<M, A> checkedApply(A a) {
+                return maybeT(pureM.<A, Monad<A, M>>apply(a).fmap(Maybe::just));
+            }
+        };
     }
 }

@@ -19,6 +19,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.adt.hlist.Tuple2.pureTuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -126,5 +127,11 @@ public class Tuple2Test {
         assertEquals(nothing(), Tuple2.fromIterable(emptyList()));
         assertEquals(nothing(), Tuple2.fromIterable(singletonList(1)));
         assertEquals(just(tuple(1, 1)), Tuple2.fromIterable(repeat(1)));
+    }
+
+    @Test
+    public void staticPure() {
+        Tuple2<Integer, String> tuple = pureTuple(1).apply("two");
+        assertEquals(tuple(1, "two"), tuple);
     }
 }

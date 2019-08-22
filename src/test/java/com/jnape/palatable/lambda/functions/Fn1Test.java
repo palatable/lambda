@@ -90,4 +90,10 @@ public class Fn1Test {
         Function<Integer, Integer> function = add1.toFunction();
         assertEquals((Integer) 2, function.apply(1));
     }
+
+    @Test
+    public void staticPure() {
+        Fn1<String, Integer> fn1 = Fn1.<String>pureFn1().apply(1);
+        assertEquals((Integer) 1, fn1.apply("anything"));
+    }
 }
