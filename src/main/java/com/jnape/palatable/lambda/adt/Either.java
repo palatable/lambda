@@ -290,8 +290,9 @@ public abstract class Either<L, R> implements
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("RedundantTypeArguments")
     public Either<L, R> catchError(Fn1<? super L, ? extends Monad<R, Either<L, ?>>> recoveryFn) {
-        return match(recoveryFn.fmap(Monad::coerce), Either::right);
+        return match(recoveryFn.fmap(Monad<R, Either<L, ?>>::coerce), Either::right);
     }
 
     /**

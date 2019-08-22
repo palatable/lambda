@@ -15,7 +15,6 @@ import com.jnape.palatable.lambda.optics.functions.Set;
 import com.jnape.palatable.lambda.optics.functions.View;
 
 import static com.jnape.palatable.lambda.functions.Fn1.fn1;
-import static com.jnape.palatable.lambda.functions.Fn2.curried;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.optics.Iso.Simple.adapt;
@@ -137,12 +136,13 @@ public interface Iso<S, T, A, B> extends
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("RedundantTypeArguments")
     default <U> Iso<S, U, A, B> flatMap(Fn1<? super T, ? extends Monad<U, Iso<S, ?, A, B>>> fn) {
-        return unIso()
-                .<Fn2<B, B, U>>fmap(bt -> curried(fn1(bt.fmap(fn.<Iso<S, U, A, B>>fmap(Monad::coerce))
-                                                              .fmap(Iso::unIso)
-                                                              .fmap(Tuple2::_2)
-                                                              .fmap(Fn1::fn1))))
+        return unIso().<Fn2<B, B, U>>fmap(bt -> Fn2.<B, B, U>curried(
+                fn1(bt.fmap(fn.<Iso<S, U, A, B>>fmap(Monad<U, Iso<S, ?, A, B>>::coerce))
+                            .fmap(Iso::unIso)
+                            .fmap(Tuple2::_2)
+                            .fmap(Fn1::fn1))))
                 .fmap(Fn2::uncurry)
                 .fmap(bbu -> bbu.<B>diMapL(Tuple2::fill))
                 .into(Iso::iso);
