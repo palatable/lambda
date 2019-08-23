@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `IO#memoize`, for memoizing an `IO` by caching its first successful result
 - `MonadError`, monads that can be thrown to and caught from
 - `Tuple2-8#fromIterable`, for populating a `TupleN` with the first `N` elements of an `Iterable`
+- `Fn2#curry`, for converting an `Fn1<Tuple2<A,B>,C>` to an `Fn2<A,B,C>`
 
 ## [4.0.0] - 2019-05-20
 ### Changed
