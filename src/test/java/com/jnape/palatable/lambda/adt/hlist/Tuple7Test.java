@@ -106,7 +106,7 @@ public class Tuple7Test {
                 tuple("foo", 1, 2, 3, 4, 5, 6);
         Tuple7<String, Integer, Integer, Integer, Integer, Integer, Fn1<? super Integer, ? extends Integer>> b =
                 tuple("bar", 2, 3, 4, 5, 6, x -> x + 1);
-        assertEquals(tuple("bar", 2, 3, 4, 5, 6, 7), a.zip(b));
+        assertEquals(tuple("foo", 1, 2, 3, 4, 5, 7), a.zip(b));
     }
 
     @Test

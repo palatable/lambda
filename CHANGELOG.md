@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Changed
 - ***Breaking Change***: `MonadT` is now witnessed by a parameter for better subtyping
+- ***Breaking Change***: `Applicative#zip` and derivatives evaluate from left to right now across the board.
 - `Alter` now merely requires an `Fn1` instead of an explicit `Effect`
 - `IO` now internally trampolines all forms of composition, including lazyZip;
    sequencing very large iterables of IO will work, if you have the heap, and

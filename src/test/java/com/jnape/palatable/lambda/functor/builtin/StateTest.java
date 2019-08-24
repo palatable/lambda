@@ -2,6 +2,8 @@ package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.hlist.HList;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
@@ -67,6 +69,14 @@ public class StateTest {
     public void stateAccumulation() {
         State<Integer, Integer> counter = State.<Integer>get().flatMap(i -> State.put(i + 1).discardL(State.state(i)));
         assertEquals(tuple(0, 1), counter.run(0));
+    }
+
+    @Test
+    public void zipOrdering() {
+        Tuple2<Integer, String> result = State.<String, Integer>state(s -> tuple(0, s + "1"))
+                .zip(State.<String, Fn1<? super Integer, ? extends Integer>>state(s -> tuple(x -> x + 1, s + "2")))
+                .run("_");
+        assertEquals(tuple(1, "_12"), result);
     }
 
     @Test

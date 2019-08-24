@@ -4,7 +4,6 @@ import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.builtin.fn2.Sequence;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Rule;
@@ -33,6 +32,7 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Replicate.replicate;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Sequence.sequence;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2.liftA2;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
@@ -45,6 +45,7 @@ import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.Executors.newFixedThreadPool;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.ForkJoinPool.commonPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -300,13 +301,13 @@ public class IOTest {
     @Test
     public void sequenceStackSafety() {
         assertEquals(STACK_EXPLODING_NUMBER,
-                     Sequence.sequence(replicate(STACK_EXPLODING_NUMBER, io(UNIT)), IO::io)
+                     sequence(replicate(STACK_EXPLODING_NUMBER, io(UNIT)), IO::io)
                              .fmap(size())
                              .fmap(Long::intValue)
                              .unsafePerformIO());
 
         assertEquals(STACK_EXPLODING_NUMBER,
-                     Sequence.sequence(replicate(STACK_EXPLODING_NUMBER, io(UNIT)), IO::io)
+                     sequence(replicate(STACK_EXPLODING_NUMBER, io(UNIT)), IO::io)
                              .fmap(size())
                              .fmap(Long::intValue)
                              .unsafePerformAsyncIO().join());
@@ -316,7 +317,7 @@ public class IOTest {
     public void sequenceIOExecutesInParallel() {
         int            n     = 2;
         CountDownLatch latch = new CountDownLatch(n);
-        Sequence.sequence(replicate(n, io(() -> {
+        sequence(replicate(n, io(() -> {
             latch.countDown();
             if (!latch.await(100, MILLISECONDS)) {
                 throw new AssertionError("Expected latch to countDown in time, but didn't.");
@@ -328,7 +329,7 @@ public class IOTest {
 
     @Test
     public void sequenceIsRepeatable() {
-        IO<Iterable<Unit>> io = Sequence.sequence(replicate(3, io(UNIT)), IO::io);
+        IO<Iterable<Unit>> io = sequence(replicate(3, io(UNIT)), IO::io);
 
         assertEquals((Long) 3L, size(io.unsafePerformIO()));
         assertEquals((Long) 3L, size(io.unsafePerformIO()));
@@ -447,5 +448,58 @@ public class IOTest {
     public void staticPure() {
         IO<Integer> io = pureIO().apply(1);
         assertEquals((Integer) 1, io.unsafePerformIO());
+    }
+
+    @Test
+    public void zipExecutionOrdering() {
+        List<String> invocationsSync = new ArrayList<>();
+        io(() -> invocationsSync.add("one"))
+                .zip(io(() -> invocationsSync.add("two"))
+                             .zip(io(() -> invocationsSync.add("three")).fmap(x -> y -> z -> z)))
+                .unsafePerformIO();
+        assertEquals(asList("one", "two", "three"), invocationsSync);
+
+        List<String> invocationsAsync = new ArrayList<>();
+        io(() -> invocationsAsync.add("one"))
+                .zip(io(() -> invocationsAsync.add("two"))
+                             .zip(io(() -> invocationsAsync.add("three")).fmap(x -> y -> z -> z)))
+                .unsafePerformAsyncIO(newSingleThreadExecutor()).join();
+        assertEquals(asList("one", "two", "three"), invocationsSync);
+    }
+
+    @Test
+    public void discardLExecutionOrdering() {
+        List<String> invocationsSync = new ArrayList<>();
+        io(() -> invocationsSync.add("one"))
+                .discardL(io(() -> invocationsSync.add("two")))
+                .discardL(io(() -> invocationsSync.add("three")))
+                .unsafePerformIO();
+        assertEquals(asList("one", "two", "three"), invocationsSync);
+
+        List<String> invocationsAsync = new ArrayList<>();
+        io(() -> invocationsAsync.add("one"))
+                .discardL(io(() -> invocationsAsync.add("two")))
+                .discardL(io(() -> invocationsAsync.add("three")))
+                .unsafePerformAsyncIO(newSingleThreadExecutor())
+                .join();
+        assertEquals(asList("one", "two", "three"), invocationsSync);
+    }
+
+    @Test
+    public void discardRExecutionOrdering() {
+        List<String> invocationsSync = new ArrayList<>();
+        io(() -> invocationsSync.add("one"))
+                .discardR(io(() -> invocationsSync.add("two")))
+                .discardR(io(() -> invocationsSync.add("three")))
+                .unsafePerformIO();
+        assertEquals(asList("one", "two", "three"), invocationsSync);
+
+        List<String> invocationsAsync = new ArrayList<>();
+        io(() -> invocationsAsync.add("one"))
+                .discardR(io(() -> invocationsAsync.add("two")))
+                .discardR(io(() -> invocationsAsync.add("three")))
+                .unsafePerformAsyncIO(newSingleThreadExecutor())
+                .join();
+        assertEquals(asList("one", "two", "three"), invocationsSync);
     }
 }

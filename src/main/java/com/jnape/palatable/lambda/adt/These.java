@@ -49,7 +49,13 @@ public abstract class These<A, B> implements
      */
     @Override
     public final <C> These<A, C> flatMap(Fn1<? super B, ? extends Monad<C, These<A, ?>>> f) {
-        return match(These::a, b -> f.apply(b).coerce(), into((a, b) -> f.apply(b).<These<A, C>>coerce().biMapL(constantly(a))));
+        return match(These::a,
+                     b -> f.apply(b).coerce(),
+                     into((a, b) -> f.apply(b)
+                             .<These<A, C>>coerce()
+                             .match(constantly(a(a)),
+                                    c -> both(a, c),
+                                    into((__, c) -> both(a, c)))));
     }
 
     /**

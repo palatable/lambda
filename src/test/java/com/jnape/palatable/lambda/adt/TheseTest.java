@@ -29,8 +29,8 @@ public class TheseTest {
     @Test
     public void lazyZip() {
         assertEquals(b(2), b(1).lazyZip(lazy(b(x -> x + 1))).value());
-        assertEquals(b(2), b(1).lazyZip(lazy(both("foo", x -> x + 1))).value());
-        assertEquals(both("bar", 2), both("foo", 1).lazyZip(lazy(both("bar", x -> x + 1))).value());
+        assertEquals(both("foo", 2), b(1).lazyZip(lazy(both("foo", x -> x + 1))).value());
+        assertEquals(both("foo", 2), both("foo", 1).lazyZip(lazy(both("bar", x -> x + 1))).value());
         assertEquals(both("foo", 2), both("foo", 1).lazyZip(lazy(b(x -> x + 1))).value());
         assertEquals(a(1), a(1).lazyZip(lazy(() -> {
             throw new AssertionError();
