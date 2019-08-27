@@ -172,8 +172,9 @@ public final class State<S, A> implements MonadReader<S, A, State<S, ?>>, MonadW
      * @param <A> the state and result type
      * @return the new {@link State} instance
      */
+    @SuppressWarnings("RedundantTypeArguments")
     public static <A> State<A, A> get() {
-        return state(Tuple2::fill);
+        return state(Tuple2::<A>fill);
     }
 
     /**
