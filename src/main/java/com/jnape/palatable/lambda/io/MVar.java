@@ -1,42 +1,73 @@
 package com.jnape.palatable.lambda.io;
 
-import com.jnape.palatable.lambda.functions.builtin.fn1.Id;
+import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.functions.Fn1;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Collections;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import static com.jnape.palatable.lambda.adt.Maybe.maybe;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
-import static com.jnape.palatable.lambda.functions.builtin.fn4.IfThenElse.ifThenElse;
 import static com.jnape.palatable.lambda.io.IO.io;
-import static com.jnape.palatable.lambda.io.IO.monitorSync;
 
 public final class MVar<A> {
 
-    private final AtomicReference<A> ref;
+    private final ArrayBlockingQueue<A> queue;
 
     private MVar() {
-        ref = new AtomicReference<>();
+        queue = new ArrayBlockingQueue<>(1, true);
+    }
+
+    private MVar(A a) {
+        queue = new ArrayBlockingQueue<>(1, true, Collections.singletonList(a));
     }
 
     public IO<A> take() {
-        return monitorSync(this, io(() -> maybe(ref.get()).peek(__ -> io(() -> ref.set(null)))))
-                .flatMap(ma -> ma
-                        .fmap(IO::io)
-                        .orElse(take()));
+        return io(queue::take);
     }
 
     public IO<MVar<A>> put(A a) {
-        return monitorSync(this, io(() -> maybe(ref.get())
-                .fmap(constantly(false))
-                .orElseGet(() -> {
-                    ref.set(a);
-                    return true;
-                })))
-                .flatMap(ifThenElse(Id.id(), constantly(IO.io(this)), __ -> put(a)));
+        return io(() -> {
+            queue.put(a);
+            return this;
+        });
+    }
+
+    public IO<A> read() {
+        return take()
+                .flatMap(a -> put(a)
+                        .fmap(constantly(a)));
+    }
+
+    public IO<A> swap(A a) {
+        return take()
+                .flatMap(a1 -> put(a)
+                        .fmap(constantly(a1)));
+    }
+
+    // Like tryTakeMVar
+    public IO<Maybe<A>> poll(A a) {
+        return io(() -> maybe(queue.poll()));
+    }
+
+    // Like tryPutMVar
+    public IO<Boolean> add(A a) {
+        return io(() -> queue.add(a));
+    }
+
+    public IO<MVar<A>> modify(Fn1<A, IO<A>> fn) {
+        return take()
+                .flatMap(a -> fn.apply(a)
+                                .flatMap(this::put)
+                                .catchError(t -> put(a)));
     }
 
     public static <A> IO<MVar<A>> newMVar() {
         return io(fn0(MVar::new));
+    }
+
+    public static <A> IO<MVar<A>> newMVar(A a) {
+        return io(() -> new MVar<>(a));
     }
 }
