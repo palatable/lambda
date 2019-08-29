@@ -10,6 +10,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.maybe;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.io.IO.io;
+import static com.jnape.palatable.lambda.io.IO.throwing;
 
 public final class MVar<A> {
 
@@ -23,6 +24,14 @@ public final class MVar<A> {
         queue = new ArrayBlockingQueue<>(1, true, Collections.singletonList(a));
     }
 
+    public static <A> IO<MVar<A>> newMVar() {
+        return io(fn0(MVar::new));
+    }
+
+    public static <A> IO<MVar<A>> newMVar(A a) {
+        return io(() -> new MVar<>(a));
+    }
+
     public IO<A> take() {
         return io(queue::take);
     }
@@ -34,6 +43,7 @@ public final class MVar<A> {
         });
     }
 
+    // Not atomic like readMVar
     public IO<A> read() {
         return take()
                 .flatMap(a -> put(a)
@@ -46,12 +56,12 @@ public final class MVar<A> {
                         .fmap(constantly(a1)));
     }
 
-    // Like tryTakeMVar
+    // See tryTakeMVar
     public IO<Maybe<A>> poll(A a) {
         return io(() -> maybe(queue.poll()));
     }
 
-    // Like tryPutMVar
+    // See tryPutMVar
     public IO<Boolean> add(A a) {
         return io(() -> queue.add(a));
     }
@@ -59,15 +69,18 @@ public final class MVar<A> {
     public IO<MVar<A>> modify(Fn1<A, IO<A>> fn) {
         return take()
                 .flatMap(a -> fn.apply(a)
-                                .flatMap(this::put)
-                                .catchError(t -> put(a)));
+                        .flatMap(this::put)
+                        .catchError(t -> put(a)));
     }
 
-    public static <A> IO<MVar<A>> newMVar() {
-        return io(fn0(MVar::new));
+    public <B> IO<B> with(Fn1<A, IO<B>> fn) {
+        return take()
+                .flatMap(a -> fn.apply(a)
+                        .flatMap(b -> put(a).fmap(constantly(b)))
+                        .catchError(t -> put(a).flatMap(constantly(throwing(t)))));
     }
 
-    public static <A> IO<MVar<A>> newMVar(A a) {
-        return io(() -> new MVar<>(a));
+    public IO<Boolean> empty() {
+        return io(queue::isEmpty);
     }
 }
