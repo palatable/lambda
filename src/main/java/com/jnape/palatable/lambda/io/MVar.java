@@ -51,7 +51,6 @@ public final class MVar<A> {
         return io(() -> new MVar<>(a));
     }
 
-
     /**
      * Blocking retrieval of the value inside. If the {@link MVar} is currently empty the returned {@link IO} will block until it becomes occupied.
      *
@@ -85,7 +84,6 @@ public final class MVar<A> {
                 .flatMap(a -> put(a)
                         .fmap(constantly(a)));
     }
-
 
     /**
      * Swap the value inside the {@link MVar} with another value and return the original.
@@ -142,7 +140,7 @@ public final class MVar<A> {
      * <p>
      * Note that this operation is not atomic in the presence of multiple producers
      *
-     * @param fn The function resulting in the transformed value which may throw inside the {@link IO}
+     * @param fn  The function resulting in the transformed value which may throw inside the {@link IO}
      * @param <B> The type of the resulting value
      * @return An {@link IO} of the resulting value
      */
@@ -152,7 +150,6 @@ public final class MVar<A> {
                         .flatMap(b -> put(a).fmap(constantly(b)))
                         .catchError(t -> put(a).flatMap(constantly(throwing(t)))));
     }
-
 
     /**
      * Check whether the {@link MVar} is unoccupied
