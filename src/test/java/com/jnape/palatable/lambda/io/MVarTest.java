@@ -98,6 +98,20 @@ public class MVarTest {
     }
 
     @Test(timeout = 200)
+    public void modifyReplacesTheValueInTheMVarIfIoThrows() {
+        assertThat(newMVar(1)
+                        .flatMap(mv -> mv
+                                .modify(i -> throwing(new RuntimeException("With method blew up"))))
+                        .flatMap(MVar::take),
+                yieldsValue(equalTo(1)));
+        assertThat(newMVar(1)
+                        .flatMap(mv -> mv
+                                .modify(i -> io(i + 1)))
+                        .flatMap(MVar::take),
+                yieldsValue(equalTo(2)));
+    }
+
+    @Test(timeout = 200)
     public void addDoesNotBlock() {
         assertThat(newMVar(1)
                         .flatMap(mv -> mv
@@ -121,5 +135,12 @@ public class MVarTest {
     public void pollDoesNotBlock() {
         assertThat(newMVar().flatMap(MVar::poll), yieldsValue(equalTo(nothing())));
         assertThat(newMVar(1).flatMap(MVar::poll), yieldsValue(equalTo(just(1))));
+    }
+
+    @Test(timeout = 200)
+    public void readRetrievesContentsAndDoesNotModifyMVar() {
+        assertThat(newMVar(1).flatMap(mv -> mv.read().fmap(tupler(mv)))
+                        .flatMap(into((mvar, i) -> mvar.read().fmap(tupler(i)))),
+                yieldsValue(equalTo(tuple(1, 1))));
     }
 }
