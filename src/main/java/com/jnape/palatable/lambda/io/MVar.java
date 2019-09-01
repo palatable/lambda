@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static com.jnape.palatable.lambda.adt.Maybe.maybe;
+import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.io.IO.io;
@@ -57,13 +58,15 @@ public final class MVar<A> {
     }
 
     // See tryTakeMVar
-    public IO<Maybe<A>> poll(A a) {
+    public IO<Maybe<A>> poll() {
         return io(() -> maybe(queue.poll()));
     }
 
     // See tryPutMVar
     public IO<Boolean> add(A a) {
-        return io(() -> queue.add(a));
+        return io(() -> trying(() -> queue.add(a))
+                .catching(IllegalStateException.class, constantly(false))
+                .orThrow());
     }
 
     public IO<MVar<A>> modify(Fn1<A, IO<A>> fn) {
