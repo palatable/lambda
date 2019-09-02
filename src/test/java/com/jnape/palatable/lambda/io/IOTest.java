@@ -349,18 +349,19 @@ public class IOTest {
         Object         lock       = new Object();
         List<String>   accesses   = new ArrayList<>();
         CountDownLatch oneStarted = new CountDownLatch(1);
+        CountDownLatch twoStarted = new CountDownLatch(1);
         CountDownLatch finishLine = new CountDownLatch(2);
 
         IO<Unit> one = IO.monitorSync(lock, io(() -> {
             accesses.add("one entered");
             oneStarted.countDown();
-            Thread.sleep(10);
+            twoStarted.await();
+            Thread.sleep(100);
             accesses.add("one exited");
             finishLine.countDown();
         }));
 
         IO<Unit> two = IO.monitorSync(lock, io(() -> {
-            oneStarted.await();
             accesses.add("two entered");
             accesses.add("two exited");
             finishLine.countDown();
@@ -370,11 +371,16 @@ public class IOTest {
             start();
         }};
 
-        new Thread(two::unsafePerformIO) {{
+        oneStarted.await();
+
+        new Thread(() -> {
+            twoStarted.countDown();
+            two.unsafePerformIO();
+        }) {{
             start();
         }};
 
-        if (!finishLine.await(15, SECONDS))
+        if (!finishLine.await(1, SECONDS))
             fail("Expected threads to have completed by now, only got this far: " + accesses);
         assertEquals(asList("one entered", "one exited", "two entered", "two exited"), accesses);
     }
