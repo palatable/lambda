@@ -30,11 +30,12 @@ public final class LeftMatcher<L, R> extends TypeSafeMatcher<Either<L, R>> {
     @Override
     protected void describeMismatchSafely(Either<L, R> item, Description mismatchDescription) {
         mismatchDescription.appendText("was ");
-        item.peek(l -> io(() -> {
-                      mismatchDescription.appendText("Left value of ");
-                      lMatcher.describeMismatch(l, mismatchDescription);
-                  }),
-                  r -> io(() -> mismatchDescription.appendValue(item)));
+        item.match(l -> io(() -> {
+                       mismatchDescription.appendText("Left value of ");
+                       lMatcher.describeMismatch(l, mismatchDescription);
+                   }),
+                   r -> io(() -> mismatchDescription.appendValue(item)))
+                .unsafePerformIO();
     }
 
     public static <L, R> LeftMatcher<L, R> isLeftThat(Matcher<L> lMatcher) {

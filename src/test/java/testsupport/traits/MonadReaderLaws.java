@@ -9,6 +9,7 @@ import com.jnape.palatable.lambda.monoid.builtin.Present;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.io.IO.throwing;
 import static java.util.Collections.singletonList;
 
 public class MonadReaderLaws<M extends MonadReader<?, ?, M>> implements EquivalenceTrait<MonadReader<?, ?, M>> {
@@ -25,8 +26,10 @@ public class MonadReaderLaws<M extends MonadReader<?, ?, M>> implements Equivale
                         f -> f.apply(equivalence),
                         singletonList(this::testLocalIdentity)
                 )
-                .peek(s -> IO.throwing(new AssertionError("The following MonadReader laws did not hold for instance of "
-                                                                  + equivalence + ": \n\t - " + s)));
+                .match(IO::io,
+                       s -> throwing(new AssertionError("The following MonadReader laws did not hold for instance of "
+                                                                + equivalence + ": \n\t - " + s)))
+                .unsafePerformIO();
     }
 
     private Maybe<String> testLocalIdentity(Equivalence<MonadReader<?, ?, M>> equivalence) {

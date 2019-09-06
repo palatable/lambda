@@ -13,7 +13,6 @@ import testsupport.traits.MonadLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
@@ -25,7 +24,6 @@ import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
-import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -101,16 +99,6 @@ public class MaybeTest {
     public void fromEither() {
         assertEquals(just(1), Maybe.fromEither(right(1)));
         assertEquals(nothing(), Maybe.fromEither(left("failure")));
-    }
-
-    @Test
-    public void peek() {
-        AtomicInteger ref = new AtomicInteger(0);
-        assertEquals(just(1), just(1).peek(constantly(io(ref::incrementAndGet))));
-        assertEquals(1, ref.get());
-
-        assertEquals(nothing(), nothing().peek(constantly(io(ref::incrementAndGet))));
-        assertEquals(1, ref.get());
     }
 
     @Test

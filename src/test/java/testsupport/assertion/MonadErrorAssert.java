@@ -20,7 +20,8 @@ public final class MonadErrorAssert {
             E e,
             Fn1<? super E, ? extends MA> recovery) {
         subjects.forEach(subject -> throwCatch(equivalence(subject, id()), e, recovery)
-                .peek(failures -> IO.throwing(new AssertionError("MonadError law failures\n\n" + failures))));
+                .match(IO::io, failures -> IO.throwing(new AssertionError("MonadError law failures\n\n" + failures)))
+                .unsafePerformIO());
     }
 
     public static <E, A, M extends MonadError<E, ?, M>, MA extends MonadError<E, A, M>> void assertLawsEq(
@@ -28,7 +29,8 @@ public final class MonadErrorAssert {
             E e,
             Fn1<? super E, ? extends MA> recovery) {
         subjects.forEach(subject -> throwCatch(subject, e, recovery)
-                .peek(failures -> IO.throwing(new AssertionError("MonadError law failures\n\n" + failures))));
+                .match(IO::io, failures -> IO.throwing(new AssertionError("MonadError law failures\n\n" + failures)))
+                .unsafePerformIO());
     }
 
     private static <E, A, M extends MonadError<E, ?, M>, MA extends MonadError<E, A, M>> Maybe<String> throwCatch(

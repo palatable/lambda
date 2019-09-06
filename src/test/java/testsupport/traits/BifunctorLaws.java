@@ -9,6 +9,7 @@ import com.jnape.palatable.lambda.monoid.builtin.Present;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.io.IO.throwing;
 import static java.util.Arrays.asList;
 
 public class BifunctorLaws<BF extends Bifunctor<?, ?, BF>> implements EquivalenceTrait<Bifunctor<?, ?, BF>> {
@@ -27,8 +28,10 @@ public class BifunctorLaws<BF extends Bifunctor<?, ?, BF>> implements Equivalenc
                                this::testRightIdentity,
                                this::testMutualIdentity)
                 )
-                .peek(s -> IO.throwing(new AssertionError("The following Bifunctor laws did not hold for instance of " +
-                                                                  equivalence + ": \n\t - " + s)));
+                .match(IO::io,
+                       s -> throwing(new AssertionError("The following Bifunctor laws did not hold for instance of " +
+                                                                equivalence + ": \n\t - " + s)))
+                .unsafePerformIO();
     }
 
     private Maybe<String> testLeftIdentity(Equivalence<Bifunctor<?, ?, BF>> equivalence) {

@@ -30,11 +30,12 @@ public final class RightMatcher<L, R> extends TypeSafeMatcher<Either<L, R>> {
     @Override
     protected void describeMismatchSafely(Either<L, R> item, Description mismatchDescription) {
         mismatchDescription.appendText("was ");
-        item.peek(l -> io(() -> mismatchDescription.appendValue(item)),
-                  r -> io(() -> {
-                      mismatchDescription.appendText("Right value of ");
-                      rMatcher.describeMismatch(r, mismatchDescription);
-                  }));
+        item.match(l -> io(() -> mismatchDescription.appendValue(item)),
+                   r -> io(() -> {
+                       mismatchDescription.appendText("Right value of ");
+                       rMatcher.describeMismatch(r, mismatchDescription);
+                   }))
+                .unsafePerformIO();
     }
 
     public static <L, R> RightMatcher<L, R> isRightThat(Matcher<R> rMatcher) {

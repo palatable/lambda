@@ -10,6 +10,7 @@ import com.jnape.palatable.lambda.monoid.builtin.Present;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.io.IO.throwing;
 import static java.util.Arrays.asList;
 
 public class MonadWriterLaws<W, A, M extends MonadWriter<W, ?, M>> implements EquivalenceTrait<MonadWriter<W, A, M>> {
@@ -27,8 +28,10 @@ public class MonadWriterLaws<W, A, M extends MonadWriter<W, ?, M>> implements Eq
                                 this::testCensor,
                                 this::testListens)
                 )
-                .peek(s -> IO.throwing(new AssertionError("The following MonadWriter laws did not hold for instance" +
-                                                                  " of " + equivalence + ": \n\t - " + s)));
+                .match(IO::io,
+                       s -> throwing(new AssertionError("The following MonadWriter laws did not hold for instance" +
+                                                                " of " + equivalence + ": \n\t - " + s)))
+                .unsafePerformIO();
     }
 
     private Maybe<String> testCensor(Equivalence<MonadWriter<W, A, M>> equivalence) {

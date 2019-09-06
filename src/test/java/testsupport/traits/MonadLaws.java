@@ -10,6 +10,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.io.IO.throwing;
 import static com.jnape.palatable.lambda.monad.Monad.join;
 import static java.util.Arrays.asList;
 
@@ -28,8 +29,10 @@ public class MonadLaws<M extends Monad<?, M>> implements EquivalenceTrait<Monad<
                         this::testRightIdentity,
                         this::testAssociativity,
                         this::testJoin))
-                .peek(s -> IO.throwing(new AssertionError("The following Monad laws did not hold for instance of " +
-                                                                  equivalence + ": \n\t - " + s)));
+                .match(IO::io,
+                       s -> throwing(new AssertionError("The following Monad laws did not hold for instance of " +
+                                                                equivalence + ": \n\t - " + s)))
+                .unsafePerformIO();
     }
 
     private Maybe<String> testLeftIdentity(Equivalence<Monad<?, M>> equivalence) {

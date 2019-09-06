@@ -10,6 +10,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.io.IO.throwing;
 import static java.util.Arrays.asList;
 
 public class FunctorLaws<F extends Functor<?, F>> implements EquivalenceTrait<Functor<?, F>> {
@@ -26,8 +27,10 @@ public class FunctorLaws<F extends Functor<?, F>> implements EquivalenceTrait<Fu
                         fn -> fn.apply(equivalence),
                         asList(this::testIdentity,
                                this::testComposition))
-                .peek(s -> IO.throwing(new AssertionError("The following Functor laws did not hold for instance of " +
-                                                                  equivalence + ": \n\t - " + s)));
+                .match(IO::io,
+                       s -> throwing(new AssertionError("The following Functor laws did not hold for instance of " +
+                                                                equivalence + ": \n\t - " + s)))
+                .unsafePerformIO();
     }
 
     private Maybe<String> testIdentity(Equivalence<Functor<?, F>> equivalence) {

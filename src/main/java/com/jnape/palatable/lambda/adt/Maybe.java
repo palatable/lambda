@@ -7,7 +7,6 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
@@ -26,6 +25,7 @@ import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.io.IO.io;
 
 /**
  * The optional type, representing a potentially absent value. This is lambda's analog of {@link Optional}, supporting
@@ -223,9 +223,11 @@ public abstract class Maybe<A> implements
      *
      * @param effect the consumer
      * @return the same Maybe instance
+     * @deprecated in favor of {@link Maybe#match(Fn1, Fn1) matching} into an {@link IO} and explicitly running it
      */
+    @Deprecated
     public final Maybe<A> peek(Fn1<? super A, ? extends IO<?>> effect) {
-        return Peek.peek(effect, this);
+        return match(constantly(io(this)), a -> effect.apply(a).fmap(constantly(this))).unsafePerformIO();
     }
 
     @Override
@@ -302,7 +304,7 @@ public abstract class Maybe<A> implements
      *
      * @return the {@link Pure} instance
      */
-    public static Pure<Maybe<?  >> pureMaybe() {
+    public static Pure<Maybe<?>> pureMaybe() {
         return Maybe::just;
     }
 

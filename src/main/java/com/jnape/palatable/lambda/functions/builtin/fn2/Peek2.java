@@ -15,7 +15,9 @@ import com.jnape.palatable.lambda.io.IO;
  * @param <A>   the bifunctor's first parameter type
  * @param <B>   the bifunctor's second parameter type
  * @param <FAB> the bifunctor type
+ * @deprecated in favor of producing an {@link IO} from the given {@link BoundedBifunctor} and explicitly running it
  */
+@Deprecated
 public final class Peek2<A, B, FAB extends BoundedBifunctor<A, B, ? super A, ? super B, ?>> implements
         Fn3<Fn1<? super A, ? extends IO<?>>, Fn1<? super B, ? extends IO<?>>, FAB, FAB> {
     private static final Peek2<?, ?, ?> INSTANCE = new Peek2<>();

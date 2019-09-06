@@ -13,6 +13,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.io.IO.throwing;
 import static java.util.Arrays.asList;
 
 public class ApplicativeLaws<App extends Applicative<?, App>> implements EquivalenceTrait<Applicative<?, App>> {
@@ -33,10 +34,11 @@ public class ApplicativeLaws<App extends Applicative<?, App>> implements Equival
                                this::testInterchange,
                                this::testDiscardL,
                                this::testDiscardR,
-                               this::testLazyZip)
-                )
-                .peek(s -> IO.throwing(new AssertionError("The following Applicative laws did not hold for instance of "
-                                                                  + equivalence + ": \n\t - " + s)));
+                               this::testLazyZip))
+                .match(IO::io,
+                       s -> throwing(new AssertionError("The following Applicative laws did not hold for instance of "
+                                                                + equivalence + ": \n\t - " + s)))
+                .unsafePerformIO();
     }
 
     private Maybe<String> testIdentity(Equivalence<Applicative<?, App>> equivalence) {

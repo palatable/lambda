@@ -5,8 +5,6 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
-import com.jnape.palatable.lambda.functions.builtin.fn2.Peek2;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
@@ -19,9 +17,11 @@ import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static java.util.Arrays.asList;
 
 /**
@@ -166,9 +166,13 @@ public abstract class Either<L, R> implements
      *
      * @param effect the effecting consumer
      * @return the Either, unaltered
+     * @deprecated in favor of {@link Either#match(Fn1, Fn1) matching} into an {@link IO} and explicitly running it
      */
+    @Deprecated
     public Either<L, R> peek(Fn1<? super R, ? extends IO<?>> effect) {
-        return Peek.peek(effect, this);
+        return match(l -> io(Either.<L, R>left(l)),
+                     r -> effect.apply(r).fmap(constantly(this)))
+                .unsafePerformIO();
     }
 
     /**
@@ -177,9 +181,11 @@ public abstract class Either<L, R> implements
      * @param leftEffect  the effecting consumer for left values
      * @param rightEffect the effecting consumer for right values
      * @return the Either, unaltered
+     * @deprecated in favor of {@link Either#match(Fn1, Fn1) matching} into an {@link IO} and explicitly running it
      */
+    @Deprecated
     public Either<L, R> peek(Fn1<? super L, ? extends IO<?>> leftEffect, Fn1<? super R, ? extends IO<?>> rightEffect) {
-        return Peek2.peek2(leftEffect, rightEffect, this);
+        return match(leftEffect, rightEffect).fmap(constantly(this)).unsafePerformIO();
     }
 
     /**

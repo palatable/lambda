@@ -35,6 +35,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `WriterT`, a monad transformer for an accumulation and a value
 - `EquivalenceTrait`, a traitor `Trait` to make it easier to test properties of type-classes with a separate equivalence 
   relation
+  
+### Deprecated
+- `Peek`, `Peek2`, `Maybe#peek`, and `Either#peek` in favor of explicitly matching into `IO` and running it
 
 ## [4.0.0] - 2019-05-20
 ### Changed

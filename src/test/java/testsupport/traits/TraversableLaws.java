@@ -14,6 +14,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.io.IO.throwing;
 import static java.util.Arrays.asList;
 
 public class TraversableLaws<Trav extends Traversable<?, Trav>> implements EquivalenceTrait<Traversable<?, Trav>> {
@@ -32,8 +33,10 @@ public class TraversableLaws<Trav extends Traversable<?, Trav>> implements Equiv
                                this::testIdentity,
                                this::testComposition)
                 )
-                .peek(s -> IO.throwing(new AssertionError("The following Traversable laws did not hold for instance of "
-                                                                  + equivalence + ": \n\t - " + s)));
+                .match(IO::io,
+                       s -> throwing(new AssertionError("The following Traversable laws did not hold for instance of "
+                                                                + equivalence + ": \n\t - " + s)))
+                .unsafePerformIO();
     }
 
     @SuppressWarnings("unchecked")
