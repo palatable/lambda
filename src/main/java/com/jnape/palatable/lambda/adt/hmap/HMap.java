@@ -116,6 +116,15 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey<?, ?>, Object>> {
     }
 
     /**
+     * Test whether this {@link HMap} is empty.
+     *
+     * @return true if the {@link HMap} is empty; false otherwise.
+     */
+    public boolean isEmpty() {
+        return table.isEmpty();
+    }
+
+    /**
      * Retrieve all the mapped keys.
      * <p>
      * Note that unlike with {@link Map#keySet()}, the resulting key set is not "live"; in fact
