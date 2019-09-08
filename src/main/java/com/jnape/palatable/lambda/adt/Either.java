@@ -414,6 +414,7 @@ public abstract class Either<L, R> implements
     /**
      * The canonical {@link Pure} instance for {@link Either}.
      *
+     * @param <L> the left type
      * @return the {@link Pure} instance
      */
     public static <L> Pure<Either<L, ?>> pureEither() {

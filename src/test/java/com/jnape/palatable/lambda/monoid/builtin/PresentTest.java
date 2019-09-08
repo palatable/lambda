@@ -12,8 +12,8 @@ public class PresentTest {
 
     @Test
     public void monoid() {
-        Present<Integer> present = present();
-        Semigroup<Integer> addition = (x, y) -> x + y;
+        Present<Integer>   present  = present();
+        Semigroup<Integer> addition = Integer::sum;
 
         assertEquals(just(3), present.apply(addition, just(1), just(2)));
         assertEquals(just(1), present.apply(addition, nothing(), just(1)));

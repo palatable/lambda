@@ -13,16 +13,16 @@ public class DowncastTest {
     @SuppressWarnings("unused")
     public void safeDowncast() {
         CharSequence charSequence = "123";
-        String s = downcast(charSequence);
+        String       s            = downcast(charSequence);
 
         Functor<Integer, Maybe<?>> maybeInt = nothing();
-        Maybe<Integer> cast = downcast(maybeInt);
+        Maybe<Integer>             cast     = downcast(maybeInt);
     }
 
     @Test(expected = ClassCastException.class)
     @SuppressWarnings({"JavacQuirks", "unused"})
     public void unsafeDowncast() {
         CharSequence charSequence = "123";
-        Integer explosion = downcast(charSequence);
+        Integer      explosion    = downcast(charSequence);
     }
 }

@@ -27,9 +27,8 @@ public class ZipTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void zipsTwoIterablesTogether() {
-        Iterable<Integer> odds = asList(1, 3, 5);
+        Iterable<Integer> odds  = asList(1, 3, 5);
         Iterable<Integer> evens = asList(2, 4, 6);
 
         Iterable<Tuple2<Integer, Integer>> numbers = zip(odds, evens);

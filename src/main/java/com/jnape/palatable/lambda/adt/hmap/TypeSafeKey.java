@@ -23,14 +23,17 @@ import java.util.Objects;
  */
 public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
 
-
     @Override
     default <U> TypeSafeKey<A, B> discardR(Applicative<U, Iso<A, ?, B, B>> appB) {
         Iso.Simple<A, B> discarded = Iso.Simple.super.discardR(appB);
         return new TypeSafeKey<A, B>() {
             @Override
-            public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<B, ? extends CoF>, FT extends Functor<A, ? extends CoF>, PAFB extends Profunctor<B, FB, ? extends CoP>, PSFT extends Profunctor<A, FT, ? extends CoP>> PSFT apply(
-                    PAFB pafb) {
+            public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>,
+                    CoF extends Functor<?, ? extends Functor<?, ?>>,
+                    FB extends Functor<B, ? extends CoF>,
+                    FT extends Functor<A, ? extends CoF>,
+                    PAFB extends Profunctor<B, FB, ? extends CoP>,
+                    PSFT extends Profunctor<A, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
                 return discarded.apply(pafb);
             }
 
@@ -65,8 +68,12 @@ public interface TypeSafeKey<A, B> extends Iso.Simple<A, B> {
         Iso.Simple<A, C> composed = Iso.Simple.super.andThen(f);
         return new TypeSafeKey<A, C>() {
             @Override
-            public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>, CoF extends Functor<?, ? extends Functor<?, ?>>, FB extends Functor<C, ? extends CoF>, FT extends Functor<A, ? extends CoF>, PAFB extends Profunctor<C, FB, ? extends CoP>, PSFT extends Profunctor<A, FT, ? extends CoP>> PSFT apply(
-                    PAFB pafb) {
+            public <CoP extends Profunctor<?, ?, ? extends Profunctor<?, ?, ?>>,
+                    CoF extends Functor<?, ? extends Functor<?, ?>>,
+                    FB extends Functor<C, ? extends CoF>,
+                    FT extends Functor<A, ? extends CoF>,
+                    PAFB extends Profunctor<C, FB, ? extends CoP>,
+                    PSFT extends Profunctor<A, FT, ? extends CoP>> PSFT apply(PAFB pafb) {
                 return composed.apply(pafb);
             }
 

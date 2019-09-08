@@ -18,14 +18,14 @@ public class SchemaTest {
 
     @Test
     public void extractsValuesAtKeysFromMap() {
-        TypeSafeKey.Simple<Byte> byteKey = typeSafeKey();
-        TypeSafeKey.Simple<Short> shortKey = typeSafeKey();
-        TypeSafeKey.Simple<Integer> intKey = typeSafeKey();
-        TypeSafeKey.Simple<Long> longKey = typeSafeKey();
-        TypeSafeKey.Simple<Float> floatKey = typeSafeKey();
-        TypeSafeKey.Simple<Double> doubleKey = typeSafeKey();
-        TypeSafeKey.Simple<Character> charKey = typeSafeKey();
-        TypeSafeKey.Simple<Boolean> booleanKey = typeSafeKey();
+        TypeSafeKey.Simple<Byte>      byteKey    = typeSafeKey();
+        TypeSafeKey.Simple<Short>     shortKey   = typeSafeKey();
+        TypeSafeKey.Simple<Integer>   intKey     = typeSafeKey();
+        TypeSafeKey.Simple<Long>      longKey    = typeSafeKey();
+        TypeSafeKey.Simple<Float>     floatKey   = typeSafeKey();
+        TypeSafeKey.Simple<Double>    doubleKey  = typeSafeKey();
+        TypeSafeKey.Simple<Character> charKey    = typeSafeKey();
+        TypeSafeKey.Simple<Boolean>   booleanKey = typeSafeKey();
 
         HMap m = hMap(byteKey, (byte) 1,
                       shortKey, (short) 2,

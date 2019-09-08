@@ -11,9 +11,9 @@ public class IfThenElseTest {
 
     @Test
     public void standardLogic() {
-        Predicate<Integer> even = x -> x % 2 == 0;
-        Fn1<Integer, Integer> inc = x -> x + 1;
-        Fn1<Integer, Integer> dec = x -> x - 1;
+        Predicate<Integer>    even = x -> x % 2 == 0;
+        Fn1<Integer, Integer> inc  = x -> x + 1;
+        Fn1<Integer, Integer> dec  = x -> x - 1;
 
         assertEquals((Integer) 3, ifThenElse(even, inc, dec, 2));
         assertEquals((Integer) 0, ifThenElse(even, inc, dec, 1));

@@ -333,6 +333,9 @@ public interface Prism<S, T, A, B> extends
     /**
      * The canonical {@link Pure} instance for {@link Prism}.
      *
+     * @param <S> the input that might fail to map to its output
+     * @param <A> the output that might fail to be produced
+     * @param <B> the input that guarantees its output
      * @return the {@link Pure} instance
      */
     static <S, A, B> Pure<Prism<S, ?, A, B>> purePrism() {

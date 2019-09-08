@@ -27,7 +27,7 @@ public class OrTest {
     @Test(timeout = 500)
     public void shortCircuiting() {
         Iterable<Boolean> bools = cons(true, repeat(false));
-        Or or = or();
+        Or                or    = or();
 
         assertEquals(true, or.foldLeft(false, bools));
         assertEquals(true, or.foldLeft(true, bools));

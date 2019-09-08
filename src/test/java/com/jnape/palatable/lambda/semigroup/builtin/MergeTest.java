@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
+import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static com.jnape.palatable.lambda.semigroup.builtin.Merge.merge;
 import static org.junit.Assert.assertEquals;
 
@@ -13,8 +14,8 @@ public class MergeTest {
 
     @Test
     public void semigroup() {
-        Semigroup<String> join = (x, y) -> x + y;
-        Semigroup<Integer> add = (x, y) -> x + y;
+        Semigroup<String>  join = join();
+        Semigroup<Integer> add  = Integer::sum;
 
         Semigroup<Either<String, Integer>> merge = merge(join, add);
         assertEquals(left("onetwo"), merge.apply(left("one"), left("two")));

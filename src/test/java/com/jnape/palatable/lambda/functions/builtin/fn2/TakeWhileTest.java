@@ -33,7 +33,7 @@ public class TakeWhileTest {
     @Test
     public void takesElementsWhilePredicateIsTrue() {
         Predicate<Integer> lessThan3 = integer -> integer < 3;
-        Iterable<Integer> numbers = takeWhile(lessThan3, asList(1, 2, 3, 4, 5));
+        Iterable<Integer>  numbers   = takeWhile(lessThan3, asList(1, 2, 3, 4, 5));
         assertThat(numbers, iterates(1, 2));
     }
 

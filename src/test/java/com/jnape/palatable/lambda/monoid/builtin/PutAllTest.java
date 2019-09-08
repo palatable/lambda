@@ -19,8 +19,8 @@ public class PutAllTest {
 
     @Test
     public void monoid() {
-        TypeSafeKey<String, String> stringKey = typeSafeKey();
-        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
+        TypeSafeKey<String, String>   stringKey = typeSafeKey();
+        TypeSafeKey<Integer, Integer> intKey    = typeSafeKey();
 
         HMap x = singletonHMap(stringKey, "string");
         HMap y = singletonHMap(intKey, 1);

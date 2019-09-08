@@ -381,6 +381,10 @@ public interface Lens<S, T, A, B> extends
     /**
      * The canonical {@link Pure} instance for {@link Lens}.
      *
+     * @param sa  the getting function
+     * @param <S> the type of the "larger" value for reading
+     * @param <A> the type of the "smaller" value that is read
+     * @param <B> the type of the "smaller" update value
      * @return the {@link Pure} instance
      */
     static <S, A, B> Pure<Lens<S, ?, A, B>> pureLens(Fn1<? super S, ? extends A> sa) {

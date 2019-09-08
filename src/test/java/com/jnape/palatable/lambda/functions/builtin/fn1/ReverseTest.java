@@ -30,7 +30,7 @@ public class ReverseTest {
 
     @Test
     public void iteratesElementsOfAnIterableBackwards() {
-        Iterable<String> words = asList("the", "rain", "in", "Spain");
+        Iterable<String> words    = asList("the", "rain", "in", "Spain");
         Iterable<String> reversed = reverse(words);
 
         assertThat(reversed, iterates("Spain", "in", "rain", "the"));

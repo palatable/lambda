@@ -317,6 +317,7 @@ public interface Fn1<A, B> extends
     /**
      * The canonical {@link Pure} instance for {@link Fn1}.
      *
+     * @param <A> the input type
      * @return the {@link Pure} instance
      */
     static <A> Pure<Fn1<A, ?>> pureFn1() {

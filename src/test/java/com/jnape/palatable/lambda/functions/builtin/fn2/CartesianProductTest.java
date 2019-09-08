@@ -18,7 +18,6 @@ import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 @RunWith(Traits.class)
-@SuppressWarnings("unchecked")
 public class CartesianProductTest {
 
     @TestTraits({Laziness.class, ImmutableIteration.class, EmptyIterableSupport.class, FiniteIteration.class})
@@ -29,7 +28,7 @@ public class CartesianProductTest {
     @Test
     public void computesCartesianProductOfTwoEquallySizedIterables() {
         Iterable<Integer> numbers = asList(1, 2, 3);
-        Iterable<String> letters = asList("a", "b", "c");
+        Iterable<String>  letters = asList("a", "b", "c");
 
         assertThat(
                 cartesianProduct(numbers, letters),
@@ -50,7 +49,7 @@ public class CartesianProductTest {
     @Test
     public void worksForTwoUnequallySizedIterables() {
         Iterable<Integer> oneThroughThree = asList(1, 2, 3);
-        Iterable<String> aAndB = asList("a", "b");
+        Iterable<String>  aAndB           = asList("a", "b");
 
         assertThat(
                 cartesianProduct(oneThroughThree, aAndB),
