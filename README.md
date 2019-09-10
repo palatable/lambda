@@ -1,6 +1,7 @@
 λ
 ======
 [![Build Status](https://travis-ci.com/palatable/lambda.svg?branch=master)](https://travis-ci.com/palatable/lambda)
+[![Actions Status](https://github.com/palatable/lambda/workflows/Java%20CI/badge.svg)](https://github.com/palatable/lambda/actions)
 [![Lambda](https://img.shields.io/maven-central/v/com.jnape.palatable/lambda.svg)](http://search.maven.org/#search%7Cga%7C1%7Ccom.jnape.palatable.lambda)
 [![Join the chat at https://gitter.im/palatable/lambda](https://badges.gitter.im/palatable/lambda.svg)](https://gitter.im/palatable/lambda?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Floobits Status](https://floobits.com/jnape/lambda.svg)](https://floobits.com/jnape/lambda/redirect)
