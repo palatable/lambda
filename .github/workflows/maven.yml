@@ -3,7 +3,7 @@ name: Java CI
 on: [push]
 
 jobs:
-  build-java-1.8:
+  build-java-1_8:
 
     runs-on: ubuntu-latest
 
