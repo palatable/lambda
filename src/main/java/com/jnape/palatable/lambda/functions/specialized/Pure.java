@@ -33,4 +33,16 @@ public interface Pure<F extends Functor<?, ? extends F>> {
     static <F extends Functor<?, ? extends F>> Pure<F> pure(Pure<F> pure) {
         return pure;
     }
+
+    /**
+     * Extract an {@link Applicative Applicative's} {@link Applicative#pure(Object) pure} implementation to an instance
+     * of {@link Pure}.
+     *
+     * @param app the {@link Applicative}
+     * @param <F> the witness
+     * @return the {@link Pure}
+     */
+    static <F extends Applicative<?, ? extends F>> Pure<F> of(Applicative<?, ? extends F> app) {
+        return app::pure;
+    }
 }

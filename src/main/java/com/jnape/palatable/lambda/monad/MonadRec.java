@@ -13,6 +13,9 @@ import com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT;
 /**
  * A class of {@link Monad monads} that offer a stack-safe interface for performing arbitrarily many
  * {@link Monad#flatMap(Fn1) flatmap-like} operations via {@link MonadRec#trampolineM(Fn1)}.
+ * <p>
+ * Inspired by Phil Freeman's paper
+ * <a href="http://functorial.com/stack-safety-for-free/index.pdf" target="_blank">_Stack Safety for Free_</a>
  *
  * @param <A> the carrier type
  * @param <M> the {@link MonadRec witness}
