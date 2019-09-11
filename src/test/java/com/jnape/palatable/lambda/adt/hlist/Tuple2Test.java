@@ -11,6 +11,7 @@ import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadRecLaws;
+import testsupport.traits.MonadWriterLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.HashMap;
@@ -45,6 +46,7 @@ public class Tuple2Test {
             ApplicativeLaws.class,
             MonadLaws.class,
             MonadRecLaws.class,
+            MonadWriterLaws.class,
             BifunctorLaws.class,
             TraversableLaws.class})
     public Tuple2<?, ?> testSubject() {

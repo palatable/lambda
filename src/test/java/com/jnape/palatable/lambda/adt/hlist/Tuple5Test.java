@@ -11,6 +11,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
@@ -36,7 +37,13 @@ public class Tuple5Test {
         tuple5 = new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new SingletonHList<>(5L)))));
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({
+            FunctorLaws.class,
+            ApplicativeLaws.class,
+            MonadLaws.class,
+            MonadRecLaws.class,
+            BifunctorLaws.class,
+            TraversableLaws.class})
     public Tuple5<?, ?, ?, ?, ?> testSubject() {
         return tuple("one", 2, 3d, 4f, '5');
     }

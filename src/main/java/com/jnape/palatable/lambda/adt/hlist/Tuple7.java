@@ -5,15 +5,18 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product7;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Into;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 
 /**
  * A 7-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -36,7 +39,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
  */
 public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3, _4, _5, _6, _7>> implements
         Product7<_1, _2, _3, _4, _5, _6, _7>,
-        Monad<_7, Tuple7<_1, _2, _3, _4, _5, _6, ?>>,
+        MonadRec<_7, Tuple7<_1, _2, _3, _4, _5, _6, ?>>,
         Bifunctor<_6, _7, Tuple7<_1, _2, _3, _4, _5, ?, ?>>,
         Traversable<_7, Tuple7<_1, _2, _3, _4, _5, _6, ?>> {
 
@@ -216,7 +219,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
      */
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> fmap(Fn1<? super _7, ? extends _7Prime> fn) {
-        return Monad.super.<_7Prime>fmap(fn).coerce();
+        return MonadRec.super.<_7Prime>fmap(fn).coerce();
     }
 
     /**
@@ -261,7 +264,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> zip(
             Applicative<Fn1<? super _7, ? extends _7Prime>, Tuple7<_1, _2, _3, _4, _5, _6, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -270,7 +273,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime> Lazy<Tuple7<_1, _2, _3, _4, _5, _6, _7Prime>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super _7, ? extends _7Prime>, Tuple7<_1, _2, _3, _4, _5, _6, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>>::coerce);
     }
 
     /**
@@ -279,7 +282,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> discardL(
             Applicative<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -288,7 +291,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7> discardR(
             Applicative<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -298,6 +301,16 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> flatMap(
             Fn1<? super _7, ? extends Monad<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>>> f) {
         return pure(f.apply(_7).<Tuple7<_1, _2, _3, _4, _5, _6, _7Prime>>coerce()._7());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> trampolineM(
+            Fn1<? super _7, ? extends MonadRec<RecursiveResult<_7, _7Prime>, Tuple7<_1, _2, _3, _4, _5, _6, ?>>> fn) {
+        return fmap(trampoline(x -> fn.apply(x).<Tuple7<_1, _2, _3, _4, _5, _6, RecursiveResult<_7, _7Prime>>>coerce()
+                ._7()));
     }
 
     /**

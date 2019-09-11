@@ -37,7 +37,6 @@ import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoli
  */
 public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
         Product2<_1, _2>,
-        Map.Entry<_1, _2>,
         MonadRec<_2, Tuple2<_1, ?>>,
         MonadWriter<_1, _2, Tuple2<_1, ?>>,
         Bifunctor<_1, _2, Tuple2<?, ?>>,

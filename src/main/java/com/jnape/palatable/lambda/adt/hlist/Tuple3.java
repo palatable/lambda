@@ -5,15 +5,18 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product3;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Into;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 
 /**
  * A 3-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -30,7 +33,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
  */
 public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
         Product3<_1, _2, _3>,
-        Monad<_3, Tuple3<_1, _2, ?>>,
+        MonadRec<_3, Tuple3<_1, _2, ?>>,
         Bifunctor<_2, _3, Tuple3<_1, ?, ?>>,
         Traversable<_3, Tuple3<_1, _2, ?>> {
 
@@ -107,7 +110,7 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     @Override
     @SuppressWarnings("unchecked")
     public <_3Prime> Tuple3<_1, _2, _3Prime> fmap(Fn1<? super _3, ? extends _3Prime> fn) {
-        return (Tuple3<_1, _2, _3Prime>) Monad.super.fmap(fn);
+        return (Tuple3<_1, _2, _3Prime>) MonadRec.super.fmap(fn);
     }
 
     /**
@@ -160,7 +163,7 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     @Override
     public <_3Prime> Lazy<Tuple3<_1, _2, _3Prime>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super _3, ? extends _3Prime>, Tuple3<_1, _2, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_3Prime, Tuple3<_1, _2, ?>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<_3Prime, Tuple3<_1, _2, ?>>::coerce);
     }
 
     /**
@@ -168,7 +171,7 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
      */
     @Override
     public <_3Prime> Tuple3<_1, _2, _3Prime> discardL(Applicative<_3Prime, Tuple3<_1, _2, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -176,7 +179,7 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
      */
     @Override
     public <_3Prime> Tuple3<_1, _2, _3> discardR(Applicative<_3Prime, Tuple3<_1, _2, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -186,6 +189,15 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     public <_3Prime> Tuple3<_1, _2, _3Prime> flatMap(
             Fn1<? super _3, ? extends Monad<_3Prime, Tuple3<_1, _2, ?>>> f) {
         return pure(f.apply(_3).<Tuple3<_1, _2, _3Prime>>coerce()._3);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <_3Prime> Tuple3<_1, _2, _3Prime> trampolineM(
+            Fn1<? super _3, ? extends MonadRec<RecursiveResult<_3, _3Prime>, Tuple3<_1, _2, ?>>> fn) {
+        return fmap(trampoline(x -> fn.apply(x).<Tuple3<_1, _2, RecursiveResult<_3, _3Prime>>>coerce()._3()));
     }
 
     /**

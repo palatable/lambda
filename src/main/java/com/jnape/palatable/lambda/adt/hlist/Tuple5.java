@@ -5,15 +5,18 @@ import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product5;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Into;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 
 /**
  * A 5-element tuple product type, implemented as a specialized HList. Supports random access.
@@ -32,7 +35,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
  */
 public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>> implements
         Product5<_1, _2, _3, _4, _5>,
-        Monad<_5, Tuple5<_1, _2, _3, _4, ?>>,
+        MonadRec<_5, Tuple5<_1, _2, _3, _4, ?>>,
         Bifunctor<_4, _5, Tuple5<_1, _2, _3, ?, ?>>,
         Traversable<_5, Tuple5<_1, _2, _3, _4, ?>> {
 
@@ -160,7 +163,7 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
      */
     @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> fmap(Fn1<? super _5, ? extends _5Prime> fn) {
-        return Monad.super.<_5Prime>fmap(fn).coerce();
+        return MonadRec.super.<_5Prime>fmap(fn).coerce();
     }
 
     /**
@@ -204,7 +207,7 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> zip(
             Applicative<Fn1<? super _5, ? extends _5Prime>, Tuple5<_1, _2, _3, _4, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -213,7 +216,7 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     @Override
     public <_5Prime> Lazy<Tuple5<_1, _2, _3, _4, _5Prime>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super _5, ? extends _5Prime>, Tuple5<_1, _2, _3, _4, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<_5Prime, Tuple5<_1, _2, _3, _4, ?>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<_5Prime, Tuple5<_1, _2, _3, _4, ?>>::coerce);
     }
 
     /**
@@ -221,7 +224,7 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
      */
     @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> discardL(Applicative<_5Prime, Tuple5<_1, _2, _3, _4, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -229,7 +232,7 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
      */
     @Override
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5> discardR(Applicative<_5Prime, Tuple5<_1, _2, _3, _4, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -239,6 +242,15 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> flatMap(
             Fn1<? super _5, ? extends Monad<_5Prime, Tuple5<_1, _2, _3, _4, ?>>> f) {
         return pure(f.apply(_5).<Tuple5<_1, _2, _3, _4, _5Prime>>coerce()._5());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> trampolineM(
+            Fn1<? super _5, ? extends MonadRec<RecursiveResult<_5, _5Prime>, Tuple5<_1, _2, _3, _4, ?>>> fn) {
+        return fmap(trampoline(x -> fn.apply(x).<Tuple5<_1, _2, _3, _4, RecursiveResult<_5, _5Prime>>>coerce()._5()));
     }
 
     /**
