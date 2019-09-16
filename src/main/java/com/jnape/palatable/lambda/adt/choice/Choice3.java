@@ -34,10 +34,9 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Choice3<A, B, C> implements
         CoProduct3<A, B, C, Choice3<A, B, C>>,
-        Monad<C, Choice3<A, B, ?>>,
+        MonadRec<C, Choice3<A, B, ?>>,
         Bifunctor<B, C, Choice3<A, ?, ?>>,
-        Traversable<C, Choice3<A, B, ?>>,
-        MonadRec<C, Choice3<A, B, ?>> {
+        Traversable<C, Choice3<A, B, ?>> {
 
     private Choice3() {
     }
