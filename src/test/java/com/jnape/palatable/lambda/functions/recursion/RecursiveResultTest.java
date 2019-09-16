@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
@@ -18,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Traits.class)
 public class RecursiveResultTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class, MonadRecLaws.class})
     public Subjects<RecursiveResult<String, Integer>> testSubject() {
         return subjects(recurse("foo"), terminate(1));
     }
