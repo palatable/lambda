@@ -49,6 +49,12 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
 
     /**
      * Map the current {@link Monad monadic} embedding to a new one in a potentially different {@link Monad}.
+     *
+     * @param fn   the function
+     * @param <MA> the currently embedded {@link Monad}
+     * @param <N>  the new {@link Monad} witness
+     * @param <B>  the new carrier type
+     * @return the mapped {@link ReaderT}
      */
     public <MA extends MonadRec<A, M>, N extends MonadRec<?, N>, B> ReaderT<R, N, B> mapReaderT(
             Fn1<? super MA, ? extends MonadRec<B, N>> fn) {
