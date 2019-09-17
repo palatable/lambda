@@ -4,6 +4,8 @@ import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.monad.MonadBase;
 import com.jnape.palatable.lambda.monad.MonadRec;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Downcast.downcast;
+
 /**
  * Generalized, portable lifting operation for lifting a {@link MonadRec} into a {@link MonadBase}.
  *
@@ -17,8 +19,7 @@ public interface Lift<B extends MonadBase<?, ?, B>> {
 
     default <A, M extends MonadRec<?, M>, MBA extends MonadBase<M, A, B>> MBA apply(MonadRec<A, M> ma) {
         try {
-            @SuppressWarnings("unchecked") MBA MBA = (MBA) checkedApply(ma);
-            return MBA;
+            return downcast(checkedApply(ma));
         } catch (Throwable t) {
             throw Runtime.throwChecked(t);
         }

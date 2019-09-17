@@ -135,18 +135,16 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_1Prime> Tuple2<_1Prime, _2> biMapL(Fn1<? super _1, ? extends _1Prime> fn) {
-        return (Tuple2<_1Prime, _2>) Bifunctor.super.biMapL(fn);
+        return (Tuple2<_1Prime, _2>) Bifunctor.super.<_1Prime>biMapL(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_2Prime> Tuple2<_1, _2Prime> biMapR(Fn1<? super _2, ? extends _2Prime> fn) {
-        return (Tuple2<_1, _2Prime>) Bifunctor.super.biMapR(fn);
+        return (Tuple2<_1, _2Prime>) Bifunctor.super.<_2Prime>biMapR(fn);
     }
 
     /**

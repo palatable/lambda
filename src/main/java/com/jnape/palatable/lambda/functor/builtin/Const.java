@@ -135,9 +135,8 @@ public final class Const<A, B> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <C> Const<A, C> biMapR(Fn1<? super B, ? extends C> fn) {
-        return (Const<A, C>) Bifunctor.super.biMapR(fn);
+        return (Const<A, C>) Bifunctor.super.<C>biMapR(fn);
     }
 
     /**

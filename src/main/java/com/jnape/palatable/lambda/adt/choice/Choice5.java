@@ -173,16 +173,16 @@ public abstract class Choice5<A, B, C, D, E> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <F, App extends Applicative<?, App>, TravB extends Traversable<F, Choice5<A, B, C, D, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super E, ? extends Applicative<F, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice5.<A, B, C, D, F>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice5.<A, B, C, D, F>b(b)).coerce(),
-                     c -> pure.apply((TravB) Choice5.<A, B, C, D, F>c(c)),
-                     d -> pure.apply((TravB) Choice5.<A, B, C, D, F>d(d)),
+        return match(a -> pure.apply(Choice5.<A, B, C, D, F>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice5.<A, B, C, D, F>b(b).<TravB>coerce()),
+                     c -> pure.apply(Choice5.<A, B, C, D, F>c(c).<TravB>coerce()),
+                     d -> pure.apply(Choice5.<A, B, C, D, F>d(d).<TravB>coerce()),
                      e -> fn.apply(e).<Choice5<A, B, C, D, F>>fmap(Choice5::e)
-                             .<TravB>fmap(Applicative::coerce).coerce());
+                             .<TravB>fmap(Applicative::coerce))
+                .coerce();
     }
 
     /**

@@ -167,13 +167,13 @@ public abstract class Choice3<A, B, C> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <D, App extends Applicative<?, App>, TravB extends Traversable<D, Choice3<A, B, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super C, ? extends Applicative<D, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice3.<A, B, D>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice3.<A, B, D>b(b)).coerce(),
-                     c -> fn.apply(c).<Choice3<A, B, D>>fmap(Choice3::c).<TravB>fmap(Functor::coerce).coerce());
+        return match(a -> pure.apply(Choice3.<A, B, D>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice3.<A, B, D>b(b).<TravB>coerce()),
+                     c -> fn.apply(c).<Choice3<A, B, D>>fmap(Choice3::c).<TravB>fmap(Functor::coerce))
+                .coerce();
     }
 
     /**

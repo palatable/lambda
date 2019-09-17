@@ -85,13 +85,12 @@ public abstract class These<A, B> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public <C, App extends Applicative<?, App>, TravB extends Traversable<C, These<A, ?>>,
-            AppTrav extends Applicative<TravB, App>>
-    AppTrav traverse(Fn1<? super B, ? extends Applicative<C, App>> fn, Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) a(a)),
-                     b -> fn.apply(b).fmap(this::pure).<TravB>fmap(Applicative::coerce).coerce(),
-                     into((a, b) -> fn.apply(b).fmap(c -> both(a, c)).<TravB>fmap(Applicative::coerce).coerce()));
+    public <C, App extends Applicative<?, App>, TravC extends Traversable<C, These<A, ?>>,
+            AppTrav extends Applicative<TravC, App>>
+    AppTrav traverse(Fn1<? super B, ? extends Applicative<C, App>> fn, Fn1<? super TravC, ? extends AppTrav> pure) {
+        return match(a -> pure.apply(These.<A, C>a(a).<TravC>coerce()),
+                     b -> fn.apply(b).fmap(this::pure).<TravC>fmap(Applicative::coerce).coerce(),
+                     into((a, b) -> fn.apply(b).fmap(c -> both(a, c)).<TravC>fmap(Applicative::coerce).coerce()));
     }
 
     /**
@@ -126,6 +125,9 @@ public abstract class These<A, B> implements
         return MonadRec.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Lazy<These<A, C>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super B, ? extends C>, These<A, ?>>> lazyAppFn) {

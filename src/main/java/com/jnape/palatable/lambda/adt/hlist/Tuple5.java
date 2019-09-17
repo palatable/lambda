@@ -170,18 +170,16 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_4Prime> Tuple5<_1, _2, _3, _4Prime, _5> biMapL(Fn1<? super _4, ? extends _4Prime> fn) {
-        return (Tuple5<_1, _2, _3, _4Prime, _5>) Bifunctor.super.biMapL(fn);
+        return (Tuple5<_1, _2, _3, _4Prime, _5>) Bifunctor.super.<_4Prime>biMapL(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_5Prime> Tuple5<_1, _2, _3, _4, _5Prime> biMapR(Fn1<? super _5, ? extends _5Prime> fn) {
-        return (Tuple5<_1, _2, _3, _4, _5Prime>) Bifunctor.super.biMapR(fn);
+        return (Tuple5<_1, _2, _3, _4, _5Prime>) Bifunctor.super.<_5Prime>biMapR(fn);
     }
 
     /**

@@ -226,18 +226,16 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_6Prime> Tuple7<_1, _2, _3, _4, _5, _6Prime, _7> biMapL(Fn1<? super _6, ? extends _6Prime> fn) {
-        return (Tuple7<_1, _2, _3, _4, _5, _6Prime, _7>) Bifunctor.super.biMapL(fn);
+        return (Tuple7<_1, _2, _3, _4, _5, _6Prime, _7>) Bifunctor.super.<_6Prime>biMapL(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> biMapR(Fn1<? super _7, ? extends _7Prime> fn) {
-        return (Tuple7<_1, _2, _3, _4, _5, _6, _7Prime>) Bifunctor.super.biMapR(fn);
+        return (Tuple7<_1, _2, _3, _4, _5, _6, _7Prime>) Bifunctor.super.<_7Prime>biMapR(fn);
     }
 
     /**

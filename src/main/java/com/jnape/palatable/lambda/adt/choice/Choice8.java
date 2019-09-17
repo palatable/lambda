@@ -6,8 +6,8 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct8;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple8;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -177,19 +177,19 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <I, App extends Applicative<?, App>, TravB extends Traversable<I, Choice8<A, B, C, D, E, F, G, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super H, ? extends Applicative<I, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>b(b)).coerce(),
-                     c -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>c(c)),
-                     d -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>d(d)),
-                     e -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>e(e)),
-                     f -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>f(f)),
-                     g -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>g(g)),
+        return match(a -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>b(b).<TravB>coerce()),
+                     c -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>c(c).<TravB>coerce()),
+                     d -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>d(d).<TravB>coerce()),
+                     e -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>e(e).<TravB>coerce()),
+                     f -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>f(f).<TravB>coerce()),
+                     g -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>g(g).<TravB>coerce()),
                      h -> fn.apply(h).<Choice8<A, B, C, D, E, F, G, I>>fmap(Choice8::h)
-                             .<TravB>fmap(Applicative::coerce).coerce());
+                             .<TravB>fmap(Applicative::coerce))
+                .coerce();
     }
 
     /**

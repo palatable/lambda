@@ -182,18 +182,18 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <H, App extends Applicative<?, App>, TravB extends Traversable<H, Choice7<A, B, C, D, E, F, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super G, ? extends Applicative<H, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>b(b)).coerce(),
-                     c -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>c(c)),
-                     d -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>d(d)),
-                     e -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>e(e)),
-                     f -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>f(f)),
+        return match(a -> pure.apply(Choice7.<A, B, C, D, E, F, H>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice7.<A, B, C, D, E, F, H>b(b).<TravB>coerce()),
+                     c -> pure.apply(Choice7.<A, B, C, D, E, F, H>c(c).<TravB>coerce()),
+                     d -> pure.apply(Choice7.<A, B, C, D, E, F, H>d(d).<TravB>coerce()),
+                     e -> pure.apply(Choice7.<A, B, C, D, E, F, H>e(e).<TravB>coerce()),
+                     f -> pure.apply(Choice7.<A, B, C, D, E, F, H>f(f).<TravB>coerce()),
                      g -> fn.apply(g).<Choice7<A, B, C, D, E, F, H>>fmap(Choice7::g)
-                             .<TravB>fmap(Applicative::coerce).coerce());
+                             .<TravB>fmap(Applicative::coerce))
+                .coerce();
     }
 
     /**

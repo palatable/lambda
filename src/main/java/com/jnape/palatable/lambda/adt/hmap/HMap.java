@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.adt.hmap;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.builtin.fn1.Downcast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,9 +46,8 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey<?, ?>, Object>> {
      * @param <B> the value type
      * @return Maybe the value at this key
      */
-    @SuppressWarnings("unchecked")
     public <A, B> Maybe<B> get(TypeSafeKey<A, B> key) {
-        return maybe((A) table.get(key)).fmap(view(key));
+        return maybe(Downcast.<A, Object>downcast(table.get(key))).fmap(view(key));
     }
 
     /**

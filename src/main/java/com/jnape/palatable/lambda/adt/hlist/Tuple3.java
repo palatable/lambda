@@ -108,27 +108,24 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_3Prime> Tuple3<_1, _2, _3Prime> fmap(Fn1<? super _3, ? extends _3Prime> fn) {
-        return (Tuple3<_1, _2, _3Prime>) MonadRec.super.fmap(fn);
+        return (Tuple3<_1, _2, _3Prime>) MonadRec.super.<_3Prime>fmap(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_2Prime> Tuple3<_1, _2Prime, _3> biMapL(Fn1<? super _2, ? extends _2Prime> fn) {
-        return (Tuple3<_1, _2Prime, _3>) Bifunctor.super.biMapL(fn);
+        return (Tuple3<_1, _2Prime, _3>) Bifunctor.super.<_2Prime>biMapL(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <_3Prime> Tuple3<_1, _2, _3Prime> biMapR(Fn1<? super _3, ? extends _3Prime> fn) {
-        return (Tuple3<_1, _2, _3Prime>) Bifunctor.super.biMapR(fn);
+        return (Tuple3<_1, _2, _3Prime>) Bifunctor.super.<_3Prime>biMapR(fn);
     }
 
     /**

@@ -82,18 +82,16 @@ public abstract class Choice6<A, B, C, D, E, F> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <G> Choice6<A, B, C, D, G, F> biMapL(Fn1<? super E, ? extends G> fn) {
-        return (Choice6<A, B, C, D, G, F>) Bifunctor.super.biMapL(fn);
+        return (Choice6<A, B, C, D, G, F>) Bifunctor.super.<G>biMapL(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <G> Choice6<A, B, C, D, E, G> biMapR(Fn1<? super F, ? extends G> fn) {
-        return (Choice6<A, B, C, D, E, G>) Bifunctor.super.biMapR(fn);
+        return (Choice6<A, B, C, D, E, G>) Bifunctor.super.<G>biMapR(fn);
     }
 
     /**
@@ -179,17 +177,17 @@ public abstract class Choice6<A, B, C, D, E, F> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <G, App extends Applicative<?, App>, TravB extends Traversable<G, Choice6<A, B, C, D, E, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super F, ? extends Applicative<G, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>b(b)).coerce(),
-                     c -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>c(c)),
-                     d -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>d(d)),
-                     e -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>e(e)),
+        return match(a -> pure.apply(Choice6.<A, B, C, D, E, G>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice6.<A, B, C, D, E, G>b(b).<TravB>coerce()),
+                     c -> pure.apply(Choice6.<A, B, C, D, E, G>c(c).<TravB>coerce()),
+                     d -> pure.apply(Choice6.<A, B, C, D, E, G>d(d).<TravB>coerce()),
+                     e -> pure.apply(Choice6.<A, B, C, D, E, G>e(e).<TravB>coerce()),
                      f -> fn.apply(f).<Choice6<A, B, C, D, E, G>>fmap(Choice6::f)
-                             .<TravB>fmap(Applicative::coerce).coerce());
+                             .<TravB>fmap(Applicative::coerce))
+                .coerce();
     }
 
     /**

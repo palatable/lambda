@@ -4,6 +4,8 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.internal.Runtime;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Downcast.downcast;
+
 /**
  * Generalized, portable {@link Applicative#pure(Object)}, with a loosened {@link Functor} constraint.
  *
@@ -16,7 +18,7 @@ public interface Pure<F extends Functor<?, ? extends F>> {
 
     default <A, FA extends Functor<A, ? extends F>> FA apply(A a) {
         try {
-            @SuppressWarnings("unchecked") FA fa = (FA) checkedApply(a);
+            @SuppressWarnings("unchecked") FA fa = downcast(checkedApply(a));
             return fa;
         } catch (Throwable t) {
             throw Runtime.throwChecked(t);

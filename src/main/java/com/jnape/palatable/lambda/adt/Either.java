@@ -10,6 +10,7 @@ import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
@@ -320,11 +321,12 @@ public abstract class Either<L, R> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public final <R2, App extends Applicative<?, App>, TravB extends Traversable<R2, Either<L, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super R, ? extends Applicative<R2, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return (AppTrav) match(l -> pure.apply((TravB) left(l)), r -> fn.apply(r).fmap(Either::right));
+        return match(l -> pure.apply(Either.<L, R2>left(l).<TravB>coerce()),
+                     r -> fn.apply(r).<Either<L, R2>>fmap(Either::right).<TravB>fmap(Functor::coerce))
+                .coerce();
     }
 
     /**
