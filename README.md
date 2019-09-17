@@ -75,22 +75,22 @@ compile group: 'com.jnape.palatable', name: 'lambda', version: '4.0.0'
 
 First, the obligatory `map`/`filter`/`reduce` example:
 ```Java
-Integer sumOfEvenIncrements =
+Maybe<Integer> sumOfEvenIncrements =
           reduceLeft((x, y) -> x + y,
               filter(x -> x % 2 == 0,
                   map(x -> x + 1, asList(1, 2, 3, 4, 5))));
-//-> 12
+//-> Just 12
 ```
 
 Every function in lambda is [curried](https://www.wikiwand.com/en/Currying), so we could have also done this:
 ```Java
-Fn1<Iterable<Integer>, Integer> sumOfEvenIncrementsFn =
+Fn1<Iterable<Integer>, Maybe<Integer>> sumOfEvenIncrementsFn =
           map((Integer x) -> x + 1)
-          .andThen(filter(x -> x % 2 == 0))
-          .andThen(reduceLeft((x, y) -> x + y));
+          .fmap(filter(x -> x % 2 == 0))
+          .fmap(reduceLeft((x, y) -> x + y));
 
-Integer sumOfEvenIncrements = sumOfEvenIncrementsFn.apply(asList(1, 2, 3, 4, 5));
-//-> 12
+Maybe<Integer> sumOfEvenIncrements = sumOfEvenIncrementsFn.apply(asList(1, 2, 3, 4, 5));
+//-> Just 12
 ```
 
 How about the positive squares below 100:
@@ -106,7 +106,7 @@ We could have also used `unfoldr`:
 ```Java
 Iterable<Integer> positiveSquaresBelow100 = unfoldr(x -> {
               int square = x * x;
-              return square < 100 ? Optional.of(tuple(square, x + 1)) : Optional.empty();
+              return square < 100 ? Maybe.just(tuple(square, x + 1)) : Maybe.nothing();
           }, 1);
 //-> [1, 4, 9, 16, 25, 36, 49, 64, 81]
 ```
@@ -116,7 +116,7 @@ What if we want the cross product of a domain and codomain:
 ```Java
 Iterable<Tuple2<Integer, String>> crossProduct =
           take(10, cartesianProduct(asList(1, 2, 3), asList("a", "b", "c")));
-//-> (1,"a"), (1,"b"), (1,"c"), (2,"a"), (2,"b"), (2,"c"), (3,"a"), (3,"b"), (3,"c")
+//-> [(1,"a"), (1,"b"), (1,"c"), (2,"a"), (2,"b"), (2,"c"), (3,"a"), (3,"b"), (3,"c")]
 ```
 
 Let's compose two functions:
@@ -125,9 +125,9 @@ Let's compose two functions:
 Fn1<Integer, Integer> add = x -> x + 1;
 Fn1<Integer, Integer> subtract = x -> x -1;
 
-Fn1<Integer, Integer> noOp = add.andThen(subtract);
+Fn1<Integer, Integer> noOp = add.fmap(subtract);
 // same as
-Fn1<Integer, Integer> alsoNoOp = subtract.compose(add);
+Fn1<Integer, Integer> alsoNoOp = subtract.fmap(add);
 ```
 
 And partially apply some:
@@ -144,7 +144,7 @@ And have fun with 3s:
 
 ```Java
 Iterable<Iterable<Integer>> multiplesOf3InGroupsOf3 =
-          take(3, inGroupsOf(3, unfoldr(x -> Optional.of(tuple(x * 3, x + 1)), 1)));
+          take(3, inGroupsOf(3, unfoldr(x -> Maybe.just(tuple(x * 3, x + 1)), 1)));
 //-> [[3, 6, 9], [12, 15, 18], [21, 24, 27]]
 ```
 
@@ -176,7 +176,7 @@ Check out the [semigroup](https://palatable.github.io/lambda/javadoc/com/jnape/p
 
 ```Java
 Monoid<Integer> multiply = monoid((x, y) -> x * y, 1);
-multiple.reduceLeft(emptyList()); //-> 1
+multiply.reduceLeft(emptyList()); //-> 1
 multiply.reduceLeft(asList(1, 2, 3)); //-> 6
 multiply.foldMap(Integer::parseInt, asList("1", "2", "3")); //-> also 6
 ```
