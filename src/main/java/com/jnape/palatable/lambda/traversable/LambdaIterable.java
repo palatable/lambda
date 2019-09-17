@@ -3,10 +3,13 @@ package com.jnape.palatable.lambda.traversable;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Empty;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
+import com.jnape.palatable.lambda.internal.iteration.TrampoliningIterator;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -24,7 +27,10 @@ import static java.util.Collections.singleton;
  * @param <A> the {@link Iterable} element type
  * @see LambdaMap
  */
-public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Traversable<A, LambdaIterable<?>> {
+public final class LambdaIterable<A> implements
+        MonadRec<A, LambdaIterable<?>>,
+        Traversable<A, LambdaIterable<?>> {
+
     private final Iterable<A> as;
 
     @SuppressWarnings("unchecked")
@@ -69,7 +75,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
      */
     @Override
     public <B> LambdaIterable<B> zip(Applicative<Fn1<? super A, ? extends B>, LambdaIterable<?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -80,7 +86,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
             Lazy<? extends Applicative<Fn1<? super A, ? extends B>, LambdaIterable<?>>> lazyAppFn) {
         return Empty.empty(as)
                ? lazy(LambdaIterable.empty())
-               : Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, LambdaIterable<?>>::coerce);
+               : MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<B, LambdaIterable<?>>::coerce);
     }
 
     /**
@@ -88,7 +94,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
      */
     @Override
     public <B> LambdaIterable<B> discardL(Applicative<B, LambdaIterable<?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -96,7 +102,7 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
      */
     @Override
     public <B> LambdaIterable<A> discardR(Applicative<B, LambdaIterable<?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -105,6 +111,19 @@ public final class LambdaIterable<A> implements Monad<A, LambdaIterable<?>>, Tra
     @Override
     public <B> LambdaIterable<B> flatMap(Fn1<? super A, ? extends Monad<B, LambdaIterable<?>>> f) {
         return wrap(flatten(map(a -> f.apply(a).<LambdaIterable<B>>coerce().unwrap(), as)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> LambdaIterable<B> trampolineM(
+            Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, LambdaIterable<?>>> fn) {
+        return flatMap(a -> wrap(() -> new TrampoliningIterator<>(
+                x -> fn.apply(x)
+                        .<LambdaIterable<RecursiveResult<A, B>>>coerce()
+                        .unwrap(),
+                a)));
     }
 
     /**

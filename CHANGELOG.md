@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 - `MonadError`, monads that can be thrown to and caught from, with defaults for `IO`, `Either`, `Maybe`, and `Try`
+- `MonadRec`, monads that support a stack-safe `trampolineM` method with defaults for all exported monads
 - `Optic#andThen`, `Optic#compose`, and other defaults added
 - `Prism#andThen`, `Prism#compose` begets another `Prism`
 - `Prism#fromPartial` public interfaces
