@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Deprecated
 - `Peek`, `Peek2`, `Maybe#peek`, and `Either#peek` in favor of explicitly matching into `IO` and running it
 - `Force`, in favor if traversing into an `IO` and explicitly running it
+- `IO#exceptionally` in favor of `IO#catchError` (from `MonadError`)
 
 ## [4.0.0] - 2019-05-20
 ### Changed
