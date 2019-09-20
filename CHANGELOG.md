@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Changed
 - ***Breaking Change***: `MonadT` is now witnessed by a parameter for better subtyping, and no longer requires a common
-  `run` interface
+  `run` interface; each `run` method is now `runXXXT()`, where `XXX` is the name of the transformer in question
 - ***Breaking Change***: `Applicative#zip` and derivatives evaluate from left to right now across the board.
 - ***Breaking Change***: `testsupport.EquatableM` replaced with `Equivalence`
 - `Alter` now merely requires an `Fn1` instead of an explicit `Effect`
@@ -15,31 +15,32 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
    retain parallelization inflection points
 
 ### Added
-- `MonadError`, monads that can be thrown to and caught from, with defaults for `IO`, `Either`, `Maybe`, and `Try`
 - `MonadRec`, monads that support a stack-safe `trampolineM` method with defaults for all exported monads
-- `Optic#andThen`, `Optic#compose`, and other defaults added
-- `Prism#andThen`, `Prism#compose` begets another `Prism`
-- `Prism#fromPartial` public interfaces
+- `MonadError`, monads that can be thrown to and caught from, with defaults for `IO`, `Either`, `Maybe`, and `Try`
+- `MonadBase`,  an interface representing lifting infrastructure for `Monad`s
+- `MonadReader` and `MonadWriter`, general interfaces for reading from an environment and accumulating results
+- `SafeT`, a stack-safe monad transformer for any `MonadRec`
 - `ReaderT`, the transformer for the reader monad
-- `Until`, for repeatedly executing an `IO` until its result matches a predicate
+- `WriterT`, a monad transformer for an accumulation and a value
+- `StateT`, the `State` monad transformer
+- `Lift`, an existentially-quantified lifting function for some `MonadBase` type
 - `IO#interruptible`, for wrapping an `IO` in a thread interruption check
 - `IO#monitorSync`, for wrapping an `IO` in a `synchronized` block on a given lock object
 - `IO#pin`, for pinning an `IO` to an `Executor` without yet executing it
 - `IO#fuse`, for fusing the fork opportunities of a given `IO` into a single linearized `IO`
 - `IO#memoize`, for memoizing an `IO` by caching its first successful result
+- `Until`, for repeatedly executing an `IO` until its result matches a predicate
+- `Optic#andThen`, `Optic#compose`, and other defaults added
+- `Prism#andThen`, `Prism#compose` begets another `Prism`
+- `Prism#fromPartial` public interfaces
 - `Tuple2-8#fromIterable`, for populating a `TupleN` with the first `N` elements of an `Iterable`
 - `Fn2#curry`, for converting an `Fn1<Tuple2<A,B>,C>` to an `Fn2<A,B,C>`
-- `MonadBase`,  an interface representing lifting infrastructure for `Monad`s
-- `Lift`, an existentially-quantified lifting function for some `MonadBase` type
-- `MonadReader` and `MonadWriter`, general interfaces for reading from an environment and accumulating results
-- `StateT`, the `State` monad transformer
-- `WriterT`, a monad transformer for an accumulation and a value
 - `EquivalenceTrait`, a traitor `Trait` to make it easier to test properties of type-classes with a separate equivalence 
   relation
-- `SafeT`, a stack-safe monad transformer for any `MonadRec`
   
 ### Deprecated
 - `Peek`, `Peek2`, `Maybe#peek`, and `Either#peek` in favor of explicitly matching into `IO` and running it
+- `Force`, in favor if traversing into an `IO` and explicitly running it
 
 ## [4.0.0] - 2019-05-20
 ### Changed
