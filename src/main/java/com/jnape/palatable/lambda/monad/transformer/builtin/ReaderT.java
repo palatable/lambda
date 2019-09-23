@@ -201,7 +201,8 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      * @param <A> the embedded output type
      * @return the {@link ReaderT}
      */
-    static <R, M extends MonadRec<?, M>, A> ReaderT<R, M, A> readerT(Fn1<? super R, ? extends MonadRec<A, M>> fn) {
+    public static <R, M extends MonadRec<?, M>, A> ReaderT<R, M, A> readerT(
+            Fn1<? super R, ? extends MonadRec<A, M>> fn) {
         return new ReaderT<>(fn);
     }
 
