@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+No changes yet
+
+## [5.0.0] - 2019-09-23
 ### Changed
 - ***Breaking Change***: `MonadT` is now witnessed by a parameter for better subtyping, and no longer requires a common
   `run` interface; each `run` method is now `runXXXT()`, where `XXX` is the name of the transformer in question
@@ -525,7 +528,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-4.0.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.0.0...HEAD
+[5.0.0]: https://github.com/palatable/lambda/compare/lambda-4.0.0...lambda-5.0.0
 [4.0.0]: https://github.com/palatable/lambda/compare/lambda-3.3.0...lambda-4.0.0
 [3.3.0]: https://github.com/palatable/lambda/compare/lambda-3.2.0...lambda-3.3.0
 [3.2.0]: https://github.com/palatable/lambda/compare/lambda-3.1.0...lambda-3.2.0
