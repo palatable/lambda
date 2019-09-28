@@ -1,6 +1,5 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
-import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -14,11 +13,8 @@ import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadRecLaws;
 import testsupport.traits.MonadWriterLaws;
 
-import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
-import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.WriterT.writerT;
 import static com.jnape.palatable.lambda.monoid.builtin.Join.join;

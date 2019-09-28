@@ -8,6 +8,7 @@ import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
+import com.jnape.palatable.lambda.functor.builtin.Writer;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.MonadWriter;
@@ -23,7 +24,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 
 /**
- * A strict transformer for a {@link Tuple2} holding a value and an accumulation.
+ * A {@link MonadT monad transformer} for {@link Writer}.
  *
  * @param <W> the accumulation type
  * @param <M> the {@link Monad monadic embedding}
@@ -177,14 +178,14 @@ public final class WriterT<W, M extends MonadRec<?, M>, A> implements
     /**
      * Lift a value and an accumulation embedded in a {@link Monad} into a {@link WriterT}.
      *
-     * @param mwa the value and accumulation inside a {@link Monad}
+     * @param maw the value and accumulation inside a {@link Monad}
      * @param <W> the accumulation type
      * @param <M> the {@link Monad} type
      * @param <A> the value type
      * @return the {@link WriterT}
      */
-    public static <W, M extends MonadRec<?, M>, A> WriterT<W, M, A> writerT(MonadRec<Tuple2<A, W>, M> mwa) {
-        return new WriterT<>(constantly(mwa));
+    public static <W, M extends MonadRec<?, M>, A> WriterT<W, M, A> writerT(MonadRec<Tuple2<A, W>, M> maw) {
+        return new WriterT<>(constantly(maw));
     }
 
     /**
@@ -198,7 +199,7 @@ public final class WriterT<W, M extends MonadRec<?, M>, A> implements
     public static <W, M extends MonadRec<?, M>> Pure<WriterT<W, M, ?>> pureWriterT(Pure<M> pureM) {
         return new Pure<WriterT<W, M, ?>>() {
             @Override
-            public <A> WriterT<W, M, A> checkedApply(A a) throws Throwable {
+            public <A> WriterT<W, M, A> checkedApply(A a) {
                 return listen(pureM.<A, MonadRec<A, M>>apply(a));
             }
         };
