@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 ### Added
 - `Writer`, the writer monad
+- `EndoK`, a monoid formed under endomorphism for any monad
 
 ## [5.0.0] - 2019-09-23
 ### Changed
