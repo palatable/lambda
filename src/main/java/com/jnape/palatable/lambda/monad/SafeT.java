@@ -90,16 +90,7 @@ public final class SafeT<M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> SafeT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, SafeT<M, ?>> appFn) {
-        return body.resume()
-                .match(mBodyA -> appFn.<SafeT<M, Fn1<? super A, ? extends B>>>coerce().body.resume()
-                               .match(mBodyF -> new SafeT<>(Body.more(mBodyA.zip(mBodyF.fmap(
-                                       bodyF -> bodyA -> new SafeT<>(bodyA, pureM).zip(new SafeT<>(bodyF, pureM)).body))), pureM),
-                                      f -> new SafeT<>(Body.more(mBodyA.fmap(b -> Body.suspend(
-                                              b, a -> Body.done(f.apply(a))))), pureM)),
-                       a -> appFn.<SafeT<M, Fn1<? super A, ? extends B>>>coerce().body.resume()
-                               .match(mBodyF -> new SafeT<>(new Body.More<>(mBodyF.fmap(
-                                       body -> new SafeT<>(body, pureM).<B>fmap(f -> f.apply(a)).body)), pureM),
-                                      f -> pure(f.apply(a))));
+        return MonadT.super.zip(appFn).coerce();
     }
 
     /**
@@ -153,7 +144,7 @@ public final class SafeT<M extends MonadRec<?, M>, A> implements
      * @return the new {@link SafeT}
      */
     public static <M extends MonadRec<?, M>, A> SafeT<M, A> safeT(MonadRec<A, M> ma) {
-        return new SafeT<>(new Body.More<>(ma.fmap(Body.Done::new)), Pure.of(ma));
+        return new SafeT<>(Body.more(ma.fmap(Body::done)), Pure.of(ma));
     }
 
     /**

@@ -1,10 +1,8 @@
 package com.jnape.palatable.lambda.monad;
 
-import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn1.Id;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
-import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
@@ -15,12 +13,9 @@ import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadRecLaws;
 
-import java.util.concurrent.CountDownLatch;
-
+import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
-import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.monad.SafeT.safeT;
-import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.junit.Assert.assertEquals;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 import static testsupport.traits.Equivalence.equivalence;
@@ -52,25 +47,11 @@ public class SafeTTest {
 
     @Test
     public void zipStackSafety() {
-        assertEquals(new Identity<>(STACK_EXPLODING_NUMBER),
+        assertEquals((Integer) (STACK_EXPLODING_NUMBER + 1),
                      times(STACK_EXPLODING_NUMBER,
-                           safeT -> safeT.zip(safeT(new Identity<>(x -> x + 1))),
-                           safeT(new Identity<>(0))).runSafeT());
-
-    }
-
-    @Test(timeout = 500)
-    public void compositionallyPreservesZip() {
-        CountDownLatch latch = new CountDownLatch(2);
-        IO<Unit> countDownAndAwait = io(() -> {
-            latch.countDown();
-            latch.await();
-        });
-
-        safeT(countDownAndAwait)
-                .discardL(safeT(countDownAndAwait))
-                .<IO<Unit>>runSafeT()
-                .unsafePerformAsyncIO(newFixedThreadPool(2))
-                .join();
+                           safeT -> safeT.zip(safeT(fn1(x -> y -> x + y))),
+                           safeT(Fn1.<Integer, Integer>fn1(x -> x)))
+                             .<Fn1<Integer, Integer>>runSafeT()
+                             .apply(1));
     }
 }
