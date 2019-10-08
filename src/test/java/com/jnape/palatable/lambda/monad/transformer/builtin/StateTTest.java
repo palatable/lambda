@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -15,10 +16,16 @@ import testsupport.traits.MonadReaderLaws;
 import testsupport.traits.MonadRecLaws;
 import testsupport.traits.MonadWriterLaws;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
+import static com.jnape.palatable.lambda.optics.functions.Set.set;
+import static com.jnape.palatable.lambda.optics.lenses.ListLens.elementAt;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static testsupport.traits.Equivalence.equivalence;
 
@@ -57,11 +64,14 @@ public class StateTTest {
 
     @Test
     public void zipping() {
-        assertEquals(new Identity<>(tuple(4, "final state: FOO")),
-                     StateT.<String, Identity<?>>modify(s -> new Identity<>(s.toUpperCase()))
-                             .discardL(StateT.gets(s -> new Identity<>(s.length())))
-                             .flatMap(x -> StateT.stateT(s -> new Identity<>(tuple(x + 1, "final state: " + s))))
-                             .<Identity<Tuple2<Integer, String>>>runStateT("foo"));
+        Tuple2<Unit, List<String>> result = StateT.<List<String>, Identity<?>>modify(
+                s -> new Identity<>(set(elementAt(s.size()), just("one"), s)))
+                .discardL(StateT.modify(s -> new Identity<>(set(elementAt(s.size()), just("two"), s))))
+                .<Identity<Tuple2<Unit, List<String>>>>runStateT(new ArrayList<>())
+                .runIdentity();
+
+        assertEquals(tuple(UNIT, asList("one", "two")),
+                     result);
     }
 
     @Test

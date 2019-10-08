@@ -152,11 +152,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> StateT<S, M, B> zip(Applicative<Fn1<? super A, ? extends B>, StateT<S, M, ?>> appFn) {
-        return stateT(s -> runStateT(s)
-                .zip(appFn.<StateT<S, M, Fn1<? super A, ? extends B>>>coerce()
-                             .runStateT(s)
-                             .fmap(Tuple2::_1)
-                             .fmap(f -> t -> t.biMapL(f))));
+        return MonadT.super.zip(appFn).coerce();
     }
 
     /**

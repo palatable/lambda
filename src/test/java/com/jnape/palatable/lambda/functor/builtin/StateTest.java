@@ -12,8 +12,8 @@ import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadReaderLaws;
-import testsupport.traits.MonadWriterLaws;
 import testsupport.traits.MonadRecLaws;
+import testsupport.traits.MonadWriterLaws;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
