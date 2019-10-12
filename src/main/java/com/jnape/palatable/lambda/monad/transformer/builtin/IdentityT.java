@@ -92,7 +92,10 @@ public final class IdentityT<M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> IdentityT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, IdentityT<M, ?>> appFn) {
-        return MonadT.super.zip(appFn).coerce();
+        return identityT(new Compose<>(this.<MonadRec<Identity<A>, M>>runIdentityT()).zip(
+                new Compose<>(appFn.<IdentityT<M, Fn1<? super A, ? extends B>>>coerce()
+                                      .<MonadRec<Identity<Fn1<? super A, ? extends B>>, M>>runIdentityT()))
+                                 .getCompose());
     }
 
     /**

@@ -73,7 +73,10 @@ public final class MaybeT<M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> MaybeT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, MaybeT<M, ?>> appFn) {
-        return MonadT.super.zip(appFn).coerce();
+        return maybeT(new Compose<>(this.<MonadRec<Maybe<A>, M>>runMaybeT()).zip(
+                new Compose<>(appFn.<MaybeT<M, Fn1<? super A, ? extends B>>>coerce()
+                                      .<MonadRec<Maybe<Fn1<? super A, ? extends B>>, M>>runMaybeT()))
+                              .getCompose());
     }
 
     /**

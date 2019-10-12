@@ -88,7 +88,9 @@ public final class LazyT<M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> LazyT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, LazyT<M, ?>> appFn) {
-        return MonadT.super.zip(appFn).coerce();
+        return lazyT(new Compose<>(this.<MonadRec<Lazy<A>, M>>runLazyT()).zip(
+                new Compose<>(appFn.<LazyT<M, Fn1<? super A, ? extends B>>>coerce()
+                                      .<MonadRec<Lazy<Fn1<? super A, ? extends B>>, M>>runLazyT())).getCompose());
     }
 
     /**

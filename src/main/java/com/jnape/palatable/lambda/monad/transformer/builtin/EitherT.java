@@ -85,7 +85,10 @@ public final class EitherT<M extends MonadRec<?, M>, L, R> implements
     @Override
     public <R2> EitherT<M, L, R2> zip(
             Applicative<Fn1<? super R, ? extends R2>, EitherT<M, L, ?>> appFn) {
-        return MonadT.super.zip(appFn).coerce();
+        return eitherT(new Compose<>(this.<MonadRec<Either<L, R>, M>>runEitherT()).zip(
+                new Compose<>(appFn.<EitherT<M, L, Fn1<? super R, ? extends R2>>>coerce()
+                                      .<MonadRec<Either<L, Fn1<? super R, ? extends R2>>, M>>runEitherT()))
+                               .getCompose());
     }
 
     /**
