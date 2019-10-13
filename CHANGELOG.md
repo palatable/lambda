@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Changed
+- All monad transformers that can support composable parallelism do support it
+
 ### Added
 - `Writer`, the writer monad
 - `EndoK`, a monoid formed under endomorphism for any monad
+- `AutoBracket`, a specialized form of `Bracket` for `AutoCloseable` that closes the resource during cleanup
+
+### Fixed
+- `SafeT#zip` is now stack-safe regardless of the underlying monad's `zip` implementation
 
 ## [5.0.0] - 2019-09-23
 ### Changed
