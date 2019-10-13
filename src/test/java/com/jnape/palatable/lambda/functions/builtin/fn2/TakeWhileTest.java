@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Force.force;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.TakeWhile.takeWhile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
@@ -55,13 +54,13 @@ public class TakeWhileTest {
     public void deforestingExecutesPredicatesInOrder() {
         List<Integer> innerInvocations = new ArrayList<>();
         List<Integer> outerInvocations = new ArrayList<>();
-        force(takeWhile(y -> {
+        takeWhile(y -> {
             outerInvocations.add(y);
             return true;
         }, takeWhile(x -> {
             innerInvocations.add(x);
             return x < 3;
-        }, asList(1, 2, 3))));
+        }, asList(1, 2, 3))).forEach(__ -> {});
         assertThat(innerInvocations, iterates(1, 2, 3));
         assertThat(outerInvocations, iterates(1, 2));
     }

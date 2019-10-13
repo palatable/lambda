@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 - `SafeT#zip` is now stack-safe regardless of the underlying monad's `zip` implementation
 
+### Deprecated
+- `Force`, in favor if traversing into an `IO` and explicitly running it
+
 ## [5.0.0] - 2019-09-23
 ### Changed
 - ***Breaking Change***: `MonadT` is now witnessed by a parameter for better subtyping, and no longer requires a common
@@ -52,7 +55,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
   
 ### Deprecated
 - `Peek`, `Peek2`, `Maybe#peek`, and `Either#peek` in favor of explicitly matching into `IO` and running it
-- `Force`, in favor if traversing into an `IO` and explicitly running it
 - `IO#exceptionally` in favor of `IO#catchError` (from `MonadError`)
 
 ## [4.0.0] - 2019-05-20
