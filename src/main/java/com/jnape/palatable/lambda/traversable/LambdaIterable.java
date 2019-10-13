@@ -135,11 +135,10 @@ public final class LambdaIterable<A> implements
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends Applicative<B, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return FoldRight.<A, AppTrav>foldRight(
-                (a, lglb) -> fn.apply(a)
-                        .lazyZip(lglb.<Applicative<Fn1<? super B, ? extends TravB>, App>>fmap(appTrav -> appTrav
-                                .fmap(travB -> b -> (TravB) wrap(cons(b, ((LambdaIterable<B>) travB).unwrap())))))
-                        .fmap(appTrav -> (AppTrav) appTrav),
-                lazy(pure.apply((TravB) empty())),
+                (a, lazyAppTrav) -> (Lazy<AppTrav>) fn.apply(a)
+                        .lazyZip(lazyAppTrav.<Applicative<Fn1<? super B, ? extends TravB>, App>>fmap(appTrav -> appTrav
+                                .fmap(travB -> b -> (TravB) wrap(cons(b, ((LambdaIterable<B>) travB).unwrap()))))),
+                lazy(() -> pure.apply((TravB) empty())),
                 as
         ).value();
     }
