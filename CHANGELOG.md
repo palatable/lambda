@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+There are currently no unreleased changes 
+
+## [5.1.0] - 2019-10-13
 ### Changed
 - All monad transformers that can support composable parallelism do support it
 
@@ -539,7 +543,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.0.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.1.0...HEAD
+[5.1.0]: https://github.com/palatable/lambda/compare/lambda-5.0.0...lambda-5.1.0
 [5.0.0]: https://github.com/palatable/lambda/compare/lambda-4.0.0...lambda-5.0.0
 [4.0.0]: https://github.com/palatable/lambda/compare/lambda-3.3.0...lambda-4.0.0
 [3.3.0]: https://github.com/palatable/lambda/compare/lambda-3.2.0...lambda-3.3.0
