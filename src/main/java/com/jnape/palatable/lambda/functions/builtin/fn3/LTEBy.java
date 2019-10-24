@@ -6,7 +6,8 @@ import com.jnape.palatable.lambda.functions.builtin.fn2.LTE;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.functions.specialized.Predicate;
 
-import static com.jnape.palatable.lambda.functions.builtin.fn3.CmpEqBy.cmpEqBy;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.LTEWith.lteWith;
+import static java.util.Comparator.comparing;
 
 /**
  * Given a mapping function from some type <code>A</code> to some {@link Comparable} type <code>B</code> and two values
@@ -28,7 +29,7 @@ public final class LTEBy<A, B extends Comparable<B>> implements Fn3<Fn1<? super 
 
     @Override
     public Boolean checkedApply(Fn1<? super A, ? extends B> compareFn, A y, A x) {
-        return LTBy.<A, B>ltBy(compareFn).or(cmpEqBy(compareFn)).apply(y, x);
+        return lteWith(comparing(compareFn.toFunction()), y, x);
     }
 
     @Override

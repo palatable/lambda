@@ -18,6 +18,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn3.LTBy.ltBy;
  * @param <A> the value type
  * @param <B> the mapped comparison type
  * @see Max
+ * @see MaxWith
  * @see MinBy
  */
 public final class MaxBy<A, B extends Comparable<B>> implements SemigroupFactory<Fn1<? super A, ? extends B>, A> {
