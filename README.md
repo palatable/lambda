@@ -30,6 +30,7 @@ Functional patterns for Java
      - [Either](#either)
  - [Lenses](#lenses)
  - [Notes](#notes) 
+ - [Community](#community) 
  - [License](#license)
 
 <a name="background">Background</a>
@@ -738,6 +739,13 @@ Check out the tests or the [javadoc](http://palatable.github.io/lambda/javadoc/)
 Wherever possible, _lambda_ maintains interface compatibility with similar, familiar core Java types. Some examples of where this works well is with both `Fn1` and `Predicate`, which extend `j.u.f.Function` and `j.u.f.Predicate`, respectively. In these examples, they also override any implemented methods to return their _lambda_-specific counterparts (`Fn1.compose` returning `Fn1` instead of `j.u.f.Function` as an example).
 
 Unfortunately, due to Java's type hierarchy and inheritance inconsistencies, this is not always possible. One surprising example of this is how `Fn1` extends `j.u.f.Function`, but `Fn2` does not extend `j.u.f.BiFunction`. This is because `j.u.f.BiFunction` itself does not extend `j.u.f.Function`, but it does define methods that collide with `j.u.f.Function`. For this reason, both `Fn1` and `Fn2` cannot extend their Java counterparts without sacrificing their own inheritance hierarchy. These types of asymmetries are, unfortunately, not uncommon; however, wherever these situations arise, measures are taken to attempt to ease the transition in and out of core Java types (in the case of `Fn2`, a supplemental `#toBiFunction` method is added). I do not take these inconveniences for granted, and I'm regularly looking for ways to minimize the negative impact of this as much as possible. Suggestions and use cases that highlight particular pain points here are particularly appreciated.
+
+<a name="community">Community</a>
+-----
+There are some open-sourced community projects that also leverage or extend _lambda_: these projects are listed below. If you use _lambda_ in your own open-sourced project, feel free to create an issue and I'll be happy to review the project and add it to this section!
+
+- [Enhanced Iterables](https://github.com/kschuetz/enhanced-iterables) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
+- [Collection Views](https://github.com/kschuetz/collection-views) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
 
 <a name="license">License</a>
 -------
