@@ -29,8 +29,8 @@ Functional patterns for Java
    - [CoProducts](#coproducts)
      - [Either](#either)
  - [Lenses](#lenses)
- - [Notes](#notes) 
- - [Community](#community) 
+ - [Notes](#notes)
+ - [Community](#community)
  - [License](#license)
 
 <a name="background">Background</a>
@@ -742,7 +742,7 @@ Unfortunately, due to Java's type hierarchy and inheritance inconsistencies, thi
 
 <a name="community">Community</a>
 -----
-There are some open-sourced community projects that also leverage or extend _lambda_: these projects are listed below. If you use _lambda_ in your own open-sourced project, feel free to create an issue and I'll be happy to review the project and add it to this section!
+There are some open-sourced community projects that depend on _lambda_ for their own functionality: these projects are listed below (note that these projects are _not_ affiliated with lambda, and have their own maintainers). If you use _lambda_ in your own open-sourced project, feel free to create an issue and I'll be happy to review the project and add it to this section!
 
 - [Enhanced Iterables](https://github.com/kschuetz/enhanced-iterables) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
 - [Collection Views](https://github.com/kschuetz/collection-views) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
