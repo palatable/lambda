@@ -25,7 +25,11 @@ import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.WriterT.writerT;
 import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static com.jnape.palatable.lambda.monoid.builtin.Trivial.trivial;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+import static testsupport.matchers.WriterTMatcher.whenEvaluatedWith;
+import static testsupport.matchers.WriterTMatcher.whenExecutedWith;
+import static testsupport.matchers.WriterTMatcher.whenRunWith;
 import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
@@ -38,38 +42,46 @@ public class WriterTTest {
 
     @Test
     public void accumulationUsesProvidedMonoid() {
-        Identity<Tuple2<Integer, String>> result = writerT(new Identity<>(tuple(1, "foo")))
-                .discardR(WriterT.tell(new Identity<>("bar")))
-                .flatMap(x -> writerT(new Identity<>(tuple(x + 1, "baz"))))
-                .runWriterT(join());
+        assertThat(writerT(new Identity<>(tuple(1, "foo")))
+                           .discardR(WriterT.tell(new Identity<>("bar")))
+                           .flatMap(x -> writerT(new Identity<>(tuple(x + 1, "baz")))),
+                   whenRunWith(join(), equalTo(new Identity<>(tuple(2, "foobarbaz")))));
+    }
 
-        assertEquals(new Identity<>(tuple(2, "foobarbaz")), result);
+    @Test
+    public void eval() {
+        assertThat(writerT(new Identity<>(tuple(1, "foo"))),
+                   whenEvaluatedWith(join(), equalTo(new Identity<>(1))));
+    }
+
+    @Test
+    public void exec() {
+        assertThat(writerT(new Identity<>(tuple(1, "foo"))),
+                   whenExecutedWith(join(), equalTo(new Identity<>("foo"))));
     }
 
     @Test
     public void tell() {
-        assertEquals(new Identity<>(tuple(UNIT, "")),
-                     WriterT.tell(new Identity<>("")).runWriterT(join()));
+        assertThat(WriterT.tell(new Identity<>("")),
+                   whenRunWith(join(), equalTo(new Identity<>(tuple(UNIT, "")))));
     }
 
     @Test
     public void listen() {
-        assertEquals(new Identity<>(tuple(1, "")),
-                     WriterT.<String, Identity<?>, Integer>listen(new Identity<>(1)).runWriterT(join()));
+        assertThat(WriterT.listen(new Identity<>(1)),
+                   whenRunWith(join(), equalTo(new Identity<>(tuple(1, "")))));
     }
 
     @Test
     public void staticPure() {
-        WriterT<String, Identity<?>, Integer> apply = WriterT.<String, Identity<?>>pureWriterT(pureIdentity()).apply(1);
-        assertEquals(new Identity<>(tuple(1, "")),
-                     apply.runWriterT(join()));
+        assertThat(WriterT.<String, Identity<?>>pureWriterT(pureIdentity()).apply(1),
+                   whenRunWith(join(), equalTo(new Identity<>(tuple(1, "")))));
     }
 
     @Test
     public void staticLift() {
-        WriterT<String, Identity<?>, Integer> apply = WriterT.<String>liftWriterT().apply(new Identity<>(1));
-        assertEquals(new Identity<>(tuple(1, "")),
-                     apply.runWriterT(join()));
+        assertThat(WriterT.<String>liftWriterT().apply(new Identity<>(1)),
+                   whenRunWith(join(), equalTo(new Identity<>(tuple(1, "")))));
     }
 
     @Test(timeout = 500)
