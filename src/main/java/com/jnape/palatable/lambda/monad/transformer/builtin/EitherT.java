@@ -10,6 +10,7 @@ import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadError;
 import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
@@ -28,7 +29,8 @@ import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.ter
  */
 public final class EitherT<M extends MonadRec<?, M>, L, R> implements
         Bifunctor<L, R, EitherT<M, ?, ?>>,
-        MonadT<M, R, EitherT<M, L, ?>, EitherT<?, L, ?>> {
+        MonadT<M, R, EitherT<M, L, ?>, EitherT<?, L, ?>>,
+        MonadError<L, R, EitherT<M, L, ?>> {
 
     private final MonadRec<Either<L, R>, M> melr;
 
@@ -118,6 +120,23 @@ public final class EitherT<M extends MonadRec<?, M>, L, R> implements
     @Override
     public <B> EitherT<M, L, R> discardR(Applicative<B, EitherT<M, L, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EitherT<M, L, R> throwError(L l) {
+        return eitherT(melr.pure(left(l)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EitherT<M, L, R> catchError(Fn1<? super L, ? extends Monad<R, EitherT<M, L, ?>>> recoveryFn) {
+        return eitherT(runEitherT().flatMap(e -> e.match(l -> recoveryFn.apply(l).<EitherT<M, L, R>>coerce().runEitherT(),
+                                                         r -> melr.pure(r).fmap(Either::right))));
     }
 
     /**

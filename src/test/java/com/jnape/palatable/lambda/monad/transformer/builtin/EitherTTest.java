@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.Unit;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -27,6 +28,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.EitherT.eitherT;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.EitherT.liftEitherT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.EitherT.pureEitherT;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 
@@ -72,5 +74,16 @@ public class EitherTTest {
         EitherT<Identity<?>, String, Integer> eitherT = EitherT.<Identity<?>, String>pureEitherT(pureIdentity())
                 .apply(1);
         assertEquals(eitherT(new Identity<>(right(1))), eitherT);
+    }
+
+    @Test
+    public void monadError() {
+        Pure<EitherT<Identity<?>, String, ?>> pure = pureEitherT(pureIdentity());
+
+        assertEquals(eitherT(new Identity<>(left("Hello"))),
+                     pure.<Integer, EitherT<Identity<?>, String, Integer>>apply(1).throwError("Hello"));
+        assertEquals(pure.apply(5),
+                     EitherT.<Identity<?>, String, Integer>eitherT(new Identity<>(left("Hello")))
+                             .catchError(s -> pure.apply(s.length())));
     }
 }
