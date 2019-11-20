@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
-There are currently no unreleased changes 
+### Changed
+- `HList#cons` static factory method auto-promotes to specialized `HList` if there is one
 
 ## [5.1.0] - 2019-10-13
 ### Changed
