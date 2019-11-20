@@ -1,5 +1,7 @@
 package com.jnape.palatable.lambda.adt.hlist;
 
+import com.jnape.palatable.lambda.functions.builtin.fn1.Downcast;
+
 import java.util.Objects;
 
 /**
@@ -63,7 +65,7 @@ public abstract class HList {
      * @return the newly created HList
      */
     public static <Head, Tail extends HList> HCons<Head, Tail> cons(Head head, Tail tail) {
-        return new HCons<>(head, tail);
+        return Downcast.<HCons<Head, Tail>, HCons<Head, ? extends HList>>downcast(tail.cons(head));
     }
 
     /**
@@ -271,7 +273,7 @@ public abstract class HList {
             if (other instanceof HCons) {
                 HCons<?, ?> that = (HCons<?, ?>) other;
                 return this.head.equals(that.head)
-                        && this.tail.equals(that.tail);
+                    && this.tail.equals(that.tail);
             }
             return false;
         }
