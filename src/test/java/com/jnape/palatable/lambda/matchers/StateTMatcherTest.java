@@ -1,6 +1,9 @@
 package com.jnape.palatable.lambda.matchers;
 
 import com.jnape.palatable.lambda.adt.Either;
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.io.IO;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.builtin.StateT;
 import org.junit.Test;
 import testsupport.matchers.StateTMatcher;
@@ -36,13 +39,15 @@ public class StateTMatcherTest {
     @Test
     public void whenRunWithUsingTwoMatchers() {
         assertThat(stateT(Either.right(1)),
-                whenRunWith(left("0"), isRightThat(equalTo(1)), isRightThat(isLeftThat(equalTo("0")))));
+                StateTMatcher.<Either<String, Integer>, Either<String, ?>, Integer, Either<String, Integer>, Either<String, Either<String, Integer>>, Either<String, Tuple2<Integer, Either<String, Integer>>>>whenRunWith(left("0"),
+                        isRightThat(equalTo(1)), isRightThat(isLeftThat(equalTo("0")))));
     }
 
     @Test
     public void whenRunWithUsingOneTupleMatcher() {
         assertThat(stateT(Either.right(1)),
-                whenRunWith(left("0"), isRightThat(equalTo(tuple(1, left("0"))))));
+                StateTMatcher.<Either<String, Integer>, Either<String, ?>, Integer, Either<String, Integer>, Either<String, Either<String, Integer>>, Either<String, Tuple2<Integer, Either<String, Integer>>>>whenRunWith(left("0"),
+                        isRightThat(equalTo(tuple(1, left("0"))))));
     }
 
     @Test
@@ -50,7 +55,7 @@ public class StateTMatcherTest {
         AtomicInteger count = new AtomicInteger(0);
 
         assertThat(StateT.gets(s -> io(count::incrementAndGet)),
-                whenRunWith(0, yieldsValue(equalTo(tuple(1, 0)))));
+                StateTMatcher.<Integer, IO<?>, Integer, IO<Integer>, IO<Integer>, IO<Tuple2<Integer, Integer>>>whenRunWith(0, yieldsValue(equalTo(tuple(1, 0)))));
         assertEquals(1, count.get());
     }
 }
