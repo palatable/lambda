@@ -14,17 +14,17 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static org.hamcrest.Matchers.equalTo;
 
-public class StateTMatcher<S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> extends TypeSafeMatcher<StateT<S, M, A>> {
+public class StateTMatcher<S, M extends MonadRec<?, M>, A> extends TypeSafeMatcher<StateT<S, M, A>> {
     private final S initialState;
 
-    private final Either<Matcher<? super MTS>, These<Matcher<? super MA>, Matcher<? super MS>>> matcher;
+    private final Either<Matcher<? super MonadRec<Tuple2<A, S>, M>>, These<Matcher<? super MonadRec<A, M>>, Matcher<? super MonadRec<S, M>>>> matcher;
 
-    private StateTMatcher(S initialState, These<Matcher<? super MA>, Matcher<? super MS>> matchers) {
+    private StateTMatcher(S initialState, These<Matcher<? super MonadRec<A, M>>, Matcher<? super MonadRec<S, M>>> matchers) {
         this.initialState = initialState;
         this.matcher = right(matchers);
     }
 
-    private StateTMatcher(S initialState, Matcher<? super MTS> matcher) {
+    private StateTMatcher(S initialState, Matcher<? super MonadRec<Tuple2<A, S>, M>> matcher) {
         this.initialState = initialState;
         this.matcher = left(matcher);
     }
@@ -44,9 +44,9 @@ public class StateTMatcher<S, M extends MonadRec<?, M>, A, MA extends MonadRec<A
                 theseMatchers -> theseMatchers.match(a -> io(() -> a.describeTo(description.appendText("Value matching "))),
                         b -> io(() -> b.describeTo(description.appendText("State matching "))),
                         ab -> io(() -> {
-                            description.appendText("Value matching: ");
+                            description.appendText("Value run matching: ");
                             ab._1().describeTo(description);
-                            description.appendText(" and state matching: ");
+                            description.appendText(", then state run matching: ");
                             ab._2().describeTo(description);
                         })))
                 .unsafePerformIO();
@@ -69,46 +69,60 @@ public class StateTMatcher<S, M extends MonadRec<?, M>, A, MA extends MonadRec<A
                             b.describeMismatch(ran.fmap(Tuple2::_2), mismatchDescription);
                         }),
                         ab -> io(() -> {
-                            mismatchDescription.appendText("value matching: ");
+                            mismatchDescription.appendText("value run matching: ");
                             ab._1().describeMismatch(ran.fmap(Tuple2::_1), mismatchDescription);
-                            mismatchDescription.appendText(" and state matching: ");
+                            mismatchDescription.appendText(", then state run matching: ");
                             ab._2().describeMismatch(ran.fmap(Tuple2::_2), mismatchDescription);
                         })))
                 .unsafePerformIO();
     }
 
-    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A, MA, MS, MTS> whenRunWith(S initialState, Matcher<? super MTS> bothMatcher) {
-        return new StateTMatcher<>(initialState, bothMatcher);
+    public static <S, M extends MonadRec<?, M>, A, MAS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A> whenRunWith(S initialState, Matcher<? super MAS> bothMatcher) {
+        return new StateTMatcher<S, M, A>(initialState, extendMatcher(bothMatcher));
     }
 
-    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A, MA, MS, MTS> whenRun(S initialState, MTS both) {
+    public static <S, M extends MonadRec<?, M>, A> StateTMatcher<S, M, A> whenRun(S initialState, MonadRec<Tuple2<A, S>, M> both) {
         return whenRunWith(initialState, equalTo(both));
     }
 
-    // Note: This constructor will run both matchers, which can run effects twice
-    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A, MA, MS, MTS> whenRunWith(S initialState, Matcher<? super MA> valueMatcher, Matcher<? super MS> stateMatcher) {
-        return new StateTMatcher<>(initialState, These.both(valueMatcher, stateMatcher));
+    // Note: This constructor will run both matchers, which will run effects twice
+    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>> StateTMatcher<S, M, A> whenRunWithBoth(S initialState, Matcher<? super MA> valueMatcher, Matcher<? super MS> stateMatcher) {
+        return new StateTMatcher<S, M, A>(initialState, These.both(extendMatcher(valueMatcher), extendMatcher(stateMatcher)));
     }
 
-    // Note: This constructor will run both matchers, which can run effects twice
+    // Note: This constructor will run both matchers, which will run effects twice
     @SuppressWarnings("unused")
-    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A, MA, MS, MTS> whenRun(S initialState, MA value, MS state) {
-        return whenRunWith(initialState, equalTo(value), equalTo(state));
+    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>> StateTMatcher<S, M, A> whenRunBoth(S initialState, MonadRec<A, M> value, MonadRec<S, M> state) {
+        return whenRunWithBoth(initialState, equalTo(value), equalTo(state));
     }
 
-    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A, MA, MS, MTS> whenExecutedWith(S initialState, Matcher<? super MS> stateMatcher) {
-        return new StateTMatcher<>(initialState, These.b(stateMatcher));
+    public static <S, M extends MonadRec<?, M>, A, MS extends MonadRec<S, M>> StateTMatcher<S, M, A> whenExecutedWith(S initialState, Matcher<? super MS> stateMatcher) {
+        return new StateTMatcher<S, M, A>(initialState, These.b(extendMatcher(stateMatcher)));
     }
 
-    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A, MA, MS, MTS> whenExecuted(S initialState, MS state) {
+    public static <S, M extends MonadRec<?, M>, A> StateTMatcher<S, M, A> whenExecuted(S initialState, MonadRec<S, M> state) {
         return whenExecutedWith(initialState, equalTo(state));
     }
 
-    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A, MA, MS, MTS> whenEvaluatedWith(S initialState, Matcher<? super MA> valueMatcher) {
-        return new StateTMatcher<>(initialState, These.a(valueMatcher));
+    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>> StateTMatcher<S, M, A> whenEvaluatedWith(S initialState, Matcher<? super MA> valueMatcher) {
+        return new StateTMatcher<S, M, A>(initialState, These.a(extendMatcher(valueMatcher)));
     }
 
-    public static <S, M extends MonadRec<?, M>, A, MA extends MonadRec<A, M>, MS extends MonadRec<S, M>, MTS extends MonadRec<Tuple2<A, S>, M>> StateTMatcher<S, M, A, MA, MS, MTS> whenEvaluated(S initialState, MA value) {
+    public static <S, M extends MonadRec<?, M>, A> StateTMatcher<S, M, A> whenEvaluated(S initialState, MonadRec<A, M> value) {
         return whenEvaluatedWith(initialState, equalTo(value));
+    }
+
+    private static <X, M extends MonadRec<?, M>, MX extends MonadRec<X, M>> Matcher<MonadRec<X, M>> extendMatcher(Matcher<? super MX> matcher) {
+        return new TypeSafeMatcher<MonadRec<X, M>>() {
+            @Override
+            protected boolean matchesSafely(MonadRec<X, M> item) {
+                return matcher.matches(item);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                matcher.describeTo(description);
+            }
+        };
     }
 }

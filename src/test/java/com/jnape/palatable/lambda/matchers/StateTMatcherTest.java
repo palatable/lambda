@@ -1,9 +1,6 @@
 package com.jnape.palatable.lambda.matchers;
 
 import com.jnape.palatable.lambda.adt.Either;
-import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.io.IO;
-import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.builtin.StateT;
 import org.junit.Test;
 import testsupport.matchers.StateTMatcher;
@@ -11,9 +8,11 @@ import testsupport.matchers.StateTMatcher;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
+import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.stateT;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -25,37 +24,57 @@ import static testsupport.matchers.StateTMatcher.*;
 public class StateTMatcherTest {
 
     @Test
-    public void whenEvalWithMatcher() {
-        assertThat(stateT(Either.right(1)),
-                StateTMatcher.whenEvaluatedWith("0", isRightThat(equalTo(1))));
+    public void whenEvaluatedWithMatcher() {
+        assertThat(stateT(right(1)),
+                whenEvaluatedWith("0", isRightThat(equalTo(1))));
     }
 
     @Test
-    public void whenExecWithMatcher() {
-        assertThat(stateT(Either.right(1)),
+    public void whenEvaluatedWithMatcherOnObject() {
+        assertThat(stateT(right(1)),
+                whenEvaluatedWith("0", not(equalTo(new Object()))));
+    }
+
+    @Test
+    public void whenExecutedWithMatcher() {
+        assertThat(stateT(right(1)),
                 whenExecutedWith(left("0"), isRightThat(isLeftThat(equalTo("0")))));
+    }
+
+
+    @Test
+    public void whenExecutedWithMatcherOnObject() {
+        assertThat(stateT(right(1)),
+                whenExecutedWith(left("0"), not(equalTo(new Object()))));
     }
 
     @Test
     public void whenRunWithUsingTwoMatchers() {
-        assertThat(stateT(Either.right(1)),
-                StateTMatcher.<Either<String, Integer>, Either<String, ?>, Integer, Either<String, Integer>, Either<String, Either<String, Integer>>, Either<String, Tuple2<Integer, Either<String, Integer>>>>whenRunWith(left("0"),
-                        isRightThat(equalTo(1)), isRightThat(isLeftThat(equalTo("0")))));
+        //noinspection RedundantTypeArguments
+        assertThat(stateT(right(1)),
+                StateTMatcher.<Either<String, Object>, Either<Object, ?>, Integer, Either<Object, Integer>, Either<Object, Either<String, Object>>>whenRunWithBoth(left("0"),
+                        isRightThat(equalTo(1)),
+                        isRightThat(isLeftThat(equalTo("0")))));
     }
 
     @Test
     public void whenRunWithUsingOneTupleMatcher() {
-        assertThat(stateT(Either.right(1)),
-                StateTMatcher.<Either<String, Integer>, Either<String, ?>, Integer, Either<String, Integer>, Either<String, Either<String, Integer>>, Either<String, Tuple2<Integer, Either<String, Integer>>>>whenRunWith(left("0"),
+        assertThat(stateT(right(1)),
+                whenRunWith(left("0"),
                         isRightThat(equalTo(tuple(1, left("0"))))));
+    }
+
+    @Test
+    public void whenRunWithUsingOneTupleMatcherOnObject() {
+        assertThat(stateT(right(1)),
+                whenRunWith(left("0"), not(equalTo(new Object()))));
     }
 
     @Test
     public void onlyRunsStateOnceWithTupleMatcher() {
         AtomicInteger count = new AtomicInteger(0);
 
-        assertThat(StateT.gets(s -> io(count::incrementAndGet)),
-                StateTMatcher.<Integer, IO<?>, Integer, IO<Integer>, IO<Integer>, IO<Tuple2<Integer, Integer>>>whenRunWith(0, yieldsValue(equalTo(tuple(1, 0)))));
+        assertThat(StateT.gets(s -> io(count::incrementAndGet)), whenRunWith(0, yieldsValue(equalTo(tuple(1, 0)))));
         assertEquals(1, count.get());
     }
 }
