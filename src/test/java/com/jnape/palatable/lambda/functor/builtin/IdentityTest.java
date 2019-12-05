@@ -9,10 +9,12 @@ import testsupport.traits.*;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static org.junit.Assert.assertEquals;
 
+
 @RunWith(Traits.class)
 public class IdentityTest {
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class, MonadRecLaws.class, ComonadLaws.class})
+
     public Identity<?> testSubject() {
         return new Identity<>("");
     }
