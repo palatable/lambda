@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - `HList#cons` static factory method auto-promotes to specialized `HList` if there is one
 
+### Added
+- `MergeHMaps`, a `Monoid` that merges `HMap`s by merging the values via key-specified `Semigroup`s
+
 ## [5.1.0] - 2019-10-13
 ### Changed
 - All monad transformers that can support composable parallelism do support it
