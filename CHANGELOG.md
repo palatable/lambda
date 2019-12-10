@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 - `HList#cons` static factory method auto-promotes to specialized `HList` if there is one
+- `EitherT` gains a `MonadError` instance
 
 ### Added
 - `MergeHMaps`, a `Monoid` that merges `HMap`s by merging the values via key-specified `Semigroup`s
