@@ -1,8 +1,5 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
-import com.jnape.palatable.lambda.adt.Unit;
-import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
@@ -17,8 +14,12 @@ import testsupport.traits.MonadWriterLaws;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static testsupport.matchers.StateMatcher.whenEvaluated;
+import static testsupport.matchers.StateMatcher.whenExecuted;
+import static testsupport.matchers.StateMatcher.whenRun;
 import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
@@ -36,71 +37,65 @@ public class StateTest {
 
     @Test
     public void eval() {
-        State<Integer, Unit> state = State.put(0);
-        assertEquals(state.run(1)._1(), state.eval(1));
+        assertThat(State.gets(id()), whenEvaluated(1, 1));
     }
 
     @Test
     public void exec() {
-        State<Integer, Unit> state = State.put(0);
-        assertEquals(state.run(1)._2(), state.exec(1));
+        assertThat(State.modify(x -> x + 1), whenExecuted(1, 2));
     }
 
     @Test
     public void get() {
-        assertEquals(tuple(1, 1), State.<Integer>get().run(1));
+        assertThat(State.get(), whenRun(1, 1, 1));
     }
 
     @Test
     public void put() {
-        assertEquals(tuple(UNIT, 1), State.put(1).run(1));
+        assertThat(State.put(1), whenRun(1, UNIT, 1));
     }
 
     @Test
     public void gets() {
-        assertEquals(tuple(0, "0"), State.<String, Integer>gets(Integer::parseInt).run("0"));
+        assertThat(State.gets(Integer::parseInt), whenRun("0", 0, "0"));
     }
 
     @Test
     public void modify() {
-        assertEquals(tuple(UNIT, 1), State.<Integer>modify(x -> x + 1).run(0));
+        assertThat(State.modify(x -> x + 1), whenRun(0, UNIT, 1));
     }
 
     @Test
     public void state() {
-        assertEquals(tuple(1, UNIT), State.<Unit, Integer>state(1).run(UNIT));
-        assertEquals(tuple(1, -1), State.<Integer, Integer>state(x -> tuple(x + 1, x - 1)).run(0));
+        assertThat(State.state(1), whenRun(UNIT, 1, UNIT));
+        assertThat(State.state(x -> tuple(x + 1, x - 1)), whenRun(0, 1, -1));
     }
 
     @Test
     public void stateAccumulation() {
-        State<Integer, Integer> counter = State.<Integer>get().flatMap(i -> State.put(i + 1).discardL(State.state(i)));
-        assertEquals(tuple(0, 1), counter.run(0));
+        assertThat(State.<Integer>get().flatMap(i -> State.put(i + 1).discardL(State.state(i))),
+                   whenRun(0, 0, 1));
     }
 
     @Test
     public void zipOrdering() {
-        Tuple2<Integer, String> result = State.<String, Integer>state(s -> tuple(0, s + "1"))
-                .zip(State.<String, Fn1<? super Integer, ? extends Integer>>state(s -> tuple(x -> x + 1, s + "2")))
-                .run("_");
-        assertEquals(tuple(1, "_12"), result);
+        assertThat(State.<String, Integer>state(s -> tuple(0, s + "1"))
+                           .zip(State.state(s -> tuple(x -> x + 1, s + "2"))),
+                   whenRun("_", 1, "_12"));
     }
 
     @Test
     public void withState() {
-        State<Integer, Integer> modified = State.<Integer>get().withState(x -> x + 1);
-        assertEquals(tuple(1, 1), modified.run(0));
+        assertThat(State.<Integer>get().withState(x -> x + 1), whenRun(0, 1, 1));
     }
 
     @Test
     public void mapState() {
-        State<Integer, Integer> modified = State.<Integer>get().mapState(into((a, s) -> tuple(a + 1, s + 2)));
-        assertEquals(tuple(1, 2), modified.run(0));
+        assertThat(State.<Integer>get().mapState(into((a, s) -> tuple(a + 1, s + 2))), whenRun(0, 1, 2));
     }
 
     @Test
     public void staticPure() {
-        State<String, Integer> state = State.<String>pureState().apply(1);
-        assertEquals(tuple(1, "foo"), state.run("foo"));
+        assertThat(State.<String>pureState().apply(1), whenRun("foo", 1, "foo"));
     }
 }
