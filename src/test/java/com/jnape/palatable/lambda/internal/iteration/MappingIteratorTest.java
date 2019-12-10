@@ -13,8 +13,8 @@ public class MappingIteratorTest {
 
     @Test
     public void nextProducesMappedResult() {
-        Fn1<String, Integer> stringToLength = String::length;
-        List<String> words = asList("foo", "bar");
+        Fn1<String, Integer>             stringToLength  = String::length;
+        List<String>                     words           = asList("foo", "bar");
         MappingIterator<String, Integer> mappingIterator = new MappingIterator<>(stringToLength, words.iterator());
 
         assertThat(mappingIterator.next(), is(3));

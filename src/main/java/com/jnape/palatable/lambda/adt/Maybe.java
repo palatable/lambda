@@ -7,13 +7,15 @@ import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadError;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -24,7 +26,10 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.io.IO.io;
 
 /**
  * The optional type, representing a potentially absent value. This is lambda's analog of {@link Optional}, supporting
@@ -36,6 +41,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 public abstract class Maybe<A> implements
         CoProduct2<Unit, A, Maybe<A>>,
         MonadError<Unit, A, Maybe<?>>,
+        MonadRec<A, Maybe<?>>,
         Traversable<A, Maybe<?>> {
 
     private Maybe() {
@@ -197,6 +203,16 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
+    public <B> Maybe<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Maybe<?>>> fn) {
+        return match(constantly(nothing()), trampoline(a -> fn.apply(a).<Maybe<RecursiveResult<A, B>>>coerce()
+                .match(constantly(terminate(nothing())),
+                       aOrB -> aOrB.fmap(Maybe::just))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <B> Choice3<Unit, A, B> diverge() {
         return match(Choice3::a, Choice3::b);
     }
@@ -222,9 +238,11 @@ public abstract class Maybe<A> implements
      *
      * @param effect the consumer
      * @return the same Maybe instance
+     * @deprecated in favor of {@link Maybe#match(Fn1, Fn1) matching} into an {@link IO} and explicitly running it
      */
+    @Deprecated
     public final Maybe<A> peek(Fn1<? super A, ? extends IO<?>> effect) {
-        return Peek.peek(effect, this);
+        return match(constantly(io(this)), a -> effect.apply(a).fmap(constantly(this))).unsafePerformIO();
     }
 
     @Override
@@ -294,6 +312,15 @@ public abstract class Maybe<A> implements
     @SuppressWarnings("unchecked")
     public static <A> Maybe<A> nothing() {
         return (Maybe<A>) Nothing.INSTANCE;
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Maybe}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<Maybe<?>> pureMaybe() {
+        return Maybe::just;
     }
 
     private static final class Nothing<A> extends Maybe<A> {

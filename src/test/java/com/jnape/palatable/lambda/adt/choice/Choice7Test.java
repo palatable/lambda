@@ -12,6 +12,7 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice7.a;
@@ -47,7 +48,13 @@ public class Choice7Test {
         g = g(6F);
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({
+            FunctorLaws.class,
+            ApplicativeLaws.class,
+            MonadLaws.class,
+            BifunctorLaws.class,
+            TraversableLaws.class,
+            MonadRecLaws.class})
     public Subjects<Choice7<String, Integer, Boolean, Character, Double, Long, Float>> testSubjects() {
         return subjects(a("foo"), b(1), c(true), d('a'), e(2d), f(5L), g(6F));
     }
@@ -97,5 +104,12 @@ public class Choice7Test {
         assertEquals(f(1), f(1).lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        Choice7<Byte, Short, Integer, Long, Float, Double, Boolean> choice =
+                Choice7.<Byte, Short, Integer, Long, Float, Double>pureChoice().apply(true);
+        assertEquals(g(true), choice);
     }
 }

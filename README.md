@@ -1,8 +1,10 @@
 λ
 ======
 [![Build Status](https://travis-ci.com/palatable/lambda.svg?branch=master)](https://travis-ci.com/palatable/lambda)
+[![Actions Status](https://github.com/palatable/lambda/workflows/Java%20CI/badge.svg)](https://github.com/palatable/lambda/actions)
 [![Lambda](https://img.shields.io/maven-central/v/com.jnape.palatable/lambda.svg)](http://search.maven.org/#search%7Cga%7C1%7Ccom.jnape.palatable.lambda)
 [![Join the chat at https://gitter.im/palatable/lambda](https://badges.gitter.im/palatable/lambda.svg)](https://gitter.im/palatable/lambda?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Floobits Status](https://floobits.com/jnape/lambda.svg)](https://floobits.com/jnape/lambda/redirect)
 
 Functional patterns for Java
 
@@ -27,7 +29,8 @@ Functional patterns for Java
    - [CoProducts](#coproducts)
      - [Either](#either)
  - [Lenses](#lenses)
- - [Notes](#notes) 
+ - [Notes](#notes)
+ - [Community](#community)
  - [License](#license)
 
 <a name="background">Background</a>
@@ -58,14 +61,14 @@ Add the following dependency to your:
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>4.0.0</version>
+    <version>5.1.0</version>
 </dependency>
 ```
 
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
 
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '4.0.0'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '5.1.0'
 ```
 
 <a name="examples">Examples</a>
@@ -73,22 +76,22 @@ compile group: 'com.jnape.palatable', name: 'lambda', version: '4.0.0'
 
 First, the obligatory `map`/`filter`/`reduce` example:
 ```Java
-Integer sumOfEvenIncrements =
+Maybe<Integer> sumOfEvenIncrements =
           reduceLeft((x, y) -> x + y,
               filter(x -> x % 2 == 0,
                   map(x -> x + 1, asList(1, 2, 3, 4, 5))));
-//-> 12
+//-> Just 12
 ```
 
 Every function in lambda is [curried](https://www.wikiwand.com/en/Currying), so we could have also done this:
 ```Java
-Fn1<Iterable<Integer>, Integer> sumOfEvenIncrementsFn =
+Fn1<Iterable<Integer>, Maybe<Integer>> sumOfEvenIncrementsFn =
           map((Integer x) -> x + 1)
-          .andThen(filter(x -> x % 2 == 0))
-          .andThen(reduceLeft((x, y) -> x + y));
+          .fmap(filter(x -> x % 2 == 0))
+          .fmap(reduceLeft((x, y) -> x + y));
 
-Integer sumOfEvenIncrements = sumOfEvenIncrementsFn.apply(asList(1, 2, 3, 4, 5));
-//-> 12
+Maybe<Integer> sumOfEvenIncrements = sumOfEvenIncrementsFn.apply(asList(1, 2, 3, 4, 5));
+//-> Just 12
 ```
 
 How about the positive squares below 100:
@@ -104,7 +107,7 @@ We could have also used `unfoldr`:
 ```Java
 Iterable<Integer> positiveSquaresBelow100 = unfoldr(x -> {
               int square = x * x;
-              return square < 100 ? Optional.of(tuple(square, x + 1)) : Optional.empty();
+              return square < 100 ? Maybe.just(tuple(square, x + 1)) : Maybe.nothing();
           }, 1);
 //-> [1, 4, 9, 16, 25, 36, 49, 64, 81]
 ```
@@ -114,7 +117,7 @@ What if we want the cross product of a domain and codomain:
 ```Java
 Iterable<Tuple2<Integer, String>> crossProduct =
           take(10, cartesianProduct(asList(1, 2, 3), asList("a", "b", "c")));
-//-> (1,"a"), (1,"b"), (1,"c"), (2,"a"), (2,"b"), (2,"c"), (3,"a"), (3,"b"), (3,"c")
+//-> [(1,"a"), (1,"b"), (1,"c"), (2,"a"), (2,"b"), (2,"c"), (3,"a"), (3,"b"), (3,"c")]
 ```
 
 Let's compose two functions:
@@ -123,9 +126,9 @@ Let's compose two functions:
 Fn1<Integer, Integer> add = x -> x + 1;
 Fn1<Integer, Integer> subtract = x -> x -1;
 
-Fn1<Integer, Integer> noOp = add.andThen(subtract);
+Fn1<Integer, Integer> noOp = add.fmap(subtract);
 // same as
-Fn1<Integer, Integer> alsoNoOp = subtract.compose(add);
+Fn1<Integer, Integer> alsoNoOp = subtract.contraMap(add);
 ```
 
 And partially apply some:
@@ -142,7 +145,7 @@ And have fun with 3s:
 
 ```Java
 Iterable<Iterable<Integer>> multiplesOf3InGroupsOf3 =
-          take(3, inGroupsOf(3, unfoldr(x -> Optional.of(tuple(x * 3, x + 1)), 1)));
+          take(3, inGroupsOf(3, unfoldr(x -> Maybe.just(tuple(x * 3, x + 1)), 1)));
 //-> [[3, 6, 9], [12, 15, 18], [21, 24, 27]]
 ```
 
@@ -174,7 +177,7 @@ Check out the [semigroup](https://palatable.github.io/lambda/javadoc/com/jnape/p
 
 ```Java
 Monoid<Integer> multiply = monoid((x, y) -> x * y, 1);
-multiple.reduceLeft(emptyList()); //-> 1
+multiply.reduceLeft(emptyList()); //-> 1
 multiply.reduceLeft(asList(1, 2, 3)); //-> 6
 multiply.foldMap(Integer::parseInt, asList("1", "2", "3")); //-> also 6
 ```
@@ -736,6 +739,13 @@ Check out the tests or the [javadoc](http://palatable.github.io/lambda/javadoc/)
 Wherever possible, _lambda_ maintains interface compatibility with similar, familiar core Java types. Some examples of where this works well is with both `Fn1` and `Predicate`, which extend `j.u.f.Function` and `j.u.f.Predicate`, respectively. In these examples, they also override any implemented methods to return their _lambda_-specific counterparts (`Fn1.compose` returning `Fn1` instead of `j.u.f.Function` as an example).
 
 Unfortunately, due to Java's type hierarchy and inheritance inconsistencies, this is not always possible. One surprising example of this is how `Fn1` extends `j.u.f.Function`, but `Fn2` does not extend `j.u.f.BiFunction`. This is because `j.u.f.BiFunction` itself does not extend `j.u.f.Function`, but it does define methods that collide with `j.u.f.Function`. For this reason, both `Fn1` and `Fn2` cannot extend their Java counterparts without sacrificing their own inheritance hierarchy. These types of asymmetries are, unfortunately, not uncommon; however, wherever these situations arise, measures are taken to attempt to ease the transition in and out of core Java types (in the case of `Fn2`, a supplemental `#toBiFunction` method is added). I do not take these inconveniences for granted, and I'm regularly looking for ways to minimize the negative impact of this as much as possible. Suggestions and use cases that highlight particular pain points here are particularly appreciated.
+
+<a name="community">Community</a>
+-----
+There are some open-sourced community projects that depend on _lambda_ for their own functionality: these projects are listed below (note that these projects are _not_ affiliated with lambda, and have their own maintainers). If you use _lambda_ in your own open-sourced project, feel free to create an issue and I'll be happy to review the project and add it to this section!
+
+- [Enhanced Iterables](https://github.com/kschuetz/enhanced-iterables) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
+- [Collection Views](https://github.com/kschuetz/collection-views) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
 
 <a name="license">License</a>
 -------

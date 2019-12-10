@@ -40,10 +40,18 @@ public class HMapTest {
     }
 
     @Test
+    public void isEmpty() {
+        assertTrue(emptyHMap().isEmpty());
+        assertFalse(singletonHMap(typeSafeKey(), "foo").isEmpty());
+    }
+
+    @Test
     public void storesTypeSafeKeyBaseValue() {
         TypeSafeKey.Simple<String> stringKey = typeSafeKey();
-        TypeSafeKey<String, Long> longKey = stringKey.andThen(simpleIso(Long::parseLong, String::valueOf));
-        TypeSafeKey<String, BigInteger> bigIntegerKey = longKey.andThen(simpleIso(BigInteger::valueOf, BigInteger::longValue));
+        TypeSafeKey<String, Long> longKey = stringKey.andThen(simpleIso(Long::parseLong,
+                                                                        String::valueOf));
+        TypeSafeKey<String, BigInteger> bigIntegerKey = longKey.andThen(simpleIso(BigInteger::valueOf,
+                                                                                  BigInteger::longValue));
 
         HMap hMap = singletonHMap(stringKey, "1");
         assertEquals(just("1"), hMap.get(stringKey));
@@ -54,7 +62,8 @@ public class HMapTest {
 
         assertEquals(emptyHMap().put(longKey, 1L).get(longKey), emptyHMap().put(stringKey, "1").get(longKey));
         assertEquals(emptyHMap().put(stringKey, "1").get(stringKey), emptyHMap().put(longKey, 1L).get(stringKey));
-        assertEquals(emptyHMap().put(stringKey, "1").get(stringKey), emptyHMap().put(bigIntegerKey, ONE).get(stringKey));
+        assertEquals(emptyHMap().put(stringKey, "1").get(stringKey),
+                     emptyHMap().put(bigIntegerKey, ONE).get(stringKey));
 
         assertEquals(singletonHMap(stringKey, "1"), singletonHMap(longKey, 1L));
         assertEquals(singletonHMap(stringKey, "1"), singletonHMap(bigIntegerKey, ONE));
@@ -82,9 +91,9 @@ public class HMapTest {
 
     @Test
     public void putAll() {
-        TypeSafeKey<String, String> stringKey1 = typeSafeKey();
-        TypeSafeKey<String, String> stringKey2 = typeSafeKey();
-        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
+        TypeSafeKey<String, String>   stringKey1 = typeSafeKey();
+        TypeSafeKey<String, String>   stringKey2 = typeSafeKey();
+        TypeSafeKey<Integer, Integer> intKey     = typeSafeKey();
 
         HMap left = hMap(stringKey1, "string value",
                          intKey, 1);
@@ -132,9 +141,9 @@ public class HMapTest {
 
     @Test
     public void containsKey() {
-        TypeSafeKey<String, String> stringKey1 = typeSafeKey();
-        TypeSafeKey<String, String> stringKey2 = typeSafeKey();
-        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
+        TypeSafeKey<String, String>   stringKey1 = typeSafeKey();
+        TypeSafeKey<String, String>   stringKey2 = typeSafeKey();
+        TypeSafeKey<Integer, Integer> intKey     = typeSafeKey();
 
         HMap hMap = singletonHMap(stringKey1, "string");
 
@@ -158,8 +167,8 @@ public class HMapTest {
     @Test
     @SuppressWarnings("serial")
     public void toMap() {
-        TypeSafeKey<String, String> stringKey = typeSafeKey();
-        TypeSafeKey<Integer, Integer> intKey = typeSafeKey();
+        TypeSafeKey<String, String>   stringKey = typeSafeKey();
+        TypeSafeKey<Integer, Integer> intKey    = typeSafeKey();
 
         assertEquals(new HashMap<TypeSafeKey<?, ?>, Object>() {{
             put(stringKey, "string");
@@ -192,14 +201,14 @@ public class HMapTest {
 
     @Test
     public void convenienceStaticFactoryMethods() {
-        TypeSafeKey.Simple<String> stringKey = typeSafeKey();
-        TypeSafeKey.Simple<Integer> intKey = typeSafeKey();
-        TypeSafeKey.Simple<Float> floatKey = typeSafeKey();
-        TypeSafeKey.Simple<Byte> byteKey = typeSafeKey();
-        TypeSafeKey.Simple<Short> shortKey = typeSafeKey();
-        TypeSafeKey.Simple<Long> longKey = typeSafeKey();
-        TypeSafeKey.Simple<Double> doubleKey = typeSafeKey();
-        TypeSafeKey.Simple<Character> charKey = typeSafeKey();
+        TypeSafeKey.Simple<String>    stringKey = typeSafeKey();
+        TypeSafeKey.Simple<Integer>   intKey    = typeSafeKey();
+        TypeSafeKey.Simple<Float>     floatKey  = typeSafeKey();
+        TypeSafeKey.Simple<Byte>      byteKey   = typeSafeKey();
+        TypeSafeKey.Simple<Short>     shortKey  = typeSafeKey();
+        TypeSafeKey.Simple<Long>      longKey   = typeSafeKey();
+        TypeSafeKey.Simple<Double>    doubleKey = typeSafeKey();
+        TypeSafeKey.Simple<Character> charKey   = typeSafeKey();
 
         HMap m1 = emptyHMap().put(stringKey, "string value");
         HMap m2 = m1.put(intKey, 1);

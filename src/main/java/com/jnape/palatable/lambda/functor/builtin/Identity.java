@@ -2,20 +2,24 @@ package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.comonad.Comonad;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 
 /**
  * A functor over some value of type <code>A</code> that can be mapped over and retrieved later.
  *
  * @param <A> the value type
  */
-public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, Identity<?>>, Comonad<A, Identity<?>> {
+public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<A, Identity<?>>, Comonad<A, Identity<?>> {
 
     private final A a;
 
@@ -61,7 +65,7 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
      */
     @Override
     public <B> Identity<B> fmap(Fn1<? super A, ? extends B> fn) {
-        return Monad.super.<B>fmap(fn).coerce();
+        return MonadRec.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -86,7 +90,7 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
     @Override
     public <B> Lazy<Identity<B>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super A, ? extends B>, Identity<?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, Identity<?>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<B, Identity<?>>::coerce);
     }
 
     /**
@@ -94,7 +98,7 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
      */
     @Override
     public <B> Identity<B> discardL(Applicative<B, Identity<?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -102,7 +106,7 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
      */
     @Override
     public <B> Identity<A> discardR(Applicative<B, Identity<?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -114,6 +118,15 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends Applicative<B, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return (AppTrav) fn.apply(runIdentity()).fmap(Identity::new);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Identity<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Identity<?>>> fn) {
+        return new Identity<>(trampoline(a -> fn.apply(a).<Identity<RecursiveResult<A, B>>>coerce().runIdentity(),
+                runIdentity()));
     }
 
     @Override
@@ -131,5 +144,14 @@ public final class Identity<A> implements Monad<A, Identity<?>>, Traversable<A, 
         return "Identity{" +
                 "a=" + a +
                 '}';
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Identity}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<Identity<?>> pureIdentity() {
+        return Identity::new;
     }
 }

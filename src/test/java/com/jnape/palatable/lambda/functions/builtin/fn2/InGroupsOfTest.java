@@ -16,7 +16,6 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
-@SuppressWarnings("unchecked")
 @RunWith(Traits.class)
 public class InGroupsOfTest {
 
@@ -27,15 +26,15 @@ public class InGroupsOfTest {
 
     @Test
     public void evenlyDistributesGroupedElementsOverIterable() {
-        Iterable<Integer> oneThroughSix = asList(1, 2, 3, 4, 5, 6);
-        Iterable<Iterable<Integer>> groups = inGroupsOf(2, oneThroughSix);
+        Iterable<Integer>           oneThroughSix = asList(1, 2, 3, 4, 5, 6);
+        Iterable<Iterable<Integer>> groups        = inGroupsOf(2, oneThroughSix);
         assertThat(groups, iterates(asList(1, 2), asList(3, 4), asList(5, 6)));
     }
 
     @Test
     public void lastGroupIsUnfinishedIfIterableSizeNotEvenlyDivisibleByK() {
-        Iterable<Integer> oneThroughFive = asList(1, 2, 3, 4, 5);
-        Iterable<Iterable<Integer>> groups = inGroupsOf(2, oneThroughFive);
+        Iterable<Integer>           oneThroughFive = asList(1, 2, 3, 4, 5);
+        Iterable<Iterable<Integer>> groups         = inGroupsOf(2, oneThroughFive);
         assertThat(groups, iterates(asList(1, 2), asList(3, 4), singletonList(5)));
     }
 }

@@ -45,8 +45,8 @@ public class SlideTest {
 
     @Test
     public void stackSafety() {
-        Integer stackBlowingNumber = 50000;
-        Iterable<Iterable<Integer>> xss = slide(2, take(stackBlowingNumber, iterate(x -> x + 1, 1)));
+        int                         stackBlowingNumber = 50_000;
+        Iterable<Iterable<Integer>> xss                = slide(2, take(stackBlowingNumber, iterate(x -> x + 1, 1)));
         assertThat(drop(stackBlowingNumber - 2, xss), iterates(asList(49999, 50000)));
     }
 }

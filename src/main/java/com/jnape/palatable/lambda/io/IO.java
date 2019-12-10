@@ -7,18 +7,19 @@ import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.LazyRec;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadError;
+import com.jnape.palatable.lambda.monad.MonadRec;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
-import static com.jnape.palatable.lambda.adt.Try.failure;
-import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
@@ -39,7 +40,7 @@ import static java.util.concurrent.ForkJoinPool.commonPool;
  *
  * @param <A> the result type
  */
-public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A, IO<?>> {
+public abstract class IO<A> implements MonadRec<A, IO<?>>, MonadError<Throwable, A, IO<?>> {
 
     private IO() {
     }
@@ -178,6 +179,16 @@ public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A,
      * {@inheritDoc}
      */
     @Override
+    public <B> IO<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, IO<?>>> fn) {
+        return flatMap(a -> fn.apply(a).<IO<RecursiveResult<A, B>>>coerce().flatMap(aOrB -> aOrB.match(
+                a_ -> io(a_).trampolineM(fn),
+                IO::io)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public final IO<A> throwError(Throwable throwable) {
         return IO.throwing(throwable);
     }
@@ -190,28 +201,17 @@ public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A,
         return new IO<A>() {
             @Override
             public A unsafePerformIO() {
-                return trying(fn0(IO.this::unsafePerformIO))
-                        .recover(t -> trying(fn0(recoveryFn.apply(t).<IO<A>>coerce()::unsafePerformIO))
-                                .fmap(Try::success)
-                                .recover(t2 -> {
-                                    t.addSuppressed(t2);
-                                    return failure(t);
-                                })
-                                .orThrow());
+                return Try.trying(IO.this::unsafePerformIO)
+                        .catchError(t -> Try.trying(recoveryFn.apply(t).<IO<A>>coerce()::unsafePerformIO))
+                        .orThrow();
             }
 
             @Override
             public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
                 return IO.this.unsafePerformAsyncIO(executor)
-                        .thenApply(CompletableFuture::completedFuture)
-                        .exceptionally(t -> recoveryFn.apply(t).<IO<A>>coerce().unsafePerformAsyncIO(executor)
-                                .thenApply(CompletableFuture::completedFuture)
-                                .exceptionally(t2 -> {
-                                    t.addSuppressed(t2);
-                                    return new CompletableFuture<A>() {{
-                                        completeExceptionally(t);
-                                    }};
-                                }).thenCompose(f -> f))
+                        .handle((a, t) -> t == null
+                                          ? completedFuture(a)
+                                          : recoveryFn.apply(t).<IO<A>>coerce().unsafePerformAsyncIO(executor))
                         .thenCompose(f -> f);
             }
         };
@@ -298,6 +298,35 @@ public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A,
     }
 
     /**
+     * Given an {@link IO}, return an {@link IO} that wraps it, caches its first successful result, and guarantees that
+     * no subsequent interactions will happen with it afterwards, returning the cached result thereafter. Note that if
+     * the underlying {@link IO} throws, the failure will not be cached, so subsequent interactions with the memoized
+     * {@link IO} will again call through to the delegate until it completes normally.
+     *
+     * @param io  the delegate {@link IO}
+     * @param <A> the return type
+     * @return the memoized {@link IO}
+     */
+    public static <A> IO<A> memoize(IO<A> io) {
+        class Ref {
+            A       value;
+            boolean computed;
+        }
+        Ref ref = new Ref();
+        return join(io(() -> {
+            if (!ref.computed) {
+                return monitorSync(ref, io(() -> {
+                    if (!ref.computed) {
+                        ref.value = io.unsafePerformIO();
+                        ref.computed = true;
+                    }
+                })).flatMap(constantly(io(() -> ref.value)));
+            }
+            return io(ref.value);
+        }));
+    }
+
+    /**
      * Static factory method for creating an {@link IO} that just returns <code>a</code> when performed.
      *
      * @param a   the result
@@ -376,6 +405,15 @@ public abstract class IO<A> implements Monad<A, IO<?>>, MonadError<Throwable, A,
                 return supplier.apply();
             }
         };
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link IO}.
+     *
+     * @return the {@link Pure} instance
+     */
+    public static Pure<IO<?>> pureIO() {
+        return IO::io;
     }
 
     private static final class Compose<A> extends IO<A> {

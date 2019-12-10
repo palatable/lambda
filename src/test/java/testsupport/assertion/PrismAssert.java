@@ -42,7 +42,8 @@ public final class PrismAssert {
                                    falsify("A non-match result can always be converted back to an input",
                                            (s, b) -> new PrismResult<>(matching(prism, s).projectA().fmap(matching(prism))),
                                            (s, b) -> new PrismResult<>(just(left(s))), cases)))
-                .peek(failures -> IO.throwing(new AssertionError("Lens law failures\n\n" + failures)));
+                .match(IO::io, failures -> IO.throwing(new AssertionError("Lens law failures\n\n" + failures)))
+                .unsafePerformIO();
     }
 
     private static <S, A, X> Maybe<String> falsify(String label, Fn2<S, A, X> l, Fn2<S, A, X> r,

@@ -11,9 +11,16 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.adt.hlist.Tuple6.pureTuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -30,7 +37,13 @@ public class Tuple6Test {
         tuple6 = new Tuple6<>(2.0f, new Tuple5<>(1, new Tuple4<>("2", new Tuple3<>('3', new Tuple2<>(false, new SingletonHList<>(5L))))));
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({
+            FunctorLaws.class,
+            ApplicativeLaws.class,
+            MonadLaws.class,
+            MonadRecLaws.class,
+            BifunctorLaws.class,
+            TraversableLaws.class})
     public Tuple6<?, ?, ?, ?, ?, ?> testSubject() {
         return tuple("one", 2, 3d, 4f, '5', (byte) 6);
     }
@@ -97,7 +110,7 @@ public class Tuple6Test {
                 tuple("foo", 1, 2, 3, 4, 5);
         Tuple6<String, Integer, Integer, Integer, Integer, Fn1<? super Integer, ? extends Integer>> b =
                 tuple("bar", 2, 3, 4, 5, x -> x + 1);
-        assertEquals(tuple("bar", 2, 3, 4, 5, 6), a.zip(b));
+        assertEquals(tuple("foo", 1, 2, 3, 4, 6), a.zip(b));
     }
 
     @Test
@@ -105,5 +118,18 @@ public class Tuple6Test {
         Tuple6<String, Integer, Integer, Integer, Integer, Integer>               a = tuple("foo", 1, 2, 3, 4, 5);
         Fn1<Integer, Tuple6<String, Integer, Integer, Integer, Integer, Integer>> b = x -> tuple("bar", 2, 3, 4, 5, x + 1);
         assertEquals(tuple("foo", 1, 2, 3, 4, 6), a.flatMap(b));
+    }
+
+    @Test
+    public void fromIterable() {
+        assertEquals(nothing(), Tuple6.fromIterable(emptyList()));
+        assertEquals(nothing(), Tuple6.fromIterable(singletonList(1)));
+        assertEquals(just(tuple(1, 1, 1, 1, 1, 1)), Tuple6.fromIterable(repeat(1)));
+    }
+
+    @Test
+    public void staticPure() {
+        Tuple6<Integer, String, Character, Boolean, Float, Byte> tuple = pureTuple(1, "2", '3', true, 5f).apply((byte) 6);
+        assertEquals(tuple(1, "2", '3', true, 5f, (byte) 6), tuple);
     }
 }

@@ -5,14 +5,16 @@ import org.junit.Test;
 
 import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.monoid.builtin.RunAll.runAll;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static testsupport.matchers.IOMatcher.yieldsValue;
 
 public class RunAllTest {
 
     @Test
     public void monoid() {
-        Monoid<Integer> add = Monoid.monoid((x, y) -> x + y, 0);
-        assertEquals((Integer) 3, runAll(add).apply(io(1), io(2)).unsafePerformIO());
-        assertEquals((Integer) 0, runAll(add).identity().unsafePerformIO());
+        Monoid<Integer> add = Monoid.monoid(Integer::sum, 0);
+        assertThat(runAll(add).apply(io(1), io(2)), yieldsValue(equalTo(3)));
+        assertThat(runAll(add).identity(), yieldsValue(equalTo(0)));
     }
 }

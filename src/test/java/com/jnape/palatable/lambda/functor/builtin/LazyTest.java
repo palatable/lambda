@@ -5,26 +5,29 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.EquatableM;
 import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.pureLazy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
+import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class LazyTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class})
-    public EquatableM<Lazy<?>, Integer> testSubject() {
-        return new EquatableM<>(lazy(0), Lazy::value);
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
+    public Equivalence<Lazy<Integer>> testSubject() {
+        return equivalence(lazy(0), Lazy::value);
     }
 
     @Test
@@ -62,5 +65,11 @@ public class LazyTest {
                                                        : lazy(x));
                          }
                      }.apply(lazy(0)).value());
+    }
+
+    @Test
+    public void staticPure() {
+        Lazy<Integer> lazy = pureLazy().apply(1);
+        assertEquals(lazy(1), lazy);
     }
 }

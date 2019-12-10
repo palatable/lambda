@@ -27,7 +27,7 @@ public class AndTest {
     @Test(timeout = 500)
     public void shortCircuiting() {
         Iterable<Boolean> bools = cons(false, repeat(true));
-        And and = and();
+        And               and   = and();
 
         assertEquals(false, and.foldLeft(false, bools));
         assertEquals(false, and.foldLeft(true, bools));

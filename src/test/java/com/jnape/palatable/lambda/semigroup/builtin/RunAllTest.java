@@ -1,17 +1,17 @@
 package com.jnape.palatable.lambda.semigroup.builtin;
 
-import com.jnape.palatable.lambda.semigroup.Semigroup;
 import org.junit.Test;
 
 import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.semigroup.builtin.RunAll.runAll;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static testsupport.matchers.IOMatcher.yieldsValue;
 
 public class RunAllTest {
 
     @Test
     public void semigroup() {
-        Semigroup<Integer> add = (x, y) -> x + y;
-        assertEquals((Integer) 3, runAll(add).apply(io(1), io(2)).unsafePerformIO());
+        assertThat(runAll(Integer::sum).apply(io(1), io(2)), yieldsValue(equalTo(3)));
     }
 }

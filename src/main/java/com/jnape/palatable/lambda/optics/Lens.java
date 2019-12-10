@@ -4,13 +4,18 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Both;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.Profunctor;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.Fn1.fn1;
+import static com.jnape.palatable.lambda.functions.Fn2.curried;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.optics.Iso.iso;
 import static com.jnape.palatable.lambda.optics.Lens.Simple.adapt;
@@ -142,7 +147,7 @@ import static com.jnape.palatable.lambda.optics.functions.View.view;
 @FunctionalInterface
 public interface Lens<S, T, A, B> extends
         Optic<Cartesian<?, ?, ?>, Functor<?, ?>, S, T, A, B>,
-        Monad<T, Lens<S, ?, A, B>>,
+        MonadRec<T, Lens<S, ?, A, B>>,
         Profunctor<S, T, Lens<?, ?, A, B>> {
 
     /**
@@ -150,7 +155,7 @@ public interface Lens<S, T, A, B> extends
      */
     @Override
     default <U> Lens<S, U, A, B> fmap(Fn1<? super T, ? extends U> fn) {
-        return Monad.super.<U>fmap(fn).coerce();
+        return MonadRec.super.<U>fmap(fn).coerce();
     }
 
     /**
@@ -166,7 +171,7 @@ public interface Lens<S, T, A, B> extends
      */
     @Override
     default <U> Lens<S, U, A, B> zip(Applicative<Fn1<? super T, ? extends U>, Lens<S, ?, A, B>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -174,7 +179,7 @@ public interface Lens<S, T, A, B> extends
      */
     @Override
     default <U> Lens<S, U, A, B> discardL(Applicative<U, Lens<S, ?, A, B>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -182,7 +187,7 @@ public interface Lens<S, T, A, B> extends
      */
     @Override
     default <U> Lens<S, T, A, B> discardR(Applicative<U, Lens<S, ?, A, B>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -192,6 +197,18 @@ public interface Lens<S, T, A, B> extends
     default <U> Lens<S, U, A, B> flatMap(Fn1<? super T, ? extends Monad<U, Lens<S, ?, A, B>>> f) {
 
         return lens(view(this), (s, b) -> set(f.apply(set(this, b, s)).<Lens<S, U, A, B>>coerce(), b, s));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <U> Lens<S, U, A, B> trampolineM(
+            Fn1<? super T, ? extends MonadRec<RecursiveResult<T, U>, Lens<S, ?, A, B>>> fn) {
+        return lens(view(this),
+                    curried(set(this).flip().flatMap(bt -> fn1(s -> bt
+                            .trampolineM(t -> set(fn.apply(t).<Lens<S, RecursiveResult<T, U>, A, B>>coerce())
+                                    .flip().apply(s))))));
     }
 
     /**
@@ -375,6 +392,24 @@ public interface Lens<S, T, A, B> extends
      */
     static <S, A, B> Lens.Simple<S, Tuple2<A, B>> both(Lens.Simple<S, A> f, Lens.Simple<S, B> g) {
         return adapt(both((Lens<S, S, A, A>) f, g));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Lens}.
+     *
+     * @param sa  the getting function
+     * @param <S> the type of the "larger" value for reading
+     * @param <A> the type of the "smaller" value that is read
+     * @param <B> the type of the "smaller" update value
+     * @return the {@link Pure} instance
+     */
+    static <S, A, B> Pure<Lens<S, ?, A, B>> pureLens(Fn1<? super S, ? extends A> sa) {
+        return new Pure<Lens<S, ?, A, B>>() {
+            @Override
+            public <T> Lens<S, T, A, B> checkedApply(T t) {
+                return lens(sa, (s, b) -> t);
+            }
+        };
     }
 
     /**

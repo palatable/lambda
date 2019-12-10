@@ -36,7 +36,7 @@ public class PartitionTest {
 
     @Test
     public void partitionsIterableIntoAsAndBs() {
-        Iterable<String> strings = asList("one", "two", "three", "four", "five");
+        Iterable<String>                            strings   = asList("one", "two", "three", "four", "five");
         Tuple2<Iterable<String>, Iterable<Integer>> partition = partition(s -> s.length() % 2 == 1 ? a(s) : b(s.length()), strings);
 
         assertThat(partition._1(), iterates("one", "two", "three"));
@@ -45,8 +45,8 @@ public class PartitionTest {
 
     @Test
     public void infiniteListSupport() {
-        Iterable<CoProduct2<String, Integer, ?>> coproducts = cycle(a("left"), b(1));
-        Tuple2<Iterable<String>, Iterable<Integer>> partition = partition(id(), coproducts);
+        Iterable<CoProduct2<String, Integer, ?>>    coproducts = cycle(a("left"), b(1));
+        Tuple2<Iterable<String>, Iterable<Integer>> partition  = partition(id(), coproducts);
 
         assertThat(take(3, partition._1()), iterates("left", "left", "left"));
         assertThat(take(3, partition._2()), iterates(1, 1, 1));

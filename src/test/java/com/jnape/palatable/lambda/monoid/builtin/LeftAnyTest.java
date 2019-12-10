@@ -13,7 +13,7 @@ public class LeftAnyTest {
     @Test
     public void monoid() {
         LeftAny<String, Integer> leftAny = leftAny();
-        Monoid<String> join = Monoid.monoid((x, y) -> x + y, "");
+        Monoid<String>           join    = Monoid.monoid((x, y) -> x + y, "");
 
         assertEquals(left(""), leftAny.apply(join).identity());
         assertEquals(left("foo"), leftAny.apply(join).apply(left("foo"), right(1)));

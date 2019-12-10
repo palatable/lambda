@@ -2,9 +2,11 @@ package com.jnape.palatable.lambda.functions;
 
 import org.junit.Test;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -51,5 +53,11 @@ public class Fn2Test {
     public void fromBiFunction() {
         BiFunction<String, String, String> biFunction = String::format;
         assertEquals("foo bar", Fn2.fromBiFunction(biFunction).apply("foo %s", "bar"));
+    }
+
+    @Test
+    public void curry() {
+        Fn1<Map.Entry<String, String>, String> uncurried = into((a, b) -> a + b);
+        assertEquals("foobar", Fn2.curry(uncurried).apply("foo", "bar"));
     }
 }

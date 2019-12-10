@@ -18,7 +18,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class MergeMapsTest {
-    private static final Semigroup<Integer> ADD = (x, y) -> x + y;
+    private static final Semigroup<Integer> ADD = Integer::sum;
+
     private Monoid<Map<String, Integer>> merge;
 
     @Before
@@ -36,8 +37,8 @@ public class MergeMapsTest {
         assertEquals(singletonMap("foo", 1), merge.apply(emptyMap(), singletonMap("foo", 1)));
         assertEquals(singletonMap("foo", 1), merge.apply(singletonMap("foo", 1), emptyMap()));
         assertEquals(singletonMap("foo", 2),
-                merge.apply(singletonMap("foo", 1), singletonMap("foo", 1)));
+                     merge.apply(singletonMap("foo", 1), singletonMap("foo", 1)));
         assertEquals(toMap(HashMap::new, asList(tuple("foo", 1), tuple("bar", 1))),
-                merge.apply(singletonMap("foo", 1), singletonMap("bar", 1)));
+                     merge.apply(singletonMap("foo", 1), singletonMap("bar", 1)));
     }
 }

@@ -1,19 +1,26 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
 import com.jnape.palatable.lambda.adt.Unit;
-import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
-import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadReader;
+import com.jnape.palatable.lambda.monad.MonadRec;
+import com.jnape.palatable.lambda.monad.MonadWriter;
+import com.jnape.palatable.lambda.monad.transformer.builtin.StateT;
 
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.Fn1.fn1;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Both.both;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.stateT;
 
 /**
  * The state {@link Monad}, useful for iteratively building up state and state-contextualized result.
@@ -24,11 +31,14 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
  * @param <S> the state type
  * @param <A> the result type
  */
-public final class State<S, A> implements Monad<A, State<S, ?>> {
+public final class State<S, A> implements
+        MonadRec<A, State<S,?>>,
+        MonadReader<S, A, State<S, ?>>,
+        MonadWriter<S, A, State<S, ?>> {
 
-    private final Fn1<? super S, ? extends Tuple2<A, S>> stateFn;
+    private final StateT<S, Identity<?>, A> stateFn;
 
-    private State(Fn1<? super S, ? extends Tuple2<A, S>> stateFn) {
+    private State(StateT<S, Identity<?>, A> stateFn) {
         this.stateFn = stateFn;
     }
 
@@ -39,7 +49,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      * @return a {@link Tuple2} of the result and the final state.
      */
     public Tuple2<A, S> run(S s) {
-        return stateFn.apply(s).into(HList::tuple);
+        return stateFn.<Identity<Tuple2<A, S>>>runStateT(s).runIdentity();
     }
 
     /**
@@ -66,10 +76,10 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      * Map both the result and the final state to a new result and final state.
      *
      * @param fn  the mapping function
-     * @param <B> the potentially new final state type
+     * @param <B> the new state type
      * @return the mapped {@link State}
      */
-    public <B> State<S, B> mapState(Fn1<? super Tuple2<A, S>, ? extends Product2<B, S>> fn) {
+    public <B> State<S, B> mapState(Fn1<? super Tuple2<A, S>, ? extends Tuple2<B, S>> fn) {
         return state(s -> fn.apply(run(s)));
     }
 
@@ -81,6 +91,30 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     public State<S, A> withState(Fn1<? super S, ? extends S> fn) {
         return state(s -> run(fn.apply(s)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public State<S, A> local(Fn1<? super S, ? extends S> fn) {
+        return state(s -> run(fn.apply(s)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> State<S, Tuple2<A, B>> listens(Fn1<? super S, ? extends B> fn) {
+        return state(s -> run(s).biMapL(both(id(), constantly(fn.apply(s)))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public State<S, A> censor(Fn1<? super S, ? extends S> fn) {
+        return local(fn);
     }
 
     /**
@@ -104,7 +138,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     @Override
     public <B> State<S, B> fmap(Fn1<? super A, ? extends B> fn) {
-        return Monad.super.<B>fmap(fn).coerce();
+        return MonadRec.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -112,7 +146,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     @Override
     public <B> State<S, B> zip(Applicative<Fn1<? super A, ? extends B>, State<S, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -121,7 +155,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
     @Override
     public <B> Lazy<State<S, B>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super A, ? extends B>, State<S, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<B, State<S, ?>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<B, State<S, ?>>::coerce);
     }
 
     /**
@@ -129,7 +163,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     @Override
     public <B> State<S, A> discardR(Applicative<B, State<S, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -137,7 +171,17 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     @Override
     public <B> State<S, B> discardL(Applicative<B, State<S, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> State<S, B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, State<S, ?>>> fn) {
+        return state(fn1(this::run).fmap(trampoline(into((a, s) -> fn.apply(a)
+                .<State<S, RecursiveResult<A, B>>>coerce().run(s)
+                .into((aOrB, s_) -> aOrB.biMap(a_ -> tuple(a_, s_), b -> tuple(b, s_)))))));
     }
 
     /**
@@ -148,7 +192,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     @SuppressWarnings("RedundantTypeArguments")
     public static <A> State<A, A> get() {
-        return new State<>(Tuple2::<A>fill);
+        return state(Tuple2::<A>fill);
     }
 
     /**
@@ -160,7 +204,7 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      * @return the new {@link State} instance
      */
     public static <S> State<S, Unit> put(S s) {
-        return new State<>(constantly(tuple(UNIT, s)));
+        return modify(constantly(s));
     }
 
     /**
@@ -187,19 +231,6 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
     }
 
     /**
-     * Create a {@link State} from <code>stateFn</code>, a function that maps an initial state into a result and a final
-     * state.
-     *
-     * @param stateFn the state function
-     * @param <S>     the state type
-     * @param <A>     the result type
-     * @return the new {@link State} instance
-     */
-    public static <S, A> State<S, A> state(Fn1<? super S, ? extends Product2<A, S>> stateFn) {
-        return new State<>(stateFn.fmap(into(HList::tuple)));
-    }
-
-    /**
      * Create a {@link State} that returns <code>a</code> as its result and its initial state as its final state.
      *
      * @param a   the result
@@ -209,5 +240,33 @@ public final class State<S, A> implements Monad<A, State<S, ?>> {
      */
     public static <S, A> State<S, A> state(A a) {
         return gets(constantly(a));
+    }
+
+    /**
+     * Create a {@link State} from <code>stateFn</code>, a function that maps an initial state into a result and a final
+     * state.
+     *
+     * @param stateFn the state function
+     * @param <S>     the state type
+     * @param <A>     the result type
+     * @return the new {@link State} instance
+     */
+    public static <S, A> State<S, A> state(Fn1<? super S, ? extends Tuple2<A, S>> stateFn) {
+        return new State<>(stateT(s -> new Identity<>(stateFn.apply(s))));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link State}.
+     *
+     * @param <S> the state type
+     * @return the {@link Pure} instance
+     */
+    public static <S> Pure<State<S, ?>> pureState() {
+        return new Pure<State<S, ?>>() {
+            @Override
+            public <A> State<S, A> checkedApply(A a) throws Throwable {
+                return state(s -> tuple(a, s));
+            }
+        };
     }
 }

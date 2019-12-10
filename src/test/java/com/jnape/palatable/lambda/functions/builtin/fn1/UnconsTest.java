@@ -25,7 +25,7 @@ public class UnconsTest {
 
     @Test
     public void nonEmptyIterable() {
-        Iterable<Integer> numbers = asList(1, 2, 3);
+        Iterable<Integer>                  numbers     = asList(1, 2, 3);
         Tuple2<Integer, Iterable<Integer>> headAndTail = uncons(numbers).orElseThrow(AssertionError::new);
 
         assertEquals((Integer) 1, headAndTail._1());

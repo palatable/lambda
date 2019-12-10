@@ -4,10 +4,14 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.adt.coproduct.CoProduct3;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.recursion.Trampoline;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
@@ -15,6 +19,7 @@ import java.util.Objects;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Sequence.sequence;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -27,7 +32,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class These<A, B> implements
         CoProduct3<A, B, Tuple2<A, B>, These<A, B>>,
-        Monad<B, These<A, ?>>,
+        MonadRec<B, These<A, ?>>,
         Bifunctor<A, B, These<?, ?>>,
         Traversable<B, These<A, ?>> {
 
@@ -48,7 +53,24 @@ public abstract class These<A, B> implements
      */
     @Override
     public final <C> These<A, C> flatMap(Fn1<? super B, ? extends Monad<C, These<A, ?>>> f) {
-        return match(These::a, b -> f.apply(b).coerce(), into((a, b) -> f.apply(b).<These<A, C>>coerce().biMapL(constantly(a))));
+        return match(These::a,
+                     b -> f.apply(b).coerce(),
+                     into((a, b) -> f.apply(b)
+                             .<These<A, C>>coerce()
+                             .match(constantly(a(a)),
+                                    c -> both(a, c),
+                                    into((__, c) -> both(a, c)))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <C> These<A, C> trampolineM(
+            Fn1<? super B, ? extends MonadRec<RecursiveResult<B, C>, These<A, ?>>> fn) {
+        return flatMap(Trampoline.<B, These<A, C>>trampoline(
+                b -> sequence(fn.apply(b).<These<A, RecursiveResult<B, C>>>coerce(),
+                              RecursiveResult::terminate)));
     }
 
     /**
@@ -59,32 +81,32 @@ public abstract class These<A, B> implements
         return match(a -> both(a, c), b -> b(c), into((a, b) -> both(a, c)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    @SuppressWarnings("unchecked")
-    public <C, App extends Applicative<?, App>, TravB extends Traversable<C, These<A, ?>>,
-            AppTrav extends Applicative<TravB, App>>
-    AppTrav traverse(Fn1<? super B, ? extends Applicative<C, App>> fn, Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) a(a)),
-                     b -> fn.apply(b).fmap(this::pure).<TravB>fmap(Applicative::coerce).coerce(),
-                     into((a, b) -> fn.apply(b).fmap(c -> both(a, c)).<TravB>fmap(Applicative::coerce).coerce()));
+    public <C, App extends Applicative<?, App>, TravC extends Traversable<C, These<A, ?>>,
+            AppTrav extends Applicative<TravC, App>>
+    AppTrav traverse(Fn1<? super B, ? extends Applicative<C, App>> fn, Fn1<? super TravC, ? extends AppTrav> pure) {
+        return match(a -> pure.apply(These.<A, C>a(a).<TravC>coerce()),
+                     b -> fn.apply(b).fmap(this::pure).<TravC>fmap(Applicative::coerce).coerce(),
+                     into((a, b) -> fn.apply(b).fmap(c -> both(a, c)).<TravC>fmap(Applicative::coerce).coerce()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public final <Z> These<Z, B> biMapL(Fn1<? super A, ? extends Z> fn) {
-        return (These<Z, B>) Bifunctor.super.biMapL(fn);
+        return (These<Z, B>) Bifunctor.super.<Z>biMapL(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public final <C> These<A, C> biMapR(Fn1<? super B, ? extends C> fn) {
-        return (These<A, C>) Bifunctor.super.biMapR(fn);
+        return (These<A, C>) Bifunctor.super.<C>biMapR(fn);
     }
 
     /**
@@ -92,7 +114,7 @@ public abstract class These<A, B> implements
      */
     @Override
     public final <C> These<A, C> fmap(Fn1<? super B, ? extends C> fn) {
-        return Monad.super.<C>fmap(fn).coerce();
+        return MonadRec.super.<C>fmap(fn).coerce();
     }
 
     /**
@@ -100,14 +122,17 @@ public abstract class These<A, B> implements
      */
     @Override
     public final <C> These<A, C> zip(Applicative<Fn1<? super B, ? extends C>, These<A, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <C> Lazy<These<A, C>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super B, ? extends C>, These<A, ?>>> lazyAppFn) {
         return projectA().<Lazy<These<A, C>>>fmap(a -> lazy(a(a)))
-                .orElseGet(() -> Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, These<A, ?>>::coerce));
+                .orElseGet(() -> MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<C, These<A, ?>>::coerce));
     }
 
     /**
@@ -115,7 +140,7 @@ public abstract class These<A, B> implements
      */
     @Override
     public final <C> These<A, C> discardL(Applicative<C, These<A, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -123,7 +148,7 @@ public abstract class These<A, B> implements
      */
     @Override
     public final <C> These<A, B> discardR(Applicative<C, These<A, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -162,6 +187,16 @@ public abstract class These<A, B> implements
      */
     public static <A, B> These<A, B> both(A a, B b) {
         return new Both<>(tuple(a, b));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link These}.
+     *
+     * @param <A> the first possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A> Pure<These<A, ?>> pureThese() {
+        return These::b;
     }
 
     private static final class _A<A, B> extends These<A, B> {

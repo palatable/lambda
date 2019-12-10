@@ -12,7 +12,9 @@ import com.jnape.palatable.lambda.io.IO;
  *
  * @param <A>  the functor parameter type
  * @param <FA> the functor type
+ * @deprecated in favor of producing an {@link IO} from the given {@link Functor} and explicitly running it
  */
+@Deprecated
 public final class Peek<A, FA extends Functor<A, ?>> implements Fn2<Fn1<? super A, ? extends IO<?>>, FA, FA> {
     private static final Peek<?, ?> INSTANCE = new Peek<>();
 

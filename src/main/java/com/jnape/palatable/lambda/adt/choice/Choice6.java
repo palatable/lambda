@@ -6,15 +6,20 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct6;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple6;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into6.into6;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -31,7 +36,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Choice6<A, B, C, D, E, F> implements
         CoProduct6<A, B, C, D, E, F, Choice6<A, B, C, D, E, F>>,
-        Monad<F, Choice6<A, B, C, D, E, ?>>,
+        MonadRec<F, Choice6<A, B, C, D, E, ?>>,
         Bifunctor<E, F, Choice6<A, B, C, D, ?, ?>>,
         Traversable<F, Choice6<A, B, C, D, E, ?>> {
 
@@ -70,25 +75,23 @@ public abstract class Choice6<A, B, C, D, E, F> implements
      */
     @Override
     public <G> Choice6<A, B, C, D, E, G> fmap(Fn1<? super F, ? extends G> fn) {
-        return Monad.super.<G>fmap(fn).coerce();
+        return MonadRec.super.<G>fmap(fn).coerce();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <G> Choice6<A, B, C, D, G, F> biMapL(Fn1<? super E, ? extends G> fn) {
-        return (Choice6<A, B, C, D, G, F>) Bifunctor.super.biMapL(fn);
+        return (Choice6<A, B, C, D, G, F>) Bifunctor.super.<G>biMapL(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public <G> Choice6<A, B, C, D, E, G> biMapR(Fn1<? super F, ? extends G> fn) {
-        return (Choice6<A, B, C, D, E, G>) Bifunctor.super.biMapR(fn);
+        return (Choice6<A, B, C, D, E, G>) Bifunctor.super.<G>biMapR(fn);
     }
 
     /**
@@ -114,7 +117,7 @@ public abstract class Choice6<A, B, C, D, E, F> implements
     @Override
     public <G> Choice6<A, B, C, D, E, G> zip(
             Applicative<Fn1<? super F, ? extends G>, Choice6<A, B, C, D, E, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -136,7 +139,7 @@ public abstract class Choice6<A, B, C, D, E, F> implements
      */
     @Override
     public <G> Choice6<A, B, C, D, E, G> discardL(Applicative<G, Choice6<A, B, C, D, E, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -144,7 +147,7 @@ public abstract class Choice6<A, B, C, D, E, F> implements
      */
     @Override
     public <G> Choice6<A, B, C, D, E, F> discardR(Applicative<G, Choice6<A, B, C, D, E, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -159,17 +162,32 @@ public abstract class Choice6<A, B, C, D, E, F> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
+    public <G> Choice6<A, B, C, D, E, G> trampolineM(
+            Fn1<? super F, ? extends MonadRec<RecursiveResult<F, G>, Choice6<A, B, C, D, E, ?>>> fn) {
+        return flatMap(trampoline(f -> fn.apply(f).<Choice6<A, B, C, D, E, RecursiveResult<F, G>>>coerce().match(
+                a -> terminate(Choice6.a(a)),
+                b -> terminate(Choice6.b(b)),
+                c -> terminate(Choice6.c(c)),
+                d -> terminate(Choice6.d(d)),
+                e -> terminate(Choice6.e(e)),
+                fRec -> fRec.fmap(Choice6::f))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <G, App extends Applicative<?, App>, TravB extends Traversable<G, Choice6<A, B, C, D, E, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super F, ? extends Applicative<G, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>b(b)).coerce(),
-                     c -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>c(c)),
-                     d -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>d(d)),
-                     e -> pure.apply((TravB) Choice6.<A, B, C, D, E, G>e(e)),
+        return match(a -> pure.apply(Choice6.<A, B, C, D, E, G>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice6.<A, B, C, D, E, G>b(b).<TravB>coerce()),
+                     c -> pure.apply(Choice6.<A, B, C, D, E, G>c(c).<TravB>coerce()),
+                     d -> pure.apply(Choice6.<A, B, C, D, E, G>d(d).<TravB>coerce()),
+                     e -> pure.apply(Choice6.<A, B, C, D, E, G>e(e).<TravB>coerce()),
                      f -> fn.apply(f).<Choice6<A, B, C, D, E, G>>fmap(Choice6::f)
-                             .<TravB>fmap(Applicative::coerce).coerce());
+                             .<TravB>fmap(Applicative::coerce))
+                .coerce();
     }
 
     /**
@@ -266,6 +284,20 @@ public abstract class Choice6<A, B, C, D, E, F> implements
      */
     public static <A, B, C, D, E, F> Choice6<A, B, C, D, E, F> f(F f) {
         return new _F<>(f);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Choice6}.
+     *
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A, B, C, D, E> Pure<Choice6<A, B, C, D, E, ?>> pureChoice() {
+        return Choice6::f;
     }
 
     private static final class _A<A, B, C, D, E, F> extends Choice6<A, B, C, D, E, F> {

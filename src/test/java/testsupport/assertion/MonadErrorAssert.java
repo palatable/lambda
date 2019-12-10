@@ -5,45 +5,42 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.MonadError;
 import com.jnape.palatable.traitor.framework.Subjects;
-import testsupport.EquatableM;
+import testsupport.traits.Equivalence;
+
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static testsupport.traits.Equivalence.equivalence;
 
 public final class MonadErrorAssert {
 
     private MonadErrorAssert() {
     }
 
-    public static <E, A, M extends MonadError<E, ?, M>> void assertLaws(
-            Subjects<MonadError<E, A, M>> subjects,
+    public static <E, A, M extends MonadError<E, ?, M>, MA extends MonadError<E, A, M>> void assertLaws(
+            Subjects<MA> subjects,
             E e,
-            Fn1<? super E, ? extends MonadError<E, A, M>> recovery) {
+            Fn1<? super E, ? extends MA> recovery) {
+        subjects.forEach(subject -> throwCatch(equivalence(subject, id()), e, recovery)
+                .match(IO::io, failures -> IO.throwing(new AssertionError("MonadError law failures\n\n" + failures)))
+                .unsafePerformIO());
+    }
 
+    public static <E, A, M extends MonadError<E, ?, M>, MA extends MonadError<E, A, M>> void assertLawsEq(
+            Subjects<Equivalence<MA>> subjects,
+            E e,
+            Fn1<? super E, ? extends MA> recovery) {
         subjects.forEach(subject -> throwCatch(subject, e, recovery)
-                .peek(failures -> IO.throwing(new AssertionError("MonadError law failures\n\n" + failures))));
+                .match(IO::io, failures -> IO.throwing(new AssertionError("MonadError law failures\n\n" + failures)))
+                .unsafePerformIO());
     }
 
-    public static <E, A, M extends MonadError<E, ?, M>> void assertLawsEq(
-            Subjects<EquatableM<M, A>> subjects,
+    private static <E, A, M extends MonadError<E, ?, M>, MA extends MonadError<E, A, M>> Maybe<String> throwCatch(
+            Equivalence<MA> equivalence,
             E e,
-            Fn1<? super E, ? extends MonadError<E, A, M>> recovery) {
-        subjects.forEach(subject -> throwCatch(subject, e, recovery)
-                .peek(failures -> IO.throwing(new AssertionError("MonadError law failures\n\n" + failures))));
-    }
-
-    private static <E, A, M extends MonadError<E, ?, M>> Maybe<String> throwCatch(
-            MonadError<E, A, M> monadError,
-            E e,
-            Fn1<? super E, ? extends MonadError<E, A, M>> recovery) {
-        return throwCatch(new EquatableM<>(monadError, x -> x), e, recovery);
-    }
-
-    private static <E, A, M extends MonadError<E, ?, M>> Maybe<String> throwCatch(
-            EquatableM<M, A> equatable,
-            E e,
-            Fn1<? super E, ? extends MonadError<E, A, M>> recovery) {
-        EquatableM<M, A> eq = equatable.with(ma -> ma.<MonadError<E, A, M>>coerce().throwError(e).catchError(recovery));
-        return eq.equals(eq.swap(recovery.apply(e)))
+            Fn1<? super E, ? extends MA> recovery) {
+        return equivalence.invMap(ma -> ma.throwError(e).catchError(recovery).coerce())
+                       .equals(equivalence.swap(recovery.apply(e)))
                ? Maybe.nothing()
-               : Maybe.just("ThrowCatch failed: " + equatable + ".throwError(" + e + ")" +
+               : Maybe.just("ThrowCatch failed: " + equivalence + ".throwError(" + e + ")" +
                                     ".catchError(recoveryFn) /= recovery.apply(" + e + ")");
     }
 }

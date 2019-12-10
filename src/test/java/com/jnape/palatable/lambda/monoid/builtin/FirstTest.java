@@ -29,7 +29,7 @@ public class FirstTest {
     @Test(timeout = 500)
     public void shortCircuiting() {
         Iterable<Maybe<Integer>> maybeInts = repeat(just(1));
-        First<Integer> first = First.first();
+        First<Integer>           first     = First.first();
 
         assertEquals(just(1), first.foldLeft(nothing(), maybeInts));
         assertEquals(just(1), first.foldLeft(just(1), maybeInts));

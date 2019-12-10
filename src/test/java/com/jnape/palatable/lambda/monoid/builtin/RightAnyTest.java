@@ -13,7 +13,7 @@ public class RightAnyTest {
     @Test
     public void monoid() {
         RightAny<String, Integer> rightAny = rightAny();
-        Monoid<Integer> add = Monoid.monoid((x, y) -> x + y, 0);
+        Monoid<Integer>           add      = Monoid.monoid(Integer::sum, 0);
 
         assertEquals(right(0), rightAny.apply(add).identity());
         assertEquals(right(1), rightAny.apply(add).apply(right(1), left("foo")));

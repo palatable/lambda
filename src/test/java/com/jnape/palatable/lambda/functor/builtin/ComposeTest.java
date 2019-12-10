@@ -12,6 +12,9 @@ import testsupport.traits.FunctorLaws;
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.pureMaybe;
+import static com.jnape.palatable.lambda.functor.builtin.Compose.pureCompose;
+import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static org.junit.Assert.assertEquals;
 
@@ -37,5 +40,11 @@ public class ComposeTest {
                      new Compose<>(left("foo")).lazyZip(lazy(() -> {
                          throw new AssertionError();
                      })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        Compose<Identity<?>, Maybe<?>, Integer> compose = pureCompose(pureIdentity(), pureMaybe()).apply(1);
+        assertEquals(new Compose<>(new Identity<>(just(1))), compose);
     }
 }

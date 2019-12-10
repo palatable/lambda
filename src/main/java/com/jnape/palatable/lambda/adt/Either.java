@@ -5,22 +5,28 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct2;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
-import com.jnape.palatable.lambda.functions.builtin.fn2.Peek;
-import com.jnape.palatable.lambda.functions.builtin.fn2.Peek2;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functions.specialized.SideEffect;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
+import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadError;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
+import static com.jnape.palatable.lambda.io.IO.io;
 import static java.util.Arrays.asList;
 
 /**
@@ -34,6 +40,7 @@ import static java.util.Arrays.asList;
 public abstract class Either<L, R> implements
         CoProduct2<L, R, Either<L, R>>,
         MonadError<L, R, Either<L, ?>>,
+        MonadRec<R, Either<L, ?>>,
         Traversable<R, Either<L, ?>>,
         Bifunctor<L, R, Either<?, ?>> {
 
@@ -133,6 +140,16 @@ public abstract class Either<L, R> implements
         return match(Either::left, rightFn.fmap(Monad<R2, Either<L, ?>>::coerce));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Either<L, B> trampolineM(Fn1<? super R, ? extends MonadRec<RecursiveResult<R, B>, Either<L, ?>>> fn) {
+        return match(Either::left, trampoline(a -> fn.apply(a).<Either<L, RecursiveResult<R, B>>>coerce()
+                .match(l -> terminate(left(l)),
+                       aOrB -> aOrB.fmap(Either::right))));
+    }
+
     @Override
     public final Either<R, L> invert() {
         return match(Either::right, Either::left);
@@ -165,9 +182,13 @@ public abstract class Either<L, R> implements
      *
      * @param effect the effecting consumer
      * @return the Either, unaltered
+     * @deprecated in favor of {@link Either#match(Fn1, Fn1) matching} into an {@link IO} and explicitly running it
      */
+    @Deprecated
     public Either<L, R> peek(Fn1<? super R, ? extends IO<?>> effect) {
-        return Peek.peek(effect, this);
+        return match(l -> io(Either.<L, R>left(l)),
+                     r -> effect.apply(r).fmap(constantly(this)))
+                .unsafePerformIO();
     }
 
     /**
@@ -176,9 +197,11 @@ public abstract class Either<L, R> implements
      * @param leftEffect  the effecting consumer for left values
      * @param rightEffect the effecting consumer for right values
      * @return the Either, unaltered
+     * @deprecated in favor of {@link Either#match(Fn1, Fn1) matching} into an {@link IO} and explicitly running it
      */
+    @Deprecated
     public Either<L, R> peek(Fn1<? super L, ? extends IO<?>> leftEffect, Fn1<? super R, ? extends IO<?>> rightEffect) {
-        return Peek2.peek2(leftEffect, rightEffect, this);
+        return match(leftEffect, rightEffect).fmap(constantly(this)).unsafePerformIO();
     }
 
     /**
@@ -289,19 +312,21 @@ public abstract class Either<L, R> implements
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("RedundantTypeArguments")
     public Either<L, R> catchError(Fn1<? super L, ? extends Monad<R, Either<L, ?>>> recoveryFn) {
-        return match(recoveryFn.fmap(Monad::coerce), Either::right);
+        return match(recoveryFn.fmap(Monad<R, Either<L, ?>>::coerce), Either::right);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
     public final <R2, App extends Applicative<?, App>, TravB extends Traversable<R2, Either<L, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super R, ? extends Applicative<R2, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return (AppTrav) match(l -> pure.apply((TravB) left(l)), r -> fn.apply(r).fmap(Either::right));
+        return match(l -> pure.apply(Either.<L, R2>left(l).<TravB>coerce()),
+                     r -> fn.apply(r).<Either<L, R2>>fmap(Either::right).<TravB>fmap(Functor::coerce))
+                .coerce();
     }
 
     /**
@@ -401,6 +426,16 @@ public abstract class Either<L, R> implements
      */
     public static <L, R> Either<L, R> right(R r) {
         return new Right<>(r);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Either}.
+     *
+     * @param <L> the left type
+     * @return the {@link Pure} instance
+     */
+    public static <L> Pure<Either<L, ?>> pureEither() {
+        return Either::right;
     }
 
     private static final class Left<L, R> extends Either<L, R> {

@@ -6,15 +6,20 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct5;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple5;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into5.into5;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -30,7 +35,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Choice5<A, B, C, D, E> implements
         CoProduct5<A, B, C, D, E, Choice5<A, B, C, D, E>>,
-        Monad<E, Choice5<A, B, C, D, ?>>,
+        MonadRec<E, Choice5<A, B, C, D, ?>>,
         Bifunctor<D, E, Choice5<A, B, C, ?, ?>>,
         Traversable<E, Choice5<A, B, C, D, ?>> {
 
@@ -69,7 +74,7 @@ public abstract class Choice5<A, B, C, D, E> implements
      */
     @Override
     public <F> Choice5<A, B, C, D, F> fmap(Fn1<? super E, ? extends F> fn) {
-        return Monad.super.<F>fmap(fn).coerce();
+        return MonadRec.super.<F>fmap(fn).coerce();
     }
 
     /**
@@ -110,7 +115,7 @@ public abstract class Choice5<A, B, C, D, E> implements
      */
     @Override
     public <F> Choice5<A, B, C, D, F> zip(Applicative<Fn1<? super E, ? extends F>, Choice5<A, B, C, D, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -131,7 +136,7 @@ public abstract class Choice5<A, B, C, D, E> implements
      */
     @Override
     public <F> Choice5<A, B, C, D, F> discardL(Applicative<F, Choice5<A, B, C, D, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -139,7 +144,7 @@ public abstract class Choice5<A, B, C, D, E> implements
      */
     @Override
     public <F> Choice5<A, B, C, D, E> discardR(Applicative<F, Choice5<A, B, C, D, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -154,16 +159,30 @@ public abstract class Choice5<A, B, C, D, E> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
+    public <F> Choice5<A, B, C, D, F> trampolineM(
+            Fn1<? super E, ? extends MonadRec<RecursiveResult<E, F>, Choice5<A, B, C, D, ?>>> fn) {
+        return flatMap(trampoline(e -> fn.apply(e).<Choice5<A, B, C, D, RecursiveResult<E, F>>>coerce().match(
+                a -> terminate(Choice5.a(a)),
+                b -> terminate(Choice5.b(b)),
+                c -> terminate(Choice5.c(c)),
+                d -> terminate(Choice5.d(d)),
+                eRec -> eRec.fmap(Choice5::e))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <F, App extends Applicative<?, App>, TravB extends Traversable<F, Choice5<A, B, C, D, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super E, ? extends Applicative<F, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice5.<A, B, C, D, F>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice5.<A, B, C, D, F>b(b)).coerce(),
-                     c -> pure.apply((TravB) Choice5.<A, B, C, D, F>c(c)),
-                     d -> pure.apply((TravB) Choice5.<A, B, C, D, F>d(d)),
+        return match(a -> pure.apply(Choice5.<A, B, C, D, F>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice5.<A, B, C, D, F>b(b).<TravB>coerce()),
+                     c -> pure.apply(Choice5.<A, B, C, D, F>c(c).<TravB>coerce()),
+                     d -> pure.apply(Choice5.<A, B, C, D, F>d(d).<TravB>coerce()),
                      e -> fn.apply(e).<Choice5<A, B, C, D, F>>fmap(Choice5::e)
-                             .<TravB>fmap(Applicative::coerce).coerce());
+                             .<TravB>fmap(Applicative::coerce))
+                .coerce();
     }
 
     /**
@@ -239,6 +258,19 @@ public abstract class Choice5<A, B, C, D, E> implements
      */
     public static <A, B, C, D, E> Choice5<A, B, C, D, E> e(E e) {
         return new _E<>(e);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Choice5}.
+     *
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A, B, C, D> Pure<Choice5<A, B, C, D, ?>> pureChoice() {
+        return Choice5::e;
     }
 
     private static final class _A<A, B, C, D, E> extends Choice5<A, B, C, D, E> {

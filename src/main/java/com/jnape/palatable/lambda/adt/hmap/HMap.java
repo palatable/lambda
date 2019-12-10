@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.adt.hmap;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.builtin.fn1.Downcast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,9 +46,8 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey<?, ?>, Object>> {
      * @param <B> the value type
      * @return Maybe the value at this key
      */
-    @SuppressWarnings("unchecked")
     public <A, B> Maybe<B> get(TypeSafeKey<A, B> key) {
-        return maybe((A) table.get(key)).fmap(view(key));
+        return maybe(Downcast.<A, Object>downcast(table.get(key))).fmap(view(key));
     }
 
     /**
@@ -59,7 +59,8 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey<?, ?>, Object>> {
      * @throws NoSuchElementException if the key is unmapped
      */
     public <V> V demand(TypeSafeKey<?, V> key) throws NoSuchElementException {
-        return get(key).orElseThrow(() -> new NoSuchElementException("Demanded value for key " + key + ", but couldn't find one."));
+        return get(key).orElseThrow(() -> new NoSuchElementException("Demanded value for key " + key
+                                                                             + ", but couldn't find one."));
     }
 
     /**
@@ -112,6 +113,15 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey<?, ?>, Object>> {
      */
     public HMap removeAll(HMap hMap) {
         return alter(t -> t.keySet().removeAll(hMap.table.keySet()));
+    }
+
+    /**
+     * Test whether this {@link HMap} is empty.
+     *
+     * @return true if the {@link HMap} is empty; false otherwise.
+     */
+    public boolean isEmpty() {
+        return table.isEmpty();
     }
 
     /**

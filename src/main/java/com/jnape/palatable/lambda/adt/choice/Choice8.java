@@ -6,15 +6,20 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct8;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple8;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into8.into8;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -32,7 +37,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Choice8<A, B, C, D, E, F, G, H> implements
         CoProduct8<A, B, C, D, E, F, G, H, Choice8<A, B, C, D, E, F, G, H>>,
-        Monad<H, Choice8<A, B, C, D, E, F, G, ?>>,
+        MonadRec<H, Choice8<A, B, C, D, E, F, G, ?>>,
         Bifunctor<G, H, Choice8<A, B, C, D, E, F, ?, ?>>,
         Traversable<H, Choice8<A, B, C, D, E, F, G, ?>> {
 
@@ -65,7 +70,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
      */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> fmap(Fn1<? super H, ? extends I> fn) {
-        return Monad.super.<I>fmap(fn).coerce();
+        return MonadRec.super.<I>fmap(fn).coerce();
     }
 
     /**
@@ -107,7 +112,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> zip(
             Applicative<Fn1<? super H, ? extends I>, Choice8<A, B, C, D, E, F, G, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -131,7 +136,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
      */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, I> discardL(Applicative<I, Choice8<A, B, C, D, E, F, G, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -139,7 +144,7 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
      */
     @Override
     public <I> Choice8<A, B, C, D, E, F, G, H> discardR(Applicative<I, Choice8<A, B, C, D, E, F, G, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -155,19 +160,36 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
+    public <I> Choice8<A, B, C, D, E, F, G, I> trampolineM(
+            Fn1<? super H, ? extends MonadRec<RecursiveResult<H, I>, Choice8<A, B, C, D, E, F, G, ?>>> fn) {
+        return flatMap(trampoline(h -> fn.apply(h).<Choice8<A, B, C, D, E, F, G, RecursiveResult<H, I>>>coerce().match(
+                a -> terminate(a(a)),
+                b -> terminate(b(b)),
+                c -> terminate(c(c)),
+                d -> terminate(d(d)),
+                e -> terminate(e(e)),
+                f -> terminate(f(f)),
+                g -> terminate(g(g)),
+                hRec -> hRec.fmap(Choice8::h))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <I, App extends Applicative<?, App>, TravB extends Traversable<I, Choice8<A, B, C, D, E, F, G, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super H, ? extends Applicative<I, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>b(b)).coerce(),
-                     c -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>c(c)),
-                     d -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>d(d)),
-                     e -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>e(e)),
-                     f -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>f(f)),
-                     g -> pure.apply((TravB) Choice8.<A, B, C, D, E, F, G, I>g(g)),
+        return match(a -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>b(b).<TravB>coerce()),
+                     c -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>c(c).<TravB>coerce()),
+                     d -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>d(d).<TravB>coerce()),
+                     e -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>e(e).<TravB>coerce()),
+                     f -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>f(f).<TravB>coerce()),
+                     g -> pure.apply(Choice8.<A, B, C, D, E, F, G, I>g(g).<TravB>coerce()),
                      h -> fn.apply(h).<Choice8<A, B, C, D, E, F, G, I>>fmap(Choice8::h)
-                             .<TravB>fmap(Applicative::coerce).coerce());
+                             .<TravB>fmap(Applicative::coerce))
+                .coerce();
     }
 
     /**
@@ -314,6 +336,21 @@ public abstract class Choice8<A, B, C, D, E, F, G, H> implements
         return new _H<>(h);
     }
 
+    /**
+     * The canonical {@link Pure} instance for {@link Choice8}.
+     *
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @param <F> the sixth possible type
+     * @param <G> the seventh possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A, B, C, D, E, F, G> Pure<Choice8<A, B, C, D, E, F, G, ?>> pureChoice() {
+        return Choice8::h;
+    }
 
     private static final class _A<A, B, C, D, E, F, G, H> extends Choice8<A, B, C, D, E, F, G, H> {
 

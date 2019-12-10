@@ -26,7 +26,6 @@ public class MagnetizeTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void magnetizesElementsByPredicateOutcome() {
         assertThat(magnetize(asList(1, 1, 2, 3, 3, 3, 2, 2, 1)),
                    contains(iterates(1, 1),

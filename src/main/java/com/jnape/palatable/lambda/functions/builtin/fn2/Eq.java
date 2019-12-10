@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 import com.jnape.palatable.lambda.functions.specialized.BiPredicate;
 import com.jnape.palatable.lambda.functions.specialized.Predicate;
 
+import java.util.Objects;
+
 /**
  * Type-safe equality in function form; uses {@link Object#equals}, not <code>==</code>.
  *
@@ -17,7 +19,7 @@ public final class Eq<A> implements BiPredicate<A, A> {
 
     @Override
     public Boolean checkedApply(A x, A y) {
-        return x == null ? y == null : x.equals(y);
+        return Objects.equals(x, y);
     }
 
     @SuppressWarnings("unchecked")

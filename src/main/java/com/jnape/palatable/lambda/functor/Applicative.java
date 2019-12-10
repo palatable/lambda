@@ -64,11 +64,6 @@ public interface Applicative<A, App extends Applicative<?, App>> extends Functor
         return lazyAppFn.fmap(this::zip);
     }
 
-    @Override
-    default <B> Applicative<B, App> fmap(Fn1<? super A, ? extends B> fn) {
-        return zip(pure(fn));
-    }
-
     /**
      * Sequence both this <code>Applicative</code> and <code>appB</code>, discarding this <code>Applicative's</code>
      * result and returning <code>appB</code>. This is generally useful for sequentially performing side-effects.
@@ -78,7 +73,7 @@ public interface Applicative<A, App extends Applicative<?, App>> extends Functor
      * @return appB
      */
     default <B> Applicative<B, App> discardL(Applicative<B, App> appB) {
-        return appB.zip(fmap(constantly(id())));
+        return zip(appB.fmap(constantly()));
     }
 
     /**
@@ -90,6 +85,14 @@ public interface Applicative<A, App extends Applicative<?, App>> extends Functor
      * @return this Applicative
      */
     default <B> Applicative<A, App> discardR(Applicative<B, App> appB) {
-        return appB.zip(fmap(constantly()));
+        return zip(appB.fmap(constantly(id())));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <B> Applicative<B, App> fmap(Fn1<? super A, ? extends B> fn) {
+        return zip(pure(fn));
     }
 }

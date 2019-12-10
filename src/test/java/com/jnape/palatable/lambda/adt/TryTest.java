@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Try.failure;
+import static com.jnape.palatable.lambda.adt.Try.pureTry;
 import static com.jnape.palatable.lambda.adt.Try.success;
 import static com.jnape.palatable.lambda.adt.Try.trying;
 import static com.jnape.palatable.lambda.adt.Try.withResources;
@@ -46,7 +48,7 @@ public class TryTest {
 
     @Rule public ExpectedException thrown = ExpectedException.none();
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class, MonadRecLaws.class})
     public Subjects<Try<Integer>> testSubject() {
         return subjects(failure(new IllegalStateException()), success(1));
     }
@@ -257,5 +259,11 @@ public class TryTest {
         } catch (Exception e) {
             fail("A different exception altogether was thrown.");
         }
+    }
+
+    @Test
+    public void staticPure() {
+        Try<Integer> try_ = pureTry().apply(1);
+        assertEquals(success(1), try_);
     }
 }

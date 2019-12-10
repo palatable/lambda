@@ -23,8 +23,9 @@ public class ComonadLaws<W extends Comonad<?, W>> implements Trait<Comonad<?, W>
                         this::testAssociativity,
                         this::testDuplicate)
                 )
-                .peek(s -> IO.throwing(new AssertionError("The following Comonad laws did not hold for instance of " +
-                        w.getClass() + ": \n\t - " + s)));
+                .traverse(s -> IO.throwing(new AssertionError("The following Comonad laws did not hold for instance of " +
+                        w.getClass() + ": \n\t - " + s)), IO::io)
+                .unsafePerformIO();
     }
 
     private Maybe<String> testLeftIdentity(Comonad<?, W> w) {

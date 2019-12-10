@@ -12,10 +12,10 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.jnape.palatable.lambda.adt.Either.fromMaybe;
 import static com.jnape.palatable.lambda.adt.Either.left;
@@ -23,7 +23,6 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
-import static com.jnape.palatable.lambda.functions.Effect.fromConsumer;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.hamcrest.core.Is.is;
@@ -37,7 +36,13 @@ public class EitherTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({
+            FunctorLaws.class,
+            ApplicativeLaws.class,
+            MonadLaws.class,
+            BifunctorLaws.class,
+            TraversableLaws.class,
+            MonadRecLaws.class})
     public Subjects<Either<String, Integer>> testSubjects() {
         return subjects(left("foo"), right(1));
     }
@@ -202,41 +207,16 @@ public class EitherTest {
     }
 
     @Test
-    public void monadicPeekLiftsIOToTheRight() {
-        Either<String, Integer> left  = left("foo");
-        Either<String, Integer> right = right(1);
-
-        AtomicInteger intRef = new AtomicInteger();
-
-        left.peek(fromConsumer(intRef::set));
-        assertEquals(0, intRef.get());
-
-        right.peek(fromConsumer(intRef::set));
-        assertEquals(1, intRef.get());
-    }
-
-    @Test
-    public void dyadicPeekDuallyLiftsIO() {
-        Either<String, Integer> left  = left("foo");
-        Either<String, Integer> right = right(1);
-
-        AtomicReference<String> stringRef = new AtomicReference<>();
-        AtomicInteger           intRef    = new AtomicInteger();
-
-        left.peek(fromConsumer(stringRef::set), fromConsumer(intRef::set));
-        assertEquals("foo", stringRef.get());
-        assertEquals(0, intRef.get());
-
-        right.peek(fromConsumer(stringRef::set), fromConsumer(intRef::set));
-        assertEquals("foo", stringRef.get());
-        assertEquals(1, intRef.get());
-    }
-
-    @Test
     public void lazyZip() {
         assertEquals(right(2), right(1).lazyZip(lazy(right(x -> x + 1))).value());
         assertEquals(left("foo"), left("foo").lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        Either<String, Integer> either = Either.<String>pureEither().apply(1);
+        assertEquals(right(1), either);
     }
 }

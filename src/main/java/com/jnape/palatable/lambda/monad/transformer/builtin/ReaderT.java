@@ -2,46 +2,62 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Lift;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadReader;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 
 /**
  * A {@link MonadT monad transformer} for any {@link Fn1 function} from some type <code>R</code> to some
- * {@link Monad monadic} embedding <code>{@link Monad}&lt;A, M&gt;</code>.
+ * {@link MonadRec monadic} embedding <code>{@link MonadRec}&lt;A, M&gt;</code>.
  *
  * @param <R> the input type
- * @param <M> the returned {@link Monad}
+ * @param <M> the returned {@link MonadRec}
  * @param <A> the embedded output type
  */
-public interface ReaderT<R, M extends Monad<?, M>, A> extends
-        MonadT<Fn1<R, ?>, M, A, ReaderT<R, M, ?>>,
-        Cartesian<R, A, ReaderT<?, M, ?>> {
+public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
+        MonadReader<R, A, ReaderT<R, M, ?>>,
+        Cartesian<R, A, ReaderT<?, M, ?>>,
+        MonadT<M, A, ReaderT<R, M, ?>, ReaderT<R, ?, ?>> {
+
+    private final Fn1<? super R, ? extends MonadRec<A, M>> f;
+
+    private ReaderT(Fn1<? super R, ? extends MonadRec<A, M>> f) {
+        this.f = f;
+    }
 
     /**
      * Run the computation represented by this {@link ReaderT}.
      *
-     * @param r the input
-     * @return the {¬@link Monad monadic} embedding {@link Monad}&lt;A, M&gt;
+     * @param r    the input
+     * @param <MA> the witnessed target type
+     * @return the embedded {@link MonadRec}
      */
-    Monad<A, M> runReaderT(R r);
+    public <MA extends MonadRec<A, M>> MA runReaderT(R r) {
+        return f.apply(r).coerce();
+    }
 
     /**
      * Map the current {@link Monad monadic} embedding to a new one in a potentially different {@link Monad}.
      *
-     * @param fn   the mapping function
-     * @param <MA> the inference target of the current {@link Monad monadic} embedding
-     * @param <N>  the new {@link Monad} to embed the result in
-     * @param <B>  the new embedded result
+     * @param fn   the function
+     * @param <MA> the currently embedded {@link Monad}
+     * @param <N>  the new {@link Monad} witness
+     * @param <B>  the new carrier type
      * @return the mapped {@link ReaderT}
      */
-    default <MA extends Monad<A, M>, N extends Monad<?, N>, B> ReaderT<R, N, B> mapReaderT(
-            Fn1<? super MA, ? extends Monad<B, N>> fn) {
+    public <MA extends MonadRec<A, M>, N extends MonadRec<?, N>, B> ReaderT<R, N, B> mapReaderT(
+            Fn1<? super MA, ? extends MonadRec<B, N>> fn) {
         return readerT(r -> fn.apply(runReaderT(r).coerce()));
     }
 
@@ -49,15 +65,23 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <GA extends Monad<A, M>, FGA extends Monad<GA, Fn1<R, ?>>> FGA run() {
-        return Fn1.<R, GA>fn1(r -> runReaderT(r).coerce()).coerce();
+    public ReaderT<R, M, A> local(Fn1<? super R, ? extends R> fn) {
+        return contraMap(fn);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> flatMap(Fn1<? super A, ? extends Monad<B, ReaderT<R, M, ?>>> f) {
+    public <B, N extends MonadRec<?, N>> ReaderT<R, N, B> lift(MonadRec<B, N> mb) {
+        return ReaderT.<R>liftReaderT().apply(mb);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> ReaderT<R, M, B> flatMap(Fn1<? super A, ? extends Monad<B, ReaderT<R, M, ?>>> f) {
         return readerT(r -> runReaderT(r).flatMap(a -> f.apply(a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
     }
 
@@ -65,7 +89,17 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> pure(B b) {
+    public <B> ReaderT<R, M, B> trampolineM(
+            Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, ReaderT<R, M, ?>>> fn) {
+        return readerT(r -> runReaderT(r).trampolineM(a -> fn.apply(a).<ReaderT<R, M, RecursiveResult<A, B>>>coerce()
+                .runReaderT(r)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> ReaderT<R, M, B> pure(B b) {
         return readerT(r -> runReaderT(r).pure(b));
     }
 
@@ -73,7 +107,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> fmap(Fn1<? super A, ? extends B> fn) {
+    public <B> ReaderT<R, M, B> fmap(Fn1<? super A, ? extends B> fn) {
         return MonadT.super.<B>fmap(fn).coerce();
     }
 
@@ -81,15 +115,15 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> zip(Applicative<Fn1<? super A, ? extends B>, ReaderT<R, M, ?>> appFn) {
-        return readerT(r -> runReaderT(r).zip(appFn.<ReaderT<R, M, Fn1<? super A, ? extends B>>>coerce().runReaderT(r)));
+    public <B> ReaderT<R, M, B> zip(Applicative<Fn1<? super A, ? extends B>, ReaderT<R, M, ?>> appFn) {
+        return readerT(r -> f.apply(r).zip(appFn.<ReaderT<R, M, Fn1<? super A, ? extends B>>>coerce().runReaderT(r)));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default <B> Lazy<? extends ReaderT<R, M, B>> lazyZip(
+    public <B> Lazy<ReaderT<R, M, B>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super A, ? extends B>, ReaderT<R, M, ?>>> lazyAppFn) {
         return lazyAppFn.fmap(this::zip);
     }
@@ -98,7 +132,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> discardL(Applicative<B, ReaderT<R, M, ?>> appB) {
+    public <B> ReaderT<R, M, B> discardL(Applicative<B, ReaderT<R, M, ?>> appB) {
         return MonadT.super.discardL(appB).coerce();
     }
 
@@ -106,7 +140,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, A> discardR(Applicative<B, ReaderT<R, M, ?>> appB) {
+    public <B> ReaderT<R, M, A> discardR(Applicative<B, ReaderT<R, M, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
     }
 
@@ -114,7 +148,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <Q, B> ReaderT<Q, M, B> diMap(Fn1<? super Q, ? extends R> lFn, Fn1<? super A, ? extends B> rFn) {
+    public <Q, B> ReaderT<Q, M, B> diMap(Fn1<? super Q, ? extends R> lFn, Fn1<? super A, ? extends B> rFn) {
         return readerT(q -> runReaderT(lFn.apply(q)).fmap(rFn));
     }
 
@@ -122,7 +156,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <Q> ReaderT<Q, M, A> diMapL(Fn1<? super Q, ? extends R> fn) {
+    public <Q> ReaderT<Q, M, A> diMapL(Fn1<? super Q, ? extends R> fn) {
         return (ReaderT<Q, M, A>) Cartesian.super.<Q>diMapL(fn);
     }
 
@@ -130,7 +164,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <B> ReaderT<R, M, B> diMapR(Fn1<? super A, ? extends B> fn) {
+    public <B> ReaderT<R, M, B> diMapR(Fn1<? super A, ? extends B> fn) {
         return (ReaderT<R, M, B>) Cartesian.super.<B>diMapR(fn);
     }
 
@@ -138,7 +172,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <Q> ReaderT<Q, M, A> contraMap(Fn1<? super Q, ? extends R> fn) {
+    public <Q> ReaderT<Q, M, A> contraMap(Fn1<? super Q, ? extends R> fn) {
         return (ReaderT<Q, M, A>) Cartesian.super.<Q>contraMap(fn);
     }
 
@@ -146,7 +180,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default <C> ReaderT<Tuple2<C, R>, M, Tuple2<C, A>> cartesian() {
+    public <C> ReaderT<Tuple2<C, R>, M, Tuple2<C, A>> cartesian() {
         return readerT(into((c, r) -> runReaderT(r).fmap(tupler(c))));
     }
 
@@ -154,7 +188,7 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * {@inheritDoc}
      */
     @Override
-    default ReaderT<R, M, Tuple2<R, A>> carry() {
+    public ReaderT<R, M, Tuple2<R, A>> carry() {
         return (ReaderT<R, M, Tuple2<R, A>>) Cartesian.super.carry();
     }
 
@@ -167,7 +201,40 @@ public interface ReaderT<R, M extends Monad<?, M>, A> extends
      * @param <A> the embedded output type
      * @return the {@link ReaderT}
      */
-    static <R, M extends Monad<?, M>, A> ReaderT<R, M, A> readerT(Fn1<? super R, ? extends Monad<A, M>> fn) {
-        return fn::apply;
+    public static <R, M extends MonadRec<?, M>, A> ReaderT<R, M, A> readerT(
+            Fn1<? super R, ? extends MonadRec<A, M>> fn) {
+        return new ReaderT<>(fn);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link ReaderT}.
+     *
+     * @param pureM the argument {@link Monad} {@link Pure}
+     * @param <R>   the input type
+     * @param <M>   the argument {@link Monad} witness
+     * @return the {@link Pure} instance
+     */
+    public static <R, M extends MonadRec<?, M>> Pure<ReaderT<R, M, ?>> pureReaderT(Pure<M> pureM) {
+        return new Pure<ReaderT<R, M, ?>>() {
+            @Override
+            public <A> ReaderT<R, M, A> checkedApply(A a) {
+                return readerT(__ -> pureM.apply(a));
+            }
+        };
+    }
+
+    /**
+     * {@link Lift} for {@link ReaderT}.
+     *
+     * @param <R> the environment type
+     * @return the {@link Monad} lifted into {@link ReaderT}
+     */
+    public static <R> Lift<ReaderT<R, ?, ?>> liftReaderT() {
+        return new Lift<ReaderT<R, ?, ?>>() {
+            @Override
+            public <A, M extends MonadRec<?, M>> ReaderT<R, M, A> checkedApply(MonadRec<A, M> ga) {
+                return readerT(constantly(ga));
+            }
+        };
     }
 }

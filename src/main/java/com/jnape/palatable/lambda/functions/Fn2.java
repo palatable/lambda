@@ -1,11 +1,13 @@
 package com.jnape.palatable.lambda.functions;
 
+import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.internal.Runtime;
 
 import java.util.function.BiFunction;
 
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn3.fn3;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
@@ -151,6 +153,19 @@ public interface Fn2<A, B, C> extends Fn1<A, Fn1<B, C>> {
      */
     static <A, B, C> Fn2<A, B, C> curried(Fn1<A, Fn1<B, C>> curriedFn1) {
         return (a, b) -> curriedFn1.apply(a).apply(b);
+    }
+
+    /**
+     * Static factory method for wrapping an uncurried {@link Fn1} in an {@link Fn2}.
+     *
+     * @param uncurriedFn1 the uncurried {@link Fn1} to adapt
+     * @param <A>          the first input argument type
+     * @param <B>          the second input argument type
+     * @param <C>          the output type
+     * @return the {@link Fn2}
+     */
+    static <A, B, C> Fn2<A, B, C> curry(Fn1<? super Tuple2<A, B>, ? extends C> uncurriedFn1) {
+        return (a, b) -> uncurriedFn1.apply(tuple(a, b));
     }
 
     /**

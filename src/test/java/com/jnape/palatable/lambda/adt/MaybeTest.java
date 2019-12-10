@@ -10,21 +10,21 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.Maybe.pureMaybe;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Eq.eq;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
-import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -33,7 +33,7 @@ import static testsupport.assertion.MonadErrorAssert.assertLaws;
 @RunWith(Traits.class)
 public class MaybeTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Subjects<Maybe<Integer>> testSubject() {
         return subjects(Maybe.nothing(), just(1));
     }
@@ -103,16 +103,6 @@ public class MaybeTest {
     }
 
     @Test
-    public void peek() {
-        AtomicInteger ref = new AtomicInteger(0);
-        assertEquals(just(1), just(1).peek(constantly(io(ref::incrementAndGet))));
-        assertEquals(1, ref.get());
-
-        assertEquals(nothing(), nothing().peek(constantly(io(ref::incrementAndGet))));
-        assertEquals(1, ref.get());
-    }
-
-    @Test
     public void justOrThrow() {
         just(1).orElseThrow(IllegalStateException::new);
     }
@@ -125,7 +115,7 @@ public class MaybeTest {
     @Test
     public void divergesIntoChoice3() {
         assertEquals(Choice3.a(UNIT), nothing().diverge());
-        assertEquals(Choice3.b(1), just(1).diverge());
+        assertEquals(Choice3.<Unit, Integer, Object>b(1), just(1).diverge());
     }
 
     @Test
@@ -146,5 +136,11 @@ public class MaybeTest {
         assertEquals(nothing(), nothing().lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        Maybe<Integer> maybe = pureMaybe().apply(1);
+        assertEquals(just(1), maybe);
     }
 }

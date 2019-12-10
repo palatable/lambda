@@ -24,9 +24,9 @@ public class TypeSafeKeyTest {
 
     @Test
     public void compositionMapsOriginalValueInAndOutOfHMap() {
-        TypeSafeKey.Simple<String> stringKey = typeSafeKey();
-        TypeSafeKey<String, Integer> intKey = stringKey.andThen(simpleIso(Integer::parseInt, Object::toString));
-        HMap map = emptyHMap().put(stringKey, "123");
+        TypeSafeKey.Simple<String>   stringKey = typeSafeKey();
+        TypeSafeKey<String, Integer> intKey    = stringKey.andThen(simpleIso(Integer::parseInt, Object::toString));
+        HMap                         map       = emptyHMap().put(stringKey, "123");
 
         assertEquals(just("123"), map.get(stringKey));
         assertEquals(just(123), map.get(intKey));
@@ -40,16 +40,16 @@ public class TypeSafeKeyTest {
 
     @Test
     public void discardRPreservesTypeSafeKey() {
-        TypeSafeKey.Simple<String> stringKey = typeSafeKey();
+        TypeSafeKey.Simple<String>  stringKey    = typeSafeKey();
         TypeSafeKey<String, String> discardedKey = stringKey.discardR(simpleIso(id(), id()));
-        HMap map = emptyHMap().put(stringKey, "123");
+        HMap                        map          = emptyHMap().put(stringKey, "123");
 
         assertEquals(just("123"), map.get(discardedKey));
     }
 
     @Test
     public void defaultEquality() {
-        TypeSafeKey.Simple<Object> keyA = typeSafeKey();
+        TypeSafeKey.Simple<Object>  keyA       = typeSafeKey();
         TypeSafeKey<Object, Object> mappedKeyA = keyA.andThen(simpleIso(id(), id()));
 
         assertEquals(keyA, keyA);

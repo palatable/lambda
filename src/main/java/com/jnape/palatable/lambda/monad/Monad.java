@@ -56,7 +56,7 @@ public interface Monad<A, M extends Monad<?, M>> extends Applicative<A, M> {
      */
     @Override
     default <B> Monad<B, M> zip(Applicative<Fn1<? super A, ? extends B>, M> appFn) {
-        return appFn.<Monad<Fn1<? super A, ? extends B>, M>>coerce().flatMap(this::fmap);
+        return flatMap(a -> appFn.<Monad<Fn1<? super A, ? extends B>, M>>coerce().fmap(f -> f.apply(a)));
     }
 
     /**

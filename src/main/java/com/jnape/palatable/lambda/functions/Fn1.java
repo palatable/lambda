@@ -3,17 +3,24 @@ package com.jnape.palatable.lambda.functions;
 import com.jnape.palatable.lambda.adt.Either;
 import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
+import com.jnape.palatable.lambda.functions.builtin.fn1.Constantly;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Cartesian;
 import com.jnape.palatable.lambda.functor.Cocartesian;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadReader;
+import com.jnape.palatable.lambda.monad.MonadRec;
+import com.jnape.palatable.lambda.monad.MonadWriter;
 
 import java.util.function.Function;
 
 import static com.jnape.palatable.lambda.functions.Fn2.curried;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 
 /**
  * A function taking a single argument. This is the core function type that all other function types extend and
@@ -24,7 +31,9 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  */
 @FunctionalInterface
 public interface Fn1<A, B> extends
-        Monad<B, Fn1<A, ?>>,
+        MonadRec<B, Fn1<A, ?>>,
+        MonadReader<A, B, Fn1<A, ?>>,
+        MonadWriter<A, B, Fn1<A, ?>>,
         Cartesian<A, B, Fn1<?, ?>>,
         Cocartesian<A, B, Fn1<?, ?>> {
 
@@ -85,6 +94,30 @@ public interface Fn1<A, B> extends
      * {@inheritDoc}
      */
     @Override
+    default Fn1<A, B> local(Fn1<? super A, ? extends A> fn) {
+        return contraMap(fn);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> Fn1<A, Tuple2<B, C>> listens(Fn1<? super A, ? extends C> fn) {
+        return carry().fmap(t -> t.<C>biMapL(fn).invert());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default Fn1<A, B> censor(Fn1<? super A, ? extends A> fn) {
+        return a -> apply(fn.apply(a));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     default <C> Fn1<A, C> flatMap(Fn1<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
         return a -> f.apply(apply(a)).<Fn1<A, C>>coerce().apply(a);
     }
@@ -114,7 +147,7 @@ public interface Fn1<A, B> extends
      */
     @Override
     default <C> Fn1<A, C> zip(Applicative<Fn1<? super B, ? extends C>, Fn1<A, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -130,7 +163,15 @@ public interface Fn1<A, B> extends
      */
     @Override
     default <C> Lazy<Fn1<A, C>> lazyZip(Lazy<? extends Applicative<Fn1<? super B, ? extends C>, Fn1<A, ?>>> lazyAppFn) {
-        return Monad.super.lazyZip(lazyAppFn).fmap(Monad<C, Fn1<A, ?>>::coerce);
+        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<C, Fn1<A, ?>>::coerce);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> Fn1<A, C> trampolineM(Fn1<? super B, ? extends MonadRec<RecursiveResult<B, C>, Fn1<A, ?>>> fn) {
+        return a -> trampoline(b -> fn.apply(b).<Fn1<A, RecursiveResult<B, C>>>coerce().apply(a), apply(a));
     }
 
     /**
@@ -138,7 +179,7 @@ public interface Fn1<A, B> extends
      */
     @Override
     default <C> Fn1<A, C> discardL(Applicative<C, Fn1<A, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -146,7 +187,7 @@ public interface Fn1<A, B> extends
      */
     @Override
     default <C> Fn1<A, B> discardR(Applicative<C, Fn1<A, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -283,5 +324,15 @@ public interface Fn1<A, B> extends
      */
     static <A, B> Fn1<A, B> fromFunction(Function<? super A, ? extends B> function) {
         return function::apply;
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Fn1}.
+     *
+     * @param <A> the input type
+     * @return the {@link Pure} instance
+     */
+    static <A> Pure<Fn1<A, ?>> pureFn1() {
+        return Constantly::constantly;
     }
 }

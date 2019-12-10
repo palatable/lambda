@@ -4,25 +4,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
 ### Changed
-- `MonadT` is now witnessed by a parameter for better subtyping
+- `HList#cons` static factory method auto-promotes to specialized `HList` if there is one
+
+## [5.1.0] - 2019-10-13
+### Changed
+- All monad transformers that can support composable parallelism do support it
+
+### Added
+- `Writer`, the writer monad
+- `EndoK`, a monoid formed under endomorphism for any monad
+- `AutoBracket`, a specialized form of `Bracket` for `AutoCloseable` that closes the resource during cleanup
+
+### Fixed
+- `SafeT#zip` is now stack-safe regardless of the underlying monad's `zip` implementation
+
+### Deprecated
+- `Force`, in favor if traversing into an `IO` and explicitly running it
+
+## [5.0.0] - 2019-09-23
+### Changed
+- ***Breaking Change***: `MonadT` is now witnessed by a parameter for better subtyping, and no longer requires a common
+  `run` interface; each `run` method is now `runXXXT()`, where `XXX` is the name of the transformer in question
+- ***Breaking Change***: `Applicative#zip` and derivatives evaluate from left to right now across the board.
+- ***Breaking Change***: `testsupport.EquatableM` replaced with `Equivalence`
 - `Alter` now merely requires an `Fn1` instead of an explicit `Effect`
-- `IO` now internally trampolines all forms of composition, including lazyZip;
-   sequencing very large iterables of IO will work, if you have the heap, and
+- `IO` now internally trampolines all forms of composition, including `lazyZip`;
+   sequencing very large iterables of `IO` will work, if you have the heap, and
    retain parallelization inflection points
 
 ### Added
-- `Optic#andThen`, `Optic#compose`, and other defaults added
-- `Prism#andThen`, `Prism#compose` begets another `Prism`
-- `Prism#fromPartial` public interfaces
+- `MonadRec`, monads that support a stack-safe `trampolineM` method with defaults for all exported monads
+- `MonadError`, monads that can be thrown to and caught from, with defaults for `IO`, `Either`, `Maybe`, and `Try`
+- `MonadBase`,  an interface representing lifting infrastructure for `Monad`s
+- `MonadReader` and `MonadWriter`, general interfaces for reading from an environment and accumulating results
+- `SafeT`, a stack-safe monad transformer for any `MonadRec`
 - `ReaderT`, the transformer for the reader monad
-- `Until`, for repeatedly executing an `IO` until its result matches a predicate
+- `WriterT`, a monad transformer for an accumulation and a value
+- `StateT`, the `State` monad transformer
+- `Lift`, an existentially-quantified lifting function for some `MonadBase` type
 - `IO#interruptible`, for wrapping an `IO` in a thread interruption check
 - `IO#monitorSync`, for wrapping an `IO` in a `synchronized` block on a given lock object
 - `IO#pin`, for pinning an `IO` to an `Executor` without yet executing it
 - `IO#fuse`, for fusing the fork opportunities of a given `IO` into a single linearized `IO`
-- `IO#exceptionallyIO`, like `exceptionally` but recover inside another `IO`
-- `MonadError`, monads that can be thrown to and caught from
+- `IO#memoize`, for memoizing an `IO` by caching its first successful result
+- `Until`, for repeatedly executing an `IO` until its result matches a predicate
+- `Optic#andThen`, `Optic#compose`, and other defaults added
+- `Prism#andThen`, `Prism#compose` begets another `Prism`
+- `Prism#fromPartial` public interfaces
+- `Tuple2-8#fromIterable`, for populating a `TupleN` with the first `N` elements of an `Iterable`
+- `Fn2#curry`, for converting an `Fn1<Tuple2<A,B>,C>` to an `Fn2<A,B,C>`
+- `EquivalenceTrait`, a traitor `Trait` to make it easier to test properties of type-classes with a separate equivalence 
+  relation
+  
+### Deprecated
+- `Peek`, `Peek2`, `Maybe#peek`, and `Either#peek` in favor of explicitly matching into `IO` and running it
+- `IO#exceptionally` in favor of `IO#catchError` (from `MonadError`)
 
 ## [4.0.0] - 2019-05-20
 ### Changed
@@ -97,11 +135,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [3.2.0] - 2018-12-08
 ### Changed
-- ***Breaking Change***: `Difference` and `Intersection` no longer instances of `Semigroup` and moved to `functions.builtin.fn2` package
+- ***Breaking Change***: `Difference` and `Intersection` no longer instances of `Semigroup` and moved to 
+  `functions.builtin.fn2` package
 - ***Breaking Change***: `Absent` moved to `semigroup.builtin` package
 - ***Breaking Change***: `Effect#accept()` is now the required method to implement in the functional interface
 - ***Breaking Change***: `Fn0#apply()` is now the required method to implement in the functional interface
-- ***Breaking Change***: `GTBy`, `GT`, `LTBy`, `LT`, `GTEBy`, `GTE`, `LTEBy`, and `LTE` take the right-hand side first for more intuitive partial application
+- ***Breaking Change***: `GTBy`, `GT`, `LTBy`, `LT`, `GTEBy`, `GTE`, `LTEBy`, and `LTE` take the right-hand side first
+  for more intuitive partial application
 - ***Breaking Change***: `Effect` now returns an `IO`
 - `RightAny` overload returns `Monoid`
 - monoids now all fold with respect to `foldMap`
@@ -203,14 +243,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - ***Breaking Change***: `Sequence` now has two more type parameters to aid in inference
 - ***Breaking Change***: `Traversable#traverse` now has three more type parameters to aid in inference
-- ***Breaking Change***: `Monad#zip` now forces `m a -> b` before `m a` in default `Applicative#zip` implementation; this is only breaking for types that are sensitive to computation order (the resulting values are the same)
-- ***Breaking Change***: `TypeSafeKey` is now dually parametric (single parameter analog is preserved in `TypeSafeKey.Simple`)
+- ***Breaking Change***: `Monad#zip` now forces `m a -> b` before `m a` in default `Applicative#zip` implementation; 
+  this is only breaking for types that are sensitive to computation order (the resulting values are the same)
+- ***Breaking Change***: `TypeSafeKey` is now dually parametric (single parameter analog is preserved in 
+  `TypeSafeKey.Simple`)
 - `Bifunctor` is now a `BoundedBifunctor` where both parameter upper bounds are `Object`
 - `Peek2` now accepts the more general `BoundedBifunctor`
 - `Identity`, `Compose`, and `Const` functors all have better `toString` implementations
 - `Into3-8` now supports functions with parameter variance
 - `HListLens#tail` is now covariant in `Tail` parameter
-- More functions now automatically deforest nested calls (`concat` `cons`, `cycle`, `distinct`, `drop`, `dropwhile`, `filter`, `map`, `reverse`, `snoc`, `take`, `takewhile`, `tail`)
+- More functions now automatically deforest nested calls (`concat` `cons`, `cycle`, `distinct`, `drop`, `dropwhile`, 
+  `filter`, `map`, `reverse`, `snoc`, `take`, `takewhile`, `tail`)
 - `Flatten` calls `Iterator#hasNext` less aggressively, allowing for better laziness
 - `Lens` subtypes `LensLike`
 - `View`/`Set`/`Over` now only require `LensLike`
@@ -276,7 +319,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `CollectionLens#asSet(Function)`, a proper analog of `CollectionLens#asSet()` that uses defensive copies
 - `CollectionLens#asStream(Function)`, a proper analog of `CollectionLens#asStream()` that uses defensive copies
 - Explicitly calling attention to all unlawful lenses in their documentation
-- `Peek` and `Peek2`, for "peeking" at the value contained inside any given `Functor` or `Bifunctor` with given side-effects
+- `Peek` and `Peek2`, for "peeking" at the value contained inside any given `Functor` or `Bifunctor` with given
+  side-effects
 - `Trampoline` and `RecursiveResult` for modeling primitive tail-recursive functions that can be trampolined 
 
 ### Removed
@@ -386,7 +430,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Const` supports value equality
 - `partition` now only requires iterables of `CoProudct2`
 - `CoProductN`s receive a unification parameter, which trickles down to `Either` and `Choice`s
-- `Concat` now represents a monoid for `Iterable`; previous `Concat` semigroup and monoid renamed to more appropriate `AddAll`
+- `Concat` now represents a monoid for `Iterable`; previous `Concat` semigroup and monoid renamed to more appropriate 
+  `AddAll`
 - `Lens` is now an instance of `Profunctor`
 
 ### Added
@@ -396,14 +441,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `empty`, used to test if an Iterable is empty
 - `groupBy`, for folding an Iterable into a Map given a key function
 - `Applicative` arrives; all functors gain applicative properties
-- `Traversable` arrives; `SingletonHList`, `Tuple*`, `Choice*`, `Either`, `Identity`, and `Const` gain traversable properties
+- `Traversable` arrives; `SingletonHList`, `Tuple*`, `Choice*`, `Either`, `Identity`, and `Const` gain traversable 
+  properties
 - `TraversableOptional` and `TraversableIterable` for adapting `Optional` and `Iterable`, respectively, to `Traversable`
 - `sequence` for wrapping a traversable in an applicative during traversal 
 - `Compose`, an applicative functor that represents type-level functor composition
 
 ## [1.5.6] - 2017-02-11
 ### Changed
-- `CoProductN.[a-e]()` static factory methods moved to equivalent `ChoiceN` class. Coproduct interfaces now solely represent methods, no longer have anonymous implementations, and no longer require a `Functor` constraint
+- `CoProductN.[a-e]()` static factory methods moved to equivalent `ChoiceN` class. Coproduct interfaces now solely
+  represent methods, no longer have anonymous implementations, and no longer require a `Functor` constraint
 
 ### Added
 - `ChoiceN` types, representing concrete coproduct implementations that are also `Functor` and `BiFunctor`
@@ -457,7 +504,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [1.4] - 2016-08-08
 ### Changed
-- All function input values become `java.util.function` types, and all function output values remain lambda types, for better compatibility
+- All function input values become `java.util.function` types, and all function output values remain lambda types, for
+  better compatibility
 
 ## [1.3] - 2016-07-31
 ### Changed
@@ -496,7 +544,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-4.0.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.1.0...HEAD
+[5.1.0]: https://github.com/palatable/lambda/compare/lambda-5.0.0...lambda-5.1.0
+[5.0.0]: https://github.com/palatable/lambda/compare/lambda-4.0.0...lambda-5.0.0
 [4.0.0]: https://github.com/palatable/lambda/compare/lambda-3.3.0...lambda-4.0.0
 [3.3.0]: https://github.com/palatable/lambda/compare/lambda-3.2.0...lambda-3.3.0
 [3.2.0]: https://github.com/palatable/lambda/compare/lambda-3.1.0...lambda-3.2.0

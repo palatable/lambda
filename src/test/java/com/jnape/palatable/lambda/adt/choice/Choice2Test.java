@@ -6,11 +6,7 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.BifunctorLaws;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.TraversableLaws;
+import testsupport.traits.*;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
@@ -30,15 +26,20 @@ public class Choice2Test {
         b = b(true);
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class,
+            ApplicativeLaws.class,
+            MonadLaws.class,
+            BifunctorLaws.class,
+            TraversableLaws.class,
+            MonadRecLaws.class})
     public Subjects<Choice2<String, Integer>> testSubjects() {
         return subjects(a("foo"), b(1));
     }
 
     @Test
     public void divergeStaysInChoice() {
-        assertEquals(Choice3.a(1), a.diverge());
-        assertEquals(Choice3.b(true), b.diverge());
+        assertEquals(Choice3.<Integer, Boolean, Object>a(1), a.diverge());
+        assertEquals(Choice3.<Integer, Boolean, Object>b(true), b.diverge());
     }
 
     @Test
@@ -47,5 +48,11 @@ public class Choice2Test {
         assertEquals(a("foo"), a("foo").lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        Choice2<Byte, Short> choice = Choice2.<Byte>pureChoice().apply((short) 2);
+        assertEquals(b((short) 2), choice);
     }
 }

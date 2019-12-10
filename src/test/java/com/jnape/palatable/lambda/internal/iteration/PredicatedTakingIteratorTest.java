@@ -16,14 +16,14 @@ public class PredicatedTakingIteratorTest {
 
     @Test
     public void hasNextIfPredicateSucceedsForNextElement() {
-        Iterable<String> words = asList("four", "three", "two", "one");
+        Iterable<String>                 words                    = asList("four", "three", "two", "one");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<>(HAS_FOUR_LETTERS, words.iterator());
         assertThat(predicatedTakingIterator.hasNext(), is(true));
     }
 
     @Test
     public void stopsTakingAfterFirstPredicateFailure() {
-        Iterable<String> words = asList("once", "upon", "a", "time");
+        Iterable<String>                 words                    = asList("once", "upon", "a", "time");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<>(HAS_FOUR_LETTERS, words.iterator());
         predicatedTakingIterator.next();
         predicatedTakingIterator.next();
@@ -32,14 +32,14 @@ public class PredicatedTakingIteratorTest {
 
     @Test
     public void doesNotHaveNextIfFirstElementFailsPredicate() {
-        Iterable<String> words = asList("I", "have", "a", "dream");
+        Iterable<String>                 words                    = asList("I", "have", "a", "dream");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<>(HAS_FOUR_LETTERS, words.iterator());
         assertThat(predicatedTakingIterator.hasNext(), is(false));
     }
 
     @Test
     public void doesNotHaveNextIfTakenAllElements() {
-        Iterable<String> words = asList("four", "four");
+        Iterable<String>                 words                    = asList("four", "four");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<>(HAS_FOUR_LETTERS, words.iterator());
         predicatedTakingIterator.next();
         predicatedTakingIterator.next();
@@ -48,14 +48,14 @@ public class PredicatedTakingIteratorTest {
 
     @Test(expected = NoSuchElementException.class)
     public void throwsExceptionIfNextAfterFailedPredicate() {
-        Iterable<String> words = singletonList("no");
+        Iterable<String>                 words                    = singletonList("no");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<>(HAS_FOUR_LETTERS, words.iterator());
         predicatedTakingIterator.next();
     }
 
     @Test
     public void takesEverythingIfPredicateNeverFails() {
-        Iterable<String> words = singletonList("yeah");
+        Iterable<String>                 words                    = singletonList("yeah");
         PredicatedTakingIterator<String> predicatedTakingIterator = new PredicatedTakingIterator<>(HAS_FOUR_LETTERS, words.iterator());
         assertThat(predicatedTakingIterator.next(), is("yeah"));
         assertThat(predicatedTakingIterator.hasNext(), is(false));

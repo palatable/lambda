@@ -5,14 +5,15 @@ import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.monoid.builtin.Collapse.collapse;
+import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static org.junit.Assert.assertEquals;
 
 public class CollapseTest {
 
     @Test
     public void monoid() {
-        Monoid<String> join = Monoid.monoid((x, y) -> x + y, "");
-        Monoid<Integer> add = Monoid.monoid((x, y) -> x + y, 0);
+        Monoid<String>  join = join();
+        Monoid<Integer> add  = Monoid.monoid(Integer::sum, 0);
 
         Collapse<String, Integer> collapse = collapse();
 

@@ -6,15 +6,20 @@ import com.jnape.palatable.lambda.adt.coproduct.CoProduct7;
 import com.jnape.palatable.lambda.adt.hlist.HList;
 import com.jnape.palatable.lambda.adt.hlist.Tuple7;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.Bifunctor;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into7.into7;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -32,7 +37,7 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
  */
 public abstract class Choice7<A, B, C, D, E, F, G> implements
         CoProduct7<A, B, C, D, E, F, G, Choice7<A, B, C, D, E, F, G>>,
-        Monad<G, Choice7<A, B, C, D, E, F, ?>>,
+        MonadRec<G, Choice7<A, B, C, D, E, F, ?>>,
         Bifunctor<F, G, Choice7<A, B, C, D, E, ?, ?>>,
         Traversable<G, Choice7<A, B, C, D, E, F, ?>> {
 
@@ -72,7 +77,7 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
      */
     @Override
     public <H> Choice7<A, B, C, D, E, F, H> fmap(Fn1<? super G, ? extends H> fn) {
-        return Monad.super.<H>fmap(fn).coerce();
+        return MonadRec.super.<H>fmap(fn).coerce();
     }
 
     /**
@@ -114,7 +119,7 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
     @Override
     public <H> Choice7<A, B, C, D, E, F, H> zip(
             Applicative<Fn1<? super G, ? extends H>, Choice7<A, B, C, D, E, F, ?>> appFn) {
-        return Monad.super.zip(appFn).coerce();
+        return MonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -137,7 +142,7 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
      */
     @Override
     public <H> Choice7<A, B, C, D, E, F, H> discardL(Applicative<H, Choice7<A, B, C, D, E, F, ?>> appB) {
-        return Monad.super.discardL(appB).coerce();
+        return MonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -145,7 +150,7 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
      */
     @Override
     public <H> Choice7<A, B, C, D, E, F, G> discardR(Applicative<H, Choice7<A, B, C, D, E, F, ?>> appB) {
-        return Monad.super.discardR(appB).coerce();
+        return MonadRec.super.discardR(appB).coerce();
     }
 
     /**
@@ -161,18 +166,34 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("unchecked")
+    public <H> Choice7<A, B, C, D, E, F, H> trampolineM(
+            Fn1<? super G, ? extends MonadRec<RecursiveResult<G, H>, Choice7<A, B, C, D, E, F, ?>>> fn) {
+        return flatMap(trampoline(g -> fn.apply(g).<Choice7<A, B, C, D, E, F, RecursiveResult<G, H>>>coerce().match(
+                a -> terminate(a(a)),
+                b -> terminate(b(b)),
+                c -> terminate(c(c)),
+                d -> terminate(d(d)),
+                e -> terminate(e(e)),
+                f -> terminate(f(f)),
+                gRec -> gRec.fmap(Choice7::g))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <H, App extends Applicative<?, App>, TravB extends Traversable<H, Choice7<A, B, C, D, E, F, ?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super G, ? extends Applicative<H, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
-        return match(a -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>a(a)).coerce(),
-                     b -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>b(b)).coerce(),
-                     c -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>c(c)),
-                     d -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>d(d)),
-                     e -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>e(e)),
-                     f -> pure.apply((TravB) Choice7.<A, B, C, D, E, F, H>f(f)),
+        return match(a -> pure.apply(Choice7.<A, B, C, D, E, F, H>a(a).<TravB>coerce()),
+                     b -> pure.apply(Choice7.<A, B, C, D, E, F, H>b(b).<TravB>coerce()),
+                     c -> pure.apply(Choice7.<A, B, C, D, E, F, H>c(c).<TravB>coerce()),
+                     d -> pure.apply(Choice7.<A, B, C, D, E, F, H>d(d).<TravB>coerce()),
+                     e -> pure.apply(Choice7.<A, B, C, D, E, F, H>e(e).<TravB>coerce()),
+                     f -> pure.apply(Choice7.<A, B, C, D, E, F, H>f(f).<TravB>coerce()),
                      g -> fn.apply(g).<Choice7<A, B, C, D, E, F, H>>fmap(Choice7::g)
-                             .<TravB>fmap(Applicative::coerce).coerce());
+                             .<TravB>fmap(Applicative::coerce))
+                .coerce();
     }
 
     /**
@@ -292,6 +313,21 @@ public abstract class Choice7<A, B, C, D, E, F, G> implements
      */
     public static <A, B, C, D, E, F, G> Choice7<A, B, C, D, E, F, G> g(G g) {
         return new _G<>(g);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link Choice7}.
+     *
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @param <C> the third possible type
+     * @param <D> the fourth possible type
+     * @param <E> the fifth possible type
+     * @param <F> the sixth possible type
+     * @return the {@link Pure} instance
+     */
+    public static <A, B, C, D, E, F> Pure<Choice7<A, B, C, D, E, F, ?>> pureChoice() {
+        return Choice7::g;
     }
 
     private static final class _A<A, B, C, D, E, F, G> extends Choice7<A, B, C, D, E, F, G> {

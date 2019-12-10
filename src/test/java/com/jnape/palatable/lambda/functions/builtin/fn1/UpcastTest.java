@@ -11,8 +11,8 @@ public class UpcastTest {
     @Test
     @SuppressWarnings("unused")
     public void castsUp() {
-        Upcast<String, CharSequence> upcast = upcast();
-        Iterable<String> strings = asList("foo", "bar");
-        Iterable<CharSequence> charSequences = map(upcast, strings);
+        Upcast<String, CharSequence> upcast        = upcast();
+        Iterable<String>             strings       = asList("foo", "bar");
+        Iterable<CharSequence>       charSequences = map(upcast, strings);
     }
 }

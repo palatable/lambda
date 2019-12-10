@@ -1,11 +1,14 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Lift;
+import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.functor.Functor;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
 import java.util.Objects;
@@ -13,25 +16,37 @@ import java.util.Objects;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
- * A {@link MonadT monad transformer} for {@link Lazy}. Note that {@link LazyT#flatMap(Fn1)} must force its value.
+ * A {@link MonadT monad transformer} for {@link Lazy}. Note that both {@link LazyT#flatMap(Fn1)} and
+ * {@link LazyT#trampolineM} must force its value.
  *
- * @param <M> the outer {@link Monad}
+ * @param <M> the outer {@link Monad stack-safe monad}
  * @param <A> the carrier type
  */
-public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, LazyT<M, ?>> {
+public final class LazyT<M extends MonadRec<?, M>, A> implements
+        MonadT<M, A, LazyT<M, ?>, LazyT<?, ?>> {
 
-    private final Monad<Lazy<A>, M> mla;
+    private final MonadRec<Lazy<A>, M> mla;
 
-    private LazyT(Monad<Lazy<A>, M> mla) {
+    private LazyT(MonadRec<Lazy<A>, M> mla) {
         this.mla = mla;
+    }
+
+    /**
+     * Recover the full structure of the embedded {@link Monad}.
+     *
+     * @param <MLA> the witnessed target type
+     * @return the embedded {@link Monad}
+     */
+    public <MLA extends MonadRec<Lazy<A>, M>> MLA runLazyT() {
+        return mla.coerce();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <GA extends Monad<A, Lazy<?>>, FGA extends Monad<GA, M>> FGA run() {
-        return mla.<GA>fmap(Functor::coerce).coerce();
+    public <B, N extends MonadRec<?, N>> LazyT<N, B> lift(MonadRec<B, N> mb) {
+        return liftLazyT().apply(mb);
     }
 
     /**
@@ -39,8 +54,17 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
      */
     @Override
     public <B> LazyT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, LazyT<M, ?>>> f) {
-        return new LazyT<>(mla.flatMap(lazyA -> f.apply(lazyA.value())
-                .<MonadT<M, Lazy<?>, B, LazyT<M, ?>>>coerce().run()));
+        return new LazyT<>(mla.flatMap(lazyA -> f.apply(lazyA.value()).<LazyT<M, B>>coerce().runLazyT()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> LazyT<M, B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, LazyT<M, ?>>> fn) {
+        return lazyT(runLazyT().trampolineM(lazyA -> fn.apply(lazyA.value())
+                .<LazyT<M, RecursiveResult<A, B>>>coerce()
+                .runLazyT().fmap(lAOrB -> lAOrB.value().biMap(Lazy::lazy, Lazy::lazy))));
     }
 
     /**
@@ -64,7 +88,9 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
      */
     @Override
     public <B> LazyT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, LazyT<M, ?>> appFn) {
-        return MonadT.super.zip(appFn).coerce();
+        return lazyT(new Compose<>(this.<MonadRec<Lazy<A>, M>>runLazyT()).zip(
+                new Compose<>(appFn.<LazyT<M, Fn1<? super A, ? extends B>>>coerce()
+                                      .<MonadRec<Lazy<Fn1<? super A, ? extends B>>, M>>runLazyT())).getCompose());
     }
 
     /**
@@ -76,8 +102,7 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
         return new Compose<>(mla)
                 .lazyZip(lazyAppFn.fmap(lazyT -> new Compose<>(
                         lazyT.<LazyT<M, Fn1<? super A, ? extends B>>>coerce()
-                                .<Lazy<Fn1<? super A, ? extends B>>,
-                                        Monad<Lazy<Fn1<? super A, ? extends B>>, M>>run())))
+                                .<MonadRec<Lazy<Fn1<? super A, ? extends B>>, M>>runLazyT())))
                 .fmap(compose -> lazyT(compose.getCompose()));
     }
 
@@ -121,7 +146,37 @@ public class LazyT<M extends Monad<?, M>, A> implements MonadT<M, Lazy<?>, A, La
      * @param <A> the carrier type
      * @return the new {@link LazyT}
      */
-    public static <M extends Monad<?, M>, A> LazyT<M, A> lazyT(Monad<Lazy<A>, M> mla) {
+    public static <M extends MonadRec<?, M>, A> LazyT<M, A> lazyT(MonadRec<Lazy<A>, M> mla) {
         return new LazyT<>(mla);
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link LazyT}.
+     *
+     * @param pureM the argument {@link Monad} {@link Pure}
+     * @param <M>   the argument {@link Monad} witness
+     * @return the {@link Pure} instance
+     */
+    public static <M extends MonadRec<?, M>> Pure<LazyT<M, ?>> pureLazyT(Pure<M> pureM) {
+        return new Pure<LazyT<M, ?>>() {
+            @Override
+            public <A> LazyT<M, A> checkedApply(A a) {
+                return lazyT(pureM.<A, MonadRec<A, M>>apply(a).fmap(Lazy::lazy));
+            }
+        };
+    }
+
+    /**
+     * {@link Lift} for {@link LazyT}.
+     *
+     * @return the {@link Monad} lifted into {@link LazyT}
+     */
+    public static Lift<LazyT<?, ?>> liftLazyT() {
+        return new Lift<LazyT<?, ?>>() {
+            @Override
+            public <A, M extends MonadRec<?, M>> LazyT<M, A> checkedApply(MonadRec<A, M> ga) {
+                return lazyT(ga.fmap(Lazy::lazy));
+            }
+        };
     }
 }

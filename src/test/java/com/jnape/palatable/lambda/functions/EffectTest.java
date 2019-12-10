@@ -12,11 +12,16 @@ import java.util.function.Consumer;
 import static com.jnape.palatable.lambda.functions.Effect.effect;
 import static com.jnape.palatable.lambda.functions.Effect.fromConsumer;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Alter.alter;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Sequence.sequence;
 import static com.jnape.palatable.lambda.functions.specialized.SideEffect.sideEffect;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static testsupport.matchers.IOMatcher.yieldsValue;
 
 public class EffectTest {
 
@@ -25,16 +30,17 @@ public class EffectTest {
         List<Object> results = new ArrayList<>();
 
         Effect<String> effect       = fromConsumer(results::add);
-        Effect<Object> diMapL       = effect.diMapL(Object::toString);
-        Effect<Object> contraMap    = effect.contraMap(Object::toString);
+        Effect<String> diMapL       = effect.diMapL(Object::toString);
+        Effect<String> contraMap    = effect.contraMap(Object::toString);
         Effect<String> stringEffect = effect.discardR(constantly("1"));
 
-        effect.apply("1").unsafePerformIO();
-        diMapL.apply("2").unsafePerformIO();
-        contraMap.apply("3").unsafePerformIO();
-        stringEffect.apply("4").unsafePerformIO();
-
-        assertEquals(asList("1", "2", "3", "4"), results);
+        assertThat(sequence(asList(effect.apply("1"),
+                                   diMapL.apply("2"),
+                                   contraMap.apply("3"),
+                                   stringEffect.apply("4")),
+                            IO::io)
+                           .fmap(constantly(results)),
+                   yieldsValue(equalTo(asList("1", "2", "3", "4"))));
     }
 
     @Test
@@ -42,8 +48,8 @@ public class EffectTest {
         AtomicInteger         counter = new AtomicInteger();
         Effect<AtomicInteger> inc     = c -> io(sideEffect(c::incrementAndGet));
 
-        inc.andThen(inc).apply(counter).unsafePerformIO();
-        assertEquals(2, counter.get());
+        assertThat(alter(inc.andThen(inc), counter).fmap(AtomicInteger::get),
+                   yieldsValue(equalTo(2)));
     }
 
     @Test
@@ -51,12 +57,12 @@ public class EffectTest {
         AtomicInteger counter = new AtomicInteger();
 
         Effect<String> sideEffect = effect(counter::incrementAndGet);
-        sideEffect.apply("foo").unsafePerformIO();
-        assertEquals(1, counter.get());
+        assertThat(sideEffect.apply("foo").flatMap(constantly(io(counter::get))),
+                   yieldsValue(equalTo(1)));
 
         Effect<AtomicInteger> fnEffect = Effect.fromConsumer(AtomicInteger::incrementAndGet);
-        fnEffect.apply(counter).unsafePerformIO();
-        assertEquals(2, counter.get());
+        assertThat(fnEffect.apply(counter).flatMap(constantly(io(counter::get))),
+                   yieldsValue(equalTo(2)));
     }
 
     @Test

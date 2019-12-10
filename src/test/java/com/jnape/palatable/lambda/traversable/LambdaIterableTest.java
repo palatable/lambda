@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
@@ -19,12 +20,16 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Size.size;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Replicate.replicate;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.traversable.LambdaIterable.empty;
+import static com.jnape.palatable.lambda.traversable.LambdaIterable.pureLambdaIterable;
 import static com.jnape.palatable.lambda.traversable.LambdaIterable.wrap;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
@@ -33,16 +38,46 @@ import static testsupport.matchers.IterableMatcher.iterates;
 @RunWith(Traits.class)
 public class LambdaIterableTest {
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class, MonadLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, TraversableLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Subjects<LambdaIterable<Object>> testSubject() {
         return subjects(LambdaIterable.empty(), wrap(singleton(1)), wrap(replicate(100, 1)));
     }
 
     @Test
+    public void trampoliningWithDeferredResult() {
+        assertThat(LambdaIterable.wrap(singletonList(0))
+                           .trampolineM(x -> wrap(x < STACK_EXPLODING_NUMBER
+                                                  ? singleton(recurse(x + 1))
+                                                  : singleton(terminate(x))))
+                           .unwrap(),
+                   iterates(STACK_EXPLODING_NUMBER));
+    }
+
+    @Test
+    public void trampoliningOncePerElement() {
+        assertThat(LambdaIterable.wrap(asList(1, 2, 3))
+                           .trampolineM(x -> wrap(x < STACK_EXPLODING_NUMBER
+                                                  ? singleton(recurse(x + 1))
+                                                  : singleton(terminate(x))))
+                           .unwrap(),
+                   iterates(STACK_EXPLODING_NUMBER, STACK_EXPLODING_NUMBER, STACK_EXPLODING_NUMBER));
+    }
+
+    @Test
+    public void trampoliningWithIncrementalResults() {
+        assertThat(LambdaIterable.wrap(singletonList(0))
+                           .trampolineM(x -> wrap(x < 10
+                                                  ? asList(terminate(x), recurse(x + 1))
+                                                  : singleton(terminate(x))))
+                           .unwrap(),
+                   iterates(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    }
+
+    @Test
     public void zipAppliesCartesianProductOfFunctionsAndValues() {
-        LambdaIterable<Fn1<? super Integer, ? extends Integer>> fns = wrap(asList(x -> x + 1, x -> x - 1));
         LambdaIterable<Integer>                                 xs  = wrap(asList(1, 2, 3));
-        assertThat(xs.zip(fns).unwrap(), iterates(2, 3, 4, 0, 1, 2));
+        LambdaIterable<Fn1<? super Integer, ? extends Integer>> fns = wrap(asList(x -> x + 1, x -> x - 1));
+        assertThat(xs.zip(fns).unwrap(), iterates(2, 0, 3, 1, 4, 2));
     }
 
     @Test
@@ -66,5 +101,11 @@ public class LambdaIterableTest {
         assertEquals(empty(), empty().lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        LambdaIterable<Integer> lambdaIterable = pureLambdaIterable().apply(1);
+        assertThat(lambdaIterable.unwrap(), iterates(1));
     }
 }

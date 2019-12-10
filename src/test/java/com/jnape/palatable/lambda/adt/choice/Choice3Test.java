@@ -6,11 +6,7 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.BifunctorLaws;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.TraversableLaws;
+import testsupport.traits.*;
 
 import static com.jnape.palatable.lambda.adt.choice.Choice3.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice3.b;
@@ -33,7 +29,7 @@ public class Choice3Test {
         c = Choice3.c(true);
     }
 
-    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class})
+    @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, BifunctorLaws.class, TraversableLaws.class, MonadRecLaws.class})
     public Subjects<Choice3<String, Integer, Boolean>> testSubjects() {
         return subjects(a("foo"), b(1), c(true));
     }
@@ -61,5 +57,11 @@ public class Choice3Test {
         assertEquals(Choice3.a(1), a(1).lazyZip(lazy(() -> {
             throw new AssertionError();
         })).value());
+    }
+
+    @Test
+    public void staticPure() {
+        Choice3<Byte, Short, Integer> choice = Choice3.<Byte, Short>pureChoice().apply(3);
+        assertEquals(c(3), choice);
     }
 }
