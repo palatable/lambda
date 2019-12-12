@@ -45,6 +45,17 @@ public final class MaybeT<M extends MonadRec<?, M>, A> implements
     }
 
     /**
+     * If the embedded value is present and satisfies <code>predicate</code>
+     * then return <code>just</code> the embedded value
+     *
+     * @param predicate the predicate to apply to the embedded value
+     * @return maybe the satisfied value embedded under M
+     */
+    public MaybeT<M, A> filter(Fn1<? super A, ? extends Boolean> predicate) {
+        return maybeT(mma.fmap(ma -> ma.filter(predicate)));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
