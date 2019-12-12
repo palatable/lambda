@@ -22,6 +22,8 @@ import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.GT.gt;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.LT.lt;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.io.IO.io;
@@ -69,5 +71,12 @@ public class MaybeTTest {
                 .<IO<Maybe<Unit>>>runMaybeT()
                 .unsafePerformAsyncIO(Executors.newFixedThreadPool(2))
                 .join();
+    }
+
+    @Test
+    public void filter() {
+        MaybeT<Identity<?>, Integer> maybeT = pureMaybeT(pureIdentity()).apply(1);
+        assertEquals(maybeT(new Identity<>(just(1))), maybeT.filter(gt(0)));
+        assertEquals(maybeT(new Identity<>(nothing())), maybeT.filter(lt(0)));
     }
 }
