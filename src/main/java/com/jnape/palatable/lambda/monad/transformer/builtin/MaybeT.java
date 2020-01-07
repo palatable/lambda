@@ -56,6 +56,18 @@ public final class MaybeT<M extends MonadRec<?, M>, A> implements
     }
 
     /**
+     * Returns the first {@link MaybeT} that is an effect around {@link Maybe#just(Object) just} a result.
+     *
+     * @param other the other {@link MaybeT}
+     * @return the first present {@link MaybeT}
+     */
+    public MaybeT<M, A> or(MaybeT<M, A> other) {
+        MonadRec<Maybe<A>, M> mMaybeA = runMaybeT();
+        return maybeT(mMaybeA.flatMap(maybeA -> maybeA.match(constantly(other.runMaybeT()),
+                                                             a -> mMaybeA.pure(just(a)))));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -145,7 +157,7 @@ public final class MaybeT<M extends MonadRec<?, M>, A> implements
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof MaybeT<?, ?> && Objects.equals(mma, ((MaybeT) other).mma);
+        return other instanceof MaybeT<?, ?> && Objects.equals(mma, ((MaybeT<?, ?>) other).mma);
     }
 
     @Override

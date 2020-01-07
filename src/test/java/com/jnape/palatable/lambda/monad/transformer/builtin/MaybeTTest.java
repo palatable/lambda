@@ -27,9 +27,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.LT.lt;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.io.IO.io;
-import static com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT.liftMaybeT;
-import static com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT.maybeT;
-import static com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT.pureMaybeT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT.*;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
 
@@ -78,5 +76,17 @@ public class MaybeTTest {
         MaybeT<Identity<?>, Integer> maybeT = pureMaybeT(pureIdentity()).apply(1);
         assertEquals(maybeT(new Identity<>(just(1))), maybeT.filter(gt(0)));
         assertEquals(maybeT(new Identity<>(nothing())), maybeT.filter(lt(0)));
+    }
+
+    @Test
+    public void orSelectsFirstPresentValueInsideEffect() {
+        assertEquals(maybeT(new Identity<>(just(1))),
+                     maybeT(new Identity<>(just(1))).or(maybeT(new Identity<>(nothing()))));
+
+        assertEquals(maybeT(new Identity<>(just(1))),
+                     maybeT(new Identity<>(nothing())).or(maybeT(new Identity<>(just(1)))));
+
+        assertEquals(maybeT(new Identity<>(just(1))),
+                     maybeT(new Identity<>(just(1))).or(maybeT(new Identity<>(just(2)))));
     }
 }
