@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 - `MergeHMaps`, a `Monoid` that merges `HMap`s by merging the values via key-specified `Semigroup`s
+- `Id#id` overload that accepts an argument and returns it
+- `MaybeT#or`, choose the first `MaybeT` that represents an effect around `just` a value
+- `StateMatcher, StateTMatcher, WriterTMatcher`
 
 ## [5.1.0] - 2019-10-13
 ### Changed
