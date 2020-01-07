@@ -23,4 +23,8 @@ public final class Id<A> implements Fn1<A, A> {
     public static <A> Id<A> id() {
         return (Id<A>) INSTANCE;
     }
+
+    public static <A> A id(A a) {
+        return Id.<A>id().apply(a);
+    }
 }
