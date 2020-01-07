@@ -8,12 +8,7 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.Equivalence;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.MonadReaderLaws;
-import testsupport.traits.MonadRecLaws;
+import testsupport.traits.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -56,6 +51,15 @@ public class ReaderTTest {
                      ReaderT.<String, Identity<?>, String>readerT(Identity::new)
                              .<Identity<String>, Maybe<?>, Integer>mapReaderT(id -> just(id.runIdentity().length()))
                              .runReaderT("foo"));
+    }
+
+    @Test
+    public void andComposesLeftToRight() {
+        ReaderT<Integer, Identity<?>, Float> intToFloat    = readerT(x -> new Identity<>(x.floatValue()));
+        ReaderT<Float, Identity<?>, Double>  floatToDouble = readerT(f -> new Identity<>(f.doubleValue()));
+
+        assertEquals(new Identity<>(1.),
+                     intToFloat.and(floatToDouble).runReaderT(1));
     }
 
     @Test
