@@ -123,7 +123,7 @@ public interface Fn1<A, B> extends
     }
 
     /**
-     * Also left-to-right composition (<a href="http://jnape.com/the-perils-of-implementing-functor-in-java/">sadly</a>).
+     * Left-to-right composition.
      *
      * @param <C> the return type of the next function to invoke
      * @param f   the function to invoke with this function's return value
