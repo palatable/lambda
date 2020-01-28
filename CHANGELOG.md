@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `MaybeT#or`, choose the first `MaybeT` that represents an effect around `just` a value
 - `StateMatcher, StateTMatcher, WriterTMatcher`
 - `ReaderT#and`, category composition between `ReaderT` instances: `(a -> m b) -> (b -> m c) -> (a -> m c)`
+- `IterateT`, [`ListT` done right](https://wiki.haskell.org/ListT_done_right)
 
 ## [5.1.0] - 2019-10-13
 ### Changed
