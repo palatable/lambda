@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.internal.iteration;
+package com.jnape.palatable.lambda.internal;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 
@@ -8,20 +8,27 @@ import java.util.NoSuchElementException;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 
-abstract class ImmutableQueue<A> implements Iterable<A> {
+/**
+ * Internal API. Use at your own peril.
+ */
+public abstract class ImmutableQueue<A> implements Iterable<A> {
 
-    abstract ImmutableQueue<A> pushFront(A a);
+    public abstract ImmutableQueue<A> pushFront(A a);
 
-    abstract ImmutableQueue<A> pushBack(A a);
+    public abstract ImmutableQueue<A> pushBack(A a);
 
-    abstract Maybe<A> head();
+    public abstract Maybe<A> head();
 
-    abstract ImmutableQueue<A> tail();
+    public abstract ImmutableQueue<A> tail();
 
-    abstract ImmutableQueue<A> concat(ImmutableQueue<A> other);
+    public abstract ImmutableQueue<A> concat(ImmutableQueue<A> other);
 
-    final boolean isEmpty() {
+    public final boolean isEmpty() {
         return head().fmap(constantly(false)).orElse(true);
+    }
+
+    public static <A> ImmutableQueue<A> singleton(A a) {
+        return new NonEmpty<>(ImmutableStack.<A>empty().push(a), ImmutableStack.empty());
     }
 
     @Override
@@ -52,27 +59,27 @@ abstract class ImmutableQueue<A> implements Iterable<A> {
         private static final Empty<?> INSTANCE = new Empty<>();
 
         @Override
-        ImmutableQueue<A> pushFront(A a) {
+        public ImmutableQueue<A> pushFront(A a) {
             return new NonEmpty<>(ImmutableStack.<A>empty().push(a), ImmutableStack.empty());
         }
 
         @Override
-        ImmutableQueue<A> pushBack(A a) {
+        public ImmutableQueue<A> pushBack(A a) {
             return pushFront(a);
         }
 
         @Override
-        ImmutableQueue<A> concat(ImmutableQueue<A> other) {
+        public ImmutableQueue<A> concat(ImmutableQueue<A> other) {
             return other;
         }
 
         @Override
-        Maybe<A> head() {
+        public Maybe<A> head() {
             return Maybe.nothing();
         }
 
         @Override
-        ImmutableQueue<A> tail() {
+        public ImmutableQueue<A> tail() {
             return this;
         }
     }
@@ -87,27 +94,27 @@ abstract class ImmutableQueue<A> implements Iterable<A> {
         }
 
         @Override
-        ImmutableQueue<A> pushFront(A a) {
+        public ImmutableQueue<A> pushFront(A a) {
             return new NonEmpty<>(outbound.push(a), inbound);
         }
 
         @Override
-        ImmutableQueue<A> pushBack(A a) {
+        public ImmutableQueue<A> pushBack(A a) {
             return new NonEmpty<>(outbound, inbound.push(a));
         }
 
         @Override
-        ImmutableQueue<A> concat(ImmutableQueue<A> other) {
+        public ImmutableQueue<A> concat(ImmutableQueue<A> other) {
             return new NonEmpty<>(outbound, foldLeft(ImmutableStack::push, inbound, other));
         }
 
         @Override
-        Maybe<A> head() {
+        public Maybe<A> head() {
             return outbound.head();
         }
 
         @Override
-        ImmutableQueue<A> tail() {
+        public ImmutableQueue<A> tail() {
             ImmutableStack<A> outTail = outbound.tail();
             if (!outTail.isEmpty())
                 return new NonEmpty<>(outTail, inbound);

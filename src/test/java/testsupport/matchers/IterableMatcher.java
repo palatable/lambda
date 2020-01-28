@@ -19,7 +19,7 @@ public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
 
     @Override
     public boolean matches(Object actual) {
-        return actual instanceof Iterable && iterablesIterateSameElementsInOrder(expected, (Iterable) actual);
+        return actual instanceof Iterable && iterablesIterateSameElementsInOrder(expected, (Iterable<?>) actual);
     }
 
     @Override
@@ -32,18 +32,18 @@ public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
         if (item instanceof Iterable) {
             if (description.toString().endsWith("but: "))
                 description.appendText("was ");
-            description.appendText("<").appendText(stringify((Iterable) item)).appendText(">");
+            description.appendText("<").appendText(stringify((Iterable<?>) item)).appendText(">");
         } else
             super.describeMismatch(item, description);
     }
 
     private boolean iterablesIterateSameElementsInOrder(Iterable<?> expected, Iterable<?> actual) {
-        Iterator<?> actualIterator = actual.iterator();
+        Iterator<?> actualIterator   = actual.iterator();
         Iterator<?> expectedIterator = expected.iterator();
 
         while (expectedIterator.hasNext() && actualIterator.hasNext()) {
             Object nextExpected = expectedIterator.next();
-            Object nextActual = actualIterator.next();
+            Object nextActual   = actualIterator.next();
 
             if (nextExpected instanceof Iterable && nextActual instanceof Iterable) {
                 if (!iterablesIterateSameElementsInOrder((Iterable<?>) nextExpected, (Iterable<?>) nextActual))
@@ -57,11 +57,11 @@ public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
 
     private String stringify(Iterable<?> iterable) {
         StringBuilder stringBuilder = new StringBuilder().append("[");
-        Iterator<?> iterator = iterable.iterator();
+        Iterator<?>   iterator      = iterable.iterator();
         while (iterator.hasNext()) {
             Object next = iterator.next();
             if (next instanceof Iterable)
-                stringBuilder.append(stringify((Iterable) next));
+                stringBuilder.append(stringify((Iterable<?>) next));
             else
                 stringBuilder.append(next);
             if (iterator.hasNext())
@@ -74,6 +74,10 @@ public class IterableMatcher<E> extends BaseMatcher<Iterable<E>> {
     @SuppressWarnings("varargs")
     public static <E> IterableMatcher<E> iterates(E... es) {
         return new IterableMatcher<>(asList(es));
+    }
+
+    public static <E> IterableMatcher<E> iteratesAll(Iterable<E> es) {
+        return new IterableMatcher<>(es);
     }
 
     public static <E> IterableMatcher<E> isEmpty() {
