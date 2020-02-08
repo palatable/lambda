@@ -13,8 +13,14 @@ import java.util.Comparator;
  * @see Compare
  */
 public abstract class ComparisonRelation
-        implements CoProduct3<ComparisonRelation.LessThan, ComparisonRelation.Equal, ComparisonRelation.GreaterThan, ComparisonRelation> {
-    private ComparisonRelation() { }
+        implements CoProduct3<
+        ComparisonRelation.LessThan,
+        ComparisonRelation.Equal,
+        ComparisonRelation.GreaterThan,
+        ComparisonRelation> {
+
+    private ComparisonRelation() {
+    }
 
     /**
      * Return a comparison relation from the result of a {@link Comparator} or {@link Comparable} result
@@ -38,7 +44,7 @@ public abstract class ComparisonRelation
         return Equal.INSTANCE;
     }
 
-    public final static class LessThan extends ComparisonRelation {
+    public static final class LessThan extends ComparisonRelation {
         private static final LessThan INSTANCE = new LessThan();
 
         private LessThan() {
@@ -50,12 +56,14 @@ public abstract class ComparisonRelation
         }
 
         @Override
-        public <R> R match(Fn1<? super LessThan, ? extends R> aFn, Fn1<? super Equal, ? extends R> bFn, Fn1<? super GreaterThan, ? extends R> cFn) {
+        public <R> R match(Fn1<? super LessThan, ? extends R> aFn,
+                           Fn1<? super Equal, ? extends R> bFn,
+                           Fn1<? super GreaterThan, ? extends R> cFn) {
             return aFn.apply(this);
         }
     }
 
-    public final static class Equal extends ComparisonRelation {
+    public static final class Equal extends ComparisonRelation {
         private static final Equal INSTANCE = new Equal();
 
         private Equal() {
@@ -66,15 +74,18 @@ public abstract class ComparisonRelation
         }
 
         @Override
-        public <R> R match(Fn1<? super LessThan, ? extends R> aFn, Fn1<? super Equal, ? extends R> bFn, Fn1<? super GreaterThan, ? extends R> cFn) {
+        public <R> R match(Fn1<? super LessThan, ? extends R> aFn,
+                           Fn1<? super Equal, ? extends R> bFn,
+                           Fn1<? super GreaterThan, ? extends R> cFn) {
             return bFn.apply(this);
         }
     }
 
-    public final static class GreaterThan extends ComparisonRelation {
+    public static final class GreaterThan extends ComparisonRelation {
         private static final GreaterThan INSTANCE = new GreaterThan();
 
-        private GreaterThan() { }
+        private GreaterThan() {
+        }
 
         @Override
         public String toString() {
@@ -82,7 +93,9 @@ public abstract class ComparisonRelation
         }
 
         @Override
-        public <R> R match(Fn1<? super LessThan, ? extends R> aFn, Fn1<? super Equal, ? extends R> bFn, Fn1<? super GreaterThan, ? extends R> cFn) {
+        public <R> R match(Fn1<? super LessThan, ? extends R> aFn,
+                           Fn1<? super Equal, ? extends R> bFn,
+                           Fn1<? super GreaterThan, ? extends R> cFn) {
             return cFn.apply(this);
         }
     }
