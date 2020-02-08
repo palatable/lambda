@@ -9,9 +9,9 @@ import java.util.Comparator;
 
 /**
  * Given a {@link Comparator} from some type <code>A</code> and two values of type <code>A</code>, return a
- * {@link ComparisonRelation} of the first value with reference to the second value (according to {@link Comparator#compare(A, A)}.
- * The order of parameters is flipped with respect to {@link Comparator#compare(A, A)} for more idiomatic partial application.
- *
+ * {@link ComparisonRelation} of the first value with reference to the second value (according to
+ * {@link Comparator#compare(Object, Object)}. The order of parameters is flipped with respect to
+ * {@link Comparator#compare(Object, Object)} for more idiomatic partial application.
  * <p>
  * Example:
  * <pre>
@@ -21,7 +21,6 @@ import java.util.Comparator;
  *  Compare.compare(naturalOrder(), 1, 1); // ComparisonRelation.Equal
  * }
  * </pre>
- * </p>
  *
  * @param <A> the value type
  * @see Comparator
@@ -30,7 +29,8 @@ import java.util.Comparator;
 public final class Compare<A> implements Fn3<Comparator<A>, A, A, ComparisonRelation> {
     private static final Compare<?> INSTANCE = new Compare<>();
 
-    private Compare() { }
+    private Compare() {
+    }
 
     @Override
     public ComparisonRelation checkedApply(Comparator<A> aComparator, A a, A a2) throws Throwable {

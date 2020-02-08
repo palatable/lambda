@@ -13,7 +13,7 @@ import static com.jnape.palatable.lambda.functions.specialized.Predicate.predica
 /**
  * Given a {@link Comparator} from some type <code>A</code> and two values of type <code>A</code>,
  * return <code>true</code> if the second value is greater than or equal to the first value in
- * terms of their mapped <code>B</code> results according to {@link Comparator#compare(A, A)};
+ * terms of their mapped <code>B</code> results according to {@link Comparator#compare(Object, Object)};
  * otherwise, return false.
  *
  * @param <A> the value type
@@ -38,6 +38,11 @@ public final class GTEWith<A> implements Fn3<Comparator<A>, A, A, Boolean> {
         return predicate(Fn3.super.apply(compareFn, x));
     }
 
+    @Override
+    public Boolean checkedApply(Comparator<A> comparator, A a, A a2) {
+        return !ltWith(comparator, a, a2);
+    }
+
     @SuppressWarnings("unchecked")
     public static <A> GTEWith<A> gteWith() {
         return (GTEWith<A>) INSTANCE;
@@ -53,10 +58,5 @@ public final class GTEWith<A> implements Fn3<Comparator<A>, A, A, Boolean> {
 
     public static <A> Boolean gteWith(Comparator<A> comparator, A y, A x) {
         return gteWith(comparator, y).apply(x);
-    }
-
-    @Override
-    public Boolean checkedApply(Comparator<A> comparator, A a, A a2) {
-        return !ltWith(comparator, a, a2);
     }
 }

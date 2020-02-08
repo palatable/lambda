@@ -11,9 +11,9 @@ import static com.jnape.palatable.lambda.functions.ordering.ComparisonRelation.e
 import static com.jnape.palatable.lambda.functions.specialized.Predicate.predicate;
 
 /**
- * Given a {@link Comparator} from some type <code>A</code> and two values of type <code>A</code>, return <code>true</code>
- * if the first value is strictly equal to the second value (according to {@link Comparator#compare(A, A)}
- * otherwise, return false.
+ * Given a {@link Comparator} from some type <code>A</code> and two values of type <code>A</code>, return
+ * <code>true</code> if the first value is strictly equal to the second value (according to
+ * {@link Comparator#compare(Object, Object)} otherwise, return false.
  *
  * @param <A> the value type
  * @see CmpEqBy
@@ -38,6 +38,11 @@ public final class CmpEqWith<A> implements Fn3<Comparator<A>, A, A, Boolean> {
         return predicate(Fn3.super.apply(compareFn, x));
     }
 
+    @Override
+    public Boolean checkedApply(Comparator<A> comparator, A a, A a2) {
+        return compare(comparator, a, a2).equals(equal());
+    }
+
     @SuppressWarnings("unchecked")
     public static <A> CmpEqWith<A> cmpEqWith() {
         return (CmpEqWith<A>) INSTANCE;
@@ -53,10 +58,5 @@ public final class CmpEqWith<A> implements Fn3<Comparator<A>, A, A, Boolean> {
 
     public static <A> Boolean cmpEqWith(Comparator<A> comparator, A x, A y) {
         return cmpEqWith(comparator, x).apply(y);
-    }
-
-    @Override
-    public Boolean checkedApply(Comparator<A> comparator, A a, A a2) {
-        return compare(comparator, a, a2).equals(equal());
     }
 }
