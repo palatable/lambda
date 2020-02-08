@@ -28,7 +28,6 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
@@ -138,11 +137,30 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      */
     public <B, MB extends MonadRec<B, M>> MB fold(Fn2<? super B, ? super A, ? extends MonadRec<B, M>> fn,
                                                   MonadRec<B, M> acc) {
+        return foldCut((b, a) -> fn.apply(b, a).fmap(RecursiveResult::recurse), acc);
+    }
+
+    /**
+     * Monolithically fold the spine of this {@link IterateT} (with the possibility of early termination) by
+     * {@link MonadRec#trampolineM(Fn1) trampolining} the underlying effects (for iterative folding, use
+     * {@link IterateT#trampolineM(Fn1) trampolineM} directly).
+     *
+     * @param fn   the folding function
+     * @param acc  the starting accumulation effect
+     * @param <B>  the accumulation type
+     * @param <MB> the witnessed target result type
+     * @return the folded effect result
+     */
+    public <B, MB extends MonadRec<B, M>> MB foldCut(
+            Fn2<? super B, ? super A, ? extends MonadRec<RecursiveResult<B, B>, M>> fn,
+            MonadRec<B, M> acc) {
         return acc.fmap(tupler(this))
                 .trampolineM(into((as, b) -> maybeT(as.runIterateT())
-                        .flatMap(into((a, aas) -> maybeT(fn.apply(b, a).fmap(tupler(aas)).fmap(Maybe::just))))
+                        .flatMap(into((a, aas) -> maybeT(fn.apply(b, a).fmap(Maybe::just)).fmap(tupler(aas))))
                         .runMaybeT()
-                        .fmap(maybeRecur -> maybeRecur.match(constantly(terminate(b)), RecursiveResult::recurse))))
+                        .fmap(maybeR -> maybeR.match(
+                                __ -> terminate(b),
+                                into((rest, rr) -> rr.biMapL(tupler(rest)))))))
                 .coerce();
     }
 

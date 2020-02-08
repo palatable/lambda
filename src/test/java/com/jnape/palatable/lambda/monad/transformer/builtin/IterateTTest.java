@@ -30,6 +30,8 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.LTE.lte;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.lambda.functor.builtin.Writer.listen;
@@ -41,6 +43,7 @@ import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.empt
 import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.singleton;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.unfold;
 import static com.jnape.palatable.lambda.monoid.builtin.AddAll.addAll;
+import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -150,6 +153,18 @@ public class IterateTTest {
                              .<Integer, Writer<List<Integer>, Integer>>fold(
                                      (x, y) -> writer(tuple(x + y, singletonList(y))), listen(0))
                              .runWriter(addAll(ArrayList::new)));
+    }
+
+    @Test
+    public void foldCut() {
+        assertEquals(tuple(3, "012"),
+                     IterateT.of(writer(tuple(1, "1")),
+                                 writer(tuple(2, "2")),
+                                 writer(tuple(3, "3")))
+                             .<Integer, Writer<String, Integer>>foldCut(
+                                     (x, y) -> listen(y == 2 ? terminate(x + y) : recurse(x + y)),
+                                     writer(tuple(0, "0")))
+                             .runWriter(join()));
     }
 
     @Test
