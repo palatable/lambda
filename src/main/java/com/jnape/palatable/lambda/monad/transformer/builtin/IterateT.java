@@ -230,6 +230,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * as such, calling this on an infinite {@link IterateT} will result in either heap exhaustion (e.g. in the case of
      * {@link List lists}) or non-termination (e.g. in the case of {@link Set sets}).
      *
+     * @param cFn0  the {@link Collection} construction function
      * @param <C>   the {@link Collection} type
      * @param <MAS> the witnessed target type
      * @return the {@link List} inside of the effect

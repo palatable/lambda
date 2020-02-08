@@ -136,6 +136,7 @@ public final class Writer<W, A> implements
     /**
      * Construct a {@link Writer} from an accumulation.
      *
+     * @param w   the accumulation
      * @param <W> the accumulation type
      * @return the {@link Writer}
      */
@@ -146,6 +147,7 @@ public final class Writer<W, A> implements
     /**
      * Construct a {@link Writer} from a value.
      *
+     * @param a   the output value
      * @param <W> the accumulation type
      * @param <A> the value type
      * @return the {@link Writer}
@@ -157,6 +159,7 @@ public final class Writer<W, A> implements
     /**
      * Construct a {@link Writer} from an accumulation and a value.
      *
+     * @param aw  the output value and accumulation
      * @param <W> the accumulation type
      * @param <A> the value type
      * @return the {@link WriterT}
