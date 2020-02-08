@@ -13,9 +13,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `MergeHMaps`, a `Monoid` that merges `HMap`s by merging the values via key-specified `Semigroup`s
 - `Id#id` overload that accepts an argument and returns it
 - `MaybeT#or`, choose the first `MaybeT` that represents an effect around `just` a value
+- `MaybeT#filter`, filter a `Maybe` inside an effect
 - `StateMatcher, StateTMatcher, WriterTMatcher`
 - `ReaderT#and`, category composition between `ReaderT` instances: `(a -> m b) -> (b -> m c) -> (a -> m c)`
 - `IterateT`, [`ListT` done right](https://wiki.haskell.org/ListT_done_right)
+- `Comparison`, a type-safe sum of `LT`, `EQ`, and `GT` orderings
+- `Compare`, a function taking a `Comparator` and returning a `Comparison`
+- `Min/Max/...With` variants for inequality testing with a `Comparator`
 
 ## [5.1.0] - 2019-10-13
 ### Changed
