@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+There are currently no unreleased changes
+
+## [5.2.0] - 2020-02-12
+
 ### Changed
 - `HList#cons` static factory method auto-promotes to specialized `HList` if there is one
 - `EitherT` gains a `MonadError` instance
@@ -557,7 +561,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.1.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.2.0...HEAD
+[5.2.0]: https://github.com/palatable/lambda/compare/lambda-5.1.0...lambda-5.2.0
 [5.1.0]: https://github.com/palatable/lambda/compare/lambda-5.0.0...lambda-5.1.0
 [5.0.0]: https://github.com/palatable/lambda/compare/lambda-4.0.0...lambda-5.0.0
 [4.0.0]: https://github.com/palatable/lambda/compare/lambda-3.3.0...lambda-4.0.0
