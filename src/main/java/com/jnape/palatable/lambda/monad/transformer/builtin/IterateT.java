@@ -8,6 +8,7 @@ import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
@@ -450,5 +451,30 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
                 return just(tuple(as.next(), as));
             return nothing();
         }), io(() -> as));
+    }
+
+    /**
+     * The canonical {@link Pure} instance for {@link IterateT}.
+     *
+     * @param pureM the argument {@link Monad} {@link Pure}
+     * @param <M>   the argument {@link Monad} witness
+     * @return the {@link Pure} instance
+     */
+    public static <M extends MonadRec<?, M>> Pure<IterateT<M, ?>> pureIterateT(Pure<M> pureM) {
+        return new Pure<IterateT<M, ?>>() {
+            @Override
+            public <A> IterateT<M, A> checkedApply(A a) {
+                return liftIterateT().apply(pureM.<A, MonadRec<A, M>>apply(a));
+            }
+        };
+    }
+
+    /**
+     * {@link Lift} for {@link IterateT}.
+     *
+     * @return the {@link Monad} lifted into {@link IterateT}
+     */
+    public static Lift<IterateT<?, ?>> liftIterateT() {
+        return IterateT::singleton;
     }
 }

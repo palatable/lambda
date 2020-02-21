@@ -13,11 +13,7 @@ import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.Equivalence;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.MonadRecLaws;
+import testsupport.traits.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,14 +30,9 @@ import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.rec
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
-import static com.jnape.palatable.lambda.functor.builtin.Writer.listen;
-import static com.jnape.palatable.lambda.functor.builtin.Writer.pureWriter;
-import static com.jnape.palatable.lambda.functor.builtin.Writer.tell;
-import static com.jnape.palatable.lambda.functor.builtin.Writer.writer;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.*;
 import static com.jnape.palatable.lambda.io.IO.io;
-import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.empty;
-import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.singleton;
-import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.unfold;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.*;
 import static com.jnape.palatable.lambda.monoid.builtin.AddAll.addAll;
 import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
@@ -53,9 +44,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 import static testsupport.matchers.IOMatcher.yieldsValue;
-import static testsupport.matchers.IterateTMatcher.isEmpty;
-import static testsupport.matchers.IterateTMatcher.iterates;
-import static testsupport.matchers.IterateTMatcher.iteratesAll;
+import static testsupport.matchers.IterateTMatcher.*;
 import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
@@ -241,5 +230,21 @@ public class IterateTTest {
                                                            singleton(new Identity<>(0)));
         assertEquals(new Identity<>(10_000),
                      bigIterateT.fold((x, y) -> new Identity<>(x + y), new Identity<>(0)));
+    }
+
+    @Test
+    public void staticPure() {
+        assertEquals(new Identity<>(singletonList(1)),
+                     pureIterateT(pureIdentity())
+                         .<Integer, IterateT<Identity<?>, Integer>>apply(1)
+                         .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
+    }
+
+    @Test
+    public void staticLift() {
+        assertEquals(new Identity<>(singletonList(1)),
+                     liftIterateT()
+                         .<Integer, Identity<?>, IterateT<Identity<?>, Integer>>apply(new Identity<>(1))
+                         .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
     }
 }
