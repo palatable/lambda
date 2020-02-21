@@ -10,6 +10,7 @@ import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.builtin.*;
 import com.jnape.palatable.lambda.monad.transformer.interpreter.interpreters.Transformers;
+import com.jnape.palatable.lambda.monoid.Monoid;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
@@ -24,6 +25,7 @@ import static com.jnape.palatable.lambda.monad.transformer.interpreter.Interpret
 import static com.jnape.palatable.lambda.monad.transformer.interpreter.InterpreterH.lifting;
 import static com.jnape.palatable.lambda.monad.transformer.interpreter.interpreters.Transformers.*;
 import static com.jnape.palatable.lambda.monad.transformer.interpreter.interpreters.transformers.Construction.eitherT;
+import static com.jnape.palatable.lambda.monoid.Monoid.monoid;
 
 public class Example {
     public static void simpleCase() {
@@ -68,7 +70,7 @@ public class Example {
         Interpreter<EitherT<MaybeT<IdentityT<IO<?>, ?>, ?>, String, ?>, Integer, IO<?>, Integer> interpreter =
             Transformers.<MaybeT<IdentityT<IO<?>, ?>, ?>, String, Integer>interpretEitherT(recoveryFn)
                 .andThen(interpretMaybeT(orElseGet))
-                .andThenH(interpretIdentityT());
+                .andThen(interpretIdentityT());
 
         interpreter
             .<IO<Integer>>interpret(eitherT(maybeT(identityT(io(() -> new Identity<>(just(right(42))))))))
@@ -85,11 +87,12 @@ public class Example {
             // F                                            a
             ReaderT<Boolean, EitherT<IO<?>, String, ?>, ?>, Integer,
             // G                                            b
-            IO<?>,                                          Tuple2<Either<String, Integer>, Integer>
+            IO<?>, Tuple2<Either<String, Integer>, Integer>
             > massiveInterpreter =
-            Transformers.<Boolean, EitherT<IO<?>, String, ?>>runReaderT(true)
+            Transformers
+                .<Boolean, EitherT<IO<?>, String, ?>>runReaderT(true)
                 .<IO<?>, Integer, Either<String, Integer>>andThen(runEitherT())
-                .<StateT<Integer, IO<?>, ?>>andThenH(lifting(liftStateT()))
+                .<StateT<Integer, IO<?>, ?>>andThen(lifting(liftStateT()))
                 .andThen(eitherT())
                 .andThen(runEitherT())
                 .andThen(runStateT(10));
@@ -105,5 +108,33 @@ public class Example {
         nested();
         deeplyNested();
         readerTCase();
+        iterateTCase();
+    }
+
+    public static <M extends MonadRec<?, M>, A> Interpreter<IterateT<M, ?>, A, M, A> folding(Monoid<A> monoid) {
+        return new Interpreter<IterateT<M, ?>, A, M, A>() {
+            @Override
+            public <GB extends MonadRec<A, M>> GB interpret(MonadRec<A, IterateT<M, ?>> fa) {
+                IterateT<M, A>                                ma   = fa.coerce();
+                MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M> mmta = ma.runIterateT();
+                return ma.fold((a, b) -> mmta.pure(monoid.apply(a, b)),
+                               mmta.pure(monoid.identity()));
+            }
+        };
+    }
+
+    public static <M extends MonadRec<?, M>, A> Interpreter<IterateT<M, ?>, A, M, Maybe<A>> head() {
+        return new Interpreter<IterateT<M, ?>, A, M, Maybe<A>>() {
+            @Override
+            public <GB extends MonadRec<Maybe<A>, M>> GB interpret(MonadRec<A, IterateT<M, ?>> fa) {
+                return fa.<IterateT<M, A>>coerce().runIterateT().fmap(m -> m.fmap(Tuple2::_1)).coerce();
+            }
+        };
+    }
+
+    private static void iterateTCase() {
+        Interpreter<ReaderT<Boolean, IterateT<IO<?>, ?>, ?>, Integer, IO<?>, Integer> whoa =
+            Example.<IO<?>, Integer>folding(monoid(Integer::sum, 0))
+                .compose(runReaderT(true));
     }
 }

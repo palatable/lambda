@@ -17,7 +17,7 @@ public interface Interpreter<F extends MonadRec<?, F>, A, G extends MonadRec<?, 
         };
     }
 
-    default <H extends MonadRec<?, H>> Interpreter<F, A, H, B> andThenH(InterpreterH<G, H> gh) {
+    default <H extends MonadRec<?, H>> Interpreter<F, A, H, B> andThen(InterpreterH<G, H> gh) {
         return new Interpreter<F, A, H, B>() {
             @Override
             public <GB extends MonadRec<B, H>> GB interpret(MonadRec<A, F> fa) {
@@ -30,7 +30,7 @@ public interface Interpreter<F extends MonadRec<?, F>, A, G extends MonadRec<?, 
         return efza.andThen(this);
     }
 
-    default <E extends MonadRec<?, E>> Interpreter<E, A, G, B> composeH(InterpreterH<E, F> ef) {
+    default <E extends MonadRec<?, E>> Interpreter<E, A, G, B> compose(InterpreterH<E, F> ef) {
         return new Interpreter<E, A, G, B>() {
             @Override
             public <GB extends MonadRec<B, G>> GB interpret(MonadRec<A, E> ea) {

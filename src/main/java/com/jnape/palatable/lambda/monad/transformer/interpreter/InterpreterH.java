@@ -20,7 +20,7 @@ public interface InterpreterH<F extends MonadRec<?, F>, G extends MonadRec<?, G>
     }
 
     default <H extends MonadRec<?, H>, A, B> Interpreter<F, A, H, B> andThen(Interpreter<G, A, H, B> gh) {
-        return gh.composeH(this);
+        return gh.compose(this);
     }
 
     default <E extends MonadRec<?, E>> InterpreterH<E, G> composeH(InterpreterH<E, F> ef) {
@@ -28,7 +28,7 @@ public interface InterpreterH<F extends MonadRec<?, F>, G extends MonadRec<?, G>
     }
 
     default <E extends MonadRec<?, E>, A, B> Interpreter<E, A, G, B> compose(Interpreter<E, A, F, B> gh) {
-        return gh.andThenH(this);
+        return gh.andThen(this);
     }
 
     default <A> Interpreter<F, A, G, A> monomorphize() {
