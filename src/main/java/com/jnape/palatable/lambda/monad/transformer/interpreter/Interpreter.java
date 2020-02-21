@@ -8,6 +8,7 @@ public interface Interpreter<F extends MonadRec<?, F>, A, G extends MonadRec<?, 
 
     <GB extends MonadRec<B, G>> GB interpret(MonadRec<A, F> fa);
 
+    @SuppressWarnings("overloads")
     default <H extends MonadRec<?, H>, C> Interpreter<F, A, H, C> andThen(Interpreter<G, B, H, C> ghbc) {
         return new Interpreter<F, A, H, C>() {
             @Override
@@ -17,6 +18,7 @@ public interface Interpreter<F extends MonadRec<?, F>, A, G extends MonadRec<?, 
         };
     }
 
+    @SuppressWarnings("overloads")
     default <H extends MonadRec<?, H>> Interpreter<F, A, H, B> andThen(InterpreterH<G, H> gh) {
         return new Interpreter<F, A, H, B>() {
             @Override
@@ -26,10 +28,12 @@ public interface Interpreter<F extends MonadRec<?, F>, A, G extends MonadRec<?, 
         };
     }
 
+    @SuppressWarnings("overloads")
     default <E extends MonadRec<?, E>, Z> Interpreter<E, Z, G, B> compose(Interpreter<E, Z, F, A> efza) {
         return efza.andThen(this);
     }
 
+    @SuppressWarnings("overloads")
     default <E extends MonadRec<?, E>> Interpreter<E, A, G, B> compose(InterpreterH<E, F> ef) {
         return new Interpreter<E, A, G, B>() {
             @Override
@@ -40,6 +44,7 @@ public interface Interpreter<F extends MonadRec<?, F>, A, G extends MonadRec<?, 
     }
 
     static <F extends MonadRec<?, F>, A> Interpreter<F, A, F, A> identity() {
+        //noinspection Anonymous2MethodRef
         return new Interpreter<F, A, F, A>() {
             @Override
             public <GB extends MonadRec<A, F>> GB interpret(MonadRec<A, F> fa) {

@@ -15,9 +15,12 @@ import com.jnape.palatable.lambda.monoid.Monoid;
 import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.EitherT.eitherT;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.IdentityT.identityT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.unfold;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.MaybeT.maybeT;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.ReaderT.readerT;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.liftStateT;
@@ -48,19 +51,6 @@ public class Example {
             .<IO<Maybe<Either<String, Integer>>>>interpret(effect)
             .flatMap(res -> io(() -> System.out.println("res (" + res.getClass().getName() + "): " + res)))
             .unsafePerformIO();
-    }
-
-    public static final class RoutingContext {
-    }
-
-    public static final class Envelope<A> {
-    }
-
-    public static interface EnvelopeHandler<M extends MonadRec<?, M>, A> {
-        MonadRec<Envelope<A>, M> handle(RoutingContext routingContext);
-    }
-
-    public static interface IOEnvelopeHandler<A> extends EnvelopeHandler<IO<?>, A> {
     }
 
     public static void deeplyNested() {
@@ -133,8 +123,17 @@ public class Example {
     }
 
     private static void iterateTCase() {
-        Interpreter<ReaderT<Boolean, IterateT<IO<?>, ?>, ?>, Integer, IO<?>, Integer> whoa =
-            Example.<IO<?>, Integer>folding(monoid(Integer::sum, 0))
-                .compose(runReaderT(true));
+        Example.<IO<?>, Integer>folding(monoid(Integer::sum, 0))
+            .compose(runReaderT(true))
+            .<IO<Integer>>interpret(readerT(b -> unfold(x -> io(() -> {
+                                                            System.out.print("reading " + x + "...");
+                                                            return x ? just(tuple(1, false)) : nothing();
+                                                        }),
+                                                        io(() -> {
+                                                            System.out.print("seed...");
+                                                            return b;
+                                                        }))))
+            .flatMap(res -> io(() -> System.out.println("res (" + res.getClass().getName() + "): " + res)))
+            .unsafePerformIO();
     }
 }
