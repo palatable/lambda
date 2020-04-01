@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
-There are currently no unreleased changes
+### Added
+- `$`, function application represented as a higher-order `Fn2`
 
 ## [5.2.0] - 2020-02-12
 
