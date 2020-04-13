@@ -5,7 +5,7 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.internal.Runtime;
 
 /**
- * A function taking six arguments. Defined in terms of {@link Fn7}, so similarly auto-curried.
+ * A function taking eight arguments. Defined in terms of {@link Fn7}, so similarly auto-curried.
  *
  * @param <A> The first argument type
  * @param <B> The second argument type
