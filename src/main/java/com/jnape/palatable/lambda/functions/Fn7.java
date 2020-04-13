@@ -8,7 +8,7 @@ import static com.jnape.palatable.lambda.functions.Fn8.fn8;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
 /**
- * A function taking six arguments. Defined in terms of {@link Fn6}, so similarly auto-curried.
+ * A function taking seven arguments. Defined in terms of {@link Fn6}, so similarly auto-curried.
  *
  * @param <A> The first argument type
  * @param <B> The second argument type
