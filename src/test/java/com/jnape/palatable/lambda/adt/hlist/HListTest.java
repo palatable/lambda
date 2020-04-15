@@ -68,4 +68,10 @@ public class HListTest {
         assertNotEquals(nil().cons(1).hashCode(), nil().cons(2).hashCode());
         assertNotEquals(nil().cons(1).cons(2).hashCode(), nil().cons(1).cons(3).hashCode());
     }
+
+    @Test
+    public void snoc() {
+        SingletonHList<Float> tuple = nil().snoc((float) 4.0);
+        assertEquals(4.0, tuple.head(), 0.01);
+    }
 }

@@ -132,4 +132,10 @@ public class Tuple6Test {
         Tuple6<Integer, String, Character, Boolean, Float, Byte> tuple = pureTuple(1, "2", '3', true, 5f).apply((byte) 6);
         assertEquals(tuple(1, "2", '3', true, 5f, (byte) 6), tuple);
     }
+
+    @Test
+    public void snoc() {
+        Tuple7<Long, String, Integer, String, Integer, String, Integer> tuple = tuple(5L, "a", 7, "b", 11, "c").snoc(13);
+        assertEquals(tuple(5L, "a", 7, "b", 11, "c", 13), tuple);
+    }
 }
