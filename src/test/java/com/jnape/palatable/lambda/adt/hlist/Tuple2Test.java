@@ -143,4 +143,10 @@ public class Tuple2Test {
         Tuple2<Integer, String> tuple = pureTuple(1).apply("two");
         assertEquals(tuple(1, "two"), tuple);
     }
+
+    @Test
+    public void snoc() {
+        Tuple3<Long, Integer, String> tuple = tuple(Long.MAX_VALUE, 123).snoc("hi");
+        assertEquals(tuple(Long.MAX_VALUE, 123, "hi"), tuple);
+    }
 }

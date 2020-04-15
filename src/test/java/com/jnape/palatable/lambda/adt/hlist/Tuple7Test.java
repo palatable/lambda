@@ -136,4 +136,10 @@ public class Tuple7Test {
                 pureTuple((byte) 1, (short) 2, 3, 4L, 5F, 6D).apply(true);
         assertEquals(tuple((byte) 1, (short) 2, 3, 4L, 5F, 6D, true), tuple);
     }
+
+    @Test
+    public void snoc() {
+        Tuple8<String, Long, String, Integer, String, Integer, String, Character> tuple = tuple("b", 7L, "c", 11, "d", 13, "e").snoc('f');
+        assertEquals(tuple("b", 7L, "c", 11, "d", 13, "e", 'f'), tuple);
+    }
 }

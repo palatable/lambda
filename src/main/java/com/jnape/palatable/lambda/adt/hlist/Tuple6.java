@@ -67,6 +67,16 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
     }
 
     /**
+     * Snoc an element onto the back of this HList.
+     *
+     * @param _7   the new last element
+     * @return the updated HList
+     */
+    public <_7> Tuple7<_1, _2, _3, _4, _5, _6, _7> snoc(_7 _7) {
+        return tuple(_1, _2, _3, _4, _5, _6, _7);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

@@ -297,5 +297,16 @@ public abstract class HList {
         public <Head> SingletonHList<Head> cons(Head head) {
             return new SingletonHList<>(head);
         }
+
+        /**
+         * Snoc an element onto the back of this HList.
+         *
+         * @param last   the new last element
+         * @param <Last> the new last element type
+         * @return the updated HList
+         */
+        public <Last> SingletonHList<Last> snoc(Last last) {
+            return new SingletonHList<>(last);
+        }
     }
 }
