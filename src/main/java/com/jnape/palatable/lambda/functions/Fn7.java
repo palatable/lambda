@@ -258,7 +258,7 @@ public interface Fn7<A, B, C, D, E, F, G, H> extends Fn6<A, B, C, D, E, F, Fn1<G
     /**
      * Static factory method for wrapping a curried {@link Fn5} in an {@link Fn7}.
      *
-     * @param curriedFn5 the curried fn4 to adapt
+     * @param curriedFn5 the curried fn5 to adapt
      * @param <A>        the first input argument type
      * @param <B>        the second input argument type
      * @param <C>        the third input argument type
@@ -276,7 +276,7 @@ public interface Fn7<A, B, C, D, E, F, G, H> extends Fn6<A, B, C, D, E, F, Fn1<G
     /**
      * Static factory method for wrapping a curried {@link Fn6} in an {@link Fn7}.
      *
-     * @param curriedFn6 the curried fn4 to adapt
+     * @param curriedFn6 the curried fn6 to adapt
      * @param <A>        the first input argument type
      * @param <B>        the second input argument type
      * @param <C>        the third input argument type
