@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 - `$`, function application represented as a higher-order `Fn2`
 - `Fn1#withSelf`, a static method for constructing a self-referencing `Fn1` 
+- `HNil/SingletonHList/TupleX#snoc`, a method to add a new last element (append to a tuple)
 
 ## [5.2.0] - 2020-02-12
 

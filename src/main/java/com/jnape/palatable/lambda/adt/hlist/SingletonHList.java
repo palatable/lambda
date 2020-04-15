@@ -39,6 +39,17 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
         return new Tuple2<>(_0, this);
     }
 
+
+    /**
+     * Snoc an element onto the back of this HList.
+     *
+     * @param _2   the new last element
+     * @return the updated HList
+     */
+    public <_2> Tuple2<_1, _2> snoc(_2 _2) {
+        return tuple(head(), _2);
+    }
+
     /**
      * {@inheritDoc}
      */

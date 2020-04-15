@@ -13,6 +13,7 @@ import testsupport.traits.TraversableLaws;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.nil;
 import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.adt.hlist.SingletonHList.pureSingletonHList;
 import static org.junit.Assert.assertEquals;
 
@@ -55,5 +56,11 @@ public class SingletonHListTest {
     public void staticPure() {
         SingletonHList<Integer> singletonHList = pureSingletonHList().apply(1);
         assertEquals(singletonHList(1), singletonHList);
+    }
+
+    @Test
+    public void snoc() {
+        Tuple2<Byte, Character> tuple = singletonHList((byte) 127).snoc('x');
+        assertEquals(tuple((byte) 127, 'x'), tuple);
     }
 }
