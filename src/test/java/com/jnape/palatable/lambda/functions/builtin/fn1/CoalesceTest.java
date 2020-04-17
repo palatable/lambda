@@ -7,7 +7,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Coalesce.coalesce;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.EitherMatcher.isLeftThat;
 import static testsupport.matchers.EitherMatcher.isRightThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;

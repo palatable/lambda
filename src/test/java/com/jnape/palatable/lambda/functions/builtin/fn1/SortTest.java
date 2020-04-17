@@ -10,7 +10,7 @@ import java.util.List;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Sort.sort;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 public class SortTest {

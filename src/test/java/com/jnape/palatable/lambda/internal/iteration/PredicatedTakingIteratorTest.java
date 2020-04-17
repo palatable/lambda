@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PredicatedTakingIteratorTest {
 

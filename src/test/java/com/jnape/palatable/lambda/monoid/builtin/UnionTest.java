@@ -18,7 +18,7 @@ import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;
 import static testsupport.matchers.IterableMatcher.iterates;
 

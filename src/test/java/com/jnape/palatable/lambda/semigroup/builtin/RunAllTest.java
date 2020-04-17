@@ -5,7 +5,7 @@ import org.junit.Test;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.semigroup.builtin.RunAll.runAll;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IOMatcher.yieldsValue;
 
 public class RunAllTest {

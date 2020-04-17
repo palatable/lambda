@@ -3,9 +3,7 @@ package com.jnape.palatable.lambda.adt;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.FunctorLaws;
@@ -33,11 +31,11 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static testsupport.assertion.MonadErrorAssert.assertLaws;
@@ -45,8 +43,6 @@ import static testsupport.matchers.EitherMatcher.isLeftThat;
 
 @RunWith(Traits.class)
 public class TryTest {
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, TraversableLaws.class, MonadRecLaws.class})
     public Subjects<Try<Integer>> testSubject() {
@@ -137,12 +133,20 @@ public class TryTest {
     }
 
     @Test
-    public void orThrow() throws Throwable {
+    public void orThrow() {
         assertEquals((Integer) 1, trying(() -> 1).orThrow());
 
         Throwable expected = new Exception("expected");
-        thrown.expect(equalTo(expected));
-        trying(() -> {throw expected;}).orThrow();
+
+        Try<Object> trying = trying(() -> {
+            throw expected;
+        });
+
+        assertThrows(
+            "expected",
+            Exception.class,
+            trying::orThrow
+        );
     }
 
     @Test

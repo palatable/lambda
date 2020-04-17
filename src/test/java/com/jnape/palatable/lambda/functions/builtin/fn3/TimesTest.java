@@ -1,17 +1,14 @@
 package com.jnape.palatable.lambda.functions.builtin.fn3;
 
 import com.jnape.palatable.lambda.functions.Fn1;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class TimesTest {
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void accumulatesFunctionNTimes() {
@@ -27,10 +24,11 @@ public class TimesTest {
 
     @Test
     public void lessThanZeroIsIllegal() {
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("n must not be less than 0");
-
-        times(-1, id(), 1);
+        assertThrows(
+            "n must not be less than 0",
+            IllegalStateException.class,
+            () -> times(-1, id(), 1)
+        );
     }
 
     @Test

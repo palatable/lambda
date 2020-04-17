@@ -16,7 +16,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn2.Sequence.sequence
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 public class SequenceTest {

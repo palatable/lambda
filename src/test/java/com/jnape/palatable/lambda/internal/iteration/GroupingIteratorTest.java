@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.Mocking.mockIteratorToHaveValues;
 import static testsupport.matchers.IterableMatcher.iterates;
 

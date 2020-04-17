@@ -26,7 +26,7 @@ import static com.jnape.palatable.lambda.monad.transformer.builtin.WriterT.write
 import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static com.jnape.palatable.lambda.monoid.builtin.Trivial.trivial;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.WriterTMatcher.whenEvaluatedWith;
 import static testsupport.matchers.WriterTMatcher.whenExecutedWith;
 import static testsupport.matchers.WriterTMatcher.whenRunWith;

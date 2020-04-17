@@ -12,7 +12,7 @@ import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Distinct.distinct;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 @RunWith(Traits.class)

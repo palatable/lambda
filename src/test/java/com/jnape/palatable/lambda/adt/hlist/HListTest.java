@@ -4,7 +4,12 @@ import org.junit.Test;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class HListTest {
 
@@ -48,7 +53,7 @@ public class HListTest {
     }
 
     @Test
-    @SuppressWarnings({"EqualsWithItself", "EqualsBetweenInconvertibleTypes"})
+    @SuppressWarnings({"EqualsWithItself", "EqualsBetweenInconvertibleTypes", "SimplifiableJUnitAssertion"})
     public void equality() {
         assertTrue(nil().equals(nil()));
         assertTrue(cons(1, nil()).equals(cons(1, nil())));

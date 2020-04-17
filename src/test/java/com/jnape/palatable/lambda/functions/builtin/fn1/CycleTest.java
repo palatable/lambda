@@ -10,7 +10,7 @@ import testsupport.traits.Laziness;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Cycle.cycle;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Take.take;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 
 @RunWith(Traits.class)

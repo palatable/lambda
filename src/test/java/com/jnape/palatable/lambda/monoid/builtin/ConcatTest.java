@@ -5,7 +5,7 @@ import org.junit.Test;
 import static com.jnape.palatable.lambda.monoid.builtin.Concat.concat;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;
 import static testsupport.matchers.IterableMatcher.iterates;
 

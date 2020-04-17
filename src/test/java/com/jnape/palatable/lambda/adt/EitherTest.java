@@ -4,9 +4,7 @@ import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.BifunctorLaws;
@@ -27,14 +25,12 @@ import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static testsupport.assertion.MonadErrorAssert.assertLaws;
 
 @RunWith(Traits.class)
 public class EitherTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @TestTraits({
             FunctorLaws.class,
@@ -86,10 +82,11 @@ public class EitherTest {
 
         assertThat(right.orThrow(IllegalStateException::new), is(1));
 
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("foo");
-
-        left.orThrow(IllegalStateException::new);
+        assertThrows(
+            "foo",
+            IllegalStateException.class,
+            () -> left.orThrow(IllegalStateException::new)
+        );
     }
 
     @Test

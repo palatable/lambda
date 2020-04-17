@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ProfunctorTest {
 

@@ -12,7 +12,7 @@ import static com.jnape.palatable.lambda.io.IO.io;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IOMatcher.throwsException;
 import static testsupport.matchers.IOMatcher.yieldsValue;
 

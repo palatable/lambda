@@ -3,7 +3,7 @@ package testsupport.traits;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.traits.Trait;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.Mocking.mockIterable;
 import static testsupport.matchers.ZeroInvocationsMatcher.wasNeverInteractedWith;
 

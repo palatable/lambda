@@ -41,7 +41,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 import static testsupport.matchers.IOMatcher.yieldsValue;
 import static testsupport.matchers.IterateTMatcher.*;

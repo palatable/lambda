@@ -6,9 +6,7 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
@@ -61,8 +59,6 @@ import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
 public class IOTest {
-
-    public @Rule ExpectedException thrown = ExpectedException.none();
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class})
     public Equivalence<IO<Integer>> testSubject() {

@@ -24,7 +24,7 @@ import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.iterates;
 import static testsupport.matchers.RateLimitedIterationMatcher.iteratesAccordingToRateLimit;
 
@@ -34,7 +34,7 @@ public class RateLimitTest {
     private InstantRecordingClock clock;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         clock = new InstantRecordingClock(systemUTC());
     }
 
@@ -62,7 +62,7 @@ public class RateLimitTest {
     }
 
     @Test(timeout = 100, expected = IterationInterruptedException.class)
-    public void rateLimitingDelayIsInterruptible() throws InterruptedException {
+    public void rateLimitingDelayIsInterruptible() {
         Thread         testThread = Thread.currentThread();
         CountDownLatch latch      = new CountDownLatch(1);
         new Thread(() -> {

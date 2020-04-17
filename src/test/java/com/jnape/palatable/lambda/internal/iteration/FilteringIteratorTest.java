@@ -5,7 +5,7 @@ import org.junit.Test;
 import static java.lang.Character.toUpperCase;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class FilteringIteratorTest {
 

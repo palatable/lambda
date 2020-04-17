@@ -3,7 +3,7 @@ package com.jnape.palatable.lambda.functions.builtin.fn2;
 import org.junit.Test;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Replicate.replicate;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;
 import static testsupport.matchers.IterableMatcher.iterates;
 
