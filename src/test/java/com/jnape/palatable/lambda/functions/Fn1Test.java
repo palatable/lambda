@@ -8,8 +8,8 @@ import testsupport.traits.ApplicativeLaws;
 import testsupport.traits.Equivalence;
 import testsupport.traits.FunctorLaws;
 import testsupport.traits.MonadLaws;
-import testsupport.traits.MonadRecLaws;
 import testsupport.traits.MonadReaderLaws;
+import testsupport.traits.MonadRecLaws;
 import testsupport.traits.MonadWriterLaws;
 
 import java.util.function.Function;
@@ -104,5 +104,10 @@ public class Fn1Test {
     public void staticPure() {
         Fn1<String, Integer> fn1 = Fn1.<String>pureFn1().apply(1);
         assertEquals((Integer) 1, fn1.apply("anything"));
+    }
+
+    @Test
+    public void withSelf() {
+        assertEquals((Integer) 15, Fn1.<Integer, Integer>withSelf((f, x) -> x > 1 ? x + f.apply(x - 1) : x).apply(5));
     }
 }
