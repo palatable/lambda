@@ -29,6 +29,8 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.Fn1.withSelf;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.$.$;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
@@ -74,10 +76,10 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
                      ImmutableQueue<MonadRec<A, M>> conses,
                      ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, IterateT<M, A>>> middles,
                      ImmutableQueue<MonadRec<A, M>> snocs) {
-        this.pureM = pureM;
-        this.conses = conses;
+        this.pureM   = pureM;
+        this.conses  = conses;
         this.middles = middles;
-        this.snocs = snocs;
+        this.snocs   = snocs;
     }
 
     /**
@@ -220,7 +222,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> IterateT<M, B> pure(B b) {
-        return singleton(runIterateT().pure(b));
+        return singleton(pureM.<B, MonadRec<B, M>>apply(b));
     }
 
     /**
@@ -413,9 +415,10 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      */
     public static <M extends MonadRec<?, M>, A, B> IterateT<M, A> unfold(
             Fn1<? super B, ? extends MonadRec<Maybe<Tuple2<A, B>>, M>> fn, MonadRec<B, M> mb) {
-        return suspended(() -> maybeT(mb.flatMap(fn))
-                .fmap(ab -> ab.fmap(b -> unfold(fn, mb.pure(b))))
-                .runMaybeT(), Pure.of(mb));
+        Pure<M> pureM = Pure.of(mb);
+        return $(withSelf((self, mmb) -> suspended(() -> maybeT(mmb.flatMap(fn))
+                .fmap(ab -> ab.<IterateT<M, A>>fmap(b -> self.apply(pureM.apply(b))))
+                .runMaybeT(), pureM)), mb);
     }
 
     /**
