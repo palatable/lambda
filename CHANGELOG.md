@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+- `IterateT#unfold` now only computes a single `Pure` for the given input
+
 ### Added
 - `$`, function application represented as a higher-order `Fn2`
 - `Fn1#withSelf`, a static method for constructing a self-referencing `Fn1` 
