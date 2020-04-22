@@ -302,6 +302,10 @@ public interface Fn1<A, B> extends
         return (a, c) -> after.apply(apply(a), c);
     }
 
+    default Fn1<A, B> self() {
+        return this;
+    }
+
     /**
      * Static factory method for avoid explicit casting when using method references as {@link Fn1}s.
      *
@@ -334,5 +338,18 @@ public interface Fn1<A, B> extends
      */
     static <A> Pure<Fn1<A, ?>> pureFn1() {
         return Constantly::constantly;
+    }
+
+    /**
+     * Construct an {@link Fn1} that has a reference to itself in scope at the time it is executed (presumably for
+     * recursive invocations).
+     *
+     * @param fn  the body of the function, with access to itself
+     * @param <A> the input type
+     * @param <B> the output type
+     * @return the {@link Fn1}
+     */
+    static <A, B> Fn1<A, B> withSelf(Fn2<? super Fn1<? super A, ? extends B>, ? super A, ? extends B> fn) {
+        return a -> fn.apply(withSelf(fn), a);
     }
 }
