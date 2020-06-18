@@ -48,10 +48,10 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     Tuple5(_1 _1, Tuple4<_2, _3, _4, _5> tail) {
         super(_1, tail);
         this._1 = _1;
-        _2 = tail._1();
-        _3 = tail._2();
-        _4 = tail._3();
-        _5 = tail._4();
+        _2      = tail._1();
+        _3      = tail._2();
+        _4      = tail._3();
+        _5      = tail._4();
     }
 
     /**
@@ -63,10 +63,11 @@ public class Tuple5<_1, _2, _3, _4, _5> extends HCons<_1, Tuple4<_2, _3, _4, _5>
     }
 
     /**
-     * Snoc an element onto the back of this HList.
+     * Snoc an element onto the back of this {@link Tuple5}.
      *
      * @param _6   the new last element
-     * @return the updated HList
+     * @param <_6> the new last element type
+     * @return the new {@link Tuple6}
      */
     public <_6> Tuple6<_1, _2, _3, _4, _5, _6> snoc(_6 _6) {
         return tuple(_1, _2, _3, _4, _5, _6);

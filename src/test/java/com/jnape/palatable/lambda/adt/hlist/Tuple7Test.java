@@ -65,6 +65,11 @@ public class Tuple7Test {
     }
 
     @Test
+    public void snoc() {
+        assertEquals(tuple("b", 7L, "c", 11, "d", 13, "e", 'f'), tuple("b", 7L, "c", 11, "d", 13, "e").snoc('f'));
+    }
+
+    @Test
     public void accessors() {
         assertEquals((Byte) (byte) 127, tuple7._1());
         assertEquals((Float) 2.0f, tuple7._2());
@@ -135,11 +140,5 @@ public class Tuple7Test {
         Tuple7<Byte, Short, Integer, Long, Float, Double, Boolean> tuple =
                 pureTuple((byte) 1, (short) 2, 3, 4L, 5F, 6D).apply(true);
         assertEquals(tuple((byte) 1, (short) 2, 3, 4L, 5F, 6D, true), tuple);
-    }
-
-    @Test
-    public void snoc() {
-        Tuple8<String, Long, String, Integer, String, Integer, String, Character> tuple = tuple("b", 7L, "c", 11, "d", 13, "e").snoc('f');
-        assertEquals(tuple("b", 7L, "c", 11, "d", 13, "e", 'f'), tuple);
     }
 }

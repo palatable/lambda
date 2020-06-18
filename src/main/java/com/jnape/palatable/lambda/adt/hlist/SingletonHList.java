@@ -41,10 +41,11 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
 
 
     /**
-     * Snoc an element onto the back of this HList.
+     * Snoc an element onto the back of this {@link SingletonHList}.
      *
      * @param _2   the new last element
-     * @return the updated HList
+     * @param <_2> the new last element type
+     * @return the new {@link Tuple2}
      */
     public <_2> Tuple2<_1, _2> snoc(_2 _2) {
         return tuple(head(), _2);

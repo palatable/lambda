@@ -69,6 +69,11 @@ public class Tuple2Test {
     }
 
     @Test
+    public void snoc() {
+        assertEquals(tuple(Long.MAX_VALUE, 123, "hi"), tuple(Long.MAX_VALUE, 123).snoc("hi"));
+    }
+
+    @Test
     public void accessors() {
         assertEquals((Integer) 1, tuple2._1());
         assertEquals((Integer) 2, tuple2._2());
@@ -142,11 +147,5 @@ public class Tuple2Test {
     public void staticPure() {
         Tuple2<Integer, String> tuple = pureTuple(1).apply("two");
         assertEquals(tuple(1, "two"), tuple);
-    }
-
-    @Test
-    public void snoc() {
-        Tuple3<Long, Integer, String> tuple = tuple(Long.MAX_VALUE, 123).snoc("hi");
-        assertEquals(tuple(Long.MAX_VALUE, 123, "hi"), tuple);
     }
 }

@@ -64,6 +64,11 @@ public class Tuple5Test {
     }
 
     @Test
+    public void snoc() {
+        assertEquals(tuple("a", 5, "b", 7, "c", 11), tuple("a", 5, "b", 7, "c").snoc(11));
+    }
+
+    @Test
     public void accessors() {
         assertEquals((Integer) 1, tuple5._1());
         assertEquals("2", tuple5._2());
@@ -127,11 +132,5 @@ public class Tuple5Test {
     public void staticPure() {
         Tuple5<Integer, String, Character, Boolean, Float> tuple = pureTuple(1, "2", '3', true).apply(5f);
         assertEquals(tuple(1, "2", '3', true, 5f), tuple);
-    }
-
-    @Test
-    public void snoc() {
-        Tuple6<String, Integer, String, Integer, String, Integer> tuple = tuple("a", 5, "b", 7, "c").snoc(11);
-        assertEquals(tuple("a", 5, "b", 7, "c", 11), tuple);
     }
 }
