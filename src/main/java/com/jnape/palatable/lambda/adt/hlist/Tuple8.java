@@ -57,13 +57,13 @@ public class Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> extends HCons<_1, Tuple7<_2,
     Tuple8(_1 _1, Tuple7<_2, _3, _4, _5, _6, _7, _8> tail) {
         super(_1, tail);
         this._1 = _1;
-        _2 = tail._1();
-        _3 = tail._2();
-        _4 = tail._3();
-        _5 = tail._4();
-        _6 = tail._5();
-        _7 = tail._6();
-        _8 = tail._7();
+        _2      = tail._1();
+        _3      = tail._2();
+        _4      = tail._3();
+        _5      = tail._4();
+        _6      = tail._5();
+        _7      = tail._6();
+        _8      = tail._7();
     }
 
     /**
@@ -75,10 +75,11 @@ public class Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> extends HCons<_1, Tuple7<_2,
     }
 
     /**
-     * Snoc an element onto the back of this HList.
+     * Snoc an element onto the back of this {@link Tuple8}.
      *
      * @param _9   the new last element
-     * @return the updated HList
+     * @param <_9> the new last element type
+     * @return the new {@link HCons consed} {@link Tuple8}
      */
     public <_9> HCons<_1, Tuple8<_2, _3, _4, _5, _6, _7, _8, _9>> snoc(_9 _9) {
         return singletonHList(_9).cons(_8).cons(_7).cons(_6).cons(_5).cons(_4).cons(_3).cons(_2).cons(_1);

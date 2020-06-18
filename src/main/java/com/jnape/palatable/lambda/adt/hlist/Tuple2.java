@@ -48,7 +48,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     Tuple2(_1 _1, SingletonHList<_2> tail) {
         super(_1, tail);
         this._1 = _1;
-        _2 = tail.head();
+        _2      = tail.head();
     }
 
     /**
@@ -76,10 +76,11 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     }
 
     /**
-     * Snoc an element onto the back of this HList.
+     * Snoc an element onto the back of this {@link Tuple2}.
      *
      * @param _3   the new last element
-     * @return the updated HList
+     * @param <_3> the new last element type
+     * @return the new {@link Tuple3}
      */
     public <_3> Tuple3<_1, _2, _3> snoc(_3 _3) {
         return tuple(_1, _2, _3);

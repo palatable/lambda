@@ -44,8 +44,8 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     Tuple3(_1 _1, Tuple2<_2, _3> tail) {
         super(_1, tail);
         this._1 = _1;
-        _2 = tail._1();
-        _3 = tail._2();
+        _2      = tail._1();
+        _3      = tail._2();
     }
 
     /**
@@ -57,10 +57,11 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     }
 
     /**
-     * Snoc an element onto the back of this HList.
+     * Snoc an element onto the back of this {@link Tuple3}.
      *
      * @param _4   the new last element
-     * @return the updated HList
+     * @param <_4> the new last element type
+     * @return the new {@link Tuple4}
      */
     public <_4> Tuple4<_1, _2, _3, _4> snoc(_4 _4) {
         return tuple(_1, _2, _3, _4);

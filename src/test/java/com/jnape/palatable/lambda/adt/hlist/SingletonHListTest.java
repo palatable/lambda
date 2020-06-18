@@ -48,6 +48,11 @@ public class SingletonHListTest {
     }
 
     @Test
+    public void snoc() {
+        assertEquals(tuple((byte) 127, 'x'), singletonHList((byte) 127).snoc('x'));
+    }
+
+    @Test
     public void intoAppliesHeadToFn() {
         assertEquals("FOO", singletonHList("foo").into(String::toUpperCase));
     }
@@ -56,11 +61,5 @@ public class SingletonHListTest {
     public void staticPure() {
         SingletonHList<Integer> singletonHList = pureSingletonHList().apply(1);
         assertEquals(singletonHList(1), singletonHList);
-    }
-
-    @Test
-    public void snoc() {
-        Tuple2<Byte, Character> tuple = singletonHList((byte) 127).snoc('x');
-        assertEquals(tuple((byte) 127, 'x'), tuple);
     }
 }

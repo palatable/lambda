@@ -13,8 +13,6 @@ import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
-import java.time.Duration;
-
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -63,6 +61,12 @@ public class Tuple3Test {
     @Test
     public void cons() {
         assertEquals(new Tuple4<>(0, tuple3), tuple3.cons(0));
+    }
+
+    @Test
+    public void snoc() {
+        assertEquals(tuple("qux", Long.MIN_VALUE, 7, ofSeconds(13)),
+                     tuple("qux", Long.MIN_VALUE, 7).snoc(ofSeconds(13)));
     }
 
     @Test
@@ -121,11 +125,5 @@ public class Tuple3Test {
     public void staticPure() {
         Tuple3<Integer, String, Character> tuple = pureTuple(1, "2").apply('3');
         assertEquals(tuple(1, "2", '3'), tuple);
-    }
-
-    @Test
-    public void snoc() {
-        Tuple4<String, Long, Integer, Duration> tuple = tuple("qux", Long.MIN_VALUE, 7).snoc(ofSeconds(13));
-        assertEquals(tuple("qux", Long.MIN_VALUE, 7, ofSeconds(13)), tuple);
     }
 }

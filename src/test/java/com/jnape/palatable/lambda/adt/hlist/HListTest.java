@@ -2,9 +2,15 @@ package com.jnape.palatable.lambda.adt.hlist;
 
 import org.junit.Test;
 
-import static com.jnape.palatable.lambda.adt.hlist.HList.*;
+import static com.jnape.palatable.lambda.adt.hlist.HList.cons;
+import static com.jnape.palatable.lambda.adt.hlist.HList.nil;
+import static com.jnape.palatable.lambda.adt.hlist.HList.singletonHList;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 
 public class HListTest {
 
@@ -48,16 +54,15 @@ public class HListTest {
     }
 
     @Test
-    @SuppressWarnings({"EqualsWithItself", "EqualsBetweenInconvertibleTypes"})
     public void equality() {
-        assertTrue(nil().equals(nil()));
-        assertTrue(cons(1, nil()).equals(cons(1, nil())));
+        assertEquals(nil(), nil());
+        assertEquals(cons(1, nil()), cons(1, nil()));
 
-        assertFalse(cons(1, nil()).equals(nil()));
-        assertFalse(nil().equals(cons(1, nil())));
+        assertNotEquals(cons(1, nil()), nil());
+        assertNotEquals(nil(), cons(1, nil()));
 
-        assertFalse(cons(1, cons(2, nil())).equals(cons(1, nil())));
-        assertFalse(cons(1, nil()).equals(cons(1, cons(2, nil()))));
+        assertNotEquals(cons(1, cons(2, nil())), cons(1, nil()));
+        assertNotEquals(cons(1, nil()), cons(1, cons(2, nil())));
     }
 
     @Test
@@ -67,11 +72,5 @@ public class HListTest {
 
         assertNotEquals(nil().cons(1).hashCode(), nil().cons(2).hashCode());
         assertNotEquals(nil().cons(1).cons(2).hashCode(), nil().cons(1).cons(3).hashCode());
-    }
-
-    @Test
-    public void snoc() {
-        SingletonHList<Float> tuple = nil().snoc((float) 4.0);
-        assertEquals(4.0, tuple.head(), 0.01);
     }
 }
