@@ -20,6 +20,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Both.both;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
 import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
+import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.stateT;
 
 /**
@@ -32,7 +33,7 @@ import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.stateT
  * @param <A> the result type
  */
 public final class State<S, A> implements
-        MonadRec<A, State<S,?>>,
+        MonadRec<A, State<S, ?>>,
         MonadReader<S, A, State<S, ?>>,
         MonadWriter<S, A, State<S, ?>> {
 
@@ -252,7 +253,7 @@ public final class State<S, A> implements
      * @return the new {@link State} instance
      */
     public static <S, A> State<S, A> state(Fn1<? super S, ? extends Tuple2<A, S>> stateFn) {
-        return new State<>(stateT(s -> new Identity<>(stateFn.apply(s))));
+        return new State<>(stateT(s -> new Identity<>(stateFn.apply(s)), pureIdentity()));
     }
 
     /**
@@ -264,7 +265,7 @@ public final class State<S, A> implements
     public static <S> Pure<State<S, ?>> pureState() {
         return new Pure<State<S, ?>>() {
             @Override
-            public <A> State<S, A> checkedApply(A a) throws Throwable {
+            public <A> State<S, A> checkedApply(A a) {
                 return state(s -> tuple(a, s));
             }
         };

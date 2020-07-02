@@ -9,6 +9,7 @@ import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.io.IO.io;
+import static com.jnape.palatable.lambda.io.IO.pureIO;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.gets;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.stateT;
 import static org.hamcrest.CoreMatchers.not;
@@ -75,7 +76,7 @@ public class StateTMatcherTest {
     public void onlyRunsStateOnceWithTupleMatcher() {
         AtomicInteger count = new AtomicInteger(0);
 
-        assertThat(gets(s -> io(count::incrementAndGet)), whenRunWith(0, yieldsValue(equalTo(tuple(1, 0)))));
+        assertThat(gets(s -> io(count::incrementAndGet), pureIO()), whenRunWith(0, yieldsValue(equalTo(tuple(1, 0)))));
         assertEquals(1, count.get());
     }
 }

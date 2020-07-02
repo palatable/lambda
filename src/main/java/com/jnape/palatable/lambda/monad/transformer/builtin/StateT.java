@@ -35,9 +35,11 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
         MonadReader<S, A, StateT<S, M, ?>>,
         MonadWriter<S, A, StateT<S, M, ?>> {
 
+    private final Pure<M>                                             pureM;
     private final Fn1<? super S, ? extends MonadRec<Tuple2<A, S>, M>> stateFn;
 
-    private StateT(Fn1<? super S, ? extends MonadRec<Tuple2<A, S>, M>> stateFn) {
+    private StateT(Pure<M> pureM, Fn1<? super S, ? extends MonadRec<Tuple2<A, S>, M>> stateFn) {
+        this.pureM   = pureM;
         this.stateFn = stateFn;
     }
 
@@ -78,14 +80,15 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
     /**
      * Map both the result and the final state to a new result and final state inside the {@link Monad}.
      *
-     * @param fn  the mapping function
-     * @param <N> the new {@link Monad monadic embedding} for this {@link StateT}
-     * @param <B> the new state type
+     * @param fn    the mapping function
+     * @param pureN the new embedded {@link MonadRec monad's} {@link Pure} instance
+     * @param <N>   the new {@link Monad monadic embedding} for this {@link StateT}
+     * @param <B>   the new state type
      * @return the mapped {@link StateT}
      */
     public <N extends MonadRec<?, N>, B> StateT<S, N, B> mapStateT(
-            Fn1<? super MonadRec<Tuple2<A, S>, M>, ? extends MonadRec<Tuple2<B, S>, N>> fn) {
-        return stateT(s -> fn.apply(runStateT(s)));
+            Fn1<? super MonadRec<Tuple2<A, S>, M>, ? extends MonadRec<Tuple2<B, S>, N>> fn, Pure<N> pureN) {
+        return stateT(s -> fn.apply(runStateT(s)), pureN);
     }
 
     /**
@@ -96,7 +99,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      * @return the mapped {@link StateT}
      */
     public StateT<S, M, A> withStateT(Fn1<? super S, ? extends MonadRec<S, M>> fn) {
-        return modify(fn).flatMap(constantly(this));
+        return modify(fn, pureM).flatMap(constantly(this));
     }
 
     /**
@@ -104,7 +107,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> StateT<S, M, Tuple2<A, B>> listens(Fn1<? super S, ? extends B> fn) {
-        return mapStateT(mas -> mas.fmap(t -> t.into((a, s) -> tuple(tuple(a, fn.apply(s)), s))));
+        return mapStateT(mas -> mas.fmap(t -> t.into((a, s) -> tuple(tuple(a, fn.apply(s)), s))), pureM);
     }
 
     /**
@@ -120,7 +123,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public StateT<S, M, A> local(Fn1<? super S, ? extends S> fn) {
-        return stateT(s -> runStateT(fn.apply(s)));
+        return stateT(s -> runStateT(fn.apply(s)), pureM);
     }
 
     /**
@@ -128,7 +131,8 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> StateT<S, M, B> flatMap(Fn1<? super A, ? extends Monad<B, StateT<S, M, ?>>> f) {
-        return stateT(s -> runStateT(s).flatMap(into((a, s_) -> f.apply(a).<StateT<S, M, B>>coerce().runStateT(s_))));
+        return stateT(s -> runStateT(s).flatMap(into((a, s_) -> f.apply(a).<StateT<S, M, B>>coerce().runStateT(s_))),
+                      pureM);
     }
 
     /**
@@ -136,7 +140,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> StateT<S, M, B> pure(B b) {
-        return stateT(s -> runStateT(s).pure(tuple(b, s)));
+        return stateT(s -> pureM.apply(tuple(b, s)), pureM);
     }
 
     /**
@@ -185,7 +189,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B, N extends MonadRec<?, N>> StateT<S, N, B> lift(MonadRec<B, N> mb) {
-        return stateT(s -> mb.fmap(b -> tuple(b, s)));
+        return stateT(s -> mb.fmap(b -> tuple(b, s)), Pure.of(mb));
     }
 
     /**
@@ -194,11 +198,12 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
     @Override
     public <B> StateT<S, M, B> trampolineM(
             Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, StateT<S, M, ?>>> fn) {
-        return StateT.<S, M, B>stateT((Fn1.<S, MonadRec<Tuple2<A, S>, M>>fn1(this::runStateT))
-                                              .fmap(m -> m.trampolineM(into((a, s) -> fn.apply(a)
-                                                      .<StateT<S, M, RecursiveResult<A, B>>>coerce().runStateT(s)
-                                                      .fmap(into((aOrB, s_) -> aOrB.biMap(a_ -> tuple(a_, s_),
-                                                                                          b -> tuple(b, s_))))))));
+        return stateT((Fn1.<S, MonadRec<Tuple2<A, S>, M>>fn1(this::runStateT))
+                              .fmap(m -> m.trampolineM(into((a, s) -> fn.apply(a)
+                                      .<StateT<S, M, RecursiveResult<A, B>>>coerce().runStateT(s)
+                                      .fmap(into((aOrB, s_) -> aOrB.biMap(a_ -> tuple(a_, s_),
+                                                                          b -> tuple(b, s_))))))),
+                      pureM);
     }
 
     /**
@@ -212,34 +217,37 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      */
     @SuppressWarnings("RedundantTypeArguments")
     public static <A, M extends MonadRec<?, M>> StateT<A, M, A> get(Pure<M> pureM) {
-        return gets(pureM::<A, MonadRec<A, M>>apply);
+        return gets(pureM::<A, MonadRec<A, M>>apply, pureM);
     }
 
     /**
      * Given a function that produces a value inside a {@link Monad monadic effect} from a state, produce a
      * {@link StateT} that simply passes its state to the function and applies it.
      *
-     * @param fn  the function
-     * @param <S> the state type
-     * @param <M> the{@link Monad} embedding
-     * @param <A> the value type
+     * @param fn    the function
+     * @param pureM the embedded {@link MonadRec monad's} {@link Pure} instance
+     * @param <S>   the state type
+     * @param <M>   the{@link Monad} embedding
+     * @param <A>   the value type
      * @return the {@link StateT}
      */
-    public static <S, M extends MonadRec<?, M>, A> StateT<S, M, A> gets(Fn1<? super S, ? extends MonadRec<A, M>> fn) {
-        return stateT(s -> fn.apply(s).fmap(a -> tuple(a, s)));
+    public static <S, M extends MonadRec<?, M>, A> StateT<S, M, A> gets(Fn1<? super S, ? extends MonadRec<A, M>> fn,
+                                                                        Pure<M> pureM) {
+        return stateT(s -> fn.apply(s).fmap(a -> tuple(a, s)), pureM);
     }
 
     /**
      * Lift a function that makes a stateful modification inside an {@link Monad} into {@link StateT}.
      *
      * @param updateFn the update function
+     * @param pureM    the embedded {@link MonadRec monad's} {@link Pure} instance
      * @param <S>      the state type
      * @param <M>      the {@link Monad} embedding
      * @return the {@link StateT}
      */
     public static <S, M extends MonadRec<?, M>> StateT<S, M, Unit> modify(
-            Fn1<? super S, ? extends MonadRec<S, M>> updateFn) {
-        return stateT(s -> updateFn.apply(s).fmap(tupler(UNIT)));
+            Fn1<? super S, ? extends MonadRec<S, M>> updateFn, Pure<M> pureM) {
+        return stateT(s -> updateFn.apply(s).fmap(tupler(UNIT)), pureM);
     }
 
     /**
@@ -251,7 +259,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      * @return the {@link StateT}
      */
     public static <S, M extends MonadRec<?, M>> StateT<S, M, Unit> put(MonadRec<S, M> ms) {
-        return modify(constantly(ms));
+        return modify(constantly(ms), Pure.of(ms));
     }
 
     /**
@@ -264,21 +272,22 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      * @return the {@link StateT}
      */
     public static <S, M extends MonadRec<?, M>, A> StateT<S, M, A> stateT(MonadRec<A, M> ma) {
-        return gets(constantly(ma));
+        return gets(constantly(ma), Pure.of(ma));
     }
 
     /**
      * Lift a state-sensitive {@link Monad monadically embedded} computation into {@link StateT}.
      *
      * @param stateFn the stateful operation
+     * @param pureM   the embedded {@link MonadRec monad's} {@link Pure} instance
      * @param <S>     the state type
      * @param <M>     the {@link Monad} embedding
      * @param <A>     the result type
      * @return the {@link StateT}
      */
     public static <S, M extends MonadRec<?, M>, A> StateT<S, M, A> stateT(
-            Fn1<? super S, ? extends MonadRec<Tuple2<A, S>, M>> stateFn) {
-        return new StateT<>(stateFn);
+            Fn1<? super S, ? extends MonadRec<Tuple2<A, S>, M>> stateFn, Pure<M> pureM) {
+        return new StateT<>(pureM, stateFn);
     }
 
     /**
@@ -292,7 +301,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
     public static <S, M extends MonadRec<?, M>> Pure<StateT<S, M, ?>> pureStateT(Pure<M> pureM) {
         return new Pure<StateT<S, M, ?>>() {
             @Override
-            public <A> StateT<S, M, A> checkedApply(A a) throws Throwable {
+            public <A> StateT<S, M, A> checkedApply(A a) {
                 return stateT(pureM.<A, MonadRec<A, M>>apply(a));
             }
         };
