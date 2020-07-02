@@ -8,12 +8,18 @@ import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.*;
+import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
+import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadReaderLaws;
+import testsupport.traits.MonadRecLaws;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.pureMaybe;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.io.IO.io;
@@ -26,13 +32,13 @@ public class ReaderTTest {
 
     @TestTraits({FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadReaderLaws.class, MonadRecLaws.class})
     public Equivalence<ReaderT<Integer, Identity<?>, Integer>> testSubject() {
-        return equivalence(readerT(Identity::new), readerT -> readerT.runReaderT(1));
+        return equivalence(readerT(Identity::new, pureIdentity()), readerT -> readerT.runReaderT(1));
     }
 
     @Test
     public void profunctor() {
         assertEquals(new Identity<>(4),
-                     ReaderT.<Integer, Identity<?>, Integer>readerT(Identity::new)
+                     ReaderT.<Integer, Identity<?>, Integer>readerT(Identity::new, pureIdentity())
                              .diMap(String::length, x -> x + 1)
                              .runReaderT("123"));
     }
@@ -40,7 +46,7 @@ public class ReaderTTest {
     @Test
     public void local() {
         assertEquals(new Identity<>(2),
-                     ReaderT.<Integer, Identity<?>, Integer>readerT(Identity::new)
+                     ReaderT.<Integer, Identity<?>, Integer>readerT(Identity::new, pureIdentity())
                              .local(x -> x + 1)
                              .runReaderT(1));
     }
@@ -48,15 +54,15 @@ public class ReaderTTest {
     @Test
     public void mapReaderT() {
         assertEquals(just(3),
-                     ReaderT.<String, Identity<?>, String>readerT(Identity::new)
-                             .<Identity<String>, Maybe<?>, Integer>mapReaderT(id -> just(id.runIdentity().length()))
+                     ReaderT.<String, Identity<?>, String>readerT(Identity::new, pureIdentity())
+                             .<Identity<String>, Maybe<?>, Integer>mapReaderT(id -> just(id.runIdentity().length()), pureMaybe())
                              .runReaderT("foo"));
     }
 
     @Test
     public void andComposesLeftToRight() {
-        ReaderT<Integer, Identity<?>, Float> intToFloat    = readerT(x -> new Identity<>(x.floatValue()));
-        ReaderT<Float, Identity<?>, Double>  floatToDouble = readerT(f -> new Identity<>(f.doubleValue()));
+        ReaderT<Integer, Identity<?>, Float> intToFloat    = readerT(x -> new Identity<>(x.floatValue()), pureIdentity());
+        ReaderT<Float, Identity<?>, Double>  floatToDouble = readerT(f -> new Identity<>(f.doubleValue()), pureIdentity());
 
         assertEquals(new Identity<>(1.),
                      intToFloat.and(floatToDouble).runReaderT(1));

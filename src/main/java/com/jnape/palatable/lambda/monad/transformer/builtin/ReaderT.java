@@ -30,10 +30,12 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
         Cartesian<R, A, ReaderT<?, M, ?>>,
         MonadT<M, A, ReaderT<R, M, ?>, ReaderT<R, ?, ?>> {
 
+    private final Pure<M>                                  pureM;
     private final Fn1<? super R, ? extends MonadRec<A, M>> f;
 
-    private ReaderT(Fn1<? super R, ? extends MonadRec<A, M>> f) {
-        this.f = f;
+    private ReaderT(Pure<M> pureM, Fn1<? super R, ? extends MonadRec<A, M>> f) {
+        this.pureM = pureM;
+        this.f     = f;
     }
 
     /**
@@ -50,15 +52,16 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
     /**
      * Map the current {@link Monad monadic} embedding to a new one in a potentially different {@link Monad}.
      *
-     * @param fn   the function
-     * @param <MA> the currently embedded {@link Monad}
-     * @param <N>  the new {@link Monad} witness
-     * @param <B>  the new carrier type
+     * @param fn    the function
+     * @param pureN the new  {@link MonadRec monad's} {@link Pure} instance
+     * @param <MA>  the currently embedded {@link Monad}
+     * @param <N>   the new {@link Monad} witness
+     * @param <B>   the new carrier type
      * @return the mapped {@link ReaderT}
      */
     public <MA extends MonadRec<A, M>, N extends MonadRec<?, N>, B> ReaderT<R, N, B> mapReaderT(
-            Fn1<? super MA, ? extends MonadRec<B, N>> fn) {
-        return readerT(r -> fn.apply(runReaderT(r).coerce()));
+            Fn1<? super MA, ? extends MonadRec<B, N>> fn, Pure<N> pureN) {
+        return readerT(r -> fn.apply(runReaderT(r).coerce()), pureN);
     }
 
     /**
@@ -70,7 +73,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      * @return the composed {@link ReaderT}
      */
     public <B> ReaderT<R, M, B> and(ReaderT<A, M, B> amb) {
-        return readerT(r -> runReaderT(r).flatMap(amb::runReaderT));
+        return readerT(r -> runReaderT(r).flatMap(amb::runReaderT), pureM);
     }
 
     /**
@@ -94,7 +97,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> ReaderT<R, M, B> flatMap(Fn1<? super A, ? extends Monad<B, ReaderT<R, M, ?>>> f) {
-        return readerT(r -> runReaderT(r).flatMap(a -> f.apply(a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
+        return readerT(r -> runReaderT(r).flatMap(a -> f.apply(a).<ReaderT<R, M, B>>coerce().runReaderT(r)), pureM);
     }
 
     /**
@@ -104,7 +107,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
     public <B> ReaderT<R, M, B> trampolineM(
             Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, ReaderT<R, M, ?>>> fn) {
         return readerT(r -> runReaderT(r).trampolineM(a -> fn.apply(a).<ReaderT<R, M, RecursiveResult<A, B>>>coerce()
-                .runReaderT(r)));
+                .runReaderT(r)), pureM);
     }
 
     /**
@@ -112,7 +115,8 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> ReaderT<R, M, B> pure(B b) {
-        return readerT(r -> runReaderT(r).pure(b));
+        MonadRec<B, M> mb = pureM.apply(b);
+        return readerT(r -> mb, pureM);
     }
 
     /**
@@ -128,7 +132,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> ReaderT<R, M, B> zip(Applicative<Fn1<? super A, ? extends B>, ReaderT<R, M, ?>> appFn) {
-        return readerT(r -> f.apply(r).zip(appFn.<ReaderT<R, M, Fn1<? super A, ? extends B>>>coerce().runReaderT(r)));
+        return readerT(r -> f.apply(r).zip(appFn.<ReaderT<R, M, Fn1<? super A, ? extends B>>>coerce().runReaderT(r)), pureM);
     }
 
     /**
@@ -161,7 +165,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <Q, B> ReaderT<Q, M, B> diMap(Fn1<? super Q, ? extends R> lFn, Fn1<? super A, ? extends B> rFn) {
-        return readerT(q -> runReaderT(lFn.apply(q)).fmap(rFn));
+        return readerT(q -> runReaderT(lFn.apply(q)).fmap(rFn), pureM);
     }
 
     /**
@@ -193,7 +197,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <C> ReaderT<Tuple2<C, R>, M, Tuple2<C, A>> cartesian() {
-        return readerT(into((c, r) -> runReaderT(r).fmap(tupler(c))));
+        return readerT(into((c, r) -> runReaderT(r).fmap(tupler(c))), pureM);
     }
 
     /**
@@ -207,15 +211,16 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
     /**
      * Lift a {@link Fn1 function} (<code>R -&gt; {@link Monad}&lt;A, M&gt;</code>) into a {@link ReaderT} instance.
      *
-     * @param fn  the function
-     * @param <R> the input type
-     * @param <M> the returned {@link Monad}
-     * @param <A> the embedded output type
+     * @param fn    the function
+     * @param pureM the {@link MonadRec monad's} {@link Pure} instance
+     * @param <R>   the input type
+     * @param <M>   the returned {@link Monad}
+     * @param <A>   the embedded output type
      * @return the {@link ReaderT}
      */
     public static <R, M extends MonadRec<?, M>, A> ReaderT<R, M, A> readerT(
-            Fn1<? super R, ? extends MonadRec<A, M>> fn) {
-        return new ReaderT<>(fn);
+            Fn1<? super R, ? extends MonadRec<A, M>> fn, Pure<M> pureM) {
+        return new ReaderT<>(pureM, fn);
     }
 
     /**
@@ -230,7 +235,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
         return new Pure<ReaderT<R, M, ?>>() {
             @Override
             public <A> ReaderT<R, M, A> checkedApply(A a) {
-                return readerT(__ -> pureM.apply(a));
+                return readerT(__ -> pureM.apply(a), pureM);
             }
         };
     }
@@ -245,7 +250,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
         return new Lift<ReaderT<R, ?, ?>>() {
             @Override
             public <A, M extends MonadRec<?, M>> ReaderT<R, M, A> checkedApply(MonadRec<A, M> ga) {
-                return readerT(constantly(ga));
+                return readerT(constantly(ga), Pure.of(ga));
             }
         };
     }
