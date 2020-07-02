@@ -12,12 +12,9 @@ import com.jnape.palatable.lambda.monad.MonadWriter;
 import com.jnape.palatable.lambda.monad.transformer.builtin.WriterT;
 import com.jnape.palatable.lambda.monoid.Monoid;
 
-import static com.jnape.palatable.lambda.adt.Unit.UNIT;
-import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Both.both;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
-import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
+import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.WriterT.pureWriterT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.WriterT.writerT;
 
 /**
  * The lazy writer monad, a monad capturing some accumulation (eventually to be folded in terms of a given monoid) and
@@ -31,10 +28,19 @@ public final class Writer<W, A> implements
         MonadWriter<W, A, Writer<W, ?>>,
         MonadRec<A, Writer<W, ?>> {
 
-    private final Fn1<? super Monoid<W>, ? extends Tuple2<A, W>> writerFn;
+    private final WriterT<W, Identity<?>, A> delegate;
 
-    private Writer(Fn1<? super Monoid<W>, ? extends Tuple2<A, W>> writerFn) {
-        this.writerFn = writerFn;
+    private Writer(WriterT<W, Identity<?>, A> delegate) {
+        this.delegate = delegate;
+    }
+
+    /**
+     * Convert this {@link Writer} to a {@link WriterT} with an {@link Identity} embedding.
+     *
+     * @return the {@link WriterT}
+     */
+    public WriterT<W, Identity<?>, A> toWriterT() {
+        return delegate;
     }
 
     /**
@@ -45,7 +51,7 @@ public final class Writer<W, A> implements
      * @return the accumulation with the value
      */
     public Tuple2<A, W> runWriter(Monoid<W> monoid) {
-        return writerFn.apply(monoid);
+        return delegate.<Identity<Tuple2<A, W>>>runWriterT(monoid).runIdentity();
     }
 
     /**
@@ -53,7 +59,7 @@ public final class Writer<W, A> implements
      */
     @Override
     public <B> Writer<W, Tuple2<A, B>> listens(Fn1<? super W, ? extends B> fn) {
-        return new Writer<>(monoid -> runWriter(monoid).into((a, w) -> tuple(both(constantly(a), fn, w), w)));
+        return new Writer<>(delegate.listens(fn));
     }
 
     /**
@@ -61,7 +67,7 @@ public final class Writer<W, A> implements
      */
     @Override
     public Writer<W, A> censor(Fn1<? super W, ? extends W> fn) {
-        return new Writer<>(monoid -> runWriter(monoid).fmap(fn));
+        return new Writer<>(delegate.censor(fn));
     }
 
     /**
@@ -69,10 +75,7 @@ public final class Writer<W, A> implements
      */
     @Override
     public <B> Writer<W, B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Writer<W, ?>>> fn) {
-        return new Writer<>(monoid -> trampoline(into((a, w) -> fn.apply(a).<Writer<W, RecursiveResult<A, B>>>coerce()
-                .runWriter(monoid)
-                .fmap(monoid.apply(w))
-                .into((aOrB, w_) -> aOrB.biMap(a_ -> tuple(a_, w_), b -> tuple(b, w_)))), runWriter(monoid)));
+        return new Writer<>(delegate.trampolineM(a -> fn.apply(a).<Writer<W, RecursiveResult<A, B>>>coerce().delegate));
     }
 
     /**
@@ -80,8 +83,7 @@ public final class Writer<W, A> implements
      */
     @Override
     public <B> Writer<W, B> flatMap(Fn1<? super A, ? extends Monad<B, Writer<W, ?>>> f) {
-        return new Writer<>(monoid -> writerFn.apply(monoid)
-                .into((a, w) -> f.apply(a).<Writer<W, B>>coerce().runWriter(monoid).fmap(monoid.apply(w))));
+        return new Writer<>(delegate.flatMap(f.fmap(writer -> writer.<Writer<W, B>>coerce().delegate)));
     }
 
     /**
@@ -141,7 +143,7 @@ public final class Writer<W, A> implements
      * @return the {@link Writer}
      */
     public static <W> Writer<W, Unit> tell(W w) {
-        return writer(tuple(UNIT, w));
+        return new Writer<>(WriterT.tell(new Identity<>(w)));
     }
 
     /**
@@ -153,7 +155,7 @@ public final class Writer<W, A> implements
      * @return the {@link Writer}
      */
     public static <W, A> Writer<W, A> listen(A a) {
-        return Writer.<W>pureWriter().apply(a);
+        return new Writer<>(WriterT.listen(new Identity<>(a)));
     }
 
     /**
@@ -162,10 +164,10 @@ public final class Writer<W, A> implements
      * @param aw  the output value and accumulation
      * @param <W> the accumulation type
      * @param <A> the value type
-     * @return the {@link WriterT}
+     * @return the {@link Writer}
      */
     public static <W, A> Writer<W, A> writer(Tuple2<A, W> aw) {
-        return new Writer<>(constantly(aw));
+        return new Writer<>(writerT(new Identity<>(aw)));
     }
 
     /**
@@ -175,11 +177,24 @@ public final class Writer<W, A> implements
      * @return the {@link Pure} instance
      */
     public static <W> Pure<Writer<W, ?>> pureWriter() {
+        Pure<WriterT<W, Identity<?>, ?>> pureWriterT = pureWriterT(pureIdentity());
         return new Pure<Writer<W, ?>>() {
             @Override
             public <A> Writer<W, A> checkedApply(A a) {
-                return new Writer<>(monoid -> tuple(a, monoid.identity()));
+                return new Writer<>(pureWriterT.<A, WriterT<W, Identity<?>, A>>apply(a));
             }
         };
+    }
+
+    /**
+     * Create a {@link Writer} from a delegate {@link WriterT} with an {@link Identity} embedding.
+     *
+     * @param writerT the delegate {@link WriterT}
+     * @param <W>     the accumulation type
+     * @param <A>     the value type
+     * @return the {@link Writer}
+     */
+    public static <W, A> Writer<W, A> writer(WriterT<W, Identity<?>, A> writerT) {
+        return new Writer<>(writerT);
     }
 }

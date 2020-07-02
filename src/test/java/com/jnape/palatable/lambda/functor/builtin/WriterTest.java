@@ -19,7 +19,10 @@ import static com.jnape.palatable.lambda.functor.builtin.Writer.tell;
 import static com.jnape.palatable.lambda.functor.builtin.Writer.writer;
 import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static testsupport.matchers.WriterTMatcher.whenRunWith;
 import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
@@ -31,6 +34,11 @@ public class WriterTest {
         return subjects(equivalence(tell("foo"), runWriter),
                         equivalence(listen(1), runWriter),
                         equivalence(writer(tuple(1, "foo")), runWriter));
+    }
+
+    @Test
+    public void toWriterT() {
+        assertThat(writer(tuple(1, "foo")).toWriterT(), whenRunWith(join(), equalTo(new Identity<>(tuple(1, "foo")))));
     }
 
     @Test

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertThat;
 import static testsupport.matchers.StateMatcher.whenEvaluated;
 import static testsupport.matchers.StateMatcher.whenExecuted;
 import static testsupport.matchers.StateMatcher.whenRun;
+import static testsupport.matchers.StateTMatcher.whenRun;
 import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
@@ -33,6 +34,11 @@ public class StateTest {
                  MonadWriterLaws.class})
     public Equivalence<State<String, Integer>> testSubject() {
         return equivalence(State.gets(String::length), s -> s.run("foo"));
+    }
+
+    @Test
+    public void toStateT() {
+        assertThat(State.<String>get().toStateT(), whenRun("foo", new Identity<>(tuple("foo", "foo"))));
     }
 
     @Test

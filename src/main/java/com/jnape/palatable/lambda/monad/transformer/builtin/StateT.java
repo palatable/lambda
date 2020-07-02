@@ -86,8 +86,8 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      * @param <B>   the new state type
      * @return the mapped {@link StateT}
      */
-    public <N extends MonadRec<?, N>, B> StateT<S, N, B> mapStateT(
-            Fn1<? super MonadRec<Tuple2<A, S>, M>, ? extends MonadRec<Tuple2<B, S>, N>> fn, Pure<N> pureN) {
+    public <MAS extends MonadRec<Tuple2<A, S>, M>, N extends MonadRec<?, N>, B> StateT<S, N, B> mapStateT(
+            Fn1<? super MAS, ? extends MonadRec<Tuple2<B, S>, N>> fn, Pure<N> pureN) {
         return stateT(s -> fn.apply(runStateT(s)), pureN);
     }
 

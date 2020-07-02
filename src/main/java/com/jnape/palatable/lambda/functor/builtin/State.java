@@ -12,15 +12,8 @@ import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.MonadWriter;
 import com.jnape.palatable.lambda.monad.transformer.builtin.StateT;
 
-import static com.jnape.palatable.lambda.adt.Unit.UNIT;
-import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.Fn1.fn1;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Both.both;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
-import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.pureStateT;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.StateT.stateT;
 
 /**
@@ -37,10 +30,19 @@ public final class State<S, A> implements
         MonadReader<S, A, State<S, ?>>,
         MonadWriter<S, A, State<S, ?>> {
 
-    private final StateT<S, Identity<?>, A> stateFn;
+    private final StateT<S, Identity<?>, A> delegate;
 
-    private State(StateT<S, Identity<?>, A> stateFn) {
-        this.stateFn = stateFn;
+    private State(StateT<S, Identity<?>, A> delegate) {
+        this.delegate = delegate;
+    }
+
+    /**
+     * Convert this {@link State} to a {@link StateT} with an {@link Identity} embedding.
+     *
+     * @return the {@link StateT}
+     */
+    public StateT<S, Identity<?>, A> toStateT() {
+        return delegate;
     }
 
     /**
@@ -50,7 +52,7 @@ public final class State<S, A> implements
      * @return a {@link Tuple2} of the result and the final state.
      */
     public Tuple2<A, S> run(S s) {
-        return stateFn.<Identity<Tuple2<A, S>>>runStateT(s).runIdentity();
+        return delegate.<Identity<Tuple2<A, S>>>runStateT(s).runIdentity();
     }
 
     /**
@@ -81,7 +83,7 @@ public final class State<S, A> implements
      * @return the mapped {@link State}
      */
     public <B> State<S, B> mapState(Fn1<? super Tuple2<A, S>, ? extends Tuple2<B, S>> fn) {
-        return state(s -> fn.apply(run(s)));
+        return state(delegate.mapStateT(f -> f.fmap(fn), pureIdentity()));
     }
 
     /**
@@ -91,7 +93,7 @@ public final class State<S, A> implements
      * @return the mapped {@link State}
      */
     public State<S, A> withState(Fn1<? super S, ? extends S> fn) {
-        return state(s -> run(fn.apply(s)));
+        return state(delegate.withStateT(fn.fmap(Identity::new)));
     }
 
     /**
@@ -99,7 +101,7 @@ public final class State<S, A> implements
      */
     @Override
     public State<S, A> local(Fn1<? super S, ? extends S> fn) {
-        return state(s -> run(fn.apply(s)));
+        return state(delegate.local(fn));
     }
 
     /**
@@ -107,7 +109,7 @@ public final class State<S, A> implements
      */
     @Override
     public <B> State<S, Tuple2<A, B>> listens(Fn1<? super S, ? extends B> fn) {
-        return state(s -> run(s).biMapL(both(id(), constantly(fn.apply(s)))));
+        return state(delegate.listens(fn));
     }
 
     /**
@@ -123,7 +125,7 @@ public final class State<S, A> implements
      */
     @Override
     public <B> State<S, B> flatMap(Fn1<? super A, ? extends Monad<B, State<S, ?>>> f) {
-        return state(s -> run(s).into((a, s2) -> f.apply(a).<State<S, B>>coerce().run(s2)));
+        return state(delegate.flatMap(f.fmap(state -> state.<State<S, B>>coerce().delegate)));
     }
 
     /**
@@ -131,7 +133,7 @@ public final class State<S, A> implements
      */
     @Override
     public <B> State<S, B> pure(B b) {
-        return state(s -> tuple(b, s));
+        return state(delegate.pure(b));
     }
 
     /**
@@ -180,9 +182,7 @@ public final class State<S, A> implements
      */
     @Override
     public <B> State<S, B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, State<S, ?>>> fn) {
-        return state(fn1(this::run).fmap(trampoline(into((a, s) -> fn.apply(a)
-                .<State<S, RecursiveResult<A, B>>>coerce().run(s)
-                .into((aOrB, s_) -> aOrB.biMap(a_ -> tuple(a_, s_), b -> tuple(b, s_)))))));
+        return state(delegate.trampolineM(a -> fn.apply(a).<State<S, RecursiveResult<A, B>>>coerce().delegate));
     }
 
     /**
@@ -191,9 +191,8 @@ public final class State<S, A> implements
      * @param <A> the state and result type
      * @return the new {@link State} instance
      */
-    @SuppressWarnings("RedundantTypeArguments")
     public static <A> State<A, A> get() {
-        return state(Tuple2::<A>fill);
+        return state(StateT.get(pureIdentity()));
     }
 
     /**
@@ -205,7 +204,7 @@ public final class State<S, A> implements
      * @return the new {@link State} instance
      */
     public static <S> State<S, Unit> put(S s) {
-        return modify(constantly(s));
+        return state(StateT.put(new Identity<>(s)));
     }
 
     /**
@@ -217,7 +216,7 @@ public final class State<S, A> implements
      * @return the new {@link State} instance
      */
     public static <S, A> State<S, A> gets(Fn1<? super S, ? extends A> fn) {
-        return state(both(fn, id()));
+        return state(StateT.gets(a -> new Identity<>(fn.apply(a)), pureIdentity()));
     }
 
     /**
@@ -228,7 +227,7 @@ public final class State<S, A> implements
      * @return the new {@link State} instance
      */
     public static <S> State<S, Unit> modify(Fn1<? super S, ? extends S> fn) {
-        return state(both(constantly(UNIT), fn));
+        return state(StateT.modify(s -> new Identity<>(fn.apply(s)), pureIdentity()));
     }
 
     /**
@@ -240,7 +239,7 @@ public final class State<S, A> implements
      * @return the new {@link State} instance
      */
     public static <S, A> State<S, A> state(A a) {
-        return gets(constantly(a));
+        return state(stateT(new Identity<>(a)));
     }
 
     /**
@@ -253,7 +252,7 @@ public final class State<S, A> implements
      * @return the new {@link State} instance
      */
     public static <S, A> State<S, A> state(Fn1<? super S, ? extends Tuple2<A, S>> stateFn) {
-        return new State<>(stateT(s -> new Identity<>(stateFn.apply(s)), pureIdentity()));
+        return state(stateT(s -> new Identity<>(stateFn.apply(s)), pureIdentity()));
     }
 
     /**
@@ -263,11 +262,24 @@ public final class State<S, A> implements
      * @return the {@link Pure} instance
      */
     public static <S> Pure<State<S, ?>> pureState() {
+        Pure<StateT<S, Identity<?>, ?>> pureStateT = pureStateT(pureIdentity());
         return new Pure<State<S, ?>>() {
             @Override
             public <A> State<S, A> checkedApply(A a) {
-                return state(s -> tuple(a, s));
+                return state(pureStateT.<A, StateT<S, Identity<?>, A>>apply(a));
             }
         };
+    }
+
+    /**
+     * Create a {@link State} from a delegate {@link StateT} with an {@link Identity} embedding.
+     *
+     * @param stateT the delegate {@link StateT}
+     * @param <S>    the state type
+     * @param <A>    the result type
+     * @return the new {@link State}
+     */
+    public static <S, A> State<S, A> state(StateT<S, Identity<?>, A> stateT) {
+        return new State<>(stateT);
     }
 }
