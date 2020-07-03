@@ -17,10 +17,13 @@ import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.lambda.monad.Monad;
 import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
+import com.jnape.palatable.lambda.monoid.builtin.Concat;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
@@ -30,8 +33,10 @@ import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.Fn1.withSelf;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.$.$;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
@@ -176,7 +181,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the folded effect result
      */
     public <MU extends MonadRec<Unit, M>> MU forEach(Fn1<? super A, ? extends MonadRec<Unit, M>> fn) {
-        return fold((__, a) -> fn.apply(a), runIterateT().pure(UNIT));
+        return fold((__, a) -> fn.apply(a), pureM.apply(UNIT));
     }
 
     /**
@@ -239,11 +244,10 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the {@link List} inside of the effect
      */
     public <C extends Collection<A>, MAS extends MonadRec<C, M>> MAS toCollection(Fn0<C> cFn0) {
-        MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M> mmta = runIterateT();
         return fold((c, a) -> {
             c.add(a);
-            return mmta.pure(c);
-        }, mmta.pure(cFn0.apply()));
+            return pureM.apply(c);
+        }, pureM.apply(cFn0.apply()));
     }
 
     /**
@@ -251,17 +255,14 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> IterateT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, IterateT<M, ?>> appFn) {
-        return suspended(() -> {
-            MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M> mmta = runIterateT();
-            return join(maybeT(mmta).zip(
-                    maybeT(appFn.<IterateT<M, Fn1<? super A, ? extends B>>>coerce().runIterateT())
-                            .fmap(into((f, fs) -> into((a, as) -> maybeT(
-                                    as.<B>fmap(f)
-                                            .cons(mmta.pure(f.apply(a)))
-                                            .concat(as.cons(mmta.pure(a)).zip(fs))
-                                            .runIterateT()))))))
-                    .runMaybeT();
-        }, pureM);
+        return suspended(() -> join(maybeT(runIterateT()).zip(
+                maybeT(appFn.<IterateT<M, Fn1<? super A, ? extends B>>>coerce().runIterateT())
+                        .fmap(into((f, fs) -> into((a, as) -> maybeT(
+                                as.<B>fmap(f)
+                                        .cons(pureM.apply(f.apply(a)))
+                                        .concat(as.cons(pureM.apply(a)).zip(fs))
+                                        .runIterateT()))))))
+                .runMaybeT(), pureM);
     }
 
     /**
@@ -287,6 +288,30 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
     @Override
     public <B> IterateT<M, A> discardR(Applicative<B, IterateT<M, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof IterateT<?, ?>) {
+            return Objects.equals(toCollection(ArrayList::new),
+                                  ((IterateT<?, ?>) other).toCollection(ArrayList::new));
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return toCollection(ArrayList::new).hashCode();
+    }
+
+    @Override
+    public String toString() {
+        Iterable<String> nodes = Concat.concat(map(Object::toString, conses),
+                                               Concat.concat(map(constantly("..."), middles),
+                                                             map(Object::toString, snocs)));
+        return "IterateT{ "
+                + String.join(" :# ", nodes)
+                + " }";
     }
 
     private MonadRec<RecursiveResult<IterateT<M, A>, Maybe<Tuple2<A, IterateT<M, A>>>>, M> resume() {

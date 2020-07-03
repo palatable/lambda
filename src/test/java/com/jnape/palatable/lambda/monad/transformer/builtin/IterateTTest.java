@@ -13,7 +13,11 @@ import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.*;
+import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
+import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,9 +34,16 @@ import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.rec
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
-import static com.jnape.palatable.lambda.functor.builtin.Writer.*;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.listen;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.pureWriter;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.tell;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.writer;
 import static com.jnape.palatable.lambda.io.IO.io;
-import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.*;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.empty;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.liftIterateT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.pureIterateT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.singleton;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.unfold;
 import static com.jnape.palatable.lambda.monoid.builtin.AddAll.addAll;
 import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
@@ -44,7 +55,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 import static testsupport.matchers.IOMatcher.yieldsValue;
-import static testsupport.matchers.IterateTMatcher.*;
+import static testsupport.matchers.IterateTMatcher.isEmpty;
+import static testsupport.matchers.IterateTMatcher.iterates;
+import static testsupport.matchers.IterateTMatcher.iteratesAll;
 import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
@@ -219,32 +232,59 @@ public class IterateTTest {
     @Test
     public void stackSafetyForNonStrictMonads() {
         IterateT<Lazy<?>, Integer> hugeNonStrictIterateT =
-                unfold(x -> lazy(() -> x <= 50_000 ? just(tuple(x, x + 1)) : nothing()), lazy(0));
+                unfold(x -> lazy(() -> x <= STACK_EXPLODING_NUMBER ? just(tuple(x, x + 1)) : nothing()), lazy(0));
         Lazy<Integer> fold = hugeNonStrictIterateT.fold((x, y) -> lazy(() -> x + y), lazy(0));
         assertEquals((Integer) 1250025000, fold.value());
     }
 
     @Test
     public void concatIsStackSafe() {
-        IterateT<Identity<?>, Integer> bigIterateT = times(10_000, xs -> xs.concat(singleton(new Identity<>(1))),
+        IterateT<Identity<?>, Integer> bigIterateT = times(STACK_EXPLODING_NUMBER,
+                                                           xs -> xs.concat(singleton(new Identity<>(1))),
                                                            singleton(new Identity<>(0)));
-        assertEquals(new Identity<>(10_000),
+        assertEquals(new Identity<>(STACK_EXPLODING_NUMBER),
                      bigIterateT.fold((x, y) -> new Identity<>(x + y), new Identity<>(0)));
+    }
+
+    @Test
+    public void iterateT() {
+        assertEquals(IterateT.<Identity<?>, Integer>empty(pureIdentity()).cons(new Identity<>(1)),
+                     IterateT.iterateT(new Identity<>(just(tuple(1, empty(pureIdentity()))))));
+    }
+
+    @Test
+    public void testToString() {
+        assertEquals("IterateT{ Identity{a=1} :# Identity{a=2} :# Identity{a=3} }",
+                     IterateT.of(new Identity<>(1), new Identity<>(2), new Identity<>(3)).toString());
+
+        assertEquals("IterateT{ ... }",
+                     IterateT.iterateT(new Identity<>(just(tuple(1, empty(pureIdentity()))))).toString());
+
+        assertEquals("IterateT{ Identity{a=1} :# ... :# Identity{a=3} }",
+                     IterateT.iterateT(new Identity<>(just(tuple(2, empty(pureIdentity())))))
+                             .cons(new Identity<>(1))
+                             .snoc(new Identity<>(3))
+                             .toString());
+
+        assertEquals("IterateT{ ... }",
+                     IterateT.of(new Identity<>(1))
+                             .concat(IterateT.of(new Identity<>(2)))
+                             .toString());
     }
 
     @Test
     public void staticPure() {
         assertEquals(new Identity<>(singletonList(1)),
                      pureIterateT(pureIdentity())
-                         .<Integer, IterateT<Identity<?>, Integer>>apply(1)
-                         .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
+                             .<Integer, IterateT<Identity<?>, Integer>>apply(1)
+                             .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
     }
 
     @Test
     public void staticLift() {
         assertEquals(new Identity<>(singletonList(1)),
                      liftIterateT()
-                         .<Integer, Identity<?>, IterateT<Identity<?>, Integer>>apply(new Identity<>(1))
-                         .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
+                             .<Integer, Identity<?>, IterateT<Identity<?>, Integer>>apply(new Identity<>(1))
+                             .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
     }
 }
