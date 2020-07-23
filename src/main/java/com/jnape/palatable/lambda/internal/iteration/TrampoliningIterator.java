@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.internal.iteration;
 import com.jnape.palatable.lambda.functions.Fn0;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
+import com.jnape.palatable.lambda.internal.ImmutableQueue;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

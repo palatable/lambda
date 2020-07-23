@@ -14,6 +14,8 @@ import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
+import java.time.LocalDate;
+
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
@@ -65,6 +67,15 @@ public class Tuple8Test {
     @Test
     public void cons() {
         assertEquals(new HCons<>(0, tuple8), tuple8.cons(0));
+    }
+
+    @Test
+    public void snoc() {
+        LocalDate last = LocalDate.of(2020, 4, 14);
+        HCons<String, Tuple8<Long, String, Integer, String, Integer, String, Long, LocalDate>> actual =
+                tuple("b", 7L, "c", 11, "d", 13, "e", 15L).snoc(last);
+        assertEquals("b", actual.head());
+        assertEquals(actual.tail(), tuple(7L, "c", 11, "d", 13, "e", 15L, last));
     }
 
     @Test

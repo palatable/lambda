@@ -65,6 +65,11 @@ public class Tuple7Test {
     }
 
     @Test
+    public void snoc() {
+        assertEquals(tuple("b", 7L, "c", 11, "d", 13, "e", 'f'), tuple("b", 7L, "c", 11, "d", 13, "e").snoc('f'));
+    }
+
+    @Test
     public void accessors() {
         assertEquals((Byte) (byte) 127, tuple7._1());
         assertEquals((Float) 2.0f, tuple7._2());

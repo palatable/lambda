@@ -5,7 +5,7 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.internal.Runtime;
 
 /**
- * A function taking six arguments. Defined in terms of {@link Fn7}, so similarly auto-curried.
+ * A function taking eight arguments. Defined in terms of {@link Fn7}, so similarly auto-curried.
  *
  * @param <A> The first argument type
  * @param <B> The second argument type
@@ -274,7 +274,7 @@ public interface Fn8<A, B, C, D, E, F, G, H, I> extends Fn7<A, B, C, D, E, F, G,
     /**
      * Static factory method for wrapping a curried {@link Fn5} in an {@link Fn8}.
      *
-     * @param curriedFn5 the curried fn4 to adapt
+     * @param curriedFn5 the curried fn5 to adapt
      * @param <A>        the first input argument type
      * @param <B>        the second input argument type
      * @param <C>        the third input argument type
@@ -294,7 +294,7 @@ public interface Fn8<A, B, C, D, E, F, G, H, I> extends Fn7<A, B, C, D, E, F, G,
     /**
      * Static factory method for wrapping a curried {@link Fn6} in an {@link Fn8}.
      *
-     * @param curriedFn6 the curried fn4 to adapt
+     * @param curriedFn6 the curried fn6 to adapt
      * @param <A>        the first input argument type
      * @param <B>        the second input argument type
      * @param <C>        the third input argument type
@@ -314,7 +314,7 @@ public interface Fn8<A, B, C, D, E, F, G, H, I> extends Fn7<A, B, C, D, E, F, G,
     /**
      * Static factory method for wrapping a curried {@link Fn7} in an {@link Fn8}.
      *
-     * @param curriedFn7 the curried fn4 to adapt
+     * @param curriedFn7 the curried fn7 to adapt
      * @param <A>        the first input argument type
      * @param <B>        the second input argument type
      * @param <C>        the third input argument type

@@ -89,7 +89,6 @@ public abstract class HList {
      * @return the 2-element HList
      * @see Tuple2
      */
-    @SuppressWarnings("JavaDoc")
     public static <_1, _2> Tuple2<_1, _2> tuple(_1 _1, _2 _2) {
         return singletonHList(_2).cons(_1);
     }
@@ -106,7 +105,6 @@ public abstract class HList {
      * @return the 3-element HList
      * @see Tuple3
      */
-    @SuppressWarnings("JavaDoc")
     public static <_1, _2, _3> Tuple3<_1, _2, _3> tuple(_1 _1, _2 _2, _3 _3) {
         return tuple(_2, _3).cons(_1);
     }
@@ -125,7 +123,6 @@ public abstract class HList {
      * @return the 4-element HList
      * @see Tuple4
      */
-    @SuppressWarnings("JavaDoc")
     public static <_1, _2, _3, _4> Tuple4<_1, _2, _3, _4> tuple(_1 _1, _2 _2, _3 _3, _4 _4) {
         return tuple(_2, _3, _4).cons(_1);
     }
@@ -146,7 +143,6 @@ public abstract class HList {
      * @return the 5-element HList
      * @see Tuple5
      */
-    @SuppressWarnings("JavaDoc")
     public static <_1, _2, _3, _4, _5> Tuple5<_1, _2, _3, _4, _5> tuple(_1 _1, _2 _2, _3 _3, _4 _4, _5 _5) {
         return tuple(_2, _3, _4, _5).cons(_1);
     }
@@ -169,7 +165,6 @@ public abstract class HList {
      * @return the 6-element HList
      * @see Tuple6
      */
-    @SuppressWarnings("JavaDoc")
     public static <_1, _2, _3, _4, _5, _6> Tuple6<_1, _2, _3, _4, _5, _6> tuple(_1 _1, _2 _2, _3 _3, _4 _4, _5 _5,
                                                                                 _6 _6) {
         return tuple(_2, _3, _4, _5, _6).cons(_1);
@@ -195,7 +190,6 @@ public abstract class HList {
      * @return the 7-element HList
      * @see Tuple7
      */
-    @SuppressWarnings("JavaDoc")
     public static <_1, _2, _3, _4, _5, _6, _7> Tuple7<_1, _2, _3, _4, _5, _6, _7> tuple(_1 _1, _2 _2, _3 _3, _4 _4,
                                                                                         _5 _5, _6 _6, _7 _7) {
         return tuple(_2, _3, _4, _5, _6, _7).cons(_1);
@@ -223,7 +217,6 @@ public abstract class HList {
      * @return the 8-element HList
      * @see Tuple8
      */
-    @SuppressWarnings("JavaDoc")
     public static <_1, _2, _3, _4, _5, _6, _7, _8> Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> tuple(_1 _1, _2 _2, _3 _3,
                                                                                                 _4 _4, _5 _5, _6 _6,
                                                                                                 _7 _7, _8 _8) {
@@ -273,7 +266,7 @@ public abstract class HList {
             if (other instanceof HCons) {
                 HCons<?, ?> that = (HCons<?, ?>) other;
                 return this.head.equals(that.head)
-                    && this.tail.equals(that.tail);
+                        && this.tail.equals(that.tail);
             }
             return false;
         }

@@ -65,6 +65,11 @@ public class Tuple6Test {
     }
 
     @Test
+    public void snoc() {
+        assertEquals(tuple(5L, "a", 7, "b", 11, "c", 13), tuple(5L, "a", 7, "b", 11, "c").snoc(13));
+    }
+
+    @Test
     public void accessors() {
         assertEquals((Float) 2.0f, tuple6._1());
         assertEquals((Integer) 1, tuple6._2());

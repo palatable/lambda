@@ -62,6 +62,18 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
     }
 
     /**
+     * Left-to-right composition between {@link ReaderT} instances running under the same effect and compatible between
+     * their inputs and outputs.
+     *
+     * @param amb the next {@link ReaderT} to run
+     * @param <B> the final output type
+     * @return the composed {@link ReaderT}
+     */
+    public <B> ReaderT<R, M, B> and(ReaderT<A, M, B> amb) {
+        return readerT(r -> runReaderT(r).flatMap(amb::runReaderT));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

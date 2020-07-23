@@ -63,6 +63,11 @@ public class Tuple4Test {
     }
 
     @Test
+    public void snoc() {
+        assertEquals(tuple("qux", 7, "foo", 13L, 17), tuple("qux", 7, "foo", 13L).snoc(17));
+    }
+
+    @Test
     public void accessors() {
         assertEquals((Integer) 1, tuple4._1());
         assertEquals("2", tuple4._2());

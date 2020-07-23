@@ -54,12 +54,12 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     Tuple7(_1 _1, Tuple6<_2, _3, _4, _5, _6, _7> tail) {
         super(_1, tail);
         this._1 = _1;
-        _2 = tail._1();
-        _3 = tail._2();
-        _4 = tail._3();
-        _5 = tail._4();
-        _6 = tail._5();
-        _7 = tail._6();
+        _2      = tail._1();
+        _3      = tail._2();
+        _4      = tail._3();
+        _5      = tail._4();
+        _6      = tail._5();
+        _7      = tail._6();
     }
 
     /**
@@ -68,6 +68,17 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_0> Tuple8<_0, _1, _2, _3, _4, _5, _6, _7> cons(_0 _0) {
         return new Tuple8<>(_0, this);
+    }
+
+    /**
+     * Snoc an element onto the back of this {@link Tuple7}.
+     *
+     * @param _8   the new last element
+     * @param <_8> the new last element type
+     * @return the new {@link Tuple8}
+     */
+    public <_8> Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> snoc(_8 _8) {
+        return tuple(_1, _2, _3, _4, _5, _6, _7, _8);
     }
 
     /**

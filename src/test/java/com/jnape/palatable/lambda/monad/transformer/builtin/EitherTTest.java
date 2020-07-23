@@ -29,6 +29,7 @@ import static com.jnape.palatable.lambda.monad.transformer.builtin.EitherT.eithe
 import static com.jnape.palatable.lambda.monad.transformer.builtin.EitherT.liftEitherT;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
+import static testsupport.assertion.MonadErrorAssert.assertLaws;
 
 @RunWith(Traits.class)
 public class EitherTTest {
@@ -72,5 +73,13 @@ public class EitherTTest {
         EitherT<Identity<?>, String, Integer> eitherT = EitherT.<Identity<?>, String>pureEitherT(pureIdentity())
                 .apply(1);
         assertEquals(eitherT(new Identity<>(right(1))), eitherT);
+    }
+
+    @Test
+    public void monadError() {
+        assertLaws(subjects(eitherT(new Identity<>(right(1))),
+                            eitherT(new Identity<>(left("")))),
+                   "bar",
+                   str -> eitherT(new Identity<>(right(str.length()))));
     }
 }

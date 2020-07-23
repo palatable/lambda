@@ -1,4 +1,4 @@
-package com.jnape.palatable.lambda.internal.iteration;
+package com.jnape.palatable.lambda.internal;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 
@@ -7,17 +7,20 @@ import java.util.NoSuchElementException;
 
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 
-abstract class ImmutableStack<A> implements Iterable<A> {
+/**
+ * Internal API. Use at your own peril.
+ */
+public abstract class ImmutableStack<A> implements Iterable<A> {
 
-    final ImmutableStack<A> push(A a) {
+    public final ImmutableStack<A> push(A a) {
         return new Node<>(a, this);
     }
 
-    abstract Maybe<A> head();
+    public abstract Maybe<A> head();
 
-    abstract ImmutableStack<A> tail();
+    public abstract ImmutableStack<A> tail();
 
-    final boolean isEmpty() {
+    public final boolean isEmpty() {
         return head().fmap(constantly(false)).orElse(true);
     }
 
@@ -49,12 +52,12 @@ abstract class ImmutableStack<A> implements Iterable<A> {
         private static final Empty<?> INSTANCE = new Empty<>();
 
         @Override
-        Maybe<A> head() {
+        public Maybe<A> head() {
             return Maybe.nothing();
         }
 
         @Override
-        ImmutableStack<A> tail() {
+        public ImmutableStack<A> tail() {
             return this;
         }
     }
@@ -69,12 +72,12 @@ abstract class ImmutableStack<A> implements Iterable<A> {
         }
 
         @Override
-        Maybe<A> head() {
+        public Maybe<A> head() {
             return Maybe.just(head);
         }
 
         @Override
-        ImmutableStack<A> tail() {
+        public ImmutableStack<A> tail() {
             return tail;
         }
     }

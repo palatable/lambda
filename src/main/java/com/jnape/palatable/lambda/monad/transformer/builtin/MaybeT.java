@@ -45,6 +45,29 @@ public final class MaybeT<M extends MonadRec<?, M>, A> implements
     }
 
     /**
+     * If the embedded value is present and satisfies <code>predicate</code>
+     * then return <code>just</code> the embedded value
+     *
+     * @param predicate the predicate to apply to the embedded value
+     * @return maybe the satisfied value embedded under M
+     */
+    public MaybeT<M, A> filter(Fn1<? super A, ? extends Boolean> predicate) {
+        return maybeT(mma.fmap(ma -> ma.filter(predicate)));
+    }
+
+    /**
+     * Returns the first {@link MaybeT} that is an effect around {@link Maybe#just(Object) just} a result.
+     *
+     * @param other the other {@link MaybeT}
+     * @return the first present {@link MaybeT}
+     */
+    public MaybeT<M, A> or(MaybeT<M, A> other) {
+        MonadRec<Maybe<A>, M> mMaybeA = runMaybeT();
+        return maybeT(mMaybeA.flatMap(maybeA -> maybeA.match(constantly(other.runMaybeT()),
+                                                             a -> mMaybeA.pure(just(a)))));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -134,7 +157,7 @@ public final class MaybeT<M extends MonadRec<?, M>, A> implements
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof MaybeT<?, ?> && Objects.equals(mma, ((MaybeT) other).mma);
+        return other instanceof MaybeT<?, ?> && Objects.equals(mma, ((MaybeT<?, ?>) other).mma);
     }
 
     @Override

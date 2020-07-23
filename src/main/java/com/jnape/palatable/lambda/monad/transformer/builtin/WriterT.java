@@ -46,11 +46,35 @@ public final class WriterT<W, M extends MonadRec<?, M>, A> implements
      * accumulation and the result inside the {@link Monad}.
      *
      * @param monoid the accumulation {@link Monoid}
-     * @param <MAW>  the inferred {@link Monad} result
+     * @param <MAW>  the inferred {@link MonadRec} result
      * @return the accumulation with the result
      */
     public <MAW extends MonadRec<Tuple2<A, W>, M>> MAW runWriterT(Monoid<W> monoid) {
         return writerFn.apply(monoid).coerce();
+    }
+
+    /**
+     * Given a {@link Monoid} for the accumulation, run the computation represented by this {@link WriterT} inside the
+     * {@link Monad monadic effect}, ignoring the resulting accumulation, yielding the value in isolation.
+     *
+     * @param monoid the accumulation {@link Monoid}
+     * @param <MA>   the inferred {@link MonadRec} result
+     * @return the result
+     */
+    public <MA extends MonadRec<A, M>> MA evalWriterT(Monoid<W> monoid) {
+        return runWriterT(monoid).fmap(Tuple2::_1).coerce();
+    }
+
+    /**
+     * Given a {@link Monoid} for the accumulation, run the computation represented by this {@link WriterT} inside the
+     * {@link Monad monadic effect}, ignoring the value, yielding the accumulation in isolation.
+     *
+     * @param monoid the accumulation {@link Monoid}
+     * @param <MW>   the inferred {@link MonadRec} accumulation
+     * @return the accumulation
+     */
+    public <MW extends MonadRec<W, M>> MW execWriterT(Monoid<W> monoid) {
+        return runWriterT(monoid).fmap(Tuple2::_2).coerce();
     }
 
     /**

@@ -46,9 +46,9 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     Tuple4(_1 _1, Tuple3<_2, _3, _4> tail) {
         super(_1, tail);
         this._1 = _1;
-        _2 = tail._1();
-        _3 = tail._2();
-        _4 = tail._3();
+        _2      = tail._1();
+        _3      = tail._2();
+        _4      = tail._3();
     }
 
     /**
@@ -57,6 +57,17 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     @Override
     public <_0> Tuple5<_0, _1, _2, _3, _4> cons(_0 _0) {
         return new Tuple5<>(_0, this);
+    }
+
+    /**
+     * Snoc an element onto the back of this {@link Tuple4}.
+     *
+     * @param _5   the new last element
+     * @param <_5> the new last element type
+     * @return the new {@link Tuple5}
+     */
+    public <_5> Tuple5<_1, _2, _3, _4, _5> snoc(_5 _5) {
+        return tuple(_1, _2, _3, _4, _5);
     }
 
     /**

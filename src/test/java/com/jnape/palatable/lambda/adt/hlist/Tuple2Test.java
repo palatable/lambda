@@ -69,6 +69,11 @@ public class Tuple2Test {
     }
 
     @Test
+    public void snoc() {
+        assertEquals(tuple(Long.MAX_VALUE, 123, "hi"), tuple(Long.MAX_VALUE, 123).snoc("hi"));
+    }
+
+    @Test
     public void accessors() {
         assertEquals((Integer) 1, tuple2._1());
         assertEquals((Integer) 2, tuple2._2());

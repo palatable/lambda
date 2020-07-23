@@ -8,10 +8,10 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Coalesce.coalesce
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertThat;
+import static testsupport.matchers.EitherMatcher.isLeftThat;
+import static testsupport.matchers.EitherMatcher.isRightThat;
 import static testsupport.matchers.IterableMatcher.isEmpty;
 import static testsupport.matchers.IterableMatcher.iterates;
-import static testsupport.matchers.LeftMatcher.isLeftThat;
-import static testsupport.matchers.RightMatcher.isRightThat;
 
 public class CoalesceTest {
 

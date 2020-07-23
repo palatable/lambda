@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static testsupport.assertion.MonadErrorAssert.assertLaws;
-import static testsupport.matchers.LeftMatcher.isLeftThat;
+import static testsupport.matchers.EitherMatcher.isLeftThat;
 
 @RunWith(Traits.class)
 public class TryTest {

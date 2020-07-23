@@ -18,6 +18,7 @@ import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.adt.hlist.Tuple3.pureTuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
+import static java.time.Duration.ofSeconds;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
@@ -60,6 +61,12 @@ public class Tuple3Test {
     @Test
     public void cons() {
         assertEquals(new Tuple4<>(0, tuple3), tuple3.cons(0));
+    }
+
+    @Test
+    public void snoc() {
+        assertEquals(tuple("qux", Long.MIN_VALUE, 7, ofSeconds(13)),
+                     tuple("qux", Long.MIN_VALUE, 7).snoc(ofSeconds(13)));
     }
 
     @Test

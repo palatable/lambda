@@ -6,7 +6,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ## [Unreleased]
 
 ### Changed
+- `IterateT#unfold` now only computes a single `Pure` for the given input
+
+### Added
+- `$`, function application represented as a higher-order `Fn2`
+- `Fn1#withSelf`, a static method for constructing a self-referencing `Fn1` 
+- `HNil/SingletonHList/TupleX#snoc`, a method to add a new last element (append to a tuple)
+
+## [5.2.0] - 2020-02-12
+
+### Changed
 - `HList#cons` static factory method auto-promotes to specialized `HList` if there is one
+- `EitherT` gains a `MonadError` instance
+
+### Added
+- `MergeHMaps`, a `Monoid` that merges `HMap`s by merging the values via key-specified `Semigroup`s
+- `Id#id` overload that accepts an argument and returns it
+- `MaybeT#or`, choose the first `MaybeT` that represents an effect around `just` a value
+- `MaybeT#filter`, filter a `Maybe` inside an effect
+- `StateMatcher, StateTMatcher, WriterTMatcher`
+- `ReaderT#and`, category composition between `ReaderT` instances: `(a -> m b) -> (b -> m c) -> (a -> m c)`
+- `IterateT`, [`ListT` done right](https://wiki.haskell.org/ListT_done_right)
+- `Comparison`, a type-safe sum of `LT`, `EQ`, and `GT` orderings
+- `Compare`, a function taking a `Comparator` and returning a `Comparison`
+- `Min/Max/...With` variants for inequality testing with a `Comparator`
 
 ## [5.1.0] - 2019-10-13
 ### Changed
@@ -544,7 +567,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.1.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.2.0...HEAD
+[5.2.0]: https://github.com/palatable/lambda/compare/lambda-5.1.0...lambda-5.2.0
 [5.1.0]: https://github.com/palatable/lambda/compare/lambda-5.0.0...lambda-5.1.0
 [5.0.0]: https://github.com/palatable/lambda/compare/lambda-4.0.0...lambda-5.0.0
 [4.0.0]: https://github.com/palatable/lambda/compare/lambda-3.3.0...lambda-4.0.0
