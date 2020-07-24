@@ -2,6 +2,8 @@ package com.jnape.palatable.lambda.adt.hlist;
 
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.hlist.HList.HNil;
+import com.jnape.palatable.lambda.bimonad.BimonadRec;
+import com.jnape.palatable.lambda.comonad.Comonad;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
@@ -24,7 +26,7 @@ import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoli
  * @see Tuple5
  */
 public class SingletonHList<_1> extends HCons<_1, HNil> implements
-        MonadRec<_1, SingletonHList<?>>,
+        BimonadRec<_1, SingletonHList<?>>,
         Traversable<_1, SingletonHList<?>> {
 
     SingletonHList(_1 _1) {
@@ -55,8 +57,24 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
      * {@inheritDoc}
      */
     @Override
+    public _1 extract() {
+        return head();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> SingletonHList<B> extendImpl(Fn1<? super Comonad<_1, SingletonHList<?>>, ? extends B> f) {
+        return singletonHList(f.apply(this));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <_1Prime> SingletonHList<_1Prime> fmap(Fn1<? super _1, ? extends _1Prime> fn) {
-        return MonadRec.super.<_1Prime>fmap(fn).coerce();
+        return BimonadRec.super.<_1Prime>fmap(fn).coerce();
     }
 
     /**
@@ -73,7 +91,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
     @Override
     public <_1Prime> SingletonHList<_1Prime> zip(
             Applicative<Fn1<? super _1, ? extends _1Prime>, SingletonHList<?>> appFn) {
-        return MonadRec.super.zip(appFn).coerce();
+        return BimonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -82,7 +100,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
     @Override
     public <_1Prime> Lazy<SingletonHList<_1Prime>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super _1, ? extends _1Prime>, SingletonHList<?>>> lazyAppFn) {
-        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<_1Prime, SingletonHList<?>>::coerce);
+        return BimonadRec.super.lazyZip(lazyAppFn).fmap(Monad<_1Prime, SingletonHList<?>>::coerce);
     }
 
     /**
@@ -90,7 +108,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
      */
     @Override
     public <_1Prime> SingletonHList<_1Prime> discardL(Applicative<_1Prime, SingletonHList<?>> appB) {
-        return MonadRec.super.discardL(appB).coerce();
+        return BimonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -98,7 +116,7 @@ public class SingletonHList<_1> extends HCons<_1, HNil> implements
      */
     @Override
     public <_1Prime> SingletonHList<_1> discardR(Applicative<_1Prime, SingletonHList<?>> appB) {
-        return MonadRec.super.discardR(appB).coerce();
+        return BimonadRec.super.discardR(appB).coerce();
     }
 
     /**

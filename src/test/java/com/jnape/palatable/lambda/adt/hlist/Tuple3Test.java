@@ -6,12 +6,7 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.BifunctorLaws;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.MonadRecLaws;
-import testsupport.traits.TraversableLaws;
+import testsupport.traits.*;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -43,7 +38,8 @@ public class Tuple3Test {
             MonadLaws.class,
             MonadRecLaws.class,
             BifunctorLaws.class,
-            TraversableLaws.class})
+            TraversableLaws.class,
+            ComonadLaws.class})
     public Tuple3<?, ?, ?> testSubject() {
         return tuple("one", 2, 3d);
     }

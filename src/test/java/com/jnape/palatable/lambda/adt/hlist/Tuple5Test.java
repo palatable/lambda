@@ -7,12 +7,7 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.BifunctorLaws;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.MonadRecLaws;
-import testsupport.traits.TraversableLaws;
+import testsupport.traits.*;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -22,10 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 @RunWith(Traits.class)
 public class Tuple5Test {
@@ -43,7 +35,8 @@ public class Tuple5Test {
             MonadLaws.class,
             MonadRecLaws.class,
             BifunctorLaws.class,
-            TraversableLaws.class})
+            TraversableLaws.class,
+            ComonadLaws.class})
     public Tuple5<?, ?, ?, ?, ?> testSubject() {
         return tuple("one", 2, 3d, 4f, '5');
     }
