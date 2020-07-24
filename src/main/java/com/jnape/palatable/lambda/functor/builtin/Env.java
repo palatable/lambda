@@ -1,17 +1,13 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
-import com.jnape.palatable.lambda.adt.product.Product2;
 import com.jnape.palatable.lambda.comonad.Comonad;
 import com.jnape.palatable.lambda.comonad.builtin.ComonadEnv;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.builtin.fn1.Id;
 import com.jnape.palatable.lambda.functor.Bifunctor;
-import com.jnape.palatable.lambda.functor.Functor;
 
 import java.util.Objects;
 
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 
 /**
  * A concrete implementation of the {@link ComonadEnv} interface.
@@ -20,8 +16,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
  * @param <A> the value type
  */
 public final class Env<E, A> implements Comonad<A, Env<E, ?>>, ComonadEnv<E, A, Env<E, ?>>, Bifunctor<E, A, Env<?, ?>> {
-    private E env;
-    private A value;
+    private final E env;
+    private final A value;
 
     private Env(E e, A a) {
         this.env = e;
@@ -32,11 +28,11 @@ public final class Env<E, A> implements Comonad<A, Env<E, ?>>, ComonadEnv<E, A, 
     /**
      * Constructor function for an Env.
      *
-     * @param env    the environment provided as context to value
-     * @param value  the primary value to be extracted
-     * @param <E>    the type of the environment
-     * @param <A>    the type of the value
-     * @return       a new instance of Env&lt;E, A&gt;
+     * @param env   the environment provided as context to value
+     * @param value the primary value to be extracted
+     * @param <E>   the type of the environment
+     * @param <A>   the type of the value
+     * @return a new instance of Env&lt;E, A&gt;
      */
     public static <E, A> Env<E, A> env(E env, A value) {
         return new Env<>(env, value);
@@ -48,7 +44,7 @@ public final class Env<E, A> implements Comonad<A, Env<E, ?>>, ComonadEnv<E, A, 
     @Override
     public final E ask() {
         return this.env;
-    };
+    }
 
     /**
      * {@inheritDoc}

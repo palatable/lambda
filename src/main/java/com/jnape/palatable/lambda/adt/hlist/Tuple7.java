@@ -3,6 +3,8 @@ package com.jnape.palatable.lambda.adt.hlist;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.hlist.HList.HCons;
 import com.jnape.palatable.lambda.adt.product.Product7;
+import com.jnape.palatable.lambda.bimonad.BimonadRec;
+import com.jnape.palatable.lambda.comonad.Comonad;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn2.Into;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
@@ -39,7 +41,7 @@ import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoli
  */
 public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3, _4, _5, _6, _7>> implements
         Product7<_1, _2, _3, _4, _5, _6, _7>,
-        MonadRec<_7, Tuple7<_1, _2, _3, _4, _5, _6, ?>>,
+        BimonadRec<_7, Tuple7<_1, _2, _3, _4, _5, _6, ?>>,
         Bifunctor<_6, _7, Tuple7<_1, _2, _3, _4, _5, ?, ?>>,
         Traversable<_7, Tuple7<_1, _2, _3, _4, _5, _6, ?>> {
 
@@ -229,8 +231,24 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
      * {@inheritDoc}
      */
     @Override
+    public _7 extract() {
+        return _7;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> Tuple7<_1, _2, _3, _4, _5, _6, B> extendImpl(Fn1<? super Comonad<_7, Tuple7<_1, _2, _3, _4, _5, _6, ?>>, ? extends B> f) {
+        return tuple(_1, _2, _3, _4, _5, _6, f.apply(this));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> fmap(Fn1<? super _7, ? extends _7Prime> fn) {
-        return MonadRec.super.<_7Prime>fmap(fn).coerce();
+        return BimonadRec.super.<_7Prime>fmap(fn).coerce();
     }
 
     /**
@@ -273,7 +291,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> zip(
             Applicative<Fn1<? super _7, ? extends _7Prime>, Tuple7<_1, _2, _3, _4, _5, _6, ?>> appFn) {
-        return MonadRec.super.zip(appFn).coerce();
+        return BimonadRec.super.zip(appFn).coerce();
     }
 
     /**
@@ -282,7 +300,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime> Lazy<Tuple7<_1, _2, _3, _4, _5, _6, _7Prime>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super _7, ? extends _7Prime>, Tuple7<_1, _2, _3, _4, _5, _6, ?>>> lazyAppFn) {
-        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>>::coerce);
+        return BimonadRec.super.lazyZip(lazyAppFn).fmap(Monad<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>>::coerce);
     }
 
     /**
@@ -291,7 +309,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7Prime> discardL(
             Applicative<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>> appB) {
-        return MonadRec.super.discardL(appB).coerce();
+        return BimonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -300,7 +318,7 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     @Override
     public <_7Prime> Tuple7<_1, _2, _3, _4, _5, _6, _7> discardR(
             Applicative<_7Prime, Tuple7<_1, _2, _3, _4, _5, _6, ?>> appB) {
-        return MonadRec.super.discardR(appB).coerce();
+        return BimonadRec.super.discardR(appB).coerce();
     }
 
     /**

@@ -14,8 +14,8 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.consta
  * @param <A>  the retrieved value type
  */
 public final class Store<S, A> implements Comonad<A, Store<S, ?>>, ComonadStore<S, A, Store<S, ?>> {
-    private Fn1<? super S, ? extends A> storage;
-    private S cursor;
+    private final Fn1<? super S, ? extends A> storage;
+    private final S cursor;
 
     private Store(Fn1<? super S, ? extends A> f, S s) {
         this.storage = f;

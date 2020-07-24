@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.functor.builtin;
 
+import com.jnape.palatable.lambda.bimonad.BimonadRec;
 import com.jnape.palatable.lambda.comonad.Comonad;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
@@ -19,7 +20,7 @@ import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoli
  *
  * @param <A> the value type
  */
-public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<A, Identity<?>>, Comonad<A, Identity<?>> {
+public final class Identity<A> implements BimonadRec<A, Identity<?>>, Traversable<A, Identity<?>> {
 
     private final A a;
 
@@ -65,7 +66,7 @@ public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<
      */
     @Override
     public <B> Identity<B> fmap(Fn1<? super A, ? extends B> fn) {
-        return MonadRec.super.<B>fmap(fn).coerce();
+        return BimonadRec.super.<B>fmap(fn).coerce();
     }
 
     /**
@@ -90,7 +91,7 @@ public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<
     @Override
     public <B> Lazy<Identity<B>> lazyZip(
             Lazy<? extends Applicative<Fn1<? super A, ? extends B>, Identity<?>>> lazyAppFn) {
-        return MonadRec.super.lazyZip(lazyAppFn).fmap(Monad<B, Identity<?>>::coerce);
+        return BimonadRec.super.lazyZip(lazyAppFn).fmap(Monad<B, Identity<?>>::coerce);
     }
 
     /**
@@ -98,7 +99,7 @@ public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<
      */
     @Override
     public <B> Identity<B> discardL(Applicative<B, Identity<?>> appB) {
-        return MonadRec.super.discardL(appB).coerce();
+        return BimonadRec.super.discardL(appB).coerce();
     }
 
     /**
@@ -106,7 +107,7 @@ public final class Identity<A> implements MonadRec<A, Identity<?>>, Traversable<
      */
     @Override
     public <B> Identity<A> discardR(Applicative<B, Identity<?>> appB) {
-        return MonadRec.super.discardR(appB).coerce();
+        return BimonadRec.super.discardR(appB).coerce();
     }
 
     /**
