@@ -7,12 +7,7 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.ApplicativeLaws;
-import testsupport.traits.BifunctorLaws;
-import testsupport.traits.FunctorLaws;
-import testsupport.traits.MonadLaws;
-import testsupport.traits.MonadRecLaws;
-import testsupport.traits.TraversableLaws;
+import testsupport.traits.*;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
@@ -22,10 +17,7 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 @RunWith(Traits.class)
 public class Tuple6Test {
@@ -134,7 +126,14 @@ public class Tuple6Test {
 
     @Test
     public void staticPure() {
-        Tuple6<Integer, String, Character, Boolean, Float, Byte> tuple = pureTuple(1, "2", '3', true, 5f).apply((byte) 6);
+        Tuple6<Integer, String, Character, Boolean, Float, Byte> tuple = pureTuple(1, "2", '3', true, 5f).apply(
+                (byte) 6);
         assertEquals(tuple(1, "2", '3', true, 5f, (byte) 6), tuple);
+    }
+
+    @Test
+    public void init() {
+        assertEquals(tuple(1, 2, 3, 4, 5),
+                     tuple(1, 2, 3, 4, 5, 6).init());
     }
 }
