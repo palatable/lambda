@@ -335,6 +335,16 @@ public class Tuple7<_1, _2, _3, _4, _5, _6, _7> extends HCons<_1, Tuple6<_2, _3,
     }
 
     /**
+     * Returns a <code>{@link Tuple6}&lt;_1, _2, _3, _4, _5, _6&gt;</code> of all the elements of this
+     * <code>{@link Tuple7}&lt;_1, _2, _3, _4, _5, _6, _7&gt;</code> except the last.
+     *
+     * @return The {@link Tuple6}&lt;_1, _2, _3, _4, _5, _6&gt; representing all but the last element
+     */
+    public Tuple6<_1, _2, _3, _4, _5, _6> init() {
+        return rotateR7().tail();
+    }
+
+    /**
      * Given a value of type <code>A</code>, produced an instance of this tuple with each slot set to that value.
      *
      * @param a   the value to fill the tuple with

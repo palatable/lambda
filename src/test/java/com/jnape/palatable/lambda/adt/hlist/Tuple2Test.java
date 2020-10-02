@@ -64,6 +64,11 @@ public class Tuple2Test {
     }
 
     @Test
+    public void init() {
+        assertEquals(new SingletonHList<>(1), tuple2.init());
+    }
+
+    @Test
     public void cons() {
         assertEquals(new Tuple3<>(0, tuple2), tuple2.cons(0));
     }
