@@ -137,4 +137,10 @@ public class Tuple6Test {
         Tuple6<Integer, String, Character, Boolean, Float, Byte> tuple = pureTuple(1, "2", '3', true, 5f).apply((byte) 6);
         assertEquals(tuple(1, "2", '3', true, 5f, (byte) 6), tuple);
     }
+
+    @Test
+    public void init() {
+        assertEquals(tuple(1, 2, 3, 4, 5),
+                     tuple(1, 2, 3, 4, 5, 6).init());
+    }
 }

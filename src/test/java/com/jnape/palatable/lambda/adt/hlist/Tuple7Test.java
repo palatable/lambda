@@ -141,4 +141,10 @@ public class Tuple7Test {
                 pureTuple((byte) 1, (short) 2, 3, 4L, 5F, 6D).apply(true);
         assertEquals(tuple((byte) 1, (short) 2, 3, 4L, 5F, 6D, true), tuple);
     }
+
+    @Test
+    public void init() {
+        assertEquals(tuple(1, 2, 3, 4, 5, 6),
+                     tuple(1, 2, 3, 4, 5, 6, 7).init());
+    }
 }

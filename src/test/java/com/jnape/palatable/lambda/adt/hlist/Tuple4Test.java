@@ -127,4 +127,10 @@ public class Tuple4Test {
         Tuple4<Integer, String, Character, Boolean> tuple = pureTuple(1, "2", '3').apply(true);
         assertEquals(tuple(1, "2", '3', true), tuple);
     }
+
+    @Test
+    public void init() {
+        assertEquals(tuple(1, 2, 3),
+                     tuple(1, 2, 3, 4).init());
+    }
 }

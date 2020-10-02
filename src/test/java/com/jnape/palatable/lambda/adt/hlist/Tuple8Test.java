@@ -158,4 +158,10 @@ public class Tuple8Test {
                 pureTuple((byte) 1, (short) 2, 3, 4L, 5F, 6D, true).apply('8');
         assertEquals(tuple((byte) 1, (short) 2, 3, 4L, 5F, 6D, true, '8'), tuple);
     }
+
+    @Test
+    public void init() {
+        assertEquals(tuple(1, 2, 3, 4, 5, 6, 7),
+                     tuple(1, 2, 3, 4, 5, 6, 7, 8).init());
+    }
 }

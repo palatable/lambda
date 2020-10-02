@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `IterateT#unfold` now only computes a single `Pure` for the given input
 - `ReaderT#fmap` and `StateT#fmap` avoid unnecessary calls to `pure`
 - `MaybeT` implements `MonadError`
+- `Tuple2-8#init`, for populating a `TupleN` with all but the last element
 
 ### Added
 - `$`, function application represented as a higher-order `Fn2`
