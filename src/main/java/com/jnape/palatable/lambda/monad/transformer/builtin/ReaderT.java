@@ -120,7 +120,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> ReaderT<R, M, B> fmap(Fn1<? super A, ? extends B> fn) {
-        return MonadT.super.<B>fmap(fn).coerce();
+        return readerT(r -> runReaderT(r).fmap(fn));
     }
 
     /**

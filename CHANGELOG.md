@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 - `IterateT#unfold` now only computes a single `Pure` for the given input
+- `ReaderT#fmap` and `StateT#fmap` avoid unnecessary calls to `pure`
 
 ### Added
 - `$`, function application represented as a higher-order `Fn2`

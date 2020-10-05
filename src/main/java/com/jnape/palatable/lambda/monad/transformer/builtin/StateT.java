@@ -144,7 +144,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> StateT<S, M, B> fmap(Fn1<? super A, ? extends B> fn) {
-        return MonadT.super.<B>fmap(fn).coerce();
+        return stateT(s -> runStateT(s).fmap(t -> t.biMapL(fn)));
     }
 
     /**
@@ -292,7 +292,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
     public static <S, M extends MonadRec<?, M>> Pure<StateT<S, M, ?>> pureStateT(Pure<M> pureM) {
         return new Pure<StateT<S, M, ?>>() {
             @Override
-            public <A> StateT<S, M, A> checkedApply(A a) throws Throwable {
+            public <A> StateT<S, M, A> checkedApply(A a) {
                 return stateT(pureM.<A, MonadRec<A, M>>apply(a));
             }
         };
