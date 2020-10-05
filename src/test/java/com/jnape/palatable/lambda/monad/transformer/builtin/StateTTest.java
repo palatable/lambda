@@ -16,15 +16,18 @@ import testsupport.traits.MonadWriterLaws;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.optics.functions.Set.set;
 import static com.jnape.palatable.lambda.optics.lenses.ListLens.elementAt;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static testsupport.matchers.StateTMatcher.whenEvaluated;
 import static testsupport.matchers.StateTMatcher.whenExecuted;
 import static testsupport.matchers.StateTMatcher.whenRun;
@@ -118,5 +121,19 @@ public class StateTTest {
     public void staticLift() {
         assertThat(StateT.<String>liftStateT().apply(new Identity<>(1)),
                    whenRun("foo", new Identity<>(tuple(1, "foo"))));
+    }
+
+    @Test
+    public void fmapInteractions() {
+        AtomicInteger invocations = new AtomicInteger(0);
+        StateT.<Integer, Identity<?>, Integer>gets(x -> {
+            invocations.incrementAndGet();
+            return new Identity<>(x);
+        })
+                .fmap(id())
+                .fmap(id())
+                .fmap(id())
+                .<Identity<Tuple2<Integer, Integer>>>runStateT(0);
+        assertEquals(1, invocations.get());
     }
 }

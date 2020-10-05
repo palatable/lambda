@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.adt.Unit;
+import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.io.IO;
 import com.jnape.palatable.traitor.annotations.TestTraits;
@@ -12,6 +13,7 @@ import testsupport.traits.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
@@ -81,5 +83,18 @@ public class ReaderTTest {
                 .<IO<Unit>>runReaderT(UNIT)
                 .unsafePerformAsyncIO(Executors.newFixedThreadPool(2))
                 .join();
+    }
+
+    @Test
+    public void fmapInteractions() {
+        AtomicInteger invocations = new AtomicInteger(0);
+        ReaderT<Integer, Identity<?>, Integer> readerT = readerT(i -> {
+            invocations.incrementAndGet();
+            return new Identity<>(i);
+        });
+
+        Fn1<Integer, Integer> plusOne = x -> x + 1;
+        readerT.fmap(plusOne).fmap(plusOne).fmap(plusOne).runReaderT(0);
+        assertEquals(1, invocations.get());
     }
 }
