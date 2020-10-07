@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
+import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Lift;
@@ -9,6 +10,7 @@ import com.jnape.palatable.lambda.functor.Applicative;
 import com.jnape.palatable.lambda.functor.builtin.Compose;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monad.Monad;
+import com.jnape.palatable.lambda.monad.MonadError;
 import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
@@ -16,6 +18,8 @@ import java.util.Objects;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 
@@ -26,7 +30,7 @@ import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.ter
  * @param <A> the carrier type
  */
 public final class MaybeT<M extends MonadRec<?, M>, A> implements
-        MonadT<M, A, MaybeT<M, ?>, MaybeT<?, ?>> {
+        MonadT<M, A, MaybeT<M, ?>, MaybeT<?, ?>>, MonadError<Unit, A, MaybeT<M, ?>> {
 
     private final MonadRec<Maybe<A>, M> mma;
 
@@ -65,6 +69,24 @@ public final class MaybeT<M extends MonadRec<?, M>, A> implements
         MonadRec<Maybe<A>, M> mMaybeA = runMaybeT();
         return maybeT(mMaybeA.flatMap(maybeA -> maybeA.match(constantly(other.runMaybeT()),
                                                              a -> mMaybeA.pure(just(a)))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public MaybeT<M, A> throwError(Unit unit) {
+        return maybeT(mma.pure(nothing()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public MaybeT<M, A> catchError(Fn1<? super Unit, ? extends Monad<A, MaybeT<M, ?>>> recoveryFn) {
+        return maybeT(mma.flatMap(maybeA -> maybeA.match(
+                fn0(() -> recoveryFn.apply(UNIT).<MaybeT<M, A>>coerce().runMaybeT()),
+                a -> mma.pure(just(a)))));
     }
 
     /**
