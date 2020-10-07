@@ -7,7 +7,12 @@ import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.*;
+import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.BifunctorLaws;
+import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
+import testsupport.traits.TraversableLaws;
 
 import java.time.LocalDate;
 
@@ -19,7 +24,10 @@ import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @RunWith(Traits.class)
 public class Tuple8Test {
