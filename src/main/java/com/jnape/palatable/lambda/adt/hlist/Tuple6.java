@@ -305,9 +305,9 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
     }
 
     /**
-     * Returns a Tuple of all the elements of this Tuple except the last
+     * Returns a {@link Tuple5}&lt;_1, _2, _3, _4, _5&gt; of all the elements of this {@link Tuple6}&lt;_1, _2, _3, _4, _5, _6&gt; except the last
      *
-     * @return The Tuple representing all but the last element
+     * @return The {@link Tuple5}&lt;_1, _2, _3, _4, _5&gt; representing all but the last element
      */
     public Tuple5<_1, _2, _3, _4, _5> init() {
         return rotateR6().tail();

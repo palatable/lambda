@@ -238,6 +238,15 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     }
 
     /**
+     * Returns a {@link SingletonHList}&lt;_1&gt; of the 1st element
+     *
+     * @return The {@link SingletonHList}&lt;_1&gt;
+     */
+    public SingletonHList<_1> init() {
+        return invert().tail();
+    }
+
+    /**
      * Static factory method for creating <code>Tuple2</code>s from {@link java.util.Map.Entry}s.
      *
      * @param entry the map entry

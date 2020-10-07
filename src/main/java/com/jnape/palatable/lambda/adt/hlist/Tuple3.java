@@ -220,9 +220,9 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     }
 
     /**
-     * Returns a Tuple of all the elements of this Tuple except the last
+     * Returns a {@link Tuple2}&lt;_1, _2&gt; of all the elements of this {@link Tuple3}&lt;_1, _2, _3&gt; except the last
      *
-     * @return The Tuple representing all but the last element
+     * @return The {@link Tuple2}&lt;_1, _2&gt; representing all but the last element
      */
     public Tuple2<_1, _2> init() {
         return rotateR3().tail();
