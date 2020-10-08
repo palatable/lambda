@@ -247,7 +247,8 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     }
 
     /**
-     * Returns a {@link Tuple3}&lt;_1, _2, _3&gt; of all the elements of this {@link Tuple4}&lt;_1, _2, _3, _4&gt; except the last
+     * Returns a <code>{@link Tuple3}&lt;_1, _2, _3&gt;</code> of all the elements of this
+     * <code>{@link Tuple4}&lt;_1, _2, _3, _4&gt;</code> except the last.
      *
      * @return The {@link Tuple3}&lt;_1, _2, _3&gt; representing all but the last element
      */
@@ -293,7 +294,7 @@ public class Tuple4<_1, _2, _3, _4> extends HCons<_1, Tuple3<_2, _3, _4>> implem
     public static <_1, _2, _3> Pure<Tuple4<_1, _2, _3, ?>> pureTuple(_1 _1, _2 _2, _3 _3) {
         return new Pure<Tuple4<_1, _2, _3, ?>>() {
             @Override
-            public <_4> Tuple4<_1, _2, _3, _4> checkedApply(_4 _4) throws Throwable {
+            public <_4> Tuple4<_1, _2, _3, _4> checkedApply(_4 _4) {
                 return tuple(_1, _2, _3, _4);
             }
         };

@@ -365,7 +365,8 @@ public class Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> extends HCons<_1, Tuple7<_2,
     }
 
     /**
-     * Returns a {@link Tuple7}&lt;_1, _2, _3, _4, _5, _6, _7&gt; of all the elements of this {@link Tuple8}&lt;_1, _2, _3, _4, _5, _6, _7, _8&gt; except the last
+     * Returns a <code>{@link Tuple7}&lt;_1, _2, _3, _4, _5, _6, _7&gt;</code> of all the elements of this
+     * <code>{@link Tuple8}&lt;_1, _2, _3, _4, _5, _6, _7, _8&gt;</code> except the last.
      *
      * @return The {@link Tuple7}&lt;_1, _2, _3, _4, _5, _6, _7&gt; representing all but the last element
      */
@@ -422,7 +423,7 @@ public class Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> extends HCons<_1, Tuple7<_2,
                                                                                                      _7 _7) {
         return new Pure<Tuple8<_1, _2, _3, _4, _5, _6, _7, ?>>() {
             @Override
-            public <_8> Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> checkedApply(_8 _8) throws Throwable {
+            public <_8> Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> checkedApply(_8 _8) {
                 return tuple(_1, _2, _3, _4, _5, _6, _7, _8);
             }
         };

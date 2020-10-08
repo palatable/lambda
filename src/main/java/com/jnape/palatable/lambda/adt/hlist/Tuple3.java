@@ -220,7 +220,8 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     }
 
     /**
-     * Returns a {@link Tuple2}&lt;_1, _2&gt; of all the elements of this {@link Tuple3}&lt;_1, _2, _3&gt; except the last
+     * Returns a <code>{@link Tuple2}&lt;_1, _2&gt;</code> of all the elements of this
+     * <code>{@link Tuple3}&lt;_1, _2, _3&gt;</code> except the last.
      *
      * @return The {@link Tuple2}&lt;_1, _2&gt; representing all but the last element
      */
@@ -264,7 +265,7 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     public static <_1, _2> Pure<Tuple3<_1, _2, ?>> pureTuple(_1 _1, _2 _2) {
         return new Pure<Tuple3<_1, _2, ?>>() {
             @Override
-            public <_3> Tuple3<_1, _2, _3> checkedApply(_3 _3) throws Throwable {
+            public <_3> Tuple3<_1, _2, _3> checkedApply(_3 _3) {
                 return tuple(_1, _2, _3);
             }
         };
