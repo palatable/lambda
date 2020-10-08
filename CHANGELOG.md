@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 - `IterateT#unfold` now only computes a single `Pure` for the given input
+- `Tuple2-8#init`, for populating a `TupleN` with all but the last element
 
 ### Added
 - `$`, function application represented as a higher-order `Fn2`
