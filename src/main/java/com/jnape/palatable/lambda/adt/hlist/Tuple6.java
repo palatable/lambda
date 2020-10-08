@@ -305,7 +305,8 @@ public class Tuple6<_1, _2, _3, _4, _5, _6> extends HCons<_1, Tuple5<_2, _3, _4,
     }
 
     /**
-     * Returns a {@link Tuple5}&lt;_1, _2, _3, _4, _5&gt; of all the elements of this {@link Tuple6}&lt;_1, _2, _3, _4, _5, _6&gt; except the last
+     * Returns a <code>{@link Tuple5}&lt;_1, _2, _3, _4, _5&gt;</code> of all the elements of this
+     * <code>{@link Tuple6}&lt;_1, _2, _3, _4, _5, _6&gt;</code> except the last.
      *
      * @return The {@link Tuple5}&lt;_1, _2, _3, _4, _5&gt; representing all but the last element
      */

@@ -238,7 +238,7 @@ public class Tuple2<_1, _2> extends HCons<_1, SingletonHList<_2>> implements
     }
 
     /**
-     * Returns a {@link SingletonHList}&lt;_1&gt; of the 1st element
+     * Returns a <code>{@link SingletonHList}&lt;_1&gt;</code> of the first element.
      *
      * @return The {@link SingletonHList}&lt;_1&gt;
      */
