@@ -423,7 +423,7 @@ public class Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> extends HCons<_1, Tuple7<_2,
                                                                                                      _7 _7) {
         return new Pure<Tuple8<_1, _2, _3, _4, _5, _6, _7, ?>>() {
             @Override
-            public <_8> Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> checkedApply(_8 _8) {
+            public <_8> Tuple8<_1, _2, _3, _4, _5, _6, _7, _8> checkedApply(_8 _8) throws Throwable {
                 return tuple(_1, _2, _3, _4, _5, _6, _7, _8);
             }
         };

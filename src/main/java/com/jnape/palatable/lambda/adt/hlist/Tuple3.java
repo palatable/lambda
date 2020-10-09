@@ -265,7 +265,7 @@ public class Tuple3<_1, _2, _3> extends HCons<_1, Tuple2<_2, _3>> implements
     public static <_1, _2> Pure<Tuple3<_1, _2, ?>> pureTuple(_1 _1, _2 _2) {
         return new Pure<Tuple3<_1, _2, ?>>() {
             @Override
-            public <_3> Tuple3<_1, _2, _3> checkedApply(_3 _3) {
+            public <_3> Tuple3<_1, _2, _3> checkedApply(_3 _3) throws Throwable {
                 return tuple(_1, _2, _3);
             }
         };
