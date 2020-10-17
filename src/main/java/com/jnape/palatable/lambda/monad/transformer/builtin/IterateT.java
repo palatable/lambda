@@ -68,18 +68,12 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
         MonadT<M, A, IterateT<M, ?>, IterateT<?, ?>> {
 
     private final Pure<M>                                                                                     pureM;
-    private final ImmutableQueue<MonadRec<A, M>>                                                              conses;
-    private final ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, IterateT<M, A>>> middles;
-    private final ImmutableQueue<MonadRec<A, M>>                                                              snocs;
+    private final ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>> spine;
 
     private IterateT(Pure<M> pureM,
-                     ImmutableQueue<MonadRec<A, M>> conses,
-                     ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, IterateT<M, A>>> middles,
-                     ImmutableQueue<MonadRec<A, M>> snocs) {
-        this.pureM   = pureM;
-        this.conses  = conses;
-        this.middles = middles;
-        this.snocs   = snocs;
+                     ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>> spine) {
+        this.pureM = pureM;
+        this.spine = spine;
     }
 
     /**
@@ -89,7 +83,9 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the embedded {@link Monad}
      */
     public <MMTA extends MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>> MMTA runIterateT() {
-        return pureM.<IterateT<M, A>, MonadRec<IterateT<M, A>, M>>apply(this).trampolineM(IterateT::resume).coerce();
+        MonadRec<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, M>
+                mSpine = pureM.apply(spine);
+        return mSpine.trampolineM(resume(pureM)).coerce();
     }
 
     /**
@@ -99,7 +95,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the cons'ed {@link IterateT}
      */
     public final IterateT<M, A> cons(MonadRec<A, M> head) {
-        return new IterateT<>(pureM, conses.pushFront(head), middles, snocs);
+        return new IterateT<>(pureM, spine.pushFront(b(head)));
     }
 
     /**
@@ -109,7 +105,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the snoc'ed {@link IterateT}
      */
     public final IterateT<M, A> snoc(MonadRec<A, M> last) {
-        return new IterateT<>(pureM, conses, middles, snocs.pushBack(last));
+        return new IterateT<>(pureM, spine.pushBack(b(last)));
     }
 
     /**
@@ -119,13 +115,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the concatenated {@link IterateT}
      */
     public IterateT<M, A> concat(IterateT<M, A> other) {
-        return new IterateT<>(pureM,
-                              conses,
-                              middles.pushBack(b(new IterateT<>(pureM,
-                                                                snocs.concat(other.conses),
-                                                                other.middles,
-                                                                other.snocs))),
-                              ImmutableQueue.empty());
+        return new IterateT<>(pureM, spine.concat(other.spine));
     }
 
     /**
@@ -289,34 +279,17 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
         return MonadT.super.discardR(appB).coerce();
     }
 
-    private MonadRec<RecursiveResult<IterateT<M, A>, Maybe<Tuple2<A, IterateT<M, A>>>>, M> resume() {
-        return conses.head().match(
-                __ -> middles.head().match(
-                        ___ -> snocs.head().match(
-                                ____ -> pureM.apply(terminate(nothing())),
-                                ma -> ma.fmap(a -> terminate(just(tuple(a, new IterateT<>(pureM,
-                                                                                          snocs.tail(),
-                                                                                          ImmutableQueue.empty(),
-                                                                                          ImmutableQueue.empty())))))),
-                        lazyOrStrict -> lazyOrStrict.match(
-                                lazy -> lazy.apply().fmap(maybeRes -> maybeRes.match(
-                                        ___ -> recurse(new IterateT<>(pureM, ImmutableQueue.empty(), middles.tail(), snocs)),
-                                        into((a, as) -> recurse(new IterateT<>(pureM,
-                                                                               ImmutableQueue.singleton(pureM.apply(a)),
-                                                                               ImmutableQueue.singleton(b(migrateForward(as))),
-                                                                               ImmutableQueue.empty())))
-                                )),
-                                strict -> pureM.apply(recurse(migrateForward(strict))))),
-                ma -> ma.fmap(a -> terminate(just(tuple(a, new IterateT<>(pureM, conses.tail(), middles, snocs))))));
-    }
-
-    private IterateT<M, A> migrateForward(IterateT<M, A> as) {
-        if (middles.tail().isEmpty()) {
-            return new IterateT<>(pureM, conses.concat(as.conses), as.middles, as.snocs.concat(snocs));
-        }
-
-        IterateT<M, A> lasts = new IterateT<>(pureM, as.snocs, middles.tail(), snocs);
-        return new IterateT<>(pureM, as.conses, as.middles.pushBack(b(lasts)), ImmutableQueue.empty());
+    private static <M extends MonadRec<?, M>, A>
+    Fn1<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>,
+            MonadRec<RecursiveResult<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, Maybe<Tuple2<A, IterateT<M, A>>>>, M>>
+    resume(Pure<M> pureM) {
+        return spine -> spine.head().match(
+                ___ -> pureM.apply(terminate(nothing())),
+                thunkOrReal -> thunkOrReal.match(
+                        thunk -> thunk.apply().fmap(m -> m.match(
+                                ___ -> recurse(spine.tail()),
+                                t -> terminate(just(t.fmap(as -> new IterateT<>(pureM, as.spine.concat(spine.tail()))))))),
+                        real -> real.fmap(a -> terminate(just(tuple(a, new IterateT<>(pureM, spine.tail())))))));
     }
 
     private <B> IterateT<M, B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, IterateT<M, ?>>> fn,
@@ -346,7 +319,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the empty {@link IterateT}
      */
     public static <M extends MonadRec<?, M>, A> IterateT<M, A> empty(Pure<M> pureM) {
-        return new IterateT<>(pureM, ImmutableQueue.empty(), ImmutableQueue.empty(), ImmutableQueue.empty());
+        return new IterateT<>(pureM, ImmutableQueue.empty());
     }
 
     /**
@@ -358,10 +331,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the singleton {@link IterateT}
      */
     public static <M extends MonadRec<?, M>, A> IterateT<M, A> singleton(MonadRec<A, M> ma) {
-        return new IterateT<>(Pure.of(ma),
-                              ImmutableQueue.<MonadRec<A, M>>empty().pushFront(ma),
-                              ImmutableQueue.empty(),
-                              ImmutableQueue.empty());
+        return IterateT.<M, A>empty(Pure.of(ma)).cons(ma);
     }
 
     /**
@@ -374,12 +344,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      */
     public static <M extends MonadRec<?, M>, A> IterateT<M, A> iterateT(
             MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M> unwrapped) {
-        return new IterateT<>(
-                Pure.of(unwrapped),
-                ImmutableQueue.empty(),
-                ImmutableQueue.<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, IterateT<M, A>>>empty()
-                        .pushFront(a(() -> unwrapped)),
-                ImmutableQueue.empty());
+        return suspended(() -> unwrapped, Pure.of(unwrapped));
     }
 
     /**
@@ -434,11 +399,10 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
     public static <M extends MonadRec<?, M>, A> IterateT<M, A> suspended(
             Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>> thunk, Pure<M> pureM) {
         return new IterateT<>(pureM,
-                              ImmutableQueue.empty(),
                               ImmutableQueue
-                                      .<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, IterateT<M, A>>>empty()
-                                      .pushFront(a(thunk)),
-                              ImmutableQueue.empty());
+                                      .<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>empty()
+                                      .pushFront(a(thunk))
+        );
     }
 
     /**
