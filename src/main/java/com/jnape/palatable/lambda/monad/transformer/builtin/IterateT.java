@@ -280,7 +280,8 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
     }
 
     private static <M extends MonadRec<?, M>, A>
-    Fn1<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, MonadRec<RecursiveResult<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, Maybe<Tuple2<A, IterateT<M, A>>>>, M>>
+    Fn1<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>,
+            MonadRec<RecursiveResult<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, Maybe<Tuple2<A, IterateT<M, A>>>>, M>>
     resume(Pure<M> pureM) {
         return spine -> spine.head().match(
                 ___ -> pureM.apply(terminate(nothing())),
@@ -413,7 +414,8 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      */
     public static <A> IterateT<IO<?>, A> fromIterator(Iterator<A> as) {
         return unfold(it -> io(() -> {
-            if (as.hasNext()) { return just(tuple(as.next(), as)); }
+            if (as.hasNext())
+                return just(tuple(as.next(), as));
             return nothing();
         }), io(() -> as));
     }
