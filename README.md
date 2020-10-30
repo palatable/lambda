@@ -747,6 +747,7 @@ There are some open-sourced community projects that depend on _lambda_ for their
 - [Enhanced Iterables](https://github.com/kschuetz/enhanced-iterables) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
 - [Collection Views](https://github.com/kschuetz/collection-views) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
 - [WuWei](https://github.com/nomicflux/WuWei) - Michael Anderson [@nomicflux](https://github.com/nomicflux) - `ST` monad for safe mutability
+- [Kraftwerk](https://github.com/kschuetz/kraftwerk) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz) - random data generators and combinators
 
 <a name="license">License</a>
 -------
