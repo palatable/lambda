@@ -85,7 +85,13 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
     public <MMTA extends MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>> MMTA runIterateT() {
         MonadRec<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, M>
                 mSpine = pureM.apply(spine);
-        return mSpine.trampolineM(resume(pureM)).coerce();
+        return mSpine.trampolineM(tSpine -> tSpine.head().<MonadRec<RecursiveResult<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, Maybe<Tuple2<A, IterateT<M, A>>>>, M>>match(
+                ___ -> pureM.apply(terminate(nothing())),
+                thunkOrReal -> thunkOrReal.match(
+                        thunk -> thunk.apply().fmap(m -> m.match(
+                                ___ -> recurse(tSpine.tail()),
+                                t -> terminate(just(t.fmap(as -> new IterateT<>(pureM, as.spine.concat(tSpine.tail()))))))),
+                        real -> real.fmap(a -> terminate(just(tuple(a, new IterateT<>(pureM, tSpine.tail())))))))).coerce();
     }
 
     /**
@@ -287,19 +293,6 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
     @Override
     public <B> IterateT<M, A> discardR(Applicative<B, IterateT<M, ?>> appB) {
         return MonadT.super.discardR(appB).coerce();
-    }
-
-    private static <M extends MonadRec<?, M>, A>
-    Fn1<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>,
-            MonadRec<RecursiveResult<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, Maybe<Tuple2<A, IterateT<M, A>>>>, M>>
-    resume(Pure<M> pureM) {
-        return spine -> spine.head().match(
-                ___ -> pureM.apply(terminate(nothing())),
-                thunkOrReal -> thunkOrReal.match(
-                        thunk -> thunk.apply().fmap(m -> m.match(
-                                ___ -> recurse(spine.tail()),
-                                t -> terminate(just(t.fmap(as -> new IterateT<>(pureM, as.spine.concat(spine.tail()))))))),
-                        real -> real.fmap(a -> terminate(just(tuple(a, new IterateT<>(pureM, spine.tail())))))));
     }
 
     /**
