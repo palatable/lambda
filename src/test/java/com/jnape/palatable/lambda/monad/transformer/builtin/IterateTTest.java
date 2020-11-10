@@ -247,4 +247,14 @@ public class IterateTTest {
                          .<Integer, Identity<?>, IterateT<Identity<?>, Integer>>apply(new Identity<>(1))
                          .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
     }
+
+    @Test
+    public void trampolineMRecursesBreadth() {
+        IterateT<Identity<?>, Integer> firstFour = of(new Identity<>(1), new Identity<>(2), new Identity<>(3), new Identity<>(4));
+        IterateT<Identity<?>, Integer> trampolined = firstFour
+                .trampolineM(x -> (x % 3 == 0 && (x < 30))
+                                  ? of(new Identity<>(terminate(x + 10)), new Identity<>(recurse(x + 11)), new Identity<>(recurse(x + 12)), new Identity<>(recurse(x + 13)))
+                                  : singleton(new Identity<>(terminate(x))));
+        assertThat(trampolined, iterates(1, 2, 13, 14, 25, 26, 37, 38, 39, 40, 28, 16, 4));
+    }
 }
