@@ -181,9 +181,19 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * {@inheritDoc}
      */
     @Override
+    @SuppressWarnings("RedundantTypeArguments")
     public <B> IterateT<M, B> trampolineM(
             Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, IterateT<M, ?>>> fn) {
-        return trampolineM(fn, ImmutableQueue.<IterateT<M, RecursiveResult<A, B>>>empty().pushBack(flatMap(fn)));
+        return $(withSelf(
+                (self, queued) -> suspended(
+                        () -> pureM.<IterateT<M, RecursiveResult<A, B>>, MonadRec<IterateT<M, RecursiveResult<A, B>>, M>>apply(queued)
+                                .trampolineM(q -> q.runIterateT().<RecursiveResult<IterateT<M, RecursiveResult<A, B>>, Maybe<Tuple2<B, IterateT<M, B>>>>>fmap(m -> m.match(
+                                        __ -> terminate(nothing()),
+                                        into((rr, tail) -> rr.biMap(
+                                                a -> fn.apply(a).<IterateT<M, RecursiveResult<A, B>>>coerce().concat(tail),
+                                                b -> just(tuple(b, self.apply(tail)))))))),
+                        pureM)),
+                 flatMap(fn));
     }
 
     /**
@@ -290,24 +300,6 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
                                 ___ -> recurse(spine.tail()),
                                 t -> terminate(just(t.fmap(as -> new IterateT<>(pureM, as.spine.concat(spine.tail()))))))),
                         real -> real.fmap(a -> terminate(just(tuple(a, new IterateT<>(pureM, spine.tail())))))));
-    }
-
-    private <B> IterateT<M, B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, IterateT<M, ?>>> fn,
-                                           ImmutableQueue<IterateT<M, RecursiveResult<A, B>>> queued) {
-        return suspended(() -> {
-            MonadRec<ImmutableQueue<IterateT<M, RecursiveResult<A, B>>>, M> pureQueue = pureM.apply(queued);
-            return pureQueue.trampolineM(
-                    q -> q.head().match(
-                            __ -> pureM.apply(terminate(nothing())),
-                            next -> next.runIterateT().flatMap(maybeMore -> maybeMore.match(
-                                    __ -> pureM.apply(terminate(nothing())),
-                                    t -> t.into((aOrB, rest) -> aOrB.match(
-                                            a -> pureM.apply(recurse(q.pushFront(fn.apply(a).coerce()))),
-                                            b -> trampolineM(fn, q.tail().pushFront(rest))
-                                                    .cons(pureM.apply(b))
-                                                    .runIterateT()
-                                                    .fmap(RecursiveResult::terminate)))))));
-        }, pureM);
     }
 
     /**
