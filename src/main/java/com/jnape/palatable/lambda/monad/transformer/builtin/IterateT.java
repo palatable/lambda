@@ -353,9 +353,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
             MonadRec<A, M> ma, MonadRec<A, M>... mas) {
         @SuppressWarnings("varargs")
         List<MonadRec<A, M>> as = asList(mas);
-        return foldLeft(IterateT::snoc,
-                        empty(Pure.of(ma)),
-                        com.jnape.palatable.lambda.functions.builtin.fn2.Cons.cons(ma, as));
+        return foldLeft(IterateT::snoc, singleton(ma), as);
     }
 
     /**
@@ -390,11 +388,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      */
     public static <M extends MonadRec<?, M>, A> IterateT<M, A> suspended(
             Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>> thunk, Pure<M> pureM) {
-        return new IterateT<>(pureM,
-                              ImmutableQueue
-                                      .<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>empty()
-                                      .pushFront(a(thunk))
-        );
+        return new IterateT<>(pureM, ImmutableQueue.singleton(a(thunk)));
     }
 
     /**
