@@ -29,6 +29,7 @@ import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
 import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.Fn0.fn0;
 import static com.jnape.palatable.lambda.functions.Fn1.withSelf;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.$.$;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
@@ -65,7 +66,7 @@ import static java.util.Arrays.asList;
  * @param <A> the element type
  */
 public class IterateT<M extends MonadRec<?, M>, A> implements
-        MonadT<M, A, IterateT<M, ?>, IterateT<?, ?>> {
+                                                   MonadT<M, A, IterateT<M, ?>, IterateT<?, ?>> {
 
     private final Pure<M>                                                                                     pureM;
     private final ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>> spine;
@@ -208,11 +209,15 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
     @Override
     public <B> IterateT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, IterateT<M, ?>>> f) {
         return suspended(() -> maybeT(runIterateT())
-                .flatMap(into((a, as) -> maybeT(f.apply(a)
-                                                        .<IterateT<M, B>>coerce()
-                                                        .concat(as.flatMap(f))
-                                                        .runIterateT())))
-                .runMaybeT(), pureM);
+                                 .trampolineM(into((a, as) -> maybeT(
+                                         f.apply(a).<IterateT<M, B>>coerce().runIterateT()
+                                                 .flatMap(maybePair -> maybePair.match(
+                                                         fn0(() -> as.runIterateT()
+                                                                 .fmap(maybeResult -> maybeResult.fmap(RecursiveResult::recurse))),
+                                                         t -> pureM.apply(just(terminate(t.fmap(mb -> mb.concat(as.flatMap(f))))))
+                                                 )))))
+                                 .runMaybeT(),
+                         pureM);
     }
 
     /**
