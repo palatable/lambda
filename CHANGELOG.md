@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 - `IterateT#trampolineM` now yields and stages all recursive result values, rather 
   than prematurely terminating on the first termination result
+- `IterateT#flatMap` is now stack-safe regardless of how many consecutive empty `IterateT`s
+  are returned and regardless of whether the monad is strict or lazy or internally trampolined
 
 ## [5.2.0] - 2020-02-12
 

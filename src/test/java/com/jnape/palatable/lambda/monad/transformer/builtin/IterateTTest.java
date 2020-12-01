@@ -8,31 +8,47 @@ import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.functor.builtin.Writer;
 import com.jnape.palatable.lambda.io.IO;
+import com.jnape.palatable.lambda.monoid.Monoid;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.framework.Subjects;
 import com.jnape.palatable.traitor.runners.Traits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import testsupport.traits.*;
+import testsupport.traits.ApplicativeLaws;
+import testsupport.traits.Equivalence;
+import testsupport.traits.FunctorLaws;
+import testsupport.traits.MonadLaws;
+import testsupport.traits.MonadRecLaws;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
 import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.LTE.lte;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.Times.times;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
-import static com.jnape.palatable.lambda.functor.builtin.Writer.*;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.listen;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.pureWriter;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.tell;
+import static com.jnape.palatable.lambda.functor.builtin.Writer.writer;
 import static com.jnape.palatable.lambda.io.IO.io;
-import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.*;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.empty;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.iterateT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.liftIterateT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.of;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.pureIterateT;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.singleton;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.unfold;
 import static com.jnape.palatable.lambda.monoid.builtin.AddAll.addAll;
 import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
@@ -44,7 +60,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 import static testsupport.matchers.IOMatcher.yieldsValue;
-import static testsupport.matchers.IterateTMatcher.*;
+import static testsupport.matchers.IterateTMatcher.isEmpty;
+import static testsupport.matchers.IterateTMatcher.iterates;
+import static testsupport.matchers.IterateTMatcher.iteratesAll;
 import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
@@ -236,16 +254,16 @@ public class IterateTTest {
     public void staticPure() {
         assertEquals(new Identity<>(singletonList(1)),
                      pureIterateT(pureIdentity())
-                         .<Integer, IterateT<Identity<?>, Integer>>apply(1)
-                         .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
+                             .<Integer, IterateT<Identity<?>, Integer>>apply(1)
+                             .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
     }
 
     @Test
     public void staticLift() {
         assertEquals(new Identity<>(singletonList(1)),
                      liftIterateT()
-                         .<Integer, Identity<?>, IterateT<Identity<?>, Integer>>apply(new Identity<>(1))
-                         .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
+                             .<Integer, Identity<?>, IterateT<Identity<?>, Integer>>apply(new Identity<>(1))
+                             .<List<Integer>, Identity<List<Integer>>>toCollection(ArrayList::new));
     }
 
     @Test
@@ -256,5 +274,43 @@ public class IterateTTest {
                                   ? of(new Identity<>(terminate(x + 10)), new Identity<>(recurse(x + 11)), new Identity<>(recurse(x + 12)), new Identity<>(recurse(x + 13)))
                                   : singleton(new Identity<>(terminate(x))));
         assertThat(trampolined, iterates(1, 2, 13, 14, 25, 26, 37, 38, 39, 40, 28, 16, 4));
+    }
+
+    @Test
+    public void flatMapToEmptyStackSafety() {
+        assertEquals(new Identity<>(UNIT),
+                     unfold(x -> new Identity<>(x <= STACK_EXPLODING_NUMBER ? just(tuple(x, x + 1)) : nothing()),
+                            new Identity<>(1))
+                             .flatMap(constantly(iterateT(new Identity<>(nothing()))))
+                             .forEach(constantly(new Identity<>(UNIT))));
+
+        assertEquals((Integer) 1_250_025_000,
+                     unfold(x -> listen(x <= STACK_EXPLODING_NUMBER ? just(tuple(x, x + 1)) : nothing()),
+                            Writer.<Integer, Integer>listen(1))
+                             .flatMap(x -> iterateT(writer(tuple(nothing(), x))))
+                             .<Writer<Integer, Unit>>forEach(constantly(listen(UNIT)))
+                             .runWriter(Monoid.monoid(Integer::sum, 0))
+                             ._2());
+    }
+
+    @Test
+    public void flatMapCostsNoMoreEffortThanRequiredToYieldFirstValue() {
+        AtomicInteger flatMapCost = new AtomicInteger(0);
+        AtomicInteger unfoldCost  = new AtomicInteger(0);
+        assertEquals(just(1),
+                     unfold(x -> {
+                                unfoldCost.incrementAndGet();
+                                return new Identity<>(x <= 10 ? just(tuple(x, x + 1)) : nothing());
+                            },
+                            new Identity<>(1))
+                             .flatMap(x -> {
+                                 flatMapCost.incrementAndGet();
+                                 return singleton(new Identity<>(x));
+                             })
+                             .<Identity<Maybe<Tuple2<Integer, IterateT<Identity<?>, Integer>>>>>runIterateT()
+                             .runIdentity()
+                             .fmap(Tuple2::_1));
+        assertEquals(1, flatMapCost.get());
+        assertEquals(1, unfoldCost.get());
     }
 }
