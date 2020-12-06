@@ -9,11 +9,12 @@ import static com.jnape.palatable.lambda.adt.Either.left;
 import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.io.IO.io;
+import static org.hamcrest.CoreMatchers.anything;
 
 public final class EitherMatcher<L, R> extends TypeSafeMatcher<Either<L, R>> {
-    private final Either<Matcher<L>, Matcher<R>> matcher;
+    private final Either<Matcher<? super L>, Matcher<? super R>> matcher;
 
-    private EitherMatcher(Either<Matcher<L>, Matcher<R>> matcher) {
+    private EitherMatcher(Either<Matcher<? super L>, Matcher<? super R>> matcher) {
         this.matcher = matcher;
     }
 
@@ -44,11 +45,19 @@ public final class EitherMatcher<L, R> extends TypeSafeMatcher<Either<L, R>> {
             .unsafePerformIO();
     }
 
-    public static <L, R> EitherMatcher<L, R> isLeftThat(Matcher<L> lMatcher) {
+    public static <L, R> EitherMatcher<L, R> isLeftThat(Matcher<? super L> lMatcher) {
         return new EitherMatcher<>(left(lMatcher));
     }
 
-    public static <L, R> EitherMatcher<L, R> isRightThat(Matcher<R> rMatcher) {
+    public static <L, R> EitherMatcher<L, R> isLeft() {
+        return isLeftThat(anything());
+    }
+
+    public static <L, R> EitherMatcher<L, R> isRightThat(Matcher<? super R> rMatcher) {
         return new EitherMatcher<>(right(rMatcher));
+    }
+
+    public static <L, R> EitherMatcher<L, R> isRight() {
+        return isRightThat(anything());
     }
 }
