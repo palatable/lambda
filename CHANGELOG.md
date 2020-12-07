@@ -5,16 +5,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+There are currently no unreleased changes.
+
+## [5.3.0] - 2020-12-07
+
 ### Changed
 - `IterateT#unfold` now only computes a single `Pure` for the given input
 - `ReaderT#fmap` and `StateT#fmap` avoid unnecessary calls to `pure`
 - `MaybeT` implements `MonadError`
-- `Tuple2-8#init`, for populating a `TupleN` with all but the last element
 
 ### Added
 - `$`, function application represented as a higher-order `Fn2`
-- `Fn1#withSelf`, a static method for constructing a self-referencing `Fn1` 
+- `Fn1#withSelf`, a static method for constructing a self-referencing `Fn1`
 - `HNil/SingletonHList/TupleX#snoc`, a method to add a new last element (append to a tuple)
+- `Tuple2-8#init`, for populating a `TupleN` with all but the last element
 
 ### Fixed
 - `IterateT#trampolineM` now yields and stages all recursive result values, rather 
@@ -576,7 +580,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.2.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.3.0...HEAD
+[5.3.0]: https://github.com/palatable/lambda/compare/lambda-5.2.0...lambda-5.3.0
 [5.2.0]: https://github.com/palatable/lambda/compare/lambda-5.1.0...lambda-5.2.0
 [5.1.0]: https://github.com/palatable/lambda/compare/lambda-5.0.0...lambda-5.1.0
 [5.0.0]: https://github.com/palatable/lambda/compare/lambda-4.0.0...lambda-5.0.0
