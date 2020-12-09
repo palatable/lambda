@@ -30,7 +30,7 @@ Functional patterns for Java
      - [Either](#either)
  - [Lenses](#lenses)
  - [Notes](#notes)
- - [Community](#community)
+ - [Ecosystem](#ecosystem)
  - [License](#license)
 
 <a name="background">Background</a>
@@ -740,9 +740,18 @@ Wherever possible, _lambda_ maintains interface compatibility with similar, fami
 
 Unfortunately, due to Java's type hierarchy and inheritance inconsistencies, this is not always possible. One surprising example of this is how `Fn1` extends `j.u.f.Function`, but `Fn2` does not extend `j.u.f.BiFunction`. This is because `j.u.f.BiFunction` itself does not extend `j.u.f.Function`, but it does define methods that collide with `j.u.f.Function`. For this reason, both `Fn1` and `Fn2` cannot extend their Java counterparts without sacrificing their own inheritance hierarchy. These types of asymmetries are, unfortunately, not uncommon; however, wherever these situations arise, measures are taken to attempt to ease the transition in and out of core Java types (in the case of `Fn2`, a supplemental `#toBiFunction` method is added). I do not take these inconveniences for granted, and I'm regularly looking for ways to minimize the negative impact of this as much as possible. Suggestions and use cases that highlight particular pain points here are particularly appreciated.
 
-<a name="community">Community</a>
+<a name="ecosystem">Ecosystem</a>
 -----
-There are some open-sourced community projects that depend on _lambda_ for their own functionality: these projects are listed below (note that these projects are _not_ affiliated with lambda, and have their own maintainers). If you use _lambda_ in your own open-sourced project, feel free to create an issue and I'll be happy to review the project and add it to this section!
+
+### Official extension libraries:
+
+These are officially supported libraries that extend lambda's core functionality and are developed under the same governance and processes as lambda.
+
+- [Shōki](https://github.com/palatable/shoki) - Purely functional, persistent data structures for the JVM
+
+### Third-party community libraries:
+
+These are open-sourced community projects that rely on _lambda_ for significant functionality, but are not necessarily affiliated with lambda and have their own separate maintainers. If you use _lambda_ in your own open-sourced project, feel free to create an issue and I'll be happy to review the project and add it to this section!
 
 - [Enhanced Iterables](https://github.com/kschuetz/enhanced-iterables) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
 - [Collection Views](https://github.com/kschuetz/collection-views) - Kevin Schuetz [@kschuetz](https://github.com/kschuetz)
