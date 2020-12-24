@@ -48,6 +48,7 @@ import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.lift
 import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.of;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.pureIterateT;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.singleton;
+import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.suspended;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.IterateT.unfold;
 import static com.jnape.palatable.lambda.monoid.builtin.AddAll.addAll;
 import static com.jnape.palatable.lambda.monoid.builtin.Join.join;
@@ -312,5 +313,40 @@ public class IterateTTest {
                              .fmap(Tuple2::_1));
         assertEquals(1, flatMapCost.get());
         assertEquals(1, unfoldCost.get());
+    }
+
+    @Test
+    public void runStep() {
+        assertEquals(new Identity<>(nothing()),
+                     IterateT.<Identity<?>, Integer>empty(pureIdentity())
+                             .<Identity<Maybe<Tuple2<Maybe<Integer>, IterateT<Identity<?>, Integer>>>>>runStep());
+
+        Tuple2<Maybe<Integer>, IterateT<Identity<?>, Integer>> singletonStep =
+                singleton(new Identity<>(1))
+                        .<Identity<Maybe<Tuple2<Maybe<Integer>, IterateT<Identity<?>, Integer>>>>>runStep()
+                        .runIdentity()
+                        .orElseThrow(AssertionError::new);
+        assertEquals(just(1), singletonStep._1());
+        assertThat(singletonStep._2(), isEmpty());
+
+        Tuple2<Maybe<Integer>, IterateT<Identity<?>, Integer>> emptySuspendedStep =
+                IterateT.<Identity<?>, Integer>suspended(() -> new Identity<>(nothing()),
+                                                         pureIdentity())
+                        .<Identity<Maybe<Tuple2<Maybe<Integer>, IterateT<Identity<?>, Integer>>>>>runStep()
+                        .runIdentity()
+                        .orElseThrow(AssertionError::new);
+
+        assertEquals(nothing(), emptySuspendedStep._1());
+        assertThat(emptySuspendedStep._2(), isEmpty());
+
+        Tuple2<Maybe<Integer>, IterateT<Identity<?>, Integer>> nonEmptySuspendedStep =
+                suspended(() -> new Identity<>(just(tuple(1, empty(pureIdentity())))),
+                                   pureIdentity())
+                        .<Identity<Maybe<Tuple2<Maybe<Integer>, IterateT<Identity<?>, Integer>>>>>runStep()
+                        .runIdentity()
+                        .orElseThrow(AssertionError::new);
+
+        assertEquals(just(1), nonEmptySuspendedStep._1());
+        assertThat(nonEmptySuspendedStep._2(), isEmpty());
     }
 }

@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
-There are currently no unreleased changes.
+### Added
+
+- `IterateT#runStep`, a method used to run a single step of an IterateT without the contractual
+  guarantee of emitting a value or reaching the end
 
 ## [5.3.0] - 2020-12-07
 

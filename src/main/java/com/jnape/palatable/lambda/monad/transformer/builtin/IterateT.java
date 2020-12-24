@@ -65,8 +65,7 @@ import static java.util.Arrays.asList;
  * @param <M> the effect type
  * @param <A> the element type
  */
-public class IterateT<M extends MonadRec<?, M>, A> implements
-                                                   MonadT<M, A, IterateT<M, ?>, IterateT<?, ?>> {
+public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, IterateT<M, ?>, IterateT<?, ?>> {
 
     private final Pure<M>                                                                                     pureM;
     private final ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>> spine;
@@ -84,15 +83,35 @@ public class IterateT<M extends MonadRec<?, M>, A> implements
      * @return the embedded {@link Monad}
      */
     public <MMTA extends MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>> MMTA runIterateT() {
-        MonadRec<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, M>
-                mSpine = pureM.apply(spine);
-        return mSpine.trampolineM(tSpine -> tSpine.head().<MonadRec<RecursiveResult<ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>>, Maybe<Tuple2<A, IterateT<M, A>>>>, M>>match(
-                ___ -> pureM.apply(terminate(nothing())),
+        return pureM.<IterateT<M, A>, MonadRec<IterateT<M, A>, M>>apply(this)
+                .<Maybe<Tuple2<A, IterateT<M, A>>>>trampolineM(iterateT -> iterateT.runStep()
+                        .fmap(maybeMore -> maybeMore.match(
+                                fn0(() -> terminate(nothing())),
+                                t -> t.into((Maybe<A> maybeA, IterateT<M, A> as) -> maybeA.match(
+                                        fn0(() -> recurse(as)),
+                                        a -> terminate(just(tuple(a, as))))))))
+                .coerce();
+    }
+
+    /**
+     * Run a single step of this {@link IterateT}, where a step is the smallest amount of work that could possibly be
+     * productive in advancing through the {@link IterateT}. Useful for implementing interleaving algorithms that
+     * require {@link IterateT IterateTs} to yield, emit, or terminate as soon as possible, regardless of whether the
+     * next element is readily available.
+     *
+     * @param <MStep> the witnessed target type of the step
+     * @return the step
+     */
+    public <MStep extends MonadRec<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, M>> MStep runStep() {
+        return spine.head().match(
+                fn0(() -> pureM.<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, MStep>apply(nothing())),
                 thunkOrReal -> thunkOrReal.match(
-                        thunk -> thunk.apply().fmap(m -> m.match(
-                                ___ -> recurse(tSpine.tail()),
-                                t -> terminate(just(t.fmap(as -> new IterateT<>(pureM, as.spine.concat(tSpine.tail()))))))),
-                        real -> real.fmap(a -> terminate(just(tuple(a, new IterateT<>(pureM, tSpine.tail())))))))).coerce();
+                        thunk -> thunk.apply().<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>>fmap(m -> m.match(
+                                fn0(() -> just(tuple(nothing(), new IterateT<>(pureM, spine.tail())))),
+                                t -> just(t.biMap(Maybe::just,
+                                                  as -> new IterateT<>(pureM, as.spine.concat(spine.tail()))))))
+                                .coerce(),
+                        ma -> ma.fmap(a -> just(tuple(just(a), new IterateT<>(pureM, spine.tail())))).coerce()));
     }
 
     /**
