@@ -11,7 +11,6 @@ import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
-import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.internal.ImmutableQueue;
 import com.jnape.palatable.lambda.io.IO;
@@ -68,11 +67,11 @@ import static java.util.Arrays.asList;
  */
 public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, IterateT<M, ?>, IterateT<?, ?>> {
 
-    private final Pure<M>                                                                                     pureM;
-    private final ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>> spine;
+    private final Pure<M>                                                                                                   pureM;
+    private final ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, M>>, MonadRec<Maybe<A>, M>>> spine;
 
     private IterateT(Pure<M> pureM,
-                     ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>>, MonadRec<A, M>>> spine) {
+                     ImmutableQueue<Choice2<Fn0<MonadRec<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, M>>, MonadRec<Maybe<A>, M>>> spine) {
         this.pureM = pureM;
         this.spine = spine;
     }
@@ -109,10 +108,9 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
                 thunkOrReal -> thunkOrReal.match(
                         thunk -> thunk.apply().<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>>fmap(m -> m.match(
                                 fn0(() -> just(tuple(nothing(), new IterateT<>(pureM, spine.tail())))),
-                                t -> just(t.biMap(Maybe::just,
-                                                  as -> new IterateT<>(pureM, as.spine.concat(spine.tail()))))))
-                                .coerce(),
-                        ma -> ma.fmap(a -> just(tuple(just(a), new IterateT<>(pureM, spine.tail())))).coerce()));
+                                t -> just(t.fmap(as -> new IterateT<>(pureM, as.spine.concat(spine.tail())))))),
+                        mMaybeA -> mMaybeA.fmap(maybeA -> just(tuple(maybeA, new IterateT<>(pureM, spine.tail()))))))
+                .coerce();
     }
 
     /**
@@ -122,15 +120,15 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
      * @return the cons'ed {@link IterateT}
      */
     public final IterateT<M, A> cons(MonadRec<A, M> head) {
-        return new IterateT<>(pureM, spine.pushFront(b(head)));
+        return consStep(head.fmap(Maybe::just));
     }
 
     public final IterateT<M, A> consStep(MonadRec<Maybe<A>, M> head) {
-        return new IterateT<>(pureM, spine.pushFront(a(() -> head.fmap(m -> m.fmap(a -> tuple(a, IterateT.empty(pureM)))))));
+        return new IterateT<>(pureM, spine.pushFront(b(head)));
     }
 
-    public final IterateT<M, A> snocStep(MonadRec<Maybe<A>, M> head) {
-        return new IterateT<>(pureM, spine.pushBack(a(() -> head.fmap(m -> m.fmap(a -> tuple(a, IterateT.empty(pureM)))))));
+    public final IterateT<M, A> snocStep(MonadRec<Maybe<A>, M> last) {
+        return new IterateT<>(pureM, spine.pushBack(b(last)));
     }
 
     /**
@@ -140,7 +138,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
      * @return the snoc'ed {@link IterateT}
      */
     public final IterateT<M, A> snoc(MonadRec<A, M> last) {
-        return new IterateT<>(pureM, spine.pushBack(b(last)));
+        return snocStep(last.fmap(Maybe::just));
     }
 
     /**
@@ -236,16 +234,17 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
      */
     @Override
     public <B> IterateT<M, B> flatMap(Fn1<? super A, ? extends Monad<B, IterateT<M, ?>>> f) {
-        return suspended(() -> maybeT(runIterateT())
-                                 .trampolineM(into((a, as) -> maybeT(
-                                         f.apply(a).<IterateT<M, B>>coerce().runIterateT()
-                                                 .flatMap(maybePair -> maybePair.match(
-                                                         fn0(() -> as.runIterateT()
-                                                                 .fmap(maybeResult -> maybeResult.fmap(RecursiveResult::recurse))),
-                                                         t -> pureM.apply(just(terminate(t.fmap(mb -> mb.concat(as.flatMap(f))))))
-                                                 )))))
-                                 .runMaybeT(),
-                         pureM);
+        return suspendStep(() -> {
+            MonadRec<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, M> runStep = runStep();
+            return maybeT(runStep)
+                    .trampolineM(into((maybeA, as) -> maybeT(maybeA.match(
+                            fn0(() -> runStep.pure(just(terminate(tuple(Maybe.<B>nothing(), as.flatMap(f)))))),
+                            a -> f.apply(a).<IterateT<M, B>>coerce().runStep()
+                                    .flatMap(maybePair -> maybePair.match(
+                                            fn0(() -> as.runStep().fmap(maybeResult -> maybeResult.fmap(RecursiveResult::recurse))),
+                                            t -> runStep.pure(just(terminate(t.fmap(mb -> mb.concat(as.flatMap(f))))))))))))
+                    .runMaybeT();
+        }, pureM);
     }
 
     /**
@@ -367,20 +366,7 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
 
     public static <M extends MonadRec<?, M>, A> IterateT<M, A> fromSteps(
             MonadRec<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, M> unwrapped) {
-        return join(new IterateT<>(Pure.of(unwrapped), ImmutableQueue.singleton(a(() -> {
-            return unwrapped.fmap(m -> m.fmap(t -> tuple(fromSteps(t._2().runStep())
-                                                                 .consStep(unwrapped.pure(t._1())),
-                                                         empty(Pure.of(unwrapped)))));
-        }))));
-    }
-
-    public static void main(String[] args) {
-        IterateT<Identity<?>, Integer> it = IterateT.unfold(x -> new Identity<>(just(tuple(x, x + 1))), new Identity<>(0));
-        fromSteps(it.runStep())
-                .forEach(x -> {
-                    System.out.println(x);
-                    return new Identity<>(UNIT);
-                });
+        return new IterateT<>(Pure.of(unwrapped), ImmutableQueue.singleton(a(() -> unwrapped)));
     }
 
     /**
@@ -432,6 +418,11 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
      */
     public static <M extends MonadRec<?, M>, A> IterateT<M, A> suspended(
             Fn0<MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M>> thunk, Pure<M> pureM) {
+        return suspendStep(thunk.fmap(m -> m.fmap(mt -> mt.fmap(t -> t.biMapL(Maybe::just)))), pureM);
+    }
+
+    public static <M extends MonadRec<?, M>, A> IterateT<M, A> suspendStep(
+            Fn0<MonadRec<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, M>> thunk, Pure<M> pureM) {
         return new IterateT<>(pureM, ImmutableQueue.singleton(a(thunk)));
     }
 
