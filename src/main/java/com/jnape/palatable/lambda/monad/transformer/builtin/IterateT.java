@@ -287,15 +287,18 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
      */
     @Override
     public <B> IterateT<M, B> zip(Applicative<Fn1<? super A, ? extends B>, IterateT<M, ?>> appFn) {
-        return suspended(() -> {
-            MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M> mmta = runIterateT();
+        return suspendStep(() -> {
+            MonadRec<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, M> mmta = runStep();
             return join(maybeT(mmta).zip(
-                    maybeT(appFn.<IterateT<M, Fn1<? super A, ? extends B>>>coerce().runIterateT())
-                            .fmap(into((f, fs) -> into((a, as) -> maybeT(
-                                    as.<B>fmap(f)
-                                            .cons(mmta.pure(f.apply(a)))
-                                            .concat(as.cons(mmta.pure(a)).zip(fs))
-                                            .runIterateT()))))))
+                    maybeT(appFn.<IterateT<M, Fn1<? super A, ? extends B>>>coerce().runStep())
+                            .fmap(into((maybeF, fs) -> into((maybeA, as) -> maybeF.match(
+                                    fn0(() -> maybeT(mmta.pure(just(tuple(nothing(), as.consStep(mmta.pure(maybeA)).zip(fs)))))),
+                                    f -> maybeA.match(
+                                            fn0(() -> maybeT(mmta.pure(just(tuple(nothing(), as.zip(fs.cons(mmta.pure(f)))))))),
+                                            a -> maybeT(as.<B>fmap(f)
+                                                                .cons(mmta.pure(f.apply(a)))
+                                                                .concat(as.cons(mmta.pure(a)).zip(fs))
+                                                                .runStep()))))))))
                     .runMaybeT();
         }, pureM);
     }
