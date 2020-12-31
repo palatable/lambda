@@ -11,6 +11,7 @@ import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
+import com.jnape.palatable.lambda.functor.builtin.Identity;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.internal.ImmutableQueue;
 import com.jnape.palatable.lambda.io.IO;
@@ -122,6 +123,14 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
      */
     public final IterateT<M, A> cons(MonadRec<A, M> head) {
         return new IterateT<>(pureM, spine.pushFront(b(head)));
+    }
+
+    public final IterateT<M, A> consStep(MonadRec<Maybe<A>, M> head) {
+        return new IterateT<>(pureM, spine.pushFront(a(() -> head.fmap(m -> m.fmap(a -> tuple(a, IterateT.empty(pureM)))))));
+    }
+
+    public final IterateT<M, A> snocStep(MonadRec<Maybe<A>, M> head) {
+        return new IterateT<>(pureM, spine.pushBack(a(() -> head.fmap(m -> m.fmap(a -> tuple(a, IterateT.empty(pureM)))))));
     }
 
     /**
@@ -354,6 +363,24 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
     public static <M extends MonadRec<?, M>, A> IterateT<M, A> iterateT(
             MonadRec<Maybe<Tuple2<A, IterateT<M, A>>>, M> unwrapped) {
         return suspended(() -> unwrapped, Pure.of(unwrapped));
+    }
+
+    public static <M extends MonadRec<?, M>, A> IterateT<M, A> fromSteps(
+            MonadRec<Maybe<Tuple2<Maybe<A>, IterateT<M, A>>>, M> unwrapped) {
+        return join(new IterateT<>(Pure.of(unwrapped), ImmutableQueue.singleton(a(() -> {
+            return unwrapped.fmap(m -> m.fmap(t -> tuple(fromSteps(t._2().runStep())
+                                                                 .consStep(unwrapped.pure(t._1())),
+                                                         empty(Pure.of(unwrapped)))));
+        }))));
+    }
+
+    public static void main(String[] args) {
+        IterateT<Identity<?>, Integer> it = IterateT.unfold(x -> new Identity<>(just(tuple(x, x + 1))), new Identity<>(0));
+        fromSteps(it.runStep())
+                .forEach(x -> {
+                    System.out.println(x);
+                    return new Identity<>(UNIT);
+                });
     }
 
     /**
