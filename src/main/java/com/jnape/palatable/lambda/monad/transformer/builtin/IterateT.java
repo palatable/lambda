@@ -214,18 +214,16 @@ public class IterateT<M extends MonadRec<?, M>, A> implements MonadT<M, A, Itera
      * {@inheritDoc}
      */
     @Override
-    @SuppressWarnings("RedundantTypeArguments")
     public <B> IterateT<M, B> trampolineM(
             Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, IterateT<M, ?>>> fn) {
-        return $(withSelf(
-                (self, queued) -> suspended(
-                        () -> pureM.<IterateT<M, RecursiveResult<A, B>>, MonadRec<IterateT<M, RecursiveResult<A, B>>, M>>apply(queued)
-                                .trampolineM(q -> q.runIterateT().<RecursiveResult<IterateT<M, RecursiveResult<A, B>>, Maybe<Tuple2<B, IterateT<M, B>>>>>fmap(m -> m.match(
-                                        __ -> terminate(nothing()),
-                                        into((rr, tail) -> rr.biMap(
-                                                a -> fn.apply(a).<IterateT<M, RecursiveResult<A, B>>>coerce().concat(tail),
-                                                b -> just(tuple(b, self.apply(tail)))))))),
-                        pureM)),
+        return $(withSelf((self, queued) -> suspendStep(() -> pureM.<IterateT<M, RecursiveResult<A, B>>, MonadRec<IterateT<M, RecursiveResult<A, B>>, M>>apply(queued)
+                         .trampolineM(q -> q.runStep().fmap(m -> m.match(
+                                 __ -> terminate(nothing()),
+                                 t -> t.into((maybeRR, tail) -> maybeRR.match(__ -> recurse(tail),
+                                                                              rr -> rr.biMap(
+                                                                                      a -> fn.apply(a).<IterateT<M, RecursiveResult<A, B>>>coerce().concat(tail),
+                                                                                      b -> just(tuple(just(b), self.apply(tail))))))
+                         ))), pureM)),
                  flatMap(fn));
     }
 
