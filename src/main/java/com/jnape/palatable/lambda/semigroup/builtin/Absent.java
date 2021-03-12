@@ -4,6 +4,7 @@ import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
@@ -32,7 +33,7 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
 
     @Override
     public Semigroup<Maybe<A>> checkedApply(Semigroup<A> aSemigroup) {
-        return LiftA2.<A, A, A, Maybe<?>, Maybe<A>>liftA2(aSemigroup)::apply;
+        return shortCircuitSemigroup(aSemigroup);
     }
 
     @SuppressWarnings("unchecked")
@@ -40,8 +41,8 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
         return (Absent<A>) INSTANCE;
     }
 
-    public static <A> Semigroup<Maybe<A>> absent(Semigroup<A> semigroup) {
-        return Absent.<A>absent().apply(semigroup);
+    public static <A> Semigroup<Maybe<A>> absent(Semigroup<A> aSemigroup) {
+        return shortCircuitSemigroup(aSemigroup);
     }
 
     public static <A> Fn1<Maybe<A>, Maybe<A>> absent(Semigroup<A> aSemigroup, Maybe<A> x) {
@@ -50,5 +51,29 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
 
     public static <A> Maybe<A> absent(Semigroup<A> semigroup, Maybe<A> x, Maybe<A> y) {
         return absent(semigroup, x).apply(y);
+    }
+
+    private static <A> Semigroup<Maybe<A>> shortCircuitSemigroup(Semigroup<A> aSemigroup) {
+        return new Semigroup<Maybe<A>>() {
+            @Override
+            public Maybe<A> checkedApply(Maybe<A> maybeX, Maybe<A> maybeY) {
+                return LiftA2.liftA2(aSemigroup, maybeX, maybeY);
+            }
+
+            @Override
+            public Maybe<A> foldLeft(Maybe<A> aMaybe, Iterable<Maybe<A>> maybes) {
+                Maybe<A> accumulation = aMaybe;
+                for (Maybe<A> a : maybes) {
+                    if (accumulation == Maybe.nothing()) return accumulation;
+                    accumulation = checkedApply(accumulation, a);
+                }
+                return accumulation;
+            }
+
+            @Override
+            public Lazy<Maybe<A>> foldRight(Maybe<A> aMaybe, Iterable<Maybe<A>> maybes) {
+                throw new UnsupportedOperationException("implement me with short-circuiting");
+            }
+        };
     }
 }
