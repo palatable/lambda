@@ -2,11 +2,14 @@ package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
 import com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
+
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * A {@link Semigroup} instance formed by <code>{@link Maybe}&lt;A&gt;</code> and a semigroup over <code>A</code>. The
@@ -64,15 +67,24 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
             public Maybe<A> foldLeft(Maybe<A> aMaybe, Iterable<Maybe<A>> maybes) {
                 Maybe<A> accumulation = aMaybe;
                 for (Maybe<A> a : maybes) {
-                    if (accumulation == Maybe.nothing()) return accumulation;
+                    boolean shouldShortCircuit = accumulation == Maybe.nothing();
+                    if (shouldShortCircuit)
+                        return accumulation;
                     accumulation = checkedApply(accumulation, a);
                 }
                 return accumulation;
             }
 
             @Override
-            public Lazy<Maybe<A>> foldRight(Maybe<A> aMaybe, Iterable<Maybe<A>> maybes) {
-                throw new UnsupportedOperationException("implement me with short-circuiting");
+            public Lazy<Maybe<A>> foldRight(Maybe<A> accumulation, Iterable<Maybe<A>> as) {
+                boolean shouldShortCircuit = accumulation == Maybe.nothing();
+                if (shouldShortCircuit)
+                    return lazy(accumulation);
+                return FoldRight.foldRight(
+                        (maybeX, acc) -> maybeX.lazyZip(acc.fmap(maybeY -> maybeY.fmap(aSemigroup.flip()))),
+                        lazy(accumulation),
+                        as
+                );
             }
         };
     }
