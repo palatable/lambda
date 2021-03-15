@@ -2,10 +2,20 @@ package com.jnape.palatable.lambda.semigroup.builtin;
 
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
-import com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2;
+import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
+
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2.liftA2;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
+import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
  * A {@link Semigroup} instance formed by <code>{@link Maybe}&lt;A&gt;</code> and a semigroup over <code>A</code>. The
@@ -32,7 +42,7 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
 
     @Override
     public Semigroup<Maybe<A>> checkedApply(Semigroup<A> aSemigroup) {
-        return LiftA2.<A, A, A, Maybe<?>, Maybe<A>>liftA2(aSemigroup)::apply;
+        return shortCircuitSemigroup(aSemigroup);
     }
 
     @SuppressWarnings("unchecked")
@@ -40,8 +50,8 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
         return (Absent<A>) INSTANCE;
     }
 
-    public static <A> Semigroup<Maybe<A>> absent(Semigroup<A> semigroup) {
-        return Absent.<A>absent().apply(semigroup);
+    public static <A> Semigroup<Maybe<A>> absent(Semigroup<A> aSemigroup) {
+        return shortCircuitSemigroup(aSemigroup);
     }
 
     public static <A> Fn1<Maybe<A>, Maybe<A>> absent(Semigroup<A> aSemigroup, Maybe<A> x) {
@@ -50,5 +60,35 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
 
     public static <A> Maybe<A> absent(Semigroup<A> semigroup, Maybe<A> x, Maybe<A> y) {
         return absent(semigroup, x).apply(y);
+    }
+
+    private static <A> Semigroup<Maybe<A>> shortCircuitSemigroup(Semigroup<A> aSemigroup) {
+        return new Semigroup<Maybe<A>>() {
+            @Override
+            public Maybe<A> checkedApply(Maybe<A> maybeX, Maybe<A> maybeY) {
+                return liftA2(aSemigroup, maybeX, maybeY);
+            }
+
+            @Override
+            public Maybe<A> foldLeft(Maybe<A> acc, Iterable<Maybe<A>> maybes) {
+                return trampoline(
+                        into((res, it) -> res.equals(nothing())
+                                ? terminate(res)
+                                : recurse(tuple(liftA2(aSemigroup, res, it.next()), it))),
+                        tuple(acc, maybes.iterator()));
+            }
+
+            @Override
+            public Lazy<Maybe<A>> foldRight(Maybe<A> accumulation, Iterable<Maybe<A>> as) {
+                boolean shouldShortCircuit = accumulation == nothing();
+                if (shouldShortCircuit)
+                    return lazy(accumulation);
+                return FoldRight.foldRight(
+                        (maybeX, acc) -> maybeX.lazyZip(acc.fmap(maybeY -> maybeY.fmap(aSemigroup.flip()))),
+                        lazy(accumulation),
+                        as
+                );
+            }
+        };
     }
 }
