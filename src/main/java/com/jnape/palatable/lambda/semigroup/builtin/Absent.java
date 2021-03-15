@@ -3,12 +3,18 @@ package com.jnape.palatable.lambda.semigroup.builtin;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
-import com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2.liftA2;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
+import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
+import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -60,24 +66,21 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
         return new Semigroup<Maybe<A>>() {
             @Override
             public Maybe<A> checkedApply(Maybe<A> maybeX, Maybe<A> maybeY) {
-                return LiftA2.liftA2(aSemigroup, maybeX, maybeY);
+                return liftA2(aSemigroup, maybeX, maybeY);
             }
 
             @Override
-            public Maybe<A> foldLeft(Maybe<A> aMaybe, Iterable<Maybe<A>> maybes) {
-                Maybe<A> accumulation = aMaybe;
-                for (Maybe<A> a : maybes) {
-                    boolean shouldShortCircuit = accumulation == Maybe.nothing();
-                    if (shouldShortCircuit)
-                        return accumulation;
-                    accumulation = checkedApply(accumulation, a);
-                }
-                return accumulation;
+            public Maybe<A> foldLeft(Maybe<A> acc, Iterable<Maybe<A>> maybes) {
+                return trampoline(
+                        into((res, it) -> res.equals(nothing())
+                                ? terminate(res)
+                                : recurse(tuple(liftA2(aSemigroup, res, it.next()), it))),
+                        tuple(acc, maybes.iterator()));
             }
 
             @Override
             public Lazy<Maybe<A>> foldRight(Maybe<A> accumulation, Iterable<Maybe<A>> as) {
-                boolean shouldShortCircuit = accumulation == Maybe.nothing();
+                boolean shouldShortCircuit = accumulation == nothing();
                 if (shouldShortCircuit)
                     return lazy(accumulation);
                 return FoldRight.foldRight(
