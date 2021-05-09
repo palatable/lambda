@@ -190,6 +190,25 @@ public abstract class These<A, B> implements
     }
 
     /**
+     * Convenience method for converting a pair of {@link Maybe}s into a {@link Maybe} of {@link These}. If both
+     * {@link Maybe}s are {@link Maybe#just} then the result is a {@link Maybe#just} {@link These#both}. If only one
+     * {@link Maybe} is {@link Maybe#just} then it will be {@link Maybe#just} {@link These#a} or
+     * {@link Maybe#just} {@link These#b}. If both  {@link Maybe}s are {@link Maybe#nothing} then the result will be
+     * {@link Maybe#nothing}.
+     *
+     * @param maybeA   the first optional value
+     * @param maybeB   the second optional value
+     * @param <A> the first possible type
+     * @param <B> the second possible type
+     * @return the wrapped values as a <code>{@link Maybe}&lt;{@link These}&lt;A,B&gt;&gt;</code>
+     */
+    public static <A, B> Maybe<These<A, B>> fromMaybes(Maybe<A> maybeA, Maybe<B> maybeB) {
+        return maybeA.fmap(a -> maybeB.fmap(b -> both(a, b)).orElse(a(a)))
+                .fmap(Maybe::just)
+                .orElse(maybeB.fmap(These::b));
+    }
+
+    /**
      * The canonical {@link Pure} instance for {@link These}.
      *
      * @param <A> the first possible type

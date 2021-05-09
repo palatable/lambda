@@ -12,9 +12,12 @@ import testsupport.traits.MonadLaws;
 import testsupport.traits.MonadRecLaws;
 import testsupport.traits.TraversableLaws;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
+import static com.jnape.palatable.lambda.adt.Maybe.nothing;
 import static com.jnape.palatable.lambda.adt.These.a;
 import static com.jnape.palatable.lambda.adt.These.b;
 import static com.jnape.palatable.lambda.adt.These.both;
+import static com.jnape.palatable.lambda.adt.These.fromMaybes;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 import static com.jnape.palatable.traitor.framework.Subjects.subjects;
 import static org.junit.Assert.assertEquals;
@@ -47,5 +50,13 @@ public class TheseTest {
     public void staticPure() {
         These<String, Integer> these = These.<String>pureThese().apply(1);
         assertEquals(b(1), these);
+    }
+
+    @Test
+    public void fromMaybesPermutations() {
+        assertEquals(nothing(), fromMaybes(nothing(), nothing()));
+        assertEquals(just(These.a(1)), fromMaybes(just(1), nothing()));
+        assertEquals(just(These.b(1)), fromMaybes(nothing(), just(1)));
+        assertEquals(just(These.both(1, "hello")), fromMaybes(just(1), just("hello")));
     }
 }
