@@ -1,14 +1,23 @@
 # Change Log
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Added
+### Changed
+- `Absent` folds short-circuit on the first `nothing()`
+- `EitherMatcher#isLeftThat/isRightThat` support contravariant bounds on their delegates
 
-- `IterateT#runStep`, a method used to run a single step of an IterateT without the contractual
-  guarantee of emitting a value or reaching the end
+### Added
+- `IterateT#runStep`, a method used to run a single step of an IterateT without the contractual guarantee of emitting a
+  value or reaching the end
+- `These#fromMaybes :: Maybe a -> Maybe b -> Maybe (These a b)`
+- `EitherMatcher#isLeftOf/isRightOf` for asserting equality
+
+### Fixed
+- `WriterT` now keeps an immediate reference to the embedded monad's `pure`
 
 ## [5.3.0] - 2020-12-07
 

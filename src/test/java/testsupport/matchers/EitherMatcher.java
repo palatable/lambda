@@ -10,6 +10,7 @@ import static com.jnape.palatable.lambda.adt.Either.right;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static org.hamcrest.CoreMatchers.anything;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 public final class EitherMatcher<L, R> extends TypeSafeMatcher<Either<L, R>> {
     private final Either<Matcher<? super L>, Matcher<? super R>> matcher;
@@ -53,11 +54,19 @@ public final class EitherMatcher<L, R> extends TypeSafeMatcher<Either<L, R>> {
         return isLeftThat(anything());
     }
 
+    public static <L, R> EitherMatcher<L, R> isLeftOf(L l) {
+        return isLeftThat(equalTo(l));
+    }
+
     public static <L, R> EitherMatcher<L, R> isRightThat(Matcher<? super R> rMatcher) {
         return new EitherMatcher<>(right(rMatcher));
     }
 
     public static <L, R> EitherMatcher<L, R> isRight() {
         return isRightThat(anything());
+    }
+
+    public static <L, R> EitherMatcher<L, R> isRightOf(R r) {
+        return isRightThat(equalTo(r));
     }
 }
