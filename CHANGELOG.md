@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+There are currently no unreleased changes
+
+## [5.4.0] - 2021-09-17
+
 ### Changed
 - `Absent` folds short-circuit on the first `nothing()`
 - `EitherMatcher#isLeftThat/isRightThat` support contravariant bounds on their delegates
@@ -592,7 +596,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - `Monadic/Dyadic/TriadicFunction`, `Predicate`, `Tuple2`, `Tuple3`
 - `Functor`, `BiFunctor`, `ProFunctor` 
 
-[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.3.0...HEAD
+[Unreleased]: https://github.com/palatable/lambda/compare/lambda-5.4.0...HEAD
+[5.4.0]: https://github.com/palatable/lambda/compare/lambda-5.3.0...lambda-5.4.0
 [5.3.0]: https://github.com/palatable/lambda/compare/lambda-5.2.0...lambda-5.3.0
 [5.2.0]: https://github.com/palatable/lambda/compare/lambda-5.1.0...lambda-5.2.0
 [5.1.0]: https://github.com/palatable/lambda/compare/lambda-5.0.0...lambda-5.1.0

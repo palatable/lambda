@@ -61,14 +61,14 @@ Add the following dependency to your:
 <dependency>
     <groupId>com.jnape.palatable</groupId>
     <artifactId>lambda</artifactId>
-    <version>5.3.0</version>
+    <version>5.4.0</version>
 </dependency>
 ```
 
 `build.gradle` ([Gradle](https://docs.gradle.org/current/userguide/dependency_management.html)):
 
 ```gradle
-compile group: 'com.jnape.palatable', name: 'lambda', version: '5.3.0'
+compile group: 'com.jnape.palatable', name: 'lambda', version: '5.4.0'
 ```
 
 <a name="examples">Examples</a>
