@@ -19,9 +19,9 @@ import testsupport.traits.MonadRecLaws;
 
 @RunWith(Traits.class)
 public class ReaderTest {
-	@TestTraits({ FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class,
-			MonadReaderLaws.class })
-	public Subjects<Equivalence<Reader<String, ?>>> testSubject() {
-		return subjects(equivalence(listen("test"), reader -> reader.eval("test")));
-	}
+    @TestTraits({ FunctorLaws.class, ApplicativeLaws.class, MonadLaws.class, MonadRecLaws.class,
+            MonadReaderLaws.class })
+    public Subjects<Equivalence<Reader<String, ?>>> testSubject() {
+        return subjects(equivalence(listen("test"), reader -> reader.eval("test")));
+    }
 }

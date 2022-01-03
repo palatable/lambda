@@ -121,7 +121,7 @@ public interface Fn1<A, B> extends
     default <C> Fn1<A, C> flatMap(Fn1<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
         return a -> f.apply(apply(a)).<Fn1<A, C>>coerce().apply(a);
     }
-    
+
     /**
      * {@inheritDoc}
      */
