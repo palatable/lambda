@@ -202,11 +202,6 @@ public class Reader<R, A>
      * @return the {@link Pure} instance
      */
     public static <R> Pure<Reader<R, ?>> pureReader() {
-        return new Pure<Reader<R, ?>>() {
-            @Override
-            public <A> Reader<R, A> checkedApply(A a) {
-                return listen(a);
-            }
-        };
+        return Reader::listen;
     }
 }
