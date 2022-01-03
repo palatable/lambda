@@ -121,6 +121,14 @@ public interface Fn1<A, B> extends
     default <C> Fn1<A, C> flatMap(Fn1<? super B, ? extends Monad<C, Fn1<A, ?>>> f) {
         return a -> f.apply(apply(a)).<Fn1<A, C>>coerce().apply(a);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default <C> Fn1<A, C> rflatMap(Fn2<? super A, ? super B, ? extends MonadReader<A, C, Fn1<A, ?>>> f) {
+    	return a -> f.apply(a, apply(a)).<Fn1<A, C>>coerce().apply(a);
+    }
 
     /**
      * Left-to-right composition.

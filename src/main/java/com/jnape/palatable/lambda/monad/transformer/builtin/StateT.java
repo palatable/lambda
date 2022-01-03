@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
@@ -129,6 +130,14 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
     @Override
     public <B> StateT<S, M, B> flatMap(Fn1<? super A, ? extends Monad<B, StateT<S, M, ?>>> f) {
         return stateT(s -> runStateT(s).flatMap(into((a, s_) -> f.apply(a).<StateT<S, M, B>>coerce().runStateT(s_))));
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> MonadReader<S, B, StateT<S, M, ?>> rflatMap(Fn2<? super S, ? super A, ? extends MonadReader<S, B, StateT<S, M, ?>>> f) {
+    	return stateT(s -> runStateT(s).flatMap(into((a, s_) -> f.apply(s, a).<StateT<S, M, B>>coerce().runStateT(s_))));
     }
 
     /**

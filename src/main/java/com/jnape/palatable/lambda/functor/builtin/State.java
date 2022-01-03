@@ -3,6 +3,7 @@ package com.jnape.palatable.lambda.functor.builtin;
 import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
 import com.jnape.palatable.lambda.functor.Applicative;
@@ -123,6 +124,14 @@ public final class State<S, A> implements
     @Override
     public <B> State<S, B> flatMap(Fn1<? super A, ? extends Monad<B, State<S, ?>>> f) {
         return state(s -> run(s).into((a, s2) -> f.apply(a).<State<S, B>>coerce().run(s2)));
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> State<S, B> rflatMap(Fn2<? super S, ? super A, ? extends MonadReader<S, B, State<S, ?>>> f) {
+    	return state(s -> run(s).into((a, s2) -> f.apply(s, a).<State<S, B>>coerce().run(s2)));
     }
 
     /**

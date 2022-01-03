@@ -18,8 +18,7 @@ public interface Pure<F extends Functor<?, ? extends F>> {
 
     default <A, FA extends Functor<A, ? extends F>> FA apply(A a) {
         try {
-            @SuppressWarnings("unchecked") FA fa = downcast(checkedApply(a));
-            return fa;
+            return downcast(this.<A>checkedApply(a));
         } catch (Throwable t) {
             throw Runtime.throwChecked(t);
         }

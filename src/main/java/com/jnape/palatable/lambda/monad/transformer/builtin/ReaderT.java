@@ -2,6 +2,7 @@ package com.jnape.palatable.lambda.monad.transformer.builtin;
 
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
@@ -96,6 +97,14 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
     public <B> ReaderT<R, M, B> flatMap(Fn1<? super A, ? extends Monad<B, ReaderT<R, M, ?>>> f) {
         return readerT(r -> runReaderT(r).flatMap(a -> f.apply(a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
     }
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <B> ReaderT<R, M, B> rflatMap(Fn2<? super R, ? super A, ? extends MonadReader<R, B, ReaderT<R, M, ?>>> f) {
+		return readerT(r -> runReaderT(r).flatMap(a -> f.apply(r, a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
+	}
 
     /**
      * {@inheritDoc}
