@@ -43,51 +43,50 @@ public interface MonadReader<R, A, MR extends MonadReader<R, ?, MR>> extends Mon
      */
     @Override
     <B> MonadReader<R, B, MR> pure(B b);
-	
-	/**
-	 * Using both the environment and the current output, chain dependent
-	 * computations that may continue or short-circuit based on previous results.
-	 *
-	 * @param fn  the dependent computation over R and A
-	 * @param <B> the resulting Reader parameter type
-	 * @return the new Reader instance
-	 */
-	<B> MonadReader<R, B, MR> rflatMap(Fn2<? super R, ? super A, ? extends MonadReader<R, B, MR>> fn);
 
-
-	/**
-	 * Using both the environment and the current output, chain dependent
-	 * computations that may continue or short-circuit based on previous results.
-	 *
-	 * @param fn  the dependent computation over R and A
-	 * @param <B> the resulting Reader parameter type
-	 * @return the new Reader instance
-	 */
-	default <B> MonadReader<R, B, MR> rflatMap(Fn1<Tuple2<? super A, ? super R>, ? extends MonadReader<R, B, MR>> fn) {
-		return rflatMap((r, a) -> fn.apply(tuple(a, r)));
-	}
-    
     /**
-	 * Map both the environment and the current output to a new output.
-	 *
-	 * @param fn  the mapping function
-	 * @param <B> the new state type
-	 * @return the mapped {@link MonadReader}
-	 */
-	default <B> MonadReader<R, B, MR> rmap(Fn2<? super R, ? super A, ? extends B> fn) {
-		return rflatMap((r, a) -> pure(fn.apply(r, a)));
-	}
-	
-	/**
-	 * Map both the environment and the current output to a new output.
-	 *
-	 * @param fn  the mapping function
-	 * @param <B> the new state type
-	 * @return the mapped {@link MonadReader}
-	 */
-	default <B> MonadReader<R, B, MR> rmap(Fn1<Tuple2<? super A, ? super R>, ? extends B> fn) {
-		return rflatMap((r, a) -> pure(fn.apply(tuple(a, r))));
-	}
+     * Using both the environment and the current output, chain dependent
+     * computations that may continue or short-circuit based on previous results.
+     *
+     * @param fn  the dependent computation over R and A
+     * @param <B> the resulting Reader parameter type
+     * @return the new Reader instance
+     */
+    <B> MonadReader<R, B, MR> rflatMap(Fn2<? super R, ? super A, ? extends MonadReader<R, B, MR>> fn);
+
+    /**
+     * Using both the environment and the current output, chain dependent
+     * computations that may continue or short-circuit based on previous results.
+     *
+     * @param fn  the dependent computation over R and A
+     * @param <B> the resulting Reader parameter type
+     * @return the new Reader instance
+     */
+    default <B> MonadReader<R, B, MR> rflatMap(Fn1<Tuple2<? super A, ? super R>, ? extends MonadReader<R, B, MR>> fn) {
+        return rflatMap((r, a) -> fn.apply(tuple(a, r)));
+    }
+
+    /**
+     * Map both the environment and the current output to a new output.
+     *
+     * @param fn  the mapping function
+     * @param <B> the new state type
+     * @return the mapped {@link MonadReader}
+     */
+    default <B> MonadReader<R, B, MR> rmap(Fn2<? super R, ? super A, ? extends B> fn) {
+        return rflatMap((r, a) -> pure(fn.apply(r, a)));
+    }
+
+    /**
+     * Map both the environment and the current output to a new output.
+     *
+     * @param fn  the mapping function
+     * @param <B> the new state type
+     * @return the mapped {@link MonadReader}
+     */
+    default <B> MonadReader<R, B, MR> rmap(Fn1<Tuple2<? super A, ? super R>, ? extends B> fn) {
+        return rflatMap((r, a) -> pure(fn.apply(tuple(a, r))));
+    }
 
     /**
      * {@inheritDoc}

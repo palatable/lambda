@@ -131,7 +131,7 @@ public final class StateT<S, M extends MonadRec<?, M>, A> implements
     public <B> StateT<S, M, B> flatMap(Fn1<? super A, ? extends Monad<B, StateT<S, M, ?>>> f) {
         return stateT(s -> runStateT(s).flatMap(into((a, s_) -> f.apply(a).<StateT<S, M, B>>coerce().runStateT(s_))));
     }
-    
+
     /**
      * {@inheritDoc}
      */

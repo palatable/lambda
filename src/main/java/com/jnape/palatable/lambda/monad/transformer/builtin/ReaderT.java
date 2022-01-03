@@ -97,14 +97,14 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
     public <B> ReaderT<R, M, B> flatMap(Fn1<? super A, ? extends Monad<B, ReaderT<R, M, ?>>> f) {
         return readerT(r -> runReaderT(r).flatMap(a -> f.apply(a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
     }
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public <B> ReaderT<R, M, B> rflatMap(Fn2<? super R, ? super A, ? extends MonadReader<R, B, ReaderT<R, M, ?>>> f) {
-		return readerT(r -> runReaderT(r).flatMap(a -> f.apply(r, a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
-	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <B> ReaderT<R, M, B> rflatMap(Fn2<? super R, ? super A, ? extends MonadReader<R, B, ReaderT<R, M, ?>>> f) {
+        return readerT(r -> runReaderT(r).flatMap(a -> f.apply(r, a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
+    }
 
     /**
      * {@inheritDoc}
