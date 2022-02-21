@@ -97,4 +97,11 @@ public class ReaderTTest {
         readerT.fmap(plusOne).fmap(plusOne).fmap(plusOne).runReaderT(0);
         assertEquals(1, invocations.get());
     }
+
+    @Test
+    public void askRetrievesInput() {
+        assertEquals(new Identity<>(1),
+                ReaderT.<Integer, Identity<?>>ask(pureIdentity())
+                        .<Identity<Integer>>runReaderT(1));
+    }
 }
