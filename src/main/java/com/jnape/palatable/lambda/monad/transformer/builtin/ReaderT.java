@@ -213,7 +213,8 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      * @return the {@link ReaderT}
      */
     public static <R, M extends MonadRec<?, M>> ReaderT<R, M, R> ask(Pure<M> pureM) {
-        return readerT(pureM::apply);
+        //noinspection Convert2MethodRef
+        return readerT(a -> pureM.apply(a));
     }
 
     /**
