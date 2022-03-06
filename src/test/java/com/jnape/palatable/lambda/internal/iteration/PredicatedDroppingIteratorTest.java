@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.internal.iteration;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.internal.ImmutableQueue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ public class PredicatedDroppingIteratorTest {
 
     @Before
     public void setUp() {
-        predicatedDroppingIterator = new PredicatedDroppingIterator<>(singletonList(EVEN), iterator);
+        predicatedDroppingIterator = new PredicatedDroppingIterator<>(ImmutableQueue.singleton(EVEN), iterator);
     }
 
     @Test
