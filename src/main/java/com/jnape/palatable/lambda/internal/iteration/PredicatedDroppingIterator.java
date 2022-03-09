@@ -4,18 +4,15 @@ import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.internal.ImmutableQueue;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 public final class PredicatedDroppingIterator<A> extends ImmutableIterator<A> {
-    private final ImmutableQueue<Fn1<? super A, ? extends Boolean>> predicates;
+    private final Iterator<Fn1<? super A, ? extends Boolean>> predicates;
     private final RewindableIterator<A> rewindableIterator;
-    private boolean finishedDropping;
 
     public PredicatedDroppingIterator(ImmutableQueue<Fn1<? super A, ? extends Boolean>> predicates, Iterator<A> asIterator) {
-        this.predicates = predicates;
+        this.predicates = predicates.iterator();
         rewindableIterator = new RewindableIterator<>(asIterator);
-        finishedDropping = false;
     }
 
     @Override
@@ -33,11 +30,11 @@ public final class PredicatedDroppingIterator<A> extends ImmutableIterator<A> {
     }
 
     private void dropElementsIfNecessary() {
-        if(finishedDropping)
-            return;
 
-        for (Fn1<? super A, ? extends Boolean> predicate : predicates) {
+        while (predicates.hasNext() && rewindableIterator.hasNext()) {
+            Fn1<? super A, ? extends Boolean> predicate = predicates.next();
             boolean predicateDone = false;
+
             while (rewindableIterator.hasNext() && !predicateDone) {
                 A next = rewindableIterator.next();
                 Boolean apply = predicate.apply(next);
@@ -46,8 +43,7 @@ public final class PredicatedDroppingIterator<A> extends ImmutableIterator<A> {
                     predicateDone = true;
                 }
             }
-        }
 
-        finishedDropping = true;
+        }
     }
 }
