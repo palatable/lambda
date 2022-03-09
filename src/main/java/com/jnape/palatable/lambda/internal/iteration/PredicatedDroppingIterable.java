@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 public final class PredicatedDroppingIterable<A> implements Iterable<A> {
     private final ImmutableQueue<Fn1<? super A, ? extends Boolean>> predicates;
-    private final Iterable<A> as;
+    private final Iterable<A>                                       as;
 
     public PredicatedDroppingIterable(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         ImmutableQueue<Fn1<? super A, ? extends Boolean>> predicates = ImmutableQueue.singleton(predicate);
