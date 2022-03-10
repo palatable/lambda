@@ -63,6 +63,6 @@ public class DropWhileTest {
     @Test
     public void eachLayerIsAppliedOnce() {
         assertThat(dropWhile(i -> i % 2 == 0, dropWhile(i -> i % 2 == 1, asList(1, 2, 3))),
-                iterates(3));
+                   iterates(3));
     }
 }
