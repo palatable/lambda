@@ -205,6 +205,19 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
     }
 
     /**
+     * Given a {@link Pure} ask will give you access to the input within the monadic embedding
+     *
+     * @param pureM the {@link Pure} instance for the given {@link Monad}
+     * @param <R> the input and output type of the returned ReaderT
+     * @param <M> the returned {@link Monad}
+     * @return the {@link ReaderT}
+     */
+    public static <R, M extends MonadRec<?, M>> ReaderT<R, M, R> ask(Pure<M> pureM) {
+        //noinspection Convert2MethodRef
+        return readerT(a -> pureM.apply(a));
+    }
+
+    /**
      * Lift a {@link Fn1 function} (<code>R -&gt; {@link Monad}&lt;A, M&gt;</code>) into a {@link ReaderT} instance.
      *
      * @param fn  the function
