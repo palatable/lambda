@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
-There are currently no unreleased changes
+### Added
+- `ReaderT#ask`, a static factory method for returning an identity `ReaderT`
+
+### Fixed
+- nested `DropWhile`s no longer incorrectly deforest using disjunction
 
 ## [5.4.0] - 2021-09-17
 
