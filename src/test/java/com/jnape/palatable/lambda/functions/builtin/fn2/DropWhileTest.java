@@ -56,7 +56,13 @@ public class DropWhileTest {
             innerInvocations.add(x);
             return x > 2;
         }, asList(1, 2, 3))).forEach(__ -> {});
-        assertThat(innerInvocations, iterates(1, 2, 3));
-        assertThat(outerInvocations, iterates(1, 2));
+        assertThat(innerInvocations, iterates(1));
+        assertThat(outerInvocations, iterates(1, 2, 3));
+    }
+
+    @Test
+    public void eachLayerIsAppliedOnce() {
+        assertThat(dropWhile(i -> i % 2 == 0, dropWhile(i -> i % 2 == 1, asList(1, 2, 3))),
+                   iterates(3));
     }
 }

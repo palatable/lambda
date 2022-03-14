@@ -54,9 +54,7 @@ public final class RewindableIterator<A> extends ImmutableIterator<A> {
             if (cache == null)
                 throw new NoSuchElementException("Cache is empty.");
 
-            A cache = this.cache;
-            this.cache = null;
-            return cache;
+            return this.cache;
         }
 
         public boolean isEmpty() {

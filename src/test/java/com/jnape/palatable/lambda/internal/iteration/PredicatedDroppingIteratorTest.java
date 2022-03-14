@@ -1,15 +1,18 @@
 package com.jnape.palatable.lambda.internal.iteration;
 
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.internal.ImmutableQueue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static testsupport.Mocking.mockIteratorToHaveValues;
@@ -25,7 +28,7 @@ public class PredicatedDroppingIteratorTest {
 
     @Before
     public void setUp() {
-        predicatedDroppingIterator = new PredicatedDroppingIterator<>(EVEN, iterator);
+        predicatedDroppingIterator = new PredicatedDroppingIterator<>(ImmutableQueue.singleton(EVEN), iterator);
     }
 
     @Test

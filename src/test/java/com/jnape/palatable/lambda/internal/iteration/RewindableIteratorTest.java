@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static testsupport.Mocking.mockIteratorToHaveValues;
 
@@ -51,13 +52,14 @@ public class RewindableIteratorTest {
         rewindableIterator.rewind();
     }
 
-    @Test(expected = NoSuchElementException.class)
-    public void cannotRewindTheSameElementTwice() {
+    @Test
+    public void canRewindTheSameElementTwice() {
         mockIteratorToHaveValues(iterator, 1, 2, 3);
         rewindableIterator.next();
         rewindableIterator.rewind();
         rewindableIterator.next();
         rewindableIterator.rewind();
+        assertEquals(1, rewindableIterator.next());
     }
 
     @Test
