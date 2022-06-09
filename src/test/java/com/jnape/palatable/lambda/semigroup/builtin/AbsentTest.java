@@ -69,6 +69,12 @@ public class AbsentTest {
         result = Absent.<Unit>absent(Constantly::constantly)
                 .foldLeft(nothing(), repeat(just(UNIT)));
         assertEquals(nothing(), result);
+
+        result = Absent.<Unit>absent()
+                .apply(Constantly::constantly)
+                .foldLeft(nothing(), repeat(just(UNIT)));
+
+        assertEquals(nothing(), result);
     }
 
     @Test(timeout = 200)

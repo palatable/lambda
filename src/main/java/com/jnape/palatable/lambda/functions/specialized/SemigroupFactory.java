@@ -1,6 +1,7 @@
 package com.jnape.palatable.lambda.functions.specialized;
 
 import com.jnape.palatable.lambda.functions.Fn3;
+import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
 
 @FunctionalInterface
@@ -11,7 +12,11 @@ public interface SemigroupFactory<A, B> extends Fn3<A, B, B, B> {
 
     @Override
     default Semigroup<B> apply(A a) {
-        return Fn3.super.apply(a)::apply;
+        try {
+            return checkedApply(a);
+        } catch (Throwable t) {
+            throw Runtime.throwChecked(t);
+        }
     }
 
     @Override
