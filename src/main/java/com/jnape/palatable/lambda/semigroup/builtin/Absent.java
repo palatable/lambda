@@ -72,7 +72,7 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
             @Override
             public Maybe<A> foldLeft(Maybe<A> acc, Iterable<Maybe<A>> maybes) {
                 return trampoline(
-                        into((res, it) -> res.equals(nothing())
+                        into((res, it) -> res.equals(nothing()) || !it.hasNext()
                                 ? terminate(res)
                                 : recurse(tuple(liftA2(aSemigroup, res, it.next()), it))),
                         tuple(acc, maybes.iterator()));
