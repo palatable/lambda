@@ -47,4 +47,9 @@ public final class Intersection<A> implements ShortCircuitingSemigroup<Iterable<
             return terminate(emptyList());
         return recurse(filter(x -> find(eq(x), a1).fmap(constantly(true)).orElse(false), distinct(a2)));
     }
+
+    @Override
+    public Iterable<A> checkedApply(Iterable<A> xs, Iterable<A> ys) {
+        return filter(x -> find(eq(x), ys).fmap(constantly(true)).orElse(false), distinct(xs));
+    }
 }
