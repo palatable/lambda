@@ -4,8 +4,14 @@ import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.specialized.BiSemigroupFactory;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
+import com.jnape.palatable.lambda.functor.builtin.Lazy;
+import com.jnape.palatable.lambda.internal.Runtime;
 import com.jnape.palatable.lambda.monoid.Monoid;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
+
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Map.map;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2.liftA2;
 
 /**
  * A {@link Semigroup} instance formed by a <code>{@link Tuple2}&lt;_1, _2&gt;</code> and semigroups over
@@ -24,12 +30,6 @@ public final class Collapse<_1, _2> implements BiSemigroupFactory<Semigroup<_1>,
     private static final Collapse<?, ?> INSTANCE = new Collapse<>();
 
     private Collapse() {
-    }
-
-    @Override
-    public Semigroup<Tuple2<_1, _2>> checkedApply(Semigroup<_1> _1Semigroup, Semigroup<_2> _2Semigroup) {
-        return (x, y) -> x.biMap(_1Semigroup.flip().apply(y._1()),
-                                 _2Semigroup.flip().apply(y._2()));
     }
 
     @SuppressWarnings("unchecked")
@@ -56,4 +56,38 @@ public final class Collapse<_1, _2> implements BiSemigroupFactory<Semigroup<_1>,
                                                    Tuple2<_1, _2> y) {
         return collapse(_1Semigroup, _2Semigroup, x).apply(y);
     }
+
+    @Override
+    public Semigroup<Tuple2<_1, _2>> checkedApply(Semigroup<_1> _1Semigroup, Semigroup<_2> _2Semigroup) {
+        return new Semigroup<Tuple2<_1, _2>>() {
+            @Override
+            public Tuple2<_1, _2> checkedApply(Tuple2<_1, _2> x, Tuple2<_1, _2> y) {
+                return x.biMap(_1Semigroup.flip().apply(y._1()),
+                               _2Semigroup.flip().apply(y._2()));
+            }
+
+            @Override
+            public Tuple2<_1, _2> foldLeft(Tuple2<_1, _2> tuple2, Iterable<Tuple2<_1, _2>> tuple2s) {
+                return tuple(_1Semigroup.foldLeft(tuple2._1(), map(Tuple2::_1, tuple2s)),
+                             _2Semigroup.foldLeft(tuple2._2(), map(Tuple2::_2, tuple2s)));
+            }
+
+            @Override
+            public Lazy<Tuple2<_1, _2>> foldRight(Tuple2<_1, _2> tuple2, Iterable<Tuple2<_1, _2>> tuple2s) {
+                return liftA2(Tuple2::tuple,
+                              _1Semigroup.foldRight(tuple2._1(), map(Tuple2::_1, tuple2s)),
+                              _2Semigroup.foldRight(tuple2._2(), map(Tuple2::_2, tuple2s)));
+            }
+        };
+    }
+
+    @Override
+    public Semigroup<Tuple2<_1, _2>> apply(Semigroup<_1> semigroup, Semigroup<_2> semigroup2) {
+        try {
+            return checkedApply(semigroup, semigroup2);
+        } catch (Throwable t) {
+            throw Runtime.throwChecked(t);
+        }
+    }
+
 }
