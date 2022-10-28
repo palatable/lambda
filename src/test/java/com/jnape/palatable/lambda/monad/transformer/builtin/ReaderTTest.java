@@ -17,10 +17,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Id.id;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Replicate.replicate;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
 import static com.jnape.palatable.lambda.functor.builtin.Identity.pureIdentity;
 import static com.jnape.palatable.lambda.io.IO.io;
 import static com.jnape.palatable.lambda.monad.transformer.builtin.ReaderT.readerT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static testsupport.Constants.STACK_EXPLODING_NUMBER;
 import static testsupport.traits.Equivalence.equivalence;
 
 @RunWith(Traits.class)
@@ -103,5 +109,25 @@ public class ReaderTTest {
         assertEquals(new Identity<>(1),
                 ReaderT.<Integer, Identity<?>>ask(pureIdentity())
                         .<Identity<Integer>>runReaderT(1));
+    }
+
+    @Test
+    public void stackSafeFlatMap() {
+        assertSame(UNIT, foldLeft(
+                (ReaderT<Unit, Identity<?>, Unit> acc, Unit u) -> acc.flatMap(constantly(readerT(constantly(new Identity<>(UNIT))))),
+                readerT(constantly(new Identity<>(UNIT))),
+                replicate(STACK_EXPLODING_NUMBER, UNIT))
+                .<Identity<Unit>>runReaderT(UNIT)
+                .runIdentity());
+    }
+
+    @Test
+    public void stackSafeZip() {
+        assertSame(UNIT, foldLeft(
+                (ReaderT<Unit, Identity<?>, Unit> acc, Unit u) -> acc.zip(readerT(constantly(new Identity<>(id())))),
+                readerT(constantly(new Identity<>(UNIT))),
+                replicate(STACK_EXPLODING_NUMBER, UNIT))
+                .<Identity<Unit>>runReaderT(UNIT)
+                .runIdentity());
     }
 }
