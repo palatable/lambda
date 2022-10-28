@@ -1,7 +1,9 @@
 package com.jnape.palatable.lambda.monad.transformer.builtin;
 
+import com.jnape.palatable.lambda.adt.choice.Choice2;
 import com.jnape.palatable.lambda.adt.hlist.Tuple2;
 import com.jnape.palatable.lambda.functions.Fn1;
+import com.jnape.palatable.lambda.functions.Fn2;
 import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.Lift;
 import com.jnape.palatable.lambda.functions.specialized.Pure;
@@ -13,9 +15,19 @@ import com.jnape.palatable.lambda.monad.MonadReader;
 import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.monad.transformer.MonadT;
 
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.adt.choice.Choice2.a;
+import static com.jnape.palatable.lambda.adt.choice.Choice2.b;
+import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
 import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Downcast.downcast;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Uncons.uncons;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Upcast.upcast;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.builtin.fn2.Snoc.snoc;
 import static com.jnape.palatable.lambda.functions.builtin.fn2.Tupler2.tupler;
+import static com.jnape.palatable.lambda.functions.builtin.fn3.FoldLeft.foldLeft;
+import static java.util.Collections.singletonList;
 
 /**
  * A {@link MonadT monad transformer} for any {@link Fn1 function} from some type <code>R</code> to some
@@ -30,10 +42,10 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
         Cartesian<R, A, ReaderT<?, M, ?>>,
         MonadT<M, A, ReaderT<R, M, ?>, ReaderT<R, ?, ?>> {
 
-    private final Fn1<? super R, ? extends MonadRec<A, M>> f;
+    private final Iterable<Choice2<Fn2<Object, R, ? extends Monad<Object, M>>, Applicative<Fn1<Object, Object>, ReaderT<R, M, ?>>>> fs;
 
-    private ReaderT(Fn1<? super R, ? extends MonadRec<A, M>> f) {
-        this.f = f;
+    private ReaderT(Iterable<Choice2<Fn2<Object, R, ? extends Monad<Object, M>>, Applicative<Fn1<Object, Object>, ReaderT<R, M, ?>>>> fs) {
+        this.fs = fs;
     }
 
     /**
@@ -43,8 +55,17 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      * @param <MA> the witnessed target type
      * @return the embedded {@link MonadRec}
      */
+    @SuppressWarnings("unchecked")
     public <MA extends MonadRec<A, M>> MA runReaderT(R r) {
-        return f.apply(r).coerce();
+        return (MA) uncons(fs)
+                .flatMap(into((head, tail) -> head
+                        .projectA()
+                        .fmap(flatMapFn -> flatMapFn.apply(UNIT, r).<MonadRec<Object, M>>coerce())
+                        .fmap(seed -> tuple(seed, tail))))
+                .orElseThrow(IllegalStateException::new)
+                .into(foldLeft((acc, c2) -> c2.match(
+                        flatMapFn -> acc.flatMap(a -> flatMapFn.apply(a, r).coerce()),
+                        zipApp -> acc.zip(zipApp.<ReaderT<R, M, Fn1<Object, Object>>>coerce().runReaderT(r).fmap(fn -> fn.fmap(upcast()))))));
     }
 
     /**
@@ -92,9 +113,10 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <B> ReaderT<R, M, B> flatMap(Fn1<? super A, ? extends Monad<B, ReaderT<R, M, ?>>> f) {
-        return readerT(r -> runReaderT(r).flatMap(a -> f.apply(a).<ReaderT<R, M, B>>coerce().runReaderT(r)));
+        return new ReaderT<>(snoc(a((a, r) -> f.apply((A) a).<ReaderT<R, M, B>>coerce().runReaderT(r).fmap(upcast())), fs));
     }
 
     /**
@@ -128,7 +150,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      */
     @Override
     public <B> ReaderT<R, M, B> zip(Applicative<Fn1<? super A, ? extends B>, ReaderT<R, M, ?>> appFn) {
-        return readerT(r -> f.apply(r).zip(appFn.<ReaderT<R, M, Fn1<? super A, ? extends B>>>coerce().runReaderT(r)));
+        return new ReaderT<>(snoc(b(appFn.fmap(fn -> fn.diMap(downcast(), upcast()))), fs));
     }
 
     /**
@@ -228,7 +250,7 @@ public final class ReaderT<R, M extends MonadRec<?, M>, A> implements
      */
     public static <R, M extends MonadRec<?, M>, A> ReaderT<R, M, A> readerT(
             Fn1<? super R, ? extends MonadRec<A, M>> fn) {
-        return new ReaderT<>(fn);
+        return new ReaderT<>(singletonList(a(fn.<R, MonadRec<Object, M>>diMap(downcast(), m -> upcast(m.fmap(upcast()))).widen())));
     }
 
     /**
