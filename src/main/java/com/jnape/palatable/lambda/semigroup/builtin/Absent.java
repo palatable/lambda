@@ -3,18 +3,20 @@ package com.jnape.palatable.lambda.semigroup.builtin;
 import com.jnape.palatable.lambda.adt.Maybe;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.lambda.functions.builtin.fn3.FoldRight;
+import com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2;
+import com.jnape.palatable.lambda.functions.recursion.RecursiveResult;
 import com.jnape.palatable.lambda.functions.specialized.SemigroupFactory;
 import com.jnape.palatable.lambda.functor.builtin.Lazy;
 import com.jnape.palatable.lambda.monoid.builtin.Present;
 import com.jnape.palatable.lambda.semigroup.Semigroup;
+import com.jnape.palatable.lambda.semigroup.ShortCircuitingSemigroup;
 
+import static com.jnape.palatable.lambda.adt.Maybe.just;
 import static com.jnape.palatable.lambda.adt.Maybe.nothing;
-import static com.jnape.palatable.lambda.adt.hlist.HList.tuple;
-import static com.jnape.palatable.lambda.functions.builtin.fn2.Into.into;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Constantly.constantly;
 import static com.jnape.palatable.lambda.functions.builtin.fn3.LiftA2.liftA2;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.recurse;
 import static com.jnape.palatable.lambda.functions.recursion.RecursiveResult.terminate;
-import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoline;
 import static com.jnape.palatable.lambda.functor.builtin.Lazy.lazy;
 
 /**
@@ -63,19 +65,17 @@ public final class Absent<A> implements SemigroupFactory<Semigroup<A>, Maybe<A>>
     }
 
     private static <A> Semigroup<Maybe<A>> shortCircuitSemigroup(Semigroup<A> aSemigroup) {
-        return new Semigroup<Maybe<A>>() {
+        return new ShortCircuitingSemigroup<Maybe<A>>() {
             @Override
-            public Maybe<A> checkedApply(Maybe<A> maybeX, Maybe<A> maybeY) {
-                return liftA2(aSemigroup, maybeX, maybeY);
+            public RecursiveResult<Maybe<A>, Maybe<A>> shortCircuitApply(Maybe<A> a1, Maybe<A> a2) {
+                return LiftA2.<A, A, A, Maybe<?>, Maybe<A>>liftA2(aSemigroup, a1, a2)
+                        .match(constantly(terminate(nothing())),
+                               a -> recurse(just(a)));
             }
 
             @Override
-            public Maybe<A> foldLeft(Maybe<A> acc, Iterable<Maybe<A>> maybes) {
-                return trampoline(
-                        into((res, it) -> res.equals(nothing())
-                                ? terminate(res)
-                                : recurse(tuple(liftA2(aSemigroup, res, it.next()), it))),
-                        tuple(acc, maybes.iterator()));
+            public Maybe<A> checkedApply(Maybe<A> maybeX, Maybe<A> maybeY) {
+                return liftA2(aSemigroup, maybeX, maybeY);
             }
 
             @Override

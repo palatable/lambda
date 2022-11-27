@@ -1,5 +1,6 @@
 package com.jnape.palatable.lambda.semigroup.builtin;
 
+import com.jnape.palatable.lambda.adt.Unit;
 import com.jnape.palatable.lambda.functions.Fn1;
 import com.jnape.palatable.traitor.annotations.TestTraits;
 import com.jnape.palatable.traitor.runners.Traits;
@@ -10,6 +11,8 @@ import testsupport.traits.FiniteIteration;
 import testsupport.traits.InfiniteIterableSupport;
 import testsupport.traits.Laziness;
 
+import static com.jnape.palatable.lambda.adt.Unit.UNIT;
+import static com.jnape.palatable.lambda.functions.builtin.fn1.Repeat.repeat;
 import static com.jnape.palatable.lambda.semigroup.builtin.Intersection.intersection;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -39,5 +42,11 @@ public class IntersectionTest {
         assertThat(intersection(asList(1, 2, 3), asList(2, 3, 4)), iterates(2, 3));
         assertThat(intersection(singletonList(1), singletonList(2)), isEmpty());
         assertThat(intersection(asList(1, 2, 3, 3), singletonList(3)), iterates(3));
+    }
+
+    @Test(timeout = 200)
+    public void foldLeftShortCircuits() {
+        assertThat(Intersection.<Unit>intersection().foldLeft(emptyList(), repeat(singletonList(UNIT))), isEmpty());
+        assertThat(Intersection.<Unit>intersection().foldLeft(singletonList(UNIT), repeat(emptyList())), isEmpty());
     }
 }
