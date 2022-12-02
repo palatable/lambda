@@ -71,6 +71,13 @@ public class AbsentTest {
         assertEquals(nothing(), result);
     }
 
+    @Test
+    public void foldLeftWorksForJusts() {
+        Maybe<Unit> result = Absent.<Unit>absent(Constantly::constantly)
+                .foldLeft(just(UNIT), Arrays.asList(just(UNIT), just(UNIT)));
+        assertEquals(just(UNIT), result);
+    }
+
     @Test(timeout = 200)
     public void checkedApplyFoldRightShortCircuit() {
         Maybe<Unit> result = Absent.<Unit>absent().checkedApply(Constantly::constantly)
