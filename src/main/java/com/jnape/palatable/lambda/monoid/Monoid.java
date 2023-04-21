@@ -82,7 +82,7 @@ public interface Monoid<A> extends Semigroup<A> {
      */
     @Override
     default Lazy<A> foldRight(A a, Iterable<A> as) {
-        return lazy(() -> flip().foldMap(id(), reverse(cons(a, as))));
+        return lazy(() -> flip().foldMap(id(), cons(a, reverse(as))));
     }
 
     /**

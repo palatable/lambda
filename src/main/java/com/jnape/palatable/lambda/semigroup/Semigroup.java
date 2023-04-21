@@ -39,7 +39,7 @@ public interface Semigroup<A> extends Fn2<A, A, A> {
      * @see FoldRight
      */
     default Lazy<A> foldRight(A a, Iterable<A> as) {
-        return FoldRight.foldRight((y, lazyX) -> lazyX.fmap(x -> apply(x, y)), lazy(a), as);
+        return FoldRight.foldRight((y, lazyX) -> lazyX.fmap(x -> apply(y, x)), lazy(a), as);
     }
 
     /**
