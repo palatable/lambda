@@ -28,12 +28,9 @@ import static com.jnape.palatable.lambda.functions.recursion.Trampoline.trampoli
  * @param <S> the input that might fail to map to its output
  * @param <T> the guaranteed output
  */
-public final class Market<A, B, S, T> implements
+public record Market<A, B, S, T>(Fn1<? super B, ? extends T> bt, Fn1<? super S, ? extends Either<T, A>> sta) implements
         MonadRec<T, Market<A, B, S, ?>>,
         Cocartesian<S, T, Market<A, B, ?, ?>> {
-
-    private final Fn1<? super B, ? extends T>            bt;
-    private final Fn1<? super S, ? extends Either<T, A>> sta;
 
     public Market(Fn1<? super B, ? extends T> bt, Fn1<? super S, ? extends Either<T, A>> sta) {
         this.bt = fn1(bt);
@@ -45,6 +42,7 @@ public final class Market<A, B, S, T> implements
      *
      * @return a <code>{@link Fn1}&lt;B, T&gt;</code>
      */
+    @Override
     public Fn1<? super B, ? extends T> bt() {
         return bt;
     }
@@ -54,6 +52,7 @@ public final class Market<A, B, S, T> implements
      *
      * @return a <code>{@link Fn1}&lt;S, {@link Either}&lt;T, A&gt;&gt;</code>
      */
+    @Override
     public Fn1<? super S, ? extends Either<T, A>> sta() {
         return sta;
     }
@@ -72,9 +71,9 @@ public final class Market<A, B, S, T> implements
     @Override
     public <U> Market<A, B, S, U> flatMap(Fn1<? super T, ? extends Monad<U, Market<A, B, S, ?>>> f) {
         return new Market<>(b -> f.apply(bt().apply(b)).<Market<A, B, S, U>>coerce().bt().apply(b),
-                            s -> sta().apply(s).invert()
-                                    .flatMap(t -> f.apply(t).<Market<A, B, S, U>>coerce().sta()
-                                            .apply(s).invert()).invert());
+                s -> sta().apply(s).invert()
+                        .flatMap(t -> f.apply(t).<Market<A, B, S, U>>coerce().sta()
+                                .apply(s).invert()).invert());
     }
 
     /**
@@ -89,7 +88,7 @@ public final class Market<A, B, S, T> implements
                         trampoline(t -> fn.apply(t).<Market<A, B, S, RecursiveResult<T, U>>>coerce()
                                 .sta.apply(s)
                                 .match(tOrU -> tOrU.match(RecursiveResult::recurse, u -> terminate(left(u))),
-                                       a -> terminate(right(a)))),
+                                        a -> terminate(right(a)))),
                         Either::right)));
         return new Market<>(bu, sua);
     }
@@ -101,7 +100,7 @@ public final class Market<A, B, S, T> implements
     public <U> Market<A, B, S, U> zip(Applicative<Fn1<? super T, ? extends U>, Market<A, B, S, ?>> appFn) {
         Market<A, B, S, Fn1<? super T, ? extends U>> marketF = appFn.coerce();
         return new Market<>(b -> marketF.bt().apply(b).apply(bt().apply(b)),
-                            s -> sta().apply(s).invert().zip(marketF.sta().apply(s).invert()).invert());
+                s -> sta().apply(s).invert().zip(marketF.sta().apply(s).invert()).invert());
     }
 
     /**
@@ -118,8 +117,8 @@ public final class Market<A, B, S, T> implements
     @Override
     public <C> Market<A, B, Choice2<C, S>, Choice2<C, T>> cocartesian() {
         return new Market<>(bt.fmap(Choice2::b),
-                            cs -> cs.fmap(sta).match(c -> left(a(c)),
-                                                     tOrA -> tOrA.match(t -> left(b(t)), Either::right)));
+                cs -> cs.fmap(sta).match(c -> left(a(c)),
+                        tOrA -> tOrA.match(t -> left(b(t)), Either::right)));
     }
 
     /**

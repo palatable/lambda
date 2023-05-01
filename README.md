@@ -672,24 +672,15 @@ There are three functions that lambda provides that interface directly with lens
 Lenses can be easily created. Consider the following `Person` class:
 
 ```Java
-public final class Person {
-    private final int age;
+public record Person(int age) {
 
-    public Person(int age) {
-        this.age = age;
-    }
+   public Person setAge(int age) {
+      return new Person(age);
+   }
 
-    public int getAge() {
-        return age;
-    }
-
-    public Person setAge(int age) {
-        return new Person(age);
-    }
-
-    public Person setAge(LocalDate dob) {
-        return setAge((int) YEARS.between(dob, LocalDate.now()));
-    }
+   public Person setAge(LocalDate dob) {
+      return setAge((int) YEARS.between(dob, LocalDate.now()));
+   }
 }
 ```
 

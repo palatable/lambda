@@ -59,29 +59,19 @@ public final class PrismAssert {
                 .apply(cases);
     }
 
-    private static final class PrismResult<S> {
-        private final Maybe<S> maybeS;
-
-        private PrismResult(Maybe<S> maybeS) {
-            this.maybeS = maybeS;
-        }
+    private record PrismResult<S>(Maybe<S> maybeS) {
 
         @Override
-        public boolean equals(Object other) {
-            if (other instanceof PrismResult) {
-                return maybeS.zip(((PrismResult<?>) other).maybeS.fmap(fn2(Objects::equals))).orElse(true);
+            public boolean equals(Object other) {
+                if (other instanceof PrismResult) {
+                    return maybeS.zip(((PrismResult<?>) other).maybeS.fmap(fn2(Objects::equals))).orElse(true);
+                }
+                return false;
             }
-            return false;
-        }
 
         @Override
-        public int hashCode() {
-            return Objects.hash(maybeS);
+            public String toString() {
+                return maybeS.toString();
+            }
         }
-
-        @Override
-        public String toString() {
-            return maybeS.toString();
-        }
-    }
 }
