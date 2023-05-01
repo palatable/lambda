@@ -12,20 +12,15 @@ import com.jnape.palatable.lambda.optics.Iso;
  * @param <S> the larger viewing value of an {@link Iso}
  * @param <T> the larger viewed value of an {@link Iso}
  */
-public final class Exchange<A, B, S, T> implements Profunctor<S, T, Exchange<A, B, ?, ?>> {
-    private final Fn1<? super S, ? extends A> sa;
-    private final Fn1<? super B, ? extends T> bt;
-
-    public Exchange(Fn1<? super S, ? extends A> sa, Fn1<? super B, ? extends T> bt) {
-        this.sa = sa;
-        this.bt = bt;
-    }
+public record Exchange<A, B, S, T>(Fn1<? super S, ? extends A> sa,
+                                   Fn1<? super B, ? extends T> bt) implements Profunctor<S, T, Exchange<A, B, ?, ?>> {
 
     /**
      * Extract the mapping <code>S -&gt; A</code>.
      *
      * @return an <code>{@link Fn1}&lt;S, A&gt;</code>
      */
+    @Override
     public Fn1<? super S, ? extends A> sa() {
         return sa;
     }
@@ -35,6 +30,7 @@ public final class Exchange<A, B, S, T> implements Profunctor<S, T, Exchange<A, 
      *
      * @return an <code>{@link Fn1}&lt;B, T&gt;</code>
      */
+    @Override
     public Fn1<? super B, ? extends T> bt() {
         return bt;
     }

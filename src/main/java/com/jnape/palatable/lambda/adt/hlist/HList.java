@@ -263,8 +263,7 @@ public abstract class HList {
 
         @Override
         public final boolean equals(Object other) {
-            if (other instanceof HCons) {
-                HCons<?, ?> that = (HCons<?, ?>) other;
+            if (other instanceof HCons<?, ?> that) {
                 return this.head.equals(that.head)
                         && this.tail.equals(that.tail);
             }

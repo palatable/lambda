@@ -16,8 +16,7 @@ public final class MappingIterable<A, B> implements Iterable<B> {
     @SuppressWarnings("unchecked")
     public MappingIterable(Fn1<? super A, ? extends B> fn, Iterable<A> as) {
         List<Fn1<?, ?>> mappers = new ArrayList<>(singletonList(fn));
-        while (as instanceof MappingIterable<?, ?>) {
-            MappingIterable<?, ?> nested = (MappingIterable<?, ?>) as;
+        while (as instanceof MappingIterable<?, ?> nested) {
             as = (Iterable<A>) nested.as;
             mappers.addAll(0, nested.mappers);
         }

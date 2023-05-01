@@ -9,8 +9,7 @@ public final class TakingIterable<A> implements Iterable<A> {
     private final Iterable<A> as;
 
     public TakingIterable(int n, Iterable<A> as) {
-        while (as instanceof TakingIterable) {
-            TakingIterable<A> nested = (TakingIterable<A>) as;
+        while (as instanceof TakingIterable<A> nested) {
             n = min(n, nested.n);
             as = nested.as;
         }
