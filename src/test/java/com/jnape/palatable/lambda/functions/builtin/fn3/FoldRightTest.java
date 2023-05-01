@@ -29,7 +29,7 @@ public class FoldRightTest {
 
     @Test
     public void foldRightAccumulatesRightToLeft() {
-        assertThat(foldRight((a, lazyB) -> lazyB.fmap(b -> explainFold().apply(a, b)),
+        assertThat(foldRight((a, lazyAcc) -> lazyAcc.fmap(acc -> explainFold().apply(a, acc)),
                              lazy("5"),
                              asList("1", "2", "3", "4"))
                            .value(),

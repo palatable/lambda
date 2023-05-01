@@ -7,6 +7,6 @@ import static java.lang.String.format;
 public class ExplainFold {
 
     public static Fn2<String, String, String> explainFold() {
-        return (acc, x) -> format("(%s + %s)", acc, x);
+        return (x, y) -> format("(%s + %s)", x, y);
     }
 }

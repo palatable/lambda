@@ -4,18 +4,19 @@ import org.junit.Test;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static testsupport.functions.ExplainFold.explainFold;
 
 public class SemigroupTest {
 
     @Test
     public void foldLeft() {
-        Semigroup<Integer> sum = (x, y) -> x + y;
-        assertEquals((Integer) 6, sum.foldLeft(0, asList(1, 2, 3)));
+        Semigroup<String> foldFn = explainFold()::apply;
+        assertEquals("(((0 + 1) + 2) + 3)", foldFn.foldLeft("0", asList("1", "2", "3")));
     }
 
     @Test
     public void foldRight() {
-        Semigroup<Integer> sum = (x, y) -> x + y;
-        assertEquals((Integer) 6, sum.foldRight(0, asList(1, 2, 3)).value());
+        Semigroup<String> foldFn = explainFold()::apply;
+        assertEquals("(1 + (2 + (3 + 0)))", foldFn.foldRight("0", asList("1", "2", "3")).value());
     }
 }
