@@ -176,17 +176,9 @@ public class MapLensTest {
         assertLensLawfulness(mappingValues(iso(Integer::parseInt, Object::toString)),
                              asList(emptyMap(),
                                     singletonMap("foo", "1"),
-                                    unmodifiableMap(new HashMap<String, String>() {{
-                                        put("foo", "1");
-                                        put("bar", "2");
-                                        put("baz", "3");
-                                    }})),
+                                     Map.of("foo", "1", "bar", "2", "baz", "3")),
                              asList(emptyMap(),
                                     singletonMap("foo", 1),
-                                    unmodifiableMap(new HashMap<String, Integer>() {{
-                                        put("foo", 1);
-                                        put("bar", 2);
-                                        put("baz", 3);
-                                    }})));
+                                     Map.of("foo", 1, "bar", 2, "baz", 3)));
     }
 }
