@@ -182,8 +182,7 @@ public abstract class Lazy<A> implements MonadRec<A, Lazy<?>>, Traversable<A, La
                     tuple((Lazy<Object>) this, new LinkedList<>());
             @SuppressWarnings("unchecked")
             A a = (A) trampoline(into((source, flatMaps) -> {
-                if (source instanceof Compose<?>) {
-                    Compose<?> nested = (Compose<?>) source;
+                if (source instanceof Compose<?> nested) {
                     flatMaps.push(nested.flatMap);
                     return recurse(tuple(nested.source, flatMaps));
                 }

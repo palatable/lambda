@@ -12,8 +12,7 @@ public final class SnocIterable<A> implements Iterable<A> {
 
     public SnocIterable(A a, Iterable<A> as) {
         Iterable<A> snocs = cons(a, Collections::emptyIterator);
-        while (as instanceof SnocIterable) {
-            SnocIterable<A> nested = ((SnocIterable<A>) as);
+        while (as instanceof SnocIterable<A> nested) {
             as = nested.as;
             snocs = concat(nested.snocs, snocs);
         }

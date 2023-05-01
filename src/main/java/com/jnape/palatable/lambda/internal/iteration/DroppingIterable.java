@@ -7,8 +7,7 @@ public final class DroppingIterable<A> implements Iterable<A> {
     private final Iterable<A> as;
 
     public DroppingIterable(int n, Iterable<A> as) {
-        while (as instanceof DroppingIterable) {
-            DroppingIterable<A> nested = (DroppingIterable<A>) as;
+        while (as instanceof DroppingIterable<A> nested) {
             as = nested.as;
             n += nested.n;
         }

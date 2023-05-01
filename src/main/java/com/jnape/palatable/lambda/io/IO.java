@@ -430,8 +430,7 @@ public abstract class IO<A> implements MonadRec<A, IO<?>>, MonadError<Throwable,
         public A unsafePerformIO() {
             Lazy<Object> lazyA = LazyRec.<IO<?>, Object>lazyRec(
                     (f, io) -> {
-                        if (io instanceof IO.Compose<?>) {
-                            Compose<?>   compose = (Compose<?>) io;
+                        if (io instanceof Compose<?> compose) {
                             Lazy<Object> head    = f.apply(compose.source);
                             return compose.composition
                                     .match(zip -> head.flatMap(x -> f.apply(zip)
@@ -450,8 +449,7 @@ public abstract class IO<A> implements MonadRec<A, IO<?>>, MonadError<Throwable,
         public CompletableFuture<A> unsafePerformAsyncIO(Executor executor) {
             Lazy<CompletableFuture<Object>> lazyFuture = LazyRec.<IO<?>, CompletableFuture<Object>>lazyRec(
                     (f, io) -> {
-                        if (io instanceof IO.Compose<?>) {
-                            Compose<?>                      compose = (Compose<?>) io;
+                        if (io instanceof Compose<?> compose) {
                             Lazy<CompletableFuture<Object>> head    = f.apply(compose.source);
                             return compose.composition
                                     .match(zip -> head.flatMap(futureX -> f.apply(zip)

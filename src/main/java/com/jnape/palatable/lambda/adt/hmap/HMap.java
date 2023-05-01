@@ -162,8 +162,7 @@ public final class HMap implements Iterable<Tuple2<TypeSafeKey<?, ?>, Object>> {
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof HMap) {
-            HMap that = (HMap) other;
+        if (other instanceof HMap that) {
             return Objects.equals(this.table, that.table);
         }
         return false;

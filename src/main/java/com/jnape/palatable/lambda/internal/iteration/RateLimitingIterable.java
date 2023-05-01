@@ -15,8 +15,7 @@ public final class RateLimitingIterable<A> implements Iterable<A> {
 
     public RateLimitingIterable(Iterable<A> as, Set<Tuple3<Long, Duration, Fn0<Instant>>> rateLimits) {
         Set<Tuple3<Long, Duration, Fn0<Instant>>> combinedRateLimits = new HashSet<>(rateLimits);
-        if (as instanceof RateLimitingIterable) {
-            RateLimitingIterable<A> inner = (RateLimitingIterable<A>) as;
+        if (as instanceof RateLimitingIterable<A> inner) {
             combinedRateLimits.addAll(inner.rateLimits);
             as = inner.as;
         }

@@ -15,8 +15,7 @@ public final class PredicatedTakingIterable<A> implements Iterable<A> {
 
     public PredicatedTakingIterable(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         List<Fn1<? super A, ? extends Boolean>> predicates = new ArrayList<>(singletonList(predicate));
-        while (as instanceof PredicatedTakingIterable) {
-            PredicatedTakingIterable<A> nested = (PredicatedTakingIterable<A>) as;
+        while (as instanceof PredicatedTakingIterable<A> nested) {
             predicates.addAll(0, nested.predicates);
             as = nested.as;
         }

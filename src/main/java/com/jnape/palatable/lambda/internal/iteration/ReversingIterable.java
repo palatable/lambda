@@ -8,8 +8,7 @@ public final class ReversingIterable<A> implements Iterable<A> {
 
     public ReversingIterable(Iterable<A> as) {
         boolean reverse = true;
-        while (as instanceof ReversingIterable) {
-            ReversingIterable<A> nested = (ReversingIterable<A>) as;
+        while (as instanceof ReversingIterable<A> nested) {
             as = nested.as;
             reverse = !nested.reverse;
         }

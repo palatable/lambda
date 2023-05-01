@@ -11,8 +11,7 @@ public final class PredicatedDroppingIterable<A> implements Iterable<A> {
 
     public PredicatedDroppingIterable(Fn1<? super A, ? extends Boolean> predicate, Iterable<A> as) {
         ImmutableQueue<Fn1<? super A, ? extends Boolean>> predicates = ImmutableQueue.singleton(predicate);
-        while (as instanceof PredicatedDroppingIterable) {
-            PredicatedDroppingIterable<A> nested = (PredicatedDroppingIterable<A>) as;
+        while (as instanceof PredicatedDroppingIterable<A> nested) {
             as = nested.as;
             predicates = nested.predicates.concat(predicates);
         }
