@@ -18,7 +18,6 @@ import com.jnape.palatable.lambda.monad.MonadError;
 import com.jnape.palatable.lambda.monad.MonadRec;
 import com.jnape.palatable.lambda.traversable.Traversable;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.jnape.palatable.lambda.adt.Either.left;
@@ -38,14 +37,12 @@ import static com.jnape.palatable.lambda.io.IO.io;
  * @param <A> the optional parameter type
  * @see Optional
  */
-public abstract class Maybe<A> implements
+public sealed interface Maybe<A> extends
         CoProduct2<Unit, A, Maybe<A>>,
         MonadError<Unit, A, Maybe<?>>,
         MonadRec<A, Maybe<?>>,
-        Traversable<A, Maybe<?>> {
+        Traversable<A, Maybe<?>> permits Just, Nothing {
 
-    private Maybe() {
-    }
 
     /**
      * If the value is present, return it; otherwise, return the value supplied by <code>otherSupplier</code>.
@@ -53,7 +50,7 @@ public abstract class Maybe<A> implements
      * @param otherFn0 the supplier for the other value
      * @return this value, or the supplied other value
      */
-    public final A orElseGet(Fn0<A> otherFn0) {
+    default A orElseGet(Fn0<A> otherFn0) {
         return match(__ -> otherFn0.apply(), id());
     }
 
@@ -63,7 +60,7 @@ public abstract class Maybe<A> implements
      * @param other the other value
      * @return this value, or the other value
      */
-    public final A orElse(A other) {
+    default A orElse(A other) {
         return orElseGet(() -> other);
     }
 
@@ -76,7 +73,7 @@ public abstract class Maybe<A> implements
      * @return the value, if present
      * @throws E the throwable, if the value is absent
      */
-    public final <E extends Throwable> A orElseThrow(Fn0<? extends E> throwableSupplier) throws E {
+    default <E extends Throwable> A orElseThrow(Fn0<? extends E> throwableSupplier) throws E {
         return orElseGet(fn0(() -> {
             throw throwableSupplier.apply();
         }));
@@ -89,7 +86,7 @@ public abstract class Maybe<A> implements
      * @param predicate the predicate to apply to the possibly absent value
      * @return maybe the present value that satisfied the predicate
      */
-    public final Maybe<A> filter(Fn1<? super A, ? extends Boolean> predicate) {
+    default Maybe<A> filter(Fn1<? super A, ? extends Boolean> predicate) {
         return flatMap(a -> predicate.apply(a) ? just(a) : nothing());
     }
 
@@ -97,7 +94,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public Maybe<A> throwError(Unit unit) {
+    default Maybe<A> throwError(Unit unit) {
         return nothing();
     }
 
@@ -105,7 +102,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public Maybe<A> catchError(Fn1<? super Unit, ? extends Monad<A, Maybe<?>>> recoveryFn) {
+    default Maybe<A> catchError(Fn1<? super Unit, ? extends Monad<A, Maybe<?>>> recoveryFn) {
         return match(recoveryFn, Maybe::just).coerce();
     }
 
@@ -117,7 +114,7 @@ public abstract class Maybe<A> implements
      * @param lFn0 the supplier for the left value
      * @return this value wrapped in an Either.right, or an Either.left around the result of lSupplier
      */
-    public final <L> Either<L, A> toEither(Fn0<L> lFn0) {
+    default <L> Either<L, A> toEither(Fn0<L> lFn0) {
         return fmap(Either::<L, A>right).orElseGet(() -> left(lFn0.apply()));
     }
 
@@ -126,7 +123,7 @@ public abstract class Maybe<A> implements
      *
      * @return the Optional
      */
-    public final Optional<A> toOptional() {
+    default Optional<A> toOptional() {
         return fmap(Optional::of).orElseGet(Optional::empty);
     }
 
@@ -138,7 +135,7 @@ public abstract class Maybe<A> implements
      * @return Just b
      */
     @Override
-    public final <B> Maybe<B> pure(B b) {
+    default <B> Maybe<B> pure(B b) {
         return just(b);
     }
 
@@ -149,7 +146,7 @@ public abstract class Maybe<A> implements
      * {@link Maybe#nothing}.
      */
     @Override
-    public final <B> Maybe<B> fmap(Fn1<? super A, ? extends B> fn) {
+    default <B> Maybe<B> fmap(Fn1<? super A, ? extends B> fn) {
         return MonadError.super.<B>fmap(fn).coerce();
     }
 
@@ -157,7 +154,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public final <B> Maybe<B> zip(Applicative<Fn1<? super A, ? extends B>, Maybe<?>> appFn) {
+    default <B> Maybe<B> zip(Applicative<Fn1<? super A, ? extends B>, Maybe<?>> appFn) {
         return MonadError.super.zip(appFn).coerce();
     }
 
@@ -169,7 +166,7 @@ public abstract class Maybe<A> implements
      * @return the zipped {@link Maybe}
      */
     @Override
-    public <B> Lazy<Maybe<B>> lazyZip(Lazy<? extends Applicative<Fn1<? super A, ? extends B>, Maybe<?>>> lazyAppFn) {
+    default <B> Lazy<Maybe<B>> lazyZip(Lazy<? extends Applicative<Fn1<? super A, ? extends B>, Maybe<?>>> lazyAppFn) {
         return match(constantly(lazy(nothing())),
                      a -> lazyAppFn.fmap(maybeF -> maybeF.<B>fmap(f -> f.apply(a)).coerce()));
     }
@@ -178,7 +175,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public final <B> Maybe<B> discardL(Applicative<B, Maybe<?>> appB) {
+    default <B> Maybe<B> discardL(Applicative<B, Maybe<?>> appB) {
         return MonadError.super.discardL(appB).coerce();
     }
 
@@ -186,7 +183,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public final <B> Maybe<A> discardR(Applicative<B, Maybe<?>> appB) {
+    default <B> Maybe<A> discardR(Applicative<B, Maybe<?>> appB) {
         return MonadError.super.discardR(appB).coerce();
     }
 
@@ -195,7 +192,7 @@ public abstract class Maybe<A> implements
      */
     @SuppressWarnings("RedundantTypeArguments")
     @Override
-    public final <B> Maybe<B> flatMap(Fn1<? super A, ? extends Monad<B, Maybe<?>>> f) {
+    default  <B> Maybe<B> flatMap(Fn1<? super A, ? extends Monad<B, Maybe<?>>> f) {
         return match(constantly(nothing()), f.fmap(Monad<B, Maybe<?>>::coerce));
     }
 
@@ -203,7 +200,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public <B> Maybe<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Maybe<?>>> fn) {
+    default <B> Maybe<B> trampolineM(Fn1<? super A, ? extends MonadRec<RecursiveResult<A, B>, Maybe<?>>> fn) {
         return match(constantly(nothing()), trampoline(a -> fn.apply(a).<Maybe<RecursiveResult<A, B>>>coerce()
                 .match(constantly(terminate(nothing())),
                        aOrB -> aOrB.fmap(Maybe::just))));
@@ -213,7 +210,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public <B> Choice3<Unit, A, B> diverge() {
+    default <B> Choice3<Unit, A, B> diverge() {
         return match(Choice3::a, Choice3::b);
     }
 
@@ -221,7 +218,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public Tuple2<Maybe<Unit>, Maybe<A>> project() {
+    default Tuple2<Maybe<Unit>, Maybe<A>> project() {
         return CoProduct2.super.project().into(HList::tuple);
     }
 
@@ -229,7 +226,7 @@ public abstract class Maybe<A> implements
      * {@inheritDoc}
      */
     @Override
-    public Choice2<A, Unit> invert() {
+    default Choice2<A, Unit> invert() {
         return match(Choice2::b, Choice2::a);
     }
 
@@ -241,13 +238,13 @@ public abstract class Maybe<A> implements
      * @deprecated in favor of {@link Maybe#match(Fn1, Fn1) matching} into an {@link IO} and explicitly running it
      */
     @Deprecated
-    public final Maybe<A> peek(Fn1<? super A, ? extends IO<?>> effect) {
+    default Maybe<A> peek(Fn1<? super A, ? extends IO<?>> effect) {
         return match(constantly(io(this)), a -> effect.apply(a).fmap(constantly(this))).unsafePerformIO();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public final <B, App extends Applicative<?, App>, TravB extends Traversable<B, Maybe<?>>,
+    default <B, App extends Applicative<?, App>, TravB extends Traversable<B, Maybe<?>>,
             AppTrav extends Applicative<TravB, App>> AppTrav traverse(Fn1<? super A, ? extends Applicative<B, App>> fn,
                                                                       Fn1<? super TravB, ? extends AppTrav> pure) {
         return match(__ -> pure.apply((TravB) Maybe.<B>nothing()), a -> (AppTrav) fn.apply(a).fmap(Maybe::just));
@@ -261,7 +258,7 @@ public abstract class Maybe<A> implements
      * @param <A>    the potential right value
      * @return "Just" the right value, or nothing
      */
-    public static <A> Maybe<A> fromEither(Either<?, A> either) {
+    static <A> Maybe<A> fromEither(Either<?, A> either) {
         return either.toMaybe();
     }
 
@@ -272,7 +269,7 @@ public abstract class Maybe<A> implements
      * @param <A>      the optional parameter type
      * @return the equivalent Maybe instance
      */
-    public static <A> Maybe<A> fromOptional(Optional<? extends A> optional) {
+    static <A> Maybe<A> fromOptional(Optional<? extends A> optional) {
         return optional.map(Maybe::<A>just).orElse(Maybe.nothing());
     }
 
@@ -284,7 +281,7 @@ public abstract class Maybe<A> implements
      * @param <A> the value parameter type
      * @return "Just" the value, or nothing
      */
-    public static <A> Maybe<A> maybe(A a) {
+    static <A> Maybe<A> maybe(A a) {
         return a == null ? nothing() : just(a);
     }
 
@@ -297,7 +294,7 @@ public abstract class Maybe<A> implements
      * @return "Just" the value
      * @throws NullPointerException if a is null
      */
-    public static <A> Maybe<A> just(A a) {
+    static <A> Maybe<A> just(A a) {
         if (a == null)
             throw new NullPointerException();
         return new Just<>(a);
@@ -310,7 +307,7 @@ public abstract class Maybe<A> implements
      * @return nothing
      */
     @SuppressWarnings("unchecked")
-    public static <A> Maybe<A> nothing() {
+    static <A> Maybe<A> nothing() {
         return (Maybe<A>) Nothing.INSTANCE;
     }
 
@@ -319,53 +316,22 @@ public abstract class Maybe<A> implements
      *
      * @return the {@link Pure} instance
      */
-    public static Pure<Maybe<?>> pureMaybe() {
+    static Pure<Maybe<?>> pureMaybe() {
         return Maybe::just;
     }
+}
+record Nothing<A>() implements Maybe<A> {
+    static final Nothing<?> INSTANCE = new Nothing<>();
 
-    private static final class Nothing<A> extends Maybe<A> {
-        private static final Nothing<?> INSTANCE = new Nothing<>();
-
-        private Nothing() {
-        }
-
-        @Override
-        public <R> R match(Fn1<? super Unit, ? extends R> aFn, Fn1<? super A, ? extends R> bFn) {
-            return aFn.apply(UNIT);
-        }
-
-        @Override
-        public String toString() {
-            return "Nothing";
-        }
+    @Override
+    public <R> R match(Fn1<? super Unit, ? extends R> aFn, Fn1<? super A, ? extends R> bFn) {
+        return aFn.apply(UNIT);
     }
+}
 
-    private static final class Just<A> extends Maybe<A> {
-
-        private final A a;
-
-        private Just(A a) {
-            this.a = a;
-        }
-
-        @Override
-        public <R> R match(Fn1<? super Unit, ? extends R> aFn, Fn1<? super A, ? extends R> bFn) {
-            return bFn.apply(a);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other instanceof Just && Objects.equals(this.a, ((Just) other).a);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(a);
-        }
-
-        @Override
-        public String toString() {
-            return "Just " + a;
-        }
+record Just<A>(A a) implements Maybe<A> {
+    @Override
+    public <R> R match(Fn1<? super Unit, ? extends R> aFn, Fn1<? super A, ? extends R> bFn) {
+        return bFn.apply(a);
     }
 }
